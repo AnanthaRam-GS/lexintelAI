@@ -1,0 +1,40 @@
+{
+  "purpose": "Plan balanced development-stage judgment acquisition without listing fabricated case identifiers.",
+  "stage_a_target": "approximately 20-50 representative judgments",
+  "sampling_dimensions": {
+    "court_level": [
+      "supreme_court",
+      "high_court",
+      "district_or_sessions"
+    ],
+    "offence_family": [
+      "homicide",
+      "sexual_offences",
+      "theft_and_robbery",
+      "cheating_and_fraud",
+      "hurt_and_assault",
+      "kidnapping",
+      "criminal_breach_of_trust",
+      "dowry_and_domestic_cruelty",
+      "narcotics_related",
+      "cyber_related",
+      "other"
+    ],
+    "legal_regime": [
+      "ipc_crpc",
+      "bns_bnss"
+    ],
+    "time_band": [
+      "pre_2015",
+      "2015_2019",
+      "2020_2023",
+      "2024_onwards"
+    ]
+  },
+  "collection_rules": [
+    "Do not bulk-download judgments before corpus foundation review.",
+    "Use documented provider APIs only where permitted.",
+    "Preserve source URL, source provider, source document ID, retrieval time, SHA-256, and local raw file path for every acquired judgment.",
+    "Balance Stage A across court level, offence family, legal regime, and time band where available."
+  ]
+}
