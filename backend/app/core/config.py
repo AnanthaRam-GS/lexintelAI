@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     chroma_persist_dir: str = "./chroma_store"
     chroma_collection_name: str = "judgments"
 
+    indian_kanoon_api_token: str = ""
+    indian_kanoon_base_url: str = "https://api.indiankanoon.org"
+
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     jwt_expiry_minutes: int = 60
