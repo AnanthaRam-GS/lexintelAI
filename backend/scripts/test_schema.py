@@ -83,8 +83,12 @@ def test_schema():
     expected_user_cols = ["id", "email", "hashed_password", "role", "created_at"]
     for col in expected_user_cols:
         assert col in user_cols, f"users missing column: {col}"
-    assert user_cols["email"].unique, "users.email must be unique"
-    print("[PASS] users columns and unique email constraint verified")
+    user_constraints = [c.name for c in tables["users"].constraints]
+    assert "uq_users_email" in user_constraints, "users missing uq_users_email constraint"
+    assert "check_user_role" in user_constraints, "users missing check_user_role constraint"
+    user_indexes = {idx.name: idx.unique for idx in tables["users"].indexes}
+    assert "ix_users_email" in user_indexes and user_indexes["ix_users_email"], "users missing unique ix_users_email index"
+    print("[PASS] users columns, unique constraint, role check, and unique index verified")
 
     # 6. ingestion_jobs
     job_cols = tables["ingestion_jobs"].columns

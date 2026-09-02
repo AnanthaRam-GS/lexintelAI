@@ -19,9 +19,11 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -126,10 +128,12 @@ class User(Base):
             "role IN ('lawyer', 'admin')",
             name="check_user_role",
         ),
+        UniqueConstraint("email", name="uq_users_email"),
+        Index("ix_users_email", "email", unique=True),
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    email = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False)
     created_at = Column(
@@ -192,8 +196,14 @@ class IngestionJob(Base):
         nullable=True,
         index=True,
     )
-    status = Column(String(50), nullable=False, default="QUEUED", index=True)
-    progress = Column(Integer, nullable=False, default=0)
+    status = Column(
+        String(50),
+        nullable=False,
+        default="QUEUED",
+        server_default="QUEUED",
+        index=True,
+    )
+    progress = Column(Integer, nullable=False, default=0, server_default="0")
     error_message = Column(Text, nullable=True)
     created_at = Column(
         DateTime(timezone=True),
@@ -230,6 +240,6 @@ class NcrbStat(Base):
     state = Column(String(100), nullable=False, index=True)
     offense_category = Column(String(150), nullable=False, index=True)
     ipc_section = Column(String(50), nullable=True, index=True)
-    case_count = Column(Integer, nullable=False, default=0)
-    conviction_count = Column(Integer, nullable=True, default=0)
-    acquittal_count = Column(Integer, nullable=True, default=0)
+    case_count = Column(Integer, nullable=False, default=0, server_default="0")
+    conviction_count = Column(Integer, nullable=True, default=0, server_default="0")
+    acquittal_count = Column(Integer, nullable=True, default=0, server_default="0")
