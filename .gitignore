@@ -42,5 +42,9 @@ Thumbs.db
 # ChromaDB local persistence
 chroma_store/
 
+# Local acquired judgment binaries
+data/raw/judgments/indiankanoon/*
+!data/raw/judgments/indiankanoon/.gitkeep
+
 # Model / generated runtime artifacts
 *.log
