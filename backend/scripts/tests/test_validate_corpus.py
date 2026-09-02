@@ -63,6 +63,33 @@ class ValidateCorpusTest(unittest.TestCase):
 
         self.assertTrue(any("attribution_text is missing" in error for error in errors))
 
+    def test_development_judgment_requires_valid_metadata(self) -> None:
+        records = [
+            {
+                "local_id": "dev-1",
+                "source_provider": "indian_kanoon",
+                "source_document_id": "1",
+                "source_url": "https://indiankanoon.org/doc/1/",
+                "case_name": "A v State",
+                "court_level": "not_a_court",
+                "year": 1700,
+                "offence_family": "homicide",
+                "raw_file_path": None,
+                "sha256": None,
+                "file_size_bytes": None,
+                "mime_type": None,
+                "attribution_required": False,
+                "status": "validated",
+            }
+        ]
+
+        errors, _warnings, _duplicates = validate_corpus.validate_development_judgments(records)
+
+        self.assertTrue(any("invalid court_level" in error for error in errors))
+        self.assertTrue(any("invalid year" in error for error in errors))
+        self.assertTrue(any("must require attribution" in error for error in errors))
+        self.assertTrue(any("validated record missing raw_file_path" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
