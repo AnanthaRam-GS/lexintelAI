@@ -9,7 +9,7 @@
     "expected_filename": "indian_penal_code_1860.pdf",
     "download_status": "manual_required",
     "attribution_required": false,
-    "notes": "Official India Code landing page verified. Direct official PDF URL was not reliably verified in the current environment."
+    "notes": "Official India Code landing page verified. Candidate direct PDF https://indiacode.nic.in/bitstream/123456789/4219/1/indian_penal_code_1860.pdf returned HTTP 404 text/html on ranged GET, so no direct PDF URL is accepted yet."
   },
   {
     "id": "bns-2023",
@@ -21,7 +21,7 @@
     "expected_filename": "bharatiya_nyaya_sanhita_2023.pdf",
     "download_status": "manual_required",
     "attribution_required": false,
-    "notes": "Official India Code central legislation browse page shows The Bharatiya Nyaya Sanhita, 2023. Direct official PDF URL was not reliably verified in the current environment."
+    "notes": "Official India Code central legislation browse page shows The Bharatiya Nyaya Sanhita, 2023. Candidate direct PDFs https://www.indiacode.nic.in/bitstream/123456789/20062/1/a202345.pdf and https://www.indiacode.nic.in/bitstream/123456789/20062/1/a2023-45.pdf returned HTTP 404 text/html on ranged GET, so no direct PDF URL is accepted yet."
   },
   {
     "id": "crpc-1973",
@@ -33,7 +33,7 @@
     "expected_filename": "code_of_criminal_procedure_1973.pdf",
     "download_status": "manual_required",
     "attribution_required": false,
-    "notes": "Official India Code landing page verified. Direct official PDF URL was not reliably verified in the current environment."
+    "notes": "Official India Code landing page verified. Candidate direct PDF https://www.indiacode.nic.in/bitstream/123456789/15272/1/the_code_of_criminal_procedure,_1973.pdf returned HTTP 404 text/html on ranged GET, so no direct PDF URL is accepted yet."
   },
   {
     "id": "bnss-2023",
@@ -45,6 +45,6 @@
     "expected_filename": "bharatiya_nagarik_suraksha_sanhita_2023.pdf",
     "download_status": "manual_required",
     "attribution_required": false,
-    "notes": "Official India Code landing page verified. Direct official PDF URL was not reliably verified in the current environment."
+    "notes": "Official India Code landing page verified. Candidate direct PDF https://www.indiacode.nic.in/bitstream/123456789/21544/1/the_bharatiya_nagarik_suraksha_sanhita,_2023.pdf returned HTTP 404 text/html on ranged GET, so no direct PDF URL is accepted yet."
   }
 ]
