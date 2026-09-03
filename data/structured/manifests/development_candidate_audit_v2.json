@@ -1,0 +1,245 @@
+[
+  {
+    "local_id": "v2-audit-70332624",
+    "source_document_id": "70332624",
+    "query_id": "cheating_fraud_current",
+    "offence_family": "cheating_and_fraud",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 1,
+    "search_title": "Directorate Of Enforcement vs Mukesh Jain on 30 March, 2024",
+    "court": null,
+    "year": 2024,
+    "search_filter_result": "considered",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 0.79,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T16:28:03.293218+00:00"
+  },
+  {
+    "local_id": "v2-audit-28369644",
+    "source_document_id": "28369644",
+    "query_id": "theft_robbery_recent",
+    "offence_family": "theft_and_robbery",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "<b>Criminal</b> Courts - Rules and Orders",
+    "court": null,
+    "year": null,
+    "search_filter_result": "considered",
+    "document_type_score": 0.03,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 0.84,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "duplicate_candidate",
+      "low_document_type_score",
+      "not_a_judgment"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T16:28:08.272275+00:00"
+  },
+  {
+    "local_id": "v2-audit-99504196",
+    "source_document_id": "99504196",
+    "query_id": "criminal_breach_trust_recent",
+    "offence_family": "criminal_breach_of_trust",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "Anosh Ekka vs The Directorate Of Enforcement on 20 January, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 0.6,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T16:28:14.490816+00:00"
+  },
+  {
+    "local_id": "v2-audit-27865803",
+    "source_document_id": "27865803",
+    "query_id": "kidnapping_recent",
+    "offence_family": "kidnapping",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "Anand Kushwaha vs The State Of Madhya Pradesh on 17 May, 2019",
+    "court": null,
+    "year": 2019,
+    "search_filter_result": "considered",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 0.76,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T16:28:53.731018+00:00"
+  },
+  {
+    "local_id": "v2-audit-83401027",
+    "source_document_id": "83401027",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 1,
+    "search_title": "Charan Singh @ Charanjit Singh vs The State Of Uttarakhand Home ... on 20 April, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T16:28:55.689198+00:00"
+  },
+  {
+    "local_id": "v2-audit-17701479",
+    "source_document_id": "17701479",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 2,
+    "search_title": "Savita vs State Of Delhi on 28 July, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T16:28:59.571704+00:00"
+  },
+  {
+    "local_id": "v2-audit-876962",
+    "source_document_id": "876962",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 3,
+    "search_title": "Siri Bhagwan vs State Of Haryana on 17 September, 2007",
+    "court": null,
+    "year": 2007,
+    "search_filter_result": "considered",
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T16:29:02.468270+00:00"
+  },
+  {
+    "local_id": "v2-audit-166101582",
+    "source_document_id": "166101582",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 4,
+    "search_title": "Rakesh & Anr. vs State Of Delhi on 25 May, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T16:29:06.267551+00:00"
+  },
+  {
+    "local_id": "v2-audit-123779490",
+    "source_document_id": "123779490",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 5,
+    "search_title": "Hompal Singh & Ors. vs State Of Delhi on 22 May, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T16:29:07.584240+00:00"
+  },
+  {
+    "local_id": "v2-audit-37639548",
+    "source_document_id": "37639548",
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 6,
+    "search_title": "State Of Kerala vs Abdul Majeed",
+    "court": null,
+    "year": null,
+    "search_filter_result": "considered",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.75,
+    "metadata_quality_score": 0.92,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T16:29:12.405244+00:00"
+  }
+]
