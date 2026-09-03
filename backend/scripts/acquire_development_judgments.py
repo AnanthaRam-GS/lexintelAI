@@ -144,6 +144,10 @@ def source_id_exists(source_document_id: str, records: list[dict[str, Any]]) -> 
     )
 
 
+def should_stop_for_api_error(exc: IndianKanoonClientError) -> bool:
+    return exc.status_code in {401, 403, 429}
+
+
 def review_record_for(record: dict[str, Any]) -> dict[str, Any]:
     return {
         "local_id": record["local_id"],
@@ -197,6 +201,8 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
             search_response = client.search(str(query["query"]), page=0)
         except IndianKanoonClientError as exc:
             print(f"{query['query_id']}: search failed: {exc}", file=sys.stderr)
+            if should_stop_for_api_error(exc):
+                return 1
             continue
         time.sleep(delay)
 
@@ -213,6 +219,8 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
                 metadata = client.get_document_metadata(source_document_id)
             except IndianKanoonClientError as exc:
                 print(f"{source_document_id}: metadata failed: {exc}", file=sys.stderr)
+                if should_stop_for_api_error(exc):
+                    return 1
                 continue
             time.sleep(delay)
 
@@ -224,6 +232,8 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
                 content = client.get_original_document(source_document_id)
             except IndianKanoonClientError as exc:
                 print(f"{source_document_id}: original document failed: {exc}", file=sys.stderr)
+                if should_stop_for_api_error(exc):
+                    return 1
                 continue
             time.sleep(delay)
 

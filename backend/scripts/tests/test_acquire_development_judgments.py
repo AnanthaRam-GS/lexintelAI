@@ -69,6 +69,28 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
 
         self.assertEqual(result, 2)
 
+    def test_auth_or_rate_limit_error_stops_acquisition(self) -> None:
+        queries = [
+            {
+                "query_id": "q1",
+                "offence_family": "homicide",
+                "query": "murder",
+                "target_count": 3,
+            }
+        ]
+        client = Mock()
+        client.search.side_effect = acquire.IndianKanoonClientError(
+            "Indian Kanoon API returned HTTP 403.",
+            status_code=403,
+        )
+
+        with patch.dict("os.environ", {"INDIAN_KANOON_API_TOKEN": "token"}):
+            with patch.object(acquire, "load_manifest", return_value=queries):
+                with patch.object(acquire, "IndianKanoonClient", return_value=client):
+                    result = acquire.acquire(limit=5, dry_run=False)
+
+        self.assertEqual(result, 1)
+
     def test_manifest_update_behavior_with_mock_client(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

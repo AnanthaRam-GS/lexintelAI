@@ -24,6 +24,10 @@ USER_AGENT = "LegalAI corpus foundation/0.1"
 class IndianKanoonClientError(RuntimeError):
     """Raised when the Indian Kanoon API request fails."""
 
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+
 
 class IndianKanoonClient:
     """Small wrapper around documented Indian Kanoon API endpoints."""
@@ -62,15 +66,23 @@ class IndianKanoonClient:
         url = f"{self.base_url}{path}"
         if query:
             url = f"{url}?{query}"
-        request = urllib.request.Request(url, headers=self._headers())
+        request = urllib.request.Request(url, headers=self._headers(), data=b"", method="POST")
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 status = getattr(response, "status", 200)
                 body = response.read()
+        except urllib.error.HTTPError as exc:
+            raise IndianKanoonClientError(
+                f"Indian Kanoon API returned HTTP {exc.code}.",
+                status_code=exc.code,
+            ) from exc
         except urllib.error.URLError as exc:
             raise IndianKanoonClientError(f"Indian Kanoon API request failed: {exc}") from exc
         if status < 200 or status >= 300:
-            raise IndianKanoonClientError(f"Indian Kanoon API returned HTTP {status}.")
+            raise IndianKanoonClientError(
+                f"Indian Kanoon API returned HTTP {status}.",
+                status_code=status,
+            )
         return body
 
     def search(self, query: str, page: int = 0) -> dict[str, Any]:

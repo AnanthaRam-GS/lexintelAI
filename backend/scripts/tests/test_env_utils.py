@@ -9,9 +9,14 @@ import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 from backend.scripts.env_utils import load_project_env
-from backend.scripts.indiankanoon_client import check_config
+from backend.scripts.indiankanoon_client import (
+    IndianKanoonClient,
+    IndianKanoonClientError,
+    check_config,
+)
 
 
 class EnvUtilsTest(unittest.TestCase):
@@ -124,6 +129,24 @@ class EnvUtilsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertIn("token is configured", output.getvalue())
         self.assertNotIn("test-token-placeholder", output.getvalue())
+
+    def test_client_uses_post_and_preserves_http_status(self) -> None:
+        error = HTTPError(
+            url="https://api.indiankanoon.org/search/",
+            code=403,
+            msg="Forbidden",
+            hdrs=None,
+            fp=None,
+        )
+        client = IndianKanoonClient(token="test-token-placeholder")
+
+        with patch("urllib.request.urlopen", side_effect=error) as urlopen:
+            with self.assertRaises(IndianKanoonClientError) as raised:
+                client.search("murder")
+
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(raised.exception.status_code, 403)
 
 
 if __name__ == "__main__":
