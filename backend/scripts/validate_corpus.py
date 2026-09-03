@@ -123,7 +123,8 @@ def validate_document_records(records: list[dict[str, Any]]) -> tuple[list[str],
             errors.append(f"{record_id}: PDF extension with non-PDF mime_type")
         if mime_type == "application/pdf":
             with raw_path.open("rb") as file_obj:
-                if file_obj.read(4) != b"%PDF":
+                header = file_obj.read(7)
+                if not (header.startswith(b"%PDF") or header.startswith(b"\xef\xbb\xbf%PDF")):
                     errors.append(f"{record_id}: PDF record missing PDF magic header")
             if suffix != ".pdf":
                 warnings.append(f"{record_id}: PDF mime_type but file extension is not .pdf")
@@ -209,7 +210,8 @@ def validate_development_judgments(
             errors.append(f"{record_id}: PDF extension with non-PDF mime_type")
         if mime_type == "application/pdf":
             with raw_path.open("rb") as file_obj:
-                if file_obj.read(4) != b"%PDF":
+                header = file_obj.read(7)
+                if not (header.startswith(b"%PDF") or header.startswith(b"\xef\xbb\xbf%PDF")):
                     errors.append(f"{record_id}: PDF record missing PDF magic header")
 
     for sha, count in sha_counts.items():

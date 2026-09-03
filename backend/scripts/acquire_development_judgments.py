@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import mimetypes
 import os
@@ -159,6 +160,9 @@ def normalize_original_document_payload(payload: bytes) -> tuple[bytes, str]:
     except ValueError:
         return payload, "application/json"
 
+    if content.startswith(b"\xef\xbb\xbf%PDF"):
+        content = content[3:]
+
     mime_type = str(parsed.get("Content-Type") or parsed.get("content_type") or "").strip()
     if not mime_type:
         mime_type = "application/pdf" if content.startswith(b"%PDF") else "application/octet-stream"
@@ -285,8 +289,6 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
             RAW_DIR.mkdir(parents=True, exist_ok=True)
             if raw_path.exists():
                 existing_digest = sha256_file(raw_path)
-                import hashlib
-
                 incoming_digest = hashlib.sha256(content).hexdigest()
                 if existing_digest != incoming_digest:
                     print(

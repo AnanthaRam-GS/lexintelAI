@@ -156,6 +156,16 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
         self.assertEqual(content, b"%PDF sample")
         self.assertEqual(mime_type, "application/pdf")
 
+    def test_original_document_pdf_bom_is_stripped(self) -> None:
+        payload = (
+            b'{"Content-Type":"application/pdf","doc":"77u/JVBERiBzYW1wbGU="}'
+        )
+
+        content, mime_type = acquire.normalize_original_document_payload(payload)
+
+        self.assertEqual(content, b"%PDF sample")
+        self.assertEqual(mime_type, "application/pdf")
+
 
 if __name__ == "__main__":
     unittest.main()
