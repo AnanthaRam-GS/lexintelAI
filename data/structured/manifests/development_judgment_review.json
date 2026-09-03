@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "local_id": "dev-1769219",
+    "source_document_id": "1769219",
+    "case_name": "State (N.C.T. Of Delhi) vs Navjot Sandhu@ Afsan Guru on 4 August, 2005",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/1769219/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-17904216",
+    "source_document_id": "17904216",
+    "case_name": "Shatrughna Baban Meshram vs The State Of Maharashtra on 2 November, 2020",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/17904216/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-129859128",
+    "source_document_id": "129859128",
+    "case_name": "Ramprakash vs State Of M.P. on 13 May, 2022",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/129859128/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  }
+]
