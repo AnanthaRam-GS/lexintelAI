@@ -18,6 +18,9 @@ MANIFEST_DIR = REPO_ROOT / "data/structured/manifests"
 STATUTES_MANIFEST = MANIFEST_DIR / "statutes.json"
 CORPUS_DOCUMENTS_MANIFEST = MANIFEST_DIR / "corpus_documents.json"
 DEVELOPMENT_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments.json"
+V1_QUALITY_ANALYSIS_MANIFEST = MANIFEST_DIR / "v1_quality_analysis.json"
+V2_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_v2.json"
+V2_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_v2.json"
 REQUIRED_FIELDS = {
     "document_id",
     "document_type",
@@ -55,7 +58,15 @@ VALID_DEVELOPMENT_STATUSES = {
     "failed",
     "excluded_duplicate",
     "excluded_irrelevant",
+    "screened",
+    "rejected_pre_download",
+    "accept_candidate",
+    "needs_review",
+    "reject",
 }
+VALID_AUTOMATED_DECISIONS = {"accept_candidate", "needs_review", "reject"}
+VALID_LEGAL_REGIMES = {"ipc_crpc", "bns_bnss", "mixed_or_transition", "unknown"}
+VALID_TEMPORAL_TRACKS = {"current_transition", "recent_ipc", "landmark_historical"}
 VALID_COURT_LEVELS = {
     "supreme_court",
     "high_court",
@@ -229,6 +240,37 @@ def validate_development_judgments(
     return errors, warnings, duplicate_count
 
 
+def valid_score(value: Any) -> bool:
+    return isinstance(value, int | float) and 0.0 <= float(value) <= 1.0
+
+
+def validate_quality_analysis(records: list[dict[str, Any]], label: str) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    for record in records:
+        record_id = str(record.get("local_id") or record.get("source_document_id") or "<missing>")
+        decision = record.get("automated_candidate_decision") or record.get("final_automated_decision")
+        if decision not in VALID_AUTOMATED_DECISIONS:
+            errors.append(f"{label} {record_id}: invalid automated decision: {decision}")
+        regime = record.get("detected_regime") or record.get("legal_regime")
+        if regime is not None and regime not in VALID_LEGAL_REGIMES:
+            errors.append(f"{label} {record_id}: invalid legal regime: {regime}")
+        for field in (
+            "document_type_score",
+            "criminal_relevance_score",
+            "metadata_quality_score",
+        ):
+            value = record.get(field)
+            if value is not None and not valid_score(value):
+                errors.append(f"{label} {record_id}: invalid score range for {field}: {value}")
+        if label == "v2_audit":
+            if record.get("temporal_track") not in VALID_TEMPORAL_TRACKS:
+                errors.append(f"{label} {record_id}: invalid temporal_track: {record.get('temporal_track')}")
+            if decision == "reject" and not record.get("rejection_reasons"):
+                warnings.append(f"{label} {record_id}: rejected candidate missing rejection reasons")
+    return errors, warnings
+
+
 def main() -> int:
     errors: list[str] = []
     warnings: list[str] = []
@@ -252,7 +294,26 @@ def main() -> int:
         warnings.extend(dev_warnings)
         duplicate_count += dev_duplicate_count
 
-    print(f"Documents checked: {len(records) + len(development_records)}")
+    v2_records = validate_json_manifest(V2_JUDGMENTS_MANIFEST, errors)
+    if V2_JUDGMENTS_MANIFEST.exists():
+        v2_errors, v2_warnings, v2_duplicate_count = validate_development_judgments(v2_records)
+        errors.extend(v2_errors)
+        warnings.extend(v2_warnings)
+        duplicate_count += v2_duplicate_count
+
+    v1_analysis = validate_json_manifest(V1_QUALITY_ANALYSIS_MANIFEST, errors)
+    if V1_QUALITY_ANALYSIS_MANIFEST.exists():
+        analysis_errors, analysis_warnings = validate_quality_analysis(v1_analysis, "v1_quality")
+        errors.extend(analysis_errors)
+        warnings.extend(analysis_warnings)
+
+    v2_audit = validate_json_manifest(V2_AUDIT_MANIFEST, errors)
+    if V2_AUDIT_MANIFEST.exists():
+        audit_errors, audit_warnings = validate_quality_analysis(v2_audit, "v2_audit")
+        errors.extend(audit_errors)
+        warnings.extend(audit_warnings)
+
+    print(f"Documents checked: {len(records) + len(development_records) + len(v2_records)}")
     print(f"Errors: {len(errors)}")
     print(f"Warnings: {len(warnings)}")
     print(f"Duplicates: {duplicate_count}")

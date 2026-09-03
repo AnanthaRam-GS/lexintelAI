@@ -90,6 +90,52 @@ class ValidateCorpusTest(unittest.TestCase):
         self.assertTrue(any("must require attribution" in error for error in errors))
         self.assertTrue(any("validated record missing raw_file_path" in error for error in errors))
 
+    def test_quality_analysis_validates_decisions_regimes_and_scores(self) -> None:
+        records = [
+            {
+                "source_document_id": "1",
+                "automated_candidate_decision": "made_up",
+                "detected_regime": "ipc_crpc",
+                "document_type_score": 1.2,
+                "criminal_relevance_score": 0.5,
+                "metadata_quality_score": 0.5,
+            },
+            {
+                "source_document_id": "2",
+                "automated_candidate_decision": "reject",
+                "detected_regime": "made_up",
+                "document_type_score": 0.2,
+                "criminal_relevance_score": 0.2,
+                "metadata_quality_score": 0.2,
+            },
+        ]
+
+        errors, warnings = validate_corpus.validate_quality_analysis(records, "v1_quality")
+
+        self.assertTrue(any("invalid automated decision" in error for error in errors))
+        self.assertTrue(any("invalid score range" in error for error in errors))
+        self.assertTrue(any("invalid legal regime" in error for error in errors))
+        self.assertEqual(warnings, [])
+
+    def test_v2_audit_validates_temporal_track_and_rejection_reasons(self) -> None:
+        records = [
+            {
+                "source_document_id": "1",
+                "final_automated_decision": "reject",
+                "detected_regime": "unknown",
+                "temporal_track": "future_track",
+                "document_type_score": 0.2,
+                "criminal_relevance_score": 0.2,
+                "metadata_quality_score": 0.2,
+                "rejection_reasons": [],
+            }
+        ]
+
+        errors, warnings = validate_corpus.validate_quality_analysis(records, "v2_audit")
+
+        self.assertTrue(any("invalid temporal_track" in error for error in errors))
+        self.assertTrue(any("missing rejection reasons" in warning for warning in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
