@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import html
 import hashlib
 import json
 import sys
 import time
 from collections import Counter
 from datetime import UTC, date, datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +58,9 @@ V1_JUDGMENTS = MANIFEST_DIR / "development_judgments.json"
 V2_JUDGMENTS = MANIFEST_DIR / "development_judgments_v2.json"
 V2_REVIEW = MANIFEST_DIR / "development_judgment_review_v2.json"
 V2_AUDIT = MANIFEST_DIR / "development_candidate_audit_v2.json"
+PRESCREEN_JUDGMENTS = MANIFEST_DIR / "development_judgments_prescreen_v2.json"
+PRESCREEN_REVIEW = MANIFEST_DIR / "development_judgment_review_prescreen_v2.json"
+PRESCREEN_AUDIT = MANIFEST_DIR / "development_candidate_audit_prescreen_v2.json"
 RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/v2"
 DEFAULT_LIMIT = 5
 MAX_LIMIT = 50
@@ -64,6 +69,59 @@ DEFAULT_MAX_API_REQUESTS = 100
 
 class BudgetExceeded(RuntimeError):
     pass
+
+
+class DocumentTextExtractor(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._skip_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() in {"script", "style"}:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in {"script", "style"} and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._skip_depth:
+            self.parts.append(data)
+
+
+def normalize_text(text: str) -> str:
+    text = html.unescape(text)
+    text = " ".join(text.split())
+    return text.strip()
+
+
+def extract_document_text(document_payload: dict[str, Any] | None) -> str:
+    if not isinstance(document_payload, dict):
+        return ""
+    value = document_payload.get("doc")
+    if not isinstance(value, str) or not value.strip():
+        return ""
+    parser = DocumentTextExtractor()
+    parser.feed(value)
+    parser.close()
+    return normalize_text(" ".join(parser.parts))
+
+
+def document_text_quality(text: str) -> str:
+    if not text:
+        return "unavailable"
+    if len(text) < 500:
+        return "sparse"
+    return "usable"
+
+
+def pre_download_decision(candidate_decision: str) -> str:
+    if candidate_decision == "reject":
+        return "reject_before_download"
+    if candidate_decision == "accept_candidate":
+        return "download"
+    return "needs_more_evidence"
 
 
 def stats_total(client: IndianKanoonClient) -> int:
@@ -165,6 +223,11 @@ def audit_entry(
         "court": (metadata or result).get("court") or (metadata or result).get("docsource"),
         "year": parse_year((metadata or result).get("date") or result.get("title")),
         "search_filter_result": "considered",
+        "pre_download_decision": decision.get("pre_download_decision"),
+        "pre_download_reasons": decision.get("pre_download_reasons", []),
+        "document_text_available": decision.get("document_text_available"),
+        "document_text_length": decision.get("document_text_length"),
+        "document_text_quality": decision.get("document_text_quality"),
         "document_type_score": decision.get("document_type_score"),
         "criminal_relevance_score": decision.get("criminal_relevance_score"),
         "metadata_quality_score": decision.get("metadata_quality_score"),
@@ -224,9 +287,9 @@ def acquire(
         raise ValueError("no v2 query groups selected")
     quotas = load_quotas()
     v1_records = load_manifest(V1_JUDGMENTS)
-    records = load_manifest(V2_JUDGMENTS)
-    reviews = load_manifest(V2_REVIEW)
-    audit = load_manifest(V2_AUDIT)
+    records = load_manifest(PRESCREEN_JUDGMENTS)
+    reviews = load_manifest(PRESCREEN_REVIEW)
+    audit = load_manifest(PRESCREEN_AUDIT)
     accepted_counts = active_counts(records)
     query_download_counts: Counter[str] = Counter(
         str(record.get("query_id"))
@@ -348,14 +411,29 @@ def acquire(
                 "acquisition_strategy_version": "v2_recent_criminal_filter",
                 "notes": None,
             }
-            pre_text = metadata_text(result, metadata, document)
+            document_text = extract_document_text(document)
+            document_quality = document_text_quality(document_text)
+            pre_text = "\n".join(
+                part for part in (document_text, metadata_text(result, metadata, document)) if part
+            )
             pre_decision = decide_candidate_quality(pre_text, base_record)
+            pre_kind = pre_download_decision(pre_decision.decision)
+            pre_decision_dict = pre_decision.to_dict()
+            pre_decision_dict.update(
+                {
+                    "pre_download_decision": pre_kind,
+                    "pre_download_reasons": pre_decision.reasons,
+                    "document_text_available": bool(document_text),
+                    "document_text_length": len(document_text),
+                    "document_text_quality": document_quality,
+                }
+            )
             if pre_decision.decision == "reject":
                 rejected = dict(base_record)
                 rejected["status"] = "rejected_pre_download"
                 rejected["notes"] = "; ".join(pre_decision.reasons)
                 upsert_by_local_id(records, rejected)
-                upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision.to_dict(), candidate_api_before, stats_total(client))})
+                upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision_dict, candidate_api_before, stats_total(client))})
                 continue
 
             enforce_budget(client, max_api_requests)
@@ -405,6 +483,16 @@ def acquire(
                 duplicate=duplicate is not None,
                 corrupt=file_size(raw_path) == 0,
             )
+            decision_dict = decision.to_dict()
+            decision_dict.update(
+                {
+                    "pre_download_decision": pre_kind,
+                    "pre_download_reasons": pre_decision.reasons,
+                    "document_text_available": bool(document_text),
+                    "document_text_length": len(document_text),
+                    "document_text_quality": document_quality,
+                }
+            )
             full_record["legal_regime"] = decision.legal_regime
             full_record["quality_scores"] = {
                 "document_type": decision.document_type_score,
@@ -415,16 +503,19 @@ def acquire(
             full_record["status"] = "validated" if decision.decision == "accept_candidate" else decision.decision
             full_record["notes"] = "; ".join(decision.reasons) if decision.reasons else None
             upsert_by_local_id(records, full_record)
-            upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision.to_dict(), candidate_api_before, stats_total(client))})
+            full_record["document_text_available"] = bool(document_text)
+            full_record["document_text_length"] = len(document_text)
+            full_record["document_text_quality"] = document_quality
+            upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision_dict, candidate_api_before, stats_total(client))})
             downloaded += 1
             query_download_counts[str(query["query_id"])] += 1
-            if decision.decision == "accept_candidate":
+            if decision.decision in {"accept_candidate", "needs_review"}:
                 accepted_counts[family] = accepted_counts.get(family, 0) + 1
                 upsert_by_local_id(reviews, review_record_for(full_record))
 
-    write_manifest_atomic(V2_JUDGMENTS, records)
-    write_manifest_atomic(V2_REVIEW, reviews)
-    write_manifest_atomic(V2_AUDIT, audit)
+    write_manifest_atomic(PRESCREEN_JUDGMENTS, records)
+    write_manifest_atomic(PRESCREEN_REVIEW, reviews)
+    write_manifest_atomic(PRESCREEN_AUDIT, audit)
     print(f"V2 documents downloaded: {downloaded}")
     print(json.dumps(client.get_request_stats(), sort_keys=True))
     return 0
