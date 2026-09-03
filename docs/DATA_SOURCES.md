@@ -20,6 +20,13 @@ uncontrolled website scraping. Every acquired judgment must retain its source
 URL and source document ID. Source retrieval time and SHA-256 must be recorded
 for every stored raw document.
 
+Recent-judgment experiments should use deterministic filtering before scaling:
+date-aware query configuration, judgment-oriented provider filters where
+available, per-offence-family quotas, explicit API request counters, and
+candidate audit manifests. Provider date filters must be treated as helpful but
+not sufficient; local metadata validation must still verify temporal-track
+fit before full-document download where possible.
+
 ## Attribution
 
 Current Indian Kanoon API terms require attribution where API-provided

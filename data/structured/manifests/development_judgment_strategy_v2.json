@@ -1,0 +1,50 @@
+{
+  "strategy_version": "v2_recent_criminal_filter",
+  "purpose": "Date-aware, quota-balanced, deterministic pre-screening for recent criminal judgment acquisition.",
+  "default_limit": 5,
+  "hard_document_acquisition_limit": 50,
+  "default_api_request_budget": 100,
+  "quality_thresholds": {
+    "document_type_likely": 0.6,
+    "criminal_strong": 0.7,
+    "criminal_uncertain": 0.4,
+    "metadata_minimum": 0.65
+  },
+  "temporal_tracks": [
+    {
+      "name": "current_transition",
+      "from_date": "2024-07-01",
+      "to_date": null,
+      "enabled_by_default": true,
+      "purpose": [
+        "discover BNS/BNSS-era matters",
+        "discover transition-period judgments",
+        "detect judgments still applying IPC/CrPC despite recent decision dates"
+      ],
+      "notes": "Decision date alone must not label records bns_bnss."
+    },
+    {
+      "name": "recent_ipc",
+      "from_date": "2018-01-01",
+      "to_date": "2024-06-30",
+      "enabled_by_default": true,
+      "purpose": [
+        "recent IPC/CrPC precedent",
+        "avoid an unnecessarily old corpus",
+        "provide recent jurisprudential context"
+      ]
+    },
+    {
+      "name": "landmark_historical",
+      "from_date": null,
+      "to_date": "2017-12-31",
+      "enabled_by_default": false,
+      "target_quota_limit": 3,
+      "purpose": [
+        "later curated landmark inclusion only"
+      ],
+      "notes": "Do not use this track simply to fill missing automated-development counts."
+    }
+  ],
+  "composition_guidance": "Approximately 70-80% of the eventual development corpus should come from recent/current tracks; a smaller minority may later consist of deliberately curated older precedents. This small experiment does not mechanically enforce exact percentages."
+}

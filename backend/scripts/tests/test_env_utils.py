@@ -7,9 +7,12 @@ import os
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from datetime import date
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError
+from urllib.parse import parse_qs, urlparse
 
 from backend.scripts.env_utils import load_project_env
 from backend.scripts.indiankanoon_client import (
@@ -147,6 +150,61 @@ class EnvUtilsTest(unittest.TestCase):
         request = urlopen.call_args.args[0]
         self.assertEqual(request.get_method(), "POST")
         self.assertEqual(raised.exception.status_code, 403)
+
+    def test_client_search_accepts_date_and_doctype_filters(self) -> None:
+        response = BytesIO(b'{"docs":[]}')
+        response.status = 200
+        client = IndianKanoonClient(token="test-token-placeholder")
+
+        with patch("urllib.request.urlopen", return_value=response) as urlopen:
+            client.search(
+                "criminal appeal",
+                page=2,
+                doctypes="judgments",
+                from_date=date(2024, 7, 1),
+                to_date="2026-09-03",
+            )
+
+        request = urlopen.call_args.args[0]
+        params = parse_qs(urlparse(request.full_url).query)
+        self.assertEqual(params["formInput"], ["criminal appeal"])
+        self.assertEqual(params["pagenum"], ["2"])
+        self.assertEqual(params["doctypes"], ["judgments"])
+        self.assertEqual(params["fromdate"], ["2024-07-01"])
+        self.assertEqual(params["todate"], ["2026-09-03"])
+
+    def test_client_request_instrumentation_tracks_safe_counts(self) -> None:
+        response = BytesIO(b'{"docs":[]}')
+        response.status = 200
+        client = IndianKanoonClient(token="test-token-placeholder")
+
+        with patch("urllib.request.urlopen", return_value=response):
+            client.search("criminal appeal")
+
+        stats = client.get_request_stats()
+        self.assertEqual(stats["total_requests"], 1)
+        self.assertEqual(stats["requests_by_endpoint"]["search"], 1)
+        self.assertEqual(stats["responses_by_category"]["2xx"], 1)
+        self.assertNotIn("test-token-placeholder", str(stats))
+
+    def test_client_instrumentation_tracks_http_error_categories(self) -> None:
+        error = HTTPError(
+            url="https://api.indiankanoon.org/search/",
+            code=429,
+            msg="Too Many Requests",
+            hdrs=None,
+            fp=None,
+        )
+        client = IndianKanoonClient(token="test-token-placeholder")
+
+        with patch("urllib.request.urlopen", side_effect=error):
+            with self.assertRaises(IndianKanoonClientError):
+                client.search("criminal appeal")
+
+        stats = client.get_request_stats()
+        self.assertEqual(stats["total_requests"], 1)
+        self.assertEqual(stats["requests_by_endpoint"]["search"], 1)
+        self.assertEqual(stats["responses_by_category"]["429"], 1)
 
 
 if __name__ == "__main__":
