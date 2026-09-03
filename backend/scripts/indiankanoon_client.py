@@ -9,6 +9,8 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +43,7 @@ class IndianKanoonClient:
         self.token = token or os.getenv("INDIAN_KANOON_API_TOKEN", "")
         self.base_url = (base_url or os.getenv("INDIAN_KANOON_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
         self.timeout = timeout
+        self._request_stats: Counter[str] = Counter()
 
     def _headers(self) -> dict[str, str]:
         if not self.token:
@@ -49,6 +52,52 @@ class IndianKanoonClient:
             "Authorization": f"Token {self.token}",
             "User-Agent": USER_AGENT,
             "Accept": "application/json",
+        }
+
+    def _endpoint_for_path(self, path: str) -> str:
+        if path.startswith("/search/"):
+            return "search"
+        if path.startswith("/docmeta/"):
+            return "metadata"
+        if path.startswith("/origdoc/"):
+            return "original_document"
+        if path.startswith("/doc/"):
+            return "document"
+        return "other"
+
+    def _record_response(self, endpoint: str, status: int | None) -> None:
+        self._request_stats["total_requests"] += 1
+        self._request_stats[f"endpoint:{endpoint}"] += 1
+        if status == 429:
+            self._request_stats["status:429"] += 1
+        elif status is None:
+            self._request_stats["status:other"] += 1
+        elif 200 <= status < 300:
+            self._request_stats["status:2xx"] += 1
+        elif 400 <= status < 500:
+            self._request_stats["status:4xx"] += 1
+        elif 500 <= status < 600:
+            self._request_stats["status:5xx"] += 1
+        else:
+            self._request_stats["status:other"] += 1
+
+    def get_request_stats(self) -> dict[str, Any]:
+        return {
+            "total_requests": self._request_stats["total_requests"],
+            "requests_by_endpoint": {
+                "search": self._request_stats["endpoint:search"],
+                "document": self._request_stats["endpoint:document"],
+                "metadata": self._request_stats["endpoint:metadata"],
+                "original_document": self._request_stats["endpoint:original_document"],
+                "other": self._request_stats["endpoint:other"],
+            },
+            "responses_by_category": {
+                "2xx": self._request_stats["status:2xx"],
+                "4xx": self._request_stats["status:4xx"],
+                "429": self._request_stats["status:429"],
+                "5xx": self._request_stats["status:5xx"],
+                "other": self._request_stats["status:other"],
+            },
         }
 
     def _request_json(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -67,17 +116,21 @@ class IndianKanoonClient:
         if query:
             url = f"{url}?{query}"
         request = urllib.request.Request(url, headers=self._headers(), data=b"", method="POST")
+        endpoint = self._endpoint_for_path(path)
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 status = getattr(response, "status", 200)
                 body = response.read()
         except urllib.error.HTTPError as exc:
+            self._record_response(endpoint, exc.code)
             raise IndianKanoonClientError(
                 f"Indian Kanoon API returned HTTP {exc.code}.",
                 status_code=exc.code,
             ) from exc
         except urllib.error.URLError as exc:
+            self._record_response(endpoint, None)
             raise IndianKanoonClientError(f"Indian Kanoon API request failed: {exc}") from exc
+        self._record_response(endpoint, status)
         if status < 200 or status >= 300:
             raise IndianKanoonClientError(
                 f"Indian Kanoon API returned HTTP {status}.",
@@ -85,8 +138,22 @@ class IndianKanoonClient:
             )
         return body
 
-    def search(self, query: str, page: int = 0) -> dict[str, Any]:
-        return self._request_json("/search/", {"formInput": query, "pagenum": page})
+    def search(
+        self,
+        query: str,
+        page: int = 0,
+        doctypes: str | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"formInput": query, "pagenum": page}
+        if doctypes:
+            params["doctypes"] = doctypes
+        if from_date:
+            params["fromdate"] = from_date.isoformat() if isinstance(from_date, date) else from_date
+        if to_date:
+            params["todate"] = to_date.isoformat() if isinstance(to_date, date) else to_date
+        return self._request_json("/search/", params)
 
     def get_document(self, document_id: str) -> dict[str, Any]:
         return self._request_json(f"/doc/{urllib.parse.quote(document_id)}/")
