@@ -976,3 +976,564 @@ Human decision:
 Review notes:
 
 * 
+
+## v2-7542474 — Steel Authority Of India Ltd. Through ... vs Prakash Poddar on 30 August, 2018
+
+### Acquisition Record
+
+* Source document ID: 7542474
+* Source URL: https://indiankanoon.org/doc/7542474/
+* Acquisition status: validated
+* Acquisition query/query ID: theft Section 379 IPC criminal appeal conviction
+* Retrieval rank: 1
+* Assigned offence family: theft_and_robbery
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Jharkhand High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2018
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/7542474_Steel_Authority_Of_India_Ltd._Through_..._vs_Prakash_Poddar_on_30_August_2018.pdf
+* MIME type: application/pdf
+* File size: 128127
+* SHA-256: 28994482a28766a86ff2f8d703c78400f17a96bd63827ea14d340be8966eca22
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-108783291 — Banti @ Jitendra Sharma vs The State Of Madhya Pradesh on 5 May, 2020
+
+### Acquisition Record
+
+* Source document ID: 108783291
+* Source URL: https://indiankanoon.org/doc/108783291/
+* Acquisition status: validated
+* Acquisition query/query ID: theft Section 379 IPC criminal appeal conviction
+* Retrieval rank: 14
+* Assigned offence family: theft_and_robbery
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Madhya Pradesh High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2020
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/108783291_Banti_Jitendra_Sharma_vs_The_State_Of_Madhya_Pradesh_on_5_May_2020.pdf
+* MIME type: application/pdf
+* File size: 422378
+* SHA-256: 187b6bab3da07a7af971ca1aa71c0daa7bce0ca0ad4c051df43b4abe1365bf83
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-136492342 — Neelam @ Neeraj vs The State Of Madhya Pradesh on 8 February, 2019
+
+### Acquisition Record
+
+* Source document ID: 136492342
+* Source URL: https://indiankanoon.org/doc/136492342/
+* Acquisition status: needs_review
+* Acquisition query/query ID: theft Section 379 IPC criminal appeal conviction
+* Retrieval rank: 16
+* Assigned offence family: theft_and_robbery
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Madhya Pradesh High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2019
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/136492342_Neelam_Neeraj_vs_The_State_Of_Madhya_Pradesh_on_8_February_2019.pdf
+* MIME type: application/pdf
+* File size: 156316
+* SHA-256: 9db1f897f6485f9d09e8888ace276134d6ebce8020600c4029eefa4b481bfbff
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-90446963 — Babu vs State Rep. By on 29 September, 2021
+
+### Acquisition Record
+
+* Source document ID: 90446963
+* Source URL: https://indiankanoon.org/doc/90446963/
+* Acquisition status: validated
+* Acquisition query/query ID: NDPS Act criminal appeal conviction recovery
+* Retrieval rank: 6
+* Assigned offence family: narcotics_related
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Madras High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2021
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/90446963_Babu_vs_State_Rep._By_on_29_September_2021.pdf
+* MIME type: application/pdf
+* File size: 280610
+* SHA-256: 775889d57504688615f942124abbe14546aa646e8fc33ba33b415d7494dfba6c
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-116547627 — State vs . Brahma Nand, on 16 March, 2020
+
+### Acquisition Record
+
+* Source document ID: 116547627
+* Source URL: https://indiankanoon.org/doc/116547627/
+* Acquisition status: needs_review
+* Acquisition query/query ID: NDPS Act criminal appeal conviction recovery
+* Retrieval rank: 7
+* Assigned offence family: narcotics_related
+* Current legal regime value: unknown
+
+### Court Metadata
+
+* Court name: Delhi District Court
+* Normalized court level: district_or_sessions
+* Decision date: 
+* Year: 2020
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/116547627_State_vs_._Brahma_Nand_on_16_March_2020.pdf
+* MIME type: application/pdf
+* File size: 383967
+* SHA-256: 62a6f6ae09a0c25f14da97eb94680247f994b342380f5be791ef399e42b81f6b
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-127989801 — Surendra Koli vs C.B.I. on 16 October, 2023
+
+### Acquisition Record
+
+* Source document ID: 127989801
+* Source URL: https://indiankanoon.org/doc/127989801/
+* Acquisition status: validated
+* Acquisition query/query ID: murder Section 302 IPC criminal appeal conviction
+* Retrieval rank: 3
+* Assigned offence family: homicide
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Allahabad High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2023
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/127989801_Surendra_Koli_vs_C.B.I._on_16_October_2023.html
+* MIME type: text/html
+* File size: 464744
+* SHA-256: 78ed973cc7828130b86ed82193e426218518d804e25e8f847c793d08fc5e2bf1
+* Attribution required: True
+
+### Content Preview
+
+JUDGMENT/ORDER IN - CAPITAL CASES No. 4 of 2019 at Allahabad Dated-16.10.2023 CASE TITLE - Surendra Koli Vs. C.B.I. eLegalix - Allahabad High Court Judgment Information System (Judgment/Order in Text Format) This is an UNCERTIFIED copy for information/reference. For authentic copy please refer to certified copy only. In case of any mistake, please bring it to the notice of Deputy Registrar(Copying). HIGH COURT OF JUDICATURE AT ALLAHABAD Neutral Citation No. - 2023:AHC:199091-DB Reserved CAPITAL CASE No. - 04 of 2019 With CAPITAL REFERENCE No. 03 of 2019 Surendra Koli ……..Appellant Versus State of U.P. …….Respondent Counsels for Appellant:- Sri Yug Mohit Chaudhary assisted by Ms. Payoshi Roy and Sri Siddhartha Sharma, Ms. Mary Punch (Sheeba Jose) and Sri Mohd. Kalim. Counsels for Respondent:- A.G.A., Sri Amit Mishra, Sri Gyan Prakash, Sri Jitendra Prasad Mishra and Sri Sanjay Kumar Yadav Hon'ble Ashwani Kumar Mishra,J. Hon'ble Syed Aftab Husain Rizvi,J. (Delivered by Hon’ble Ashwani Kumar Mishra, J.) 1. Accused appellant Surendra Koli S/o Shankar Ram Koli (hereinafter referred to as ‘SK’) has been tried in Sessions Trial No. 930 of 2007, arising out of CBI FIR No. RC 16(S)/07-SCB-I/DLI, under Sections 364, 376 I.P.C. r/w 511, 302, 201 IPC and convicted in the aforesaid sections vide judgment dated 06.04.2019. He is sentenced to death alongwith fine of Rs. 50,000/- under Section 302 IPC with a direction to hang the accused till death, subject to confirmation by the High Court;
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-189001274 — Page No.# 1/77 vs The State Of Assam on 5 August, 2023
+
+### Acquisition Record
+
+* Source document ID: 189001274
+* Source URL: https://indiankanoon.org/doc/189001274/
+* Acquisition status: validated
+* Acquisition query/query ID: murder Section 302 IPC criminal appeal conviction
+* Retrieval rank: 4
+* Assigned offence family: homicide
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Gauhati High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2023
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/189001274_Page_No._1_77_vs_The_State_Of_Assam_on_5_August_2023.pdf
+* MIME type: application/pdf
+* File size: 377310
+* SHA-256: 7cc71d59c5a118a0923e9d68befd9b21c7c3b1a2c4c8f15baae2f494efba0c2b
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-156271048 — Md. Fakar Uddin Barbhuiya And Anr vs The State Of Assam on 18 January, 2019
+
+### Acquisition Record
+
+* Source document ID: 156271048
+* Source URL: https://indiankanoon.org/doc/156271048/
+* Acquisition status: validated
+* Acquisition query/query ID: murder Section 302 IPC criminal appeal conviction
+* Retrieval rank: 18
+* Assigned offence family: homicide
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Gauhati High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2019
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/156271048_Md._Fakar_Uddin_Barbhuiya_And_Anr_vs_The_State_Of_Assam_on_18_January_2019.pdf
+* MIME type: application/pdf
+* File size: 140673
+* SHA-256: 6c8e109d3749b87e23ab504864ad72aeea52627cf9e558403f605dc9b8576103
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-15834217 — Mukesh Khandelwal @ Devendra Kumar S/O ... vs State Of Rajasthan Through Pp on 29 January, 2019
+
+### Acquisition Record
+
+* Source document ID: 15834217
+* Source URL: https://indiankanoon.org/doc/15834217/
+* Acquisition status: validated
+* Acquisition query/query ID: murder Section 302 IPC criminal appeal conviction
+* Retrieval rank: 19
+* Assigned offence family: homicide
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Rajasthan High Court - Jaipur
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2019
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/15834217_Mukesh_Khandelwal_Devendra_Kumar_S_O_..._vs_State_Of_Rajasthan_Through_Pp_on_29_January_2019.pdf
+* MIME type: application/pdf
+* File size: 175907
+* SHA-256: f061fd3bef5aa1eb2264e75087c8eb937225033d80c8c16a20c478a14e84e7fe
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-77330685 — Crl.A./213/2020 on 12 June, 2024
+
+### Acquisition Record
+
+* Source document ID: 77330685
+* Source URL: https://indiankanoon.org/doc/77330685/
+* Acquisition status: validated
+* Acquisition query/query ID: kidnapping Section 363 364 IPC criminal appeal
+* Retrieval rank: 2
+* Assigned offence family: kidnapping
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Gauhati High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2020
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/77330685_Crl.A._213_2020_on_12_June_2024.pdf
+* MIME type: application/pdf
+* File size: 333371
+* SHA-256: 8e1d2f30c04b21d1c1c78aa9e8dfdf6c5b094a34088bd4794bb99a669c89fbac
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 
+
+## v2-123721856 — Suresh Ram vs The State Of Bihar on 13 July, 2022
+
+### Acquisition Record
+
+* Source document ID: 123721856
+* Source URL: https://indiankanoon.org/doc/123721856/
+* Acquisition status: validated
+* Acquisition query/query ID: grievous hurt Section 326 IPC criminal appeal
+* Retrieval rank: 4
+* Assigned offence family: hurt_and_assault
+* Current legal regime value: ipc_crpc
+
+### Court Metadata
+
+* Court name: Patna High Court
+* Normalized court level: high_court
+* Decision date: 
+* Year: 2022
+* Case number if available: 
+
+### Integrity
+
+* Local raw path: data/raw/judgments/indiankanoon/balanced/123721856_Suresh_Ram_vs_The_State_Of_Bihar_on_13_July_2022.pdf
+* MIME type: application/pdf
+* File size: 173071
+* SHA-256: 6fa9870b4e4dcb2237794347fa19fc8057b1ffd206075d2811f5257264ef3a02
+* Attribution required: True
+
+### Content Preview
+
+Preview unavailable until PDF parsing dependency is installed.
+
+### Human Review Checklist
+
+* [ ] Genuine judicial decision/order
+* [ ] Criminal-law relevance confirmed
+* [ ] Offence-family assignment confirmed
+* [ ] Court metadata confirmed
+* [ ] Year/date confirmed
+* [ ] Legal regime reviewed
+* [ ] Source/provenance confirmed
+* [ ] Suitable for development RAG corpus
+
+Human decision:
+
+* Pending
+
+Review notes:
+
+* 

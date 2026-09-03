@@ -221,6 +221,8 @@ def generate_balanced_composition(
         for record in judgments
         if automated_decision(record) in {"accept_candidate", "needs_review"}
     ]
+    targeted_additions = [record for record in reviewable if str(record.get("query_id") or "").startswith("gap_")]
+    step_04e_records = [record for record in reviewable if record not in targeted_additions]
     review_by_source = review_records_by_source_id(reviews)
     family_counts = Counter(str(record.get("offence_family")) for record in reviewable)
     court_counts = Counter(str(record.get("court_level")) for record in reviewable)
@@ -231,18 +233,33 @@ def generate_balanced_composition(
     review_counts = Counter(str(record.get("human_review_status")) for record in reviews)
     audit_reasons = Counter(reason for record in audit for reason in record.get("rejection_reasons", []))
 
+    target_total = sum(BALANCED_FAMILY_QUOTAS.values())
+    remaining_gaps = {
+        family: max(target - family_counts.get(family, 0), 0)
+        for family, target in BALANCED_FAMILY_QUOTAS.items()
+    }
+    corpus_status = "READY FOR HUMAN REVIEW" if len(reviewable) >= target_total and not any(remaining_gaps.values()) else "INCOMPLETE"
+    status_reason = (
+        "target reached with all configured offence-family quotas filled."
+        if corpus_status == "READY FOR HUMAN REVIEW"
+        else "provider search results and strict pre-screening exhausted useful candidates before all quotas were filled."
+    )
+
     lines = [
         "# LegalAI Balanced Development Judgment Corpus",
         "",
-        "Phase 0 Step 0.4E acquired a controlled, balanced development judgment corpus for human review.",
+        "Phase 0 Step 0.4E acquired the initial controlled, balanced development judgment corpus.",
+        "Phase 0 Step 0.4F supplemented only underfilled offence-family gaps.",
         "No human suitability decisions are recorded in this document.",
         "",
         "## Status",
         "",
-        f"* Target reviewable candidates: {sum(BALANCED_FAMILY_QUOTAS.values())}",
+        f"* Target reviewable candidates: {target_total}",
         f"* Actual reviewable candidates: {len(reviewable)}",
-        "* Corpus status: INCOMPLETE",
-        "* Reason: provider search results and strict pre-screening exhausted useful candidates before all quotas were filled.",
+        f"* Step 0.4E reviewable candidates: {len(step_04e_records)}",
+        f"* Step 0.4F targeted additions: {len(targeted_additions)}",
+        f"* Corpus status: {corpus_status}",
+        f"* Reason: {status_reason}",
         "",
         "## Configured Quotas",
         "",
@@ -264,6 +281,10 @@ def generate_balanced_composition(
     }
     for name, count in metrics.items():
         lines.append(f"| {name} | {count} |")
+
+    lines.extend(["", "## Remaining Gaps", "", "| Offence Family | Remaining Gap |", "| --- | ---: |"])
+    for family in BALANCED_FAMILY_QUOTAS:
+        lines.append(f"| {family} | {remaining_gaps[family]} |")
 
     for heading, counts in [
         ("Court Distribution", court_counts),
