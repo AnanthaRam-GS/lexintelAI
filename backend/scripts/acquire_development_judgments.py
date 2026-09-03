@@ -176,8 +176,11 @@ def normalize_original_document_payload(payload: bytes) -> tuple[bytes, str]:
     except ValueError:
         return payload, "application/json"
 
-    if content.startswith(b"\xef\xbb\xbf%PDF"):
-        content = content[3:]
+    stripped = content.lstrip()
+    if stripped.startswith(b"\xef\xbb\xbf%PDF"):
+        content = stripped[3:]
+    elif stripped.startswith(b"%PDF"):
+        content = stripped
 
     mime_type = str(parsed.get("Content-Type") or parsed.get("content_type") or "").strip()
     if not mime_type:

@@ -180,6 +180,16 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
         self.assertEqual(content, b"%PDF sample")
         self.assertEqual(mime_type, "application/pdf")
 
+    def test_original_document_pdf_leading_whitespace_and_bom_are_stripped(self) -> None:
+        payload = (
+            b'{"Content-Type":"application/pdf","doc":"DQrvu78lUERGIDEuNwo="}'
+        )
+
+        content, mime_type = acquire.normalize_original_document_payload(payload)
+
+        self.assertEqual(content, b"%PDF 1.7\n")
+        self.assertEqual(mime_type, "application/pdf")
+
 
 if __name__ == "__main__":
     unittest.main()

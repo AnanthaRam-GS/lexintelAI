@@ -382,7 +382,7 @@ def acquire(
             if raw_path.exists():
                 incoming_digest = hashlib.sha256(content).hexdigest()
                 if sha256_file(raw_path) != incoming_digest:
-                    continue
+                    raw_path.write_bytes(content)
             else:
                 raw_path.write_bytes(content)
             digest = sha256_file(raw_path)
