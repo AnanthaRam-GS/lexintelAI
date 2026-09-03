@@ -34,6 +34,20 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
         )
         self.assertEqual(acquire.normalize_court_level("Unknown Forum"), "unknown")
 
+    def test_probable_judgment_filter(self) -> None:
+        self.assertTrue(
+            acquire.is_probable_judgment("A v State", "Supreme Court of India")
+        )
+        self.assertFalse(
+            acquire.is_probable_judgment("Vol(1) And Vol(3)", "Law Commission Report")
+        )
+        self.assertFalse(
+            acquire.is_probable_judgment(
+                "Criminal Rules of Practice and Circular Orders",
+                "State of Andhra Pradesh - Act",
+            )
+        )
+
     def test_duplicate_source_id_behavior(self) -> None:
         records = [{"source_provider": "indian_kanoon", "source_document_id": "123"}]
 

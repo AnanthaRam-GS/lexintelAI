@@ -126,6 +126,22 @@ def extract_court_name(result: dict[str, Any], metadata: dict[str, Any]) -> str 
     return None
 
 
+def is_probable_judgment(case_name: str | None, court_name: str | None) -> bool:
+    text = f"{case_name or ''} {court_name or ''}".lower()
+    if not case_name:
+        return False
+    excluded_terms = (
+        "law commission report",
+        " act",
+        "rules of practice",
+        "circular orders",
+        "vol(",
+    )
+    if any(term in text for term in excluded_terms):
+        return False
+    return " vs " in text or " v. " in text or " v " in text
+
+
 def extension_for_content(content: bytes, mime_type: str | None) -> str:
     if content.startswith(b"%PDF"):
         return ".pdf"
@@ -272,6 +288,35 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
             case_name = extract_case_name(result, metadata)
             court_name = extract_court_name(result, metadata)
             year = parse_year(metadata.get("date") or result.get("date") or case_name)
+            if not is_probable_judgment(case_name, court_name):
+                excluded = {
+                    "local_id": f"dev-{source_document_id}",
+                    "source_provider": "indian_kanoon",
+                    "source_document_id": source_document_id,
+                    "source_url": f"https://indiankanoon.org/doc/{source_document_id}/",
+                    "case_name": case_name,
+                    "case_number": None,
+                    "court_name": court_name,
+                    "court_level": normalize_court_level(court_name),
+                    "decision_date": metadata.get("date"),
+                    "year": year,
+                    "legal_regime": "unknown",
+                    "offence_family": query["offence_family"],
+                    "known_sections": [],
+                    "acquisition_query": query["query"],
+                    "retrieval_rank": rank,
+                    "retrieved_at": datetime.now(UTC).isoformat(),
+                    "raw_file_path": None,
+                    "sha256": None,
+                    "file_size_bytes": None,
+                    "mime_type": None,
+                    "attribution_required": True,
+                    "attribution_text": ATTRIBUTION_TEXT,
+                    "status": "excluded_irrelevant",
+                    "notes": "Candidate metadata does not look like a court judgment.",
+                }
+                upsert_by_local_id(records, excluded)
+                continue
 
             try:
                 payload = client.get_original_document(source_document_id)

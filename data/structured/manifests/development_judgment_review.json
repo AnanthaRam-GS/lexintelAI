@@ -98,5 +98,25 @@
     "automated_status": "failed",
     "human_review_status": "pending",
     "review_notes": "Original document endpoint returned Document not Found JSON; retained for acquisition audit."
+  },
+  {
+    "local_id": "dev-44786366",
+    "source_document_id": "44786366",
+    "case_name": "Vol(1) And Vol(3)",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/44786366/",
+    "automated_status": "excluded_irrelevant",
+    "human_review_status": "pending",
+    "review_notes": "Law Commission report/volume result, not a court judgment; retained for acquisition audit."
+  },
+  {
+    "local_id": "dev-111519619",
+    "source_document_id": "111519619",
+    "case_name": "Surender Klumar vs The State on 19 December, 2013",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/111519619/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
   }
 ]
