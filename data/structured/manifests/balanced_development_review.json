@@ -1,0 +1,52 @@
+[
+  {
+    "local_id": "v2-14496522",
+    "source_document_id": "14496522",
+    "case_name": "Dr. Lakshman vs The State Of Karnataka on 17 October, 2019",
+    "offence_family": "cheating_and_fraud",
+    "source_url": "https://indiankanoon.org/doc/14496522/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-8095700",
+    "source_document_id": "8095700",
+    "case_name": "Amit Kumar Alias Sushil vs State Of H.P on 4 February, 2021",
+    "offence_family": "cheating_and_fraud",
+    "source_url": "https://indiankanoon.org/doc/8095700/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-31369863",
+    "source_document_id": "31369863",
+    "case_name": "K.V. Brahmaji Rao vs Union Of India & Ors on 4 September, 2023",
+    "offence_family": "cheating_and_fraud",
+    "source_url": "https://indiankanoon.org/doc/31369863/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-111592349",
+    "source_document_id": "111592349",
+    "case_name": "Jinofer Kawasji Bhujwala vs The State Of Gujarat on 19 June, 2020",
+    "offence_family": "criminal_breach_of_trust",
+    "source_url": "https://indiankanoon.org/doc/111592349/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-44731735",
+    "source_document_id": "44731735",
+    "case_name": "Sahadev Prasad Agarwal & Anr vs The State Of West Bengal & Anr on 30 July, 2021",
+    "offence_family": "criminal_breach_of_trust",
+    "source_url": "https://indiankanoon.org/doc/44731735/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  }
+]
