@@ -6,6 +6,7 @@ import argparse
 import html
 import hashlib
 import json
+import re
 import sys
 import time
 from collections import Counter
@@ -55,6 +56,7 @@ STRATEGY_MANIFEST = MANIFEST_DIR / "development_judgment_strategy_v2.json"
 QUOTA_MANIFEST = MANIFEST_DIR / "development_judgment_quotas_v2.json"
 QUERY_MANIFEST = MANIFEST_DIR / "development_judgment_queries_v2.json"
 BALANCED_QUERY_MANIFEST = MANIFEST_DIR / "balanced_development_queries.json"
+GAP_QUERY_MANIFEST = MANIFEST_DIR / "development_judgment_gap_queries.json"
 V1_JUDGMENTS = MANIFEST_DIR / "development_judgments.json"
 V2_JUDGMENTS = MANIFEST_DIR / "development_judgments_v2.json"
 V2_REVIEW = MANIFEST_DIR / "development_judgment_review_v2.json"
@@ -70,6 +72,7 @@ BALANCED_RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/balanced"
 DEFAULT_LIMIT = 5
 MAX_LIMIT = 50
 DEFAULT_MAX_API_REQUESTS = 100
+DEFAULT_MAX_SEARCH_PAGES = 1
 
 
 class BudgetExceeded(RuntimeError):
@@ -138,8 +141,8 @@ def enforce_budget(client: IndianKanoonClient, max_api_requests: int) -> None:
         raise BudgetExceeded("api_request_budget_reached")
 
 
-def load_quotas(path: Path = QUOTA_MANIFEST) -> dict[str, int]:
-    return {str(record["offence_family"]): int(record["target_quota"]) for record in load_manifest(path)}
+def load_quotas(path: Path | None = None) -> dict[str, int]:
+    return {str(record["offence_family"]): int(record["target_quota"]) for record in load_manifest(path or QUOTA_MANIFEST)}
 
 
 def active_counts(records: list[dict[str, Any]]) -> dict[str, int]:
@@ -154,22 +157,76 @@ def reviewable_count(records: list[dict[str, Any]]) -> int:
     return sum(1 for record in records if record.get("status") in {"validated", "needs_review"})
 
 
+def gap_targets(records: list[dict[str, Any]], quotas: dict[str, int]) -> dict[str, int]:
+    counts = active_counts(records)
+    return {family: max(target - counts.get(family, 0), 0) for family, target in quotas.items()}
+
+
 def parse_iso_date(value: str | None) -> date | None:
     if not value:
         return None
     return date.fromisoformat(value)
 
 
-def year_within_bounds(year: int | None, from_date: str | None, to_date: str | None) -> bool:
-    if year is None:
-        return True
+MONTHS = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+
+
+def parse_document_date(value: Any) -> date | None:
+    if value is None:
+        return None
+    text = str(value)
+    iso = re.search(r"\b(\d{4})-(\d{2})-(\d{2})\b", text)
+    if iso:
+        return date(int(iso.group(1)), int(iso.group(2)), int(iso.group(3)))
+    numeric = re.search(r"\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b", text)
+    if numeric:
+        return date(int(numeric.group(3)), int(numeric.group(2)), int(numeric.group(1)))
+    month_name = re.search(
+        r"\b(\d{1,2})(?:st|nd|rd|th)?\s+("
+        + "|".join(MONTHS)
+        + r"),?\s+(\d{4})\b",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if month_name:
+        return date(int(month_name.group(3)), MONTHS[month_name.group(2).lower()], int(month_name.group(1)))
+    return None
+
+
+def date_within_bounds(value: Any, from_date: str | None, to_date: str | None, fallback_year: int | None = None) -> bool:
+    parsed = parse_document_date(value)
     lower = parse_iso_date(from_date)
     upper = parse_iso_date(to_date)
-    if lower and year < lower.year:
+    if parsed:
+        if lower and parsed < lower:
+            return False
+        if upper and parsed > upper:
+            return False
+        return True
+    if fallback_year is None:
+        return True
+    if lower and fallback_year < lower.year:
         return False
-    if upper and year > upper.year:
+    if upper and fallback_year > upper.year:
         return False
     return True
+
+
+def year_within_bounds(year: int | None, from_date: str | None, to_date: str | None) -> bool:
+    return date_within_bounds(None, from_date, to_date, fallback_year=year)
 
 
 def text_from_payload(content: bytes, mime_type: str, metadata_text: str) -> str:
@@ -297,6 +354,7 @@ def acquire(
     audit_manifest: Path = PRESCREEN_AUDIT,
     raw_dir: Path = RAW_DIR,
     delay: float = 1.0,
+    max_search_pages: int = DEFAULT_MAX_SEARCH_PAGES,
 ) -> int:
     if limit < 1 or limit > MAX_LIMIT:
         raise ValueError(f"limit must be between 1 and {MAX_LIMIT}")
@@ -312,6 +370,12 @@ def acquire(
     reviews = load_manifest(review_manifest)
     audit = load_manifest(audit_manifest)
     accepted_counts = active_counts(records)
+    seen_source_ids = {
+        str(record.get("source_document_id"))
+        for record_set in (v1_records, prior_v2_records, prior_prescreen_records, records, audit)
+        for record in record_set
+        if record.get("source_document_id")
+    }
     query_download_counts: Counter[str] = Counter(
         str(record.get("query_id"))
         for record in records
@@ -330,217 +394,222 @@ def acquire(
         family = str(query["offence_family"])
         if not quota_allows(family, accepted_counts, quotas):
             continue
-        enforce_budget(client, max_api_requests)
-        before = stats_total(client)
-        try:
-            search_response = client.search(
-                str(query["query"]),
-                page=0,
-                doctypes=query.get("doctypes"),
-                from_date=query.get("from_date"),
-                to_date=query.get("to_date"),
-            )
-        except IndianKanoonClientError as exc:
-            print(f"{query['query_id']}: search failed: {exc}", file=sys.stderr)
-            if should_stop_for_api_error(exc):
-                break
-            continue
-        time.sleep(delay)
-
-        for rank, result in enumerate(extract_results(search_response), start=1):
+        for page in range(max(1, max_search_pages)):
             if reviewable_count(records) >= target_reviewable:
                 break
             if query_download_counts[str(query["query_id"])] >= query_limit:
                 break
             if not quota_allows(family, accepted_counts, quotas):
                 break
-            source_id = extract_source_document_id(result)
-            if not source_id or source_id_seen(
-                source_id,
-                v1_records,
-                prior_v2_records,
-                prior_prescreen_records,
-                records,
-            ):
-                continue
             enforce_budget(client, max_api_requests)
-            candidate_api_before = stats_total(client)
-            metadata: dict[str, Any] = {}
-            document: dict[str, Any] | None = None
             try:
-                metadata = client.get_document_metadata(source_id)
-                time.sleep(delay)
+                search_response = client.search(
+                    str(query["query"]),
+                    page=page,
+                    doctypes=query.get("doctypes"),
+                    from_date=query.get("from_date"),
+                    to_date=query.get("to_date"),
+                )
+            except IndianKanoonClientError as exc:
+                print(f"{query['query_id']}: search failed: {exc}", file=sys.stderr)
+                if should_stop_for_api_error(exc):
+                    break
+                continue
+            time.sleep(delay)
+            results = extract_results(search_response)
+            if not results:
+                break
+
+            for rank, result in enumerate(results, start=1 + (page * len(results))):
+                if reviewable_count(records) >= target_reviewable:
+                    break
+                if query_download_counts[str(query["query_id"])] >= query_limit:
+                    break
+                if not quota_allows(family, accepted_counts, quotas):
+                    break
+                source_id = extract_source_document_id(result)
+                if not source_id or source_id in seen_source_ids:
+                    continue
+                seen_source_ids.add(source_id)
                 enforce_budget(client, max_api_requests)
-                document = client.get_document(source_id)
-                time.sleep(delay)
-            except IndianKanoonClientError as exc:
-                print(f"{source_id}: metadata/document failed: {exc}", file=sys.stderr)
-                decision = {
-                    "decision": "reject",
-                    "reasons": ["metadata_or_document_fetch_failed"],
-                    "document_type_score": None,
-                    "criminal_relevance_score": None,
-                    "metadata_quality_score": None,
-                    "detected_statutes": [],
+                candidate_api_before = stats_total(client)
+                metadata: dict[str, Any] = {}
+                document: dict[str, Any] | None = None
+                try:
+                    metadata = client.get_document_metadata(source_id)
+                    time.sleep(delay)
+                    enforce_budget(client, max_api_requests)
+                    document = client.get_document(source_id)
+                    time.sleep(delay)
+                except IndianKanoonClientError as exc:
+                    print(f"{source_id}: metadata/document failed: {exc}", file=sys.stderr)
+                    decision = {
+                        "decision": "reject",
+                        "reasons": ["metadata_or_document_fetch_failed"],
+                        "document_type_score": None,
+                        "criminal_relevance_score": None,
+                        "metadata_quality_score": None,
+                        "detected_statutes": [],
+                        "legal_regime": "unknown",
+                    }
+                    upsert_by_local_id(
+                        audit,
+                        {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
+                    )
+                    if should_stop_for_api_error(exc):
+                        break
+                    continue
+
+                case_name = extract_case_name(result, metadata)
+                court_name = extract_court_name(result, metadata)
+                date_source = metadata.get("date") or result.get("date") or case_name
+                year = parse_year(date_source)
+                if not date_within_bounds(date_source, query.get("from_date"), query.get("to_date"), fallback_year=year):
+                    decision = {
+                        "decision": "reject",
+                        "reasons": ["outside_temporal_track"],
+                        "document_type_score": None,
+                        "criminal_relevance_score": None,
+                        "metadata_quality_score": None,
+                        "detected_statutes": [],
+                        "legal_regime": "unknown",
+                    }
+                    upsert_by_local_id(
+                        audit,
+                        {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
+                    )
+                    continue
+                base_record = {
+                    "local_id": f"v2-{source_id}",
+                    "source_provider": "indian_kanoon",
+                    "source_document_id": source_id,
+                    "source_url": f"https://indiankanoon.org/doc/{source_id}/",
+                    "case_name": case_name,
+                    "case_number": None,
+                    "court_name": court_name,
+                    "court_level": normalize_court_level(court_name),
+                    "decision_date": metadata.get("date"),
+                    "year": year,
                     "legal_regime": "unknown",
+                    "offence_family": family,
+                    "known_sections": [],
+                    "acquisition_query": query["query"],
+                    "query_id": query["query_id"],
+                    "temporal_track": query["temporal_track"],
+                    "retrieval_rank": rank,
+                    "retrieved_at": datetime.now(UTC).isoformat(),
+                    "raw_file_path": None,
+                    "sha256": None,
+                    "file_size_bytes": None,
+                    "mime_type": None,
+                    "attribution_required": True,
+                    "attribution_text": ATTRIBUTION_TEXT,
+                    "status": "screened",
+                    "acquisition_strategy_version": "v2_recent_criminal_filter",
+                    "notes": None,
                 }
-                upsert_by_local_id(
-                    audit,
-                    {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
+                document_text = extract_document_text(document)
+                document_quality = document_text_quality(document_text)
+                pre_text = "\n".join(
+                    part for part in (document_text, metadata_text(result, metadata, document)) if part
                 )
-                if should_stop_for_api_error(exc):
-                    break
-                continue
-
-            case_name = extract_case_name(result, metadata)
-            court_name = extract_court_name(result, metadata)
-            year = parse_year(metadata.get("date") or result.get("date") or case_name)
-            if not year_within_bounds(year, query.get("from_date"), query.get("to_date")):
-                decision = {
-                    "decision": "reject",
-                    "reasons": ["outside_temporal_track"],
-                    "document_type_score": None,
-                    "criminal_relevance_score": None,
-                    "metadata_quality_score": None,
-                    "detected_statutes": [],
-                    "legal_regime": "unknown",
-                }
-                upsert_by_local_id(
-                    audit,
-                    {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
+                pre_decision = decide_candidate_quality(pre_text, base_record)
+                pre_kind = pre_download_decision(pre_decision.decision)
+                pre_decision_dict = pre_decision.to_dict()
+                pre_decision_dict.update(
+                    {
+                        "pre_download_decision": pre_kind,
+                        "pre_download_reasons": pre_decision.reasons,
+                        "document_text_available": bool(document_text),
+                        "document_text_length": len(document_text),
+                        "document_text_quality": document_quality,
+                    }
                 )
-                continue
-            base_record = {
-                "local_id": f"v2-{source_id}",
-                "source_provider": "indian_kanoon",
-                "source_document_id": source_id,
-                "source_url": f"https://indiankanoon.org/doc/{source_id}/",
-                "case_name": case_name,
-                "case_number": None,
-                "court_name": court_name,
-                "court_level": normalize_court_level(court_name),
-                "decision_date": metadata.get("date"),
-                "year": year,
-                "legal_regime": "unknown",
-                "offence_family": family,
-                "known_sections": [],
-                "acquisition_query": query["query"],
-                "query_id": query["query_id"],
-                "temporal_track": query["temporal_track"],
-                "retrieval_rank": rank,
-                "retrieved_at": datetime.now(UTC).isoformat(),
-                "raw_file_path": None,
-                "sha256": None,
-                "file_size_bytes": None,
-                "mime_type": None,
-                "attribution_required": True,
-                "attribution_text": ATTRIBUTION_TEXT,
-                "status": "screened",
-                "acquisition_strategy_version": "v2_recent_criminal_filter",
-                "notes": None,
-            }
-            document_text = extract_document_text(document)
-            document_quality = document_text_quality(document_text)
-            pre_text = "\n".join(
-                part for part in (document_text, metadata_text(result, metadata, document)) if part
-            )
-            pre_decision = decide_candidate_quality(pre_text, base_record)
-            pre_kind = pre_download_decision(pre_decision.decision)
-            pre_decision_dict = pre_decision.to_dict()
-            pre_decision_dict.update(
-                {
-                    "pre_download_decision": pre_kind,
-                    "pre_download_reasons": pre_decision.reasons,
-                    "document_text_available": bool(document_text),
-                    "document_text_length": len(document_text),
-                    "document_text_quality": document_quality,
-                }
-            )
-            if pre_decision.decision == "reject":
-                rejected = dict(base_record)
-                rejected["status"] = "rejected_pre_download"
-                rejected["notes"] = "; ".join(pre_decision.reasons)
-                upsert_by_local_id(records, rejected)
-                upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision_dict, candidate_api_before, stats_total(client))})
-                continue
+                if pre_decision.decision == "reject":
+                    rejected = dict(base_record)
+                    rejected["status"] = "rejected_pre_download"
+                    rejected["notes"] = "; ".join(pre_decision.reasons)
+                    upsert_by_local_id(records, rejected)
+                    upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision_dict, candidate_api_before, stats_total(client))})
+                    continue
 
-            enforce_budget(client, max_api_requests)
-            try:
-                payload = client.get_original_document(source_id)
-                time.sleep(delay)
-            except IndianKanoonClientError as exc:
-                failed = dict(base_record)
-                failed["status"] = "failed"
-                failed["notes"] = f"original_document_failed: {exc}"
-                upsert_by_local_id(records, failed)
-                decision = pre_decision.to_dict()
-                decision["decision"] = "reject"
-                decision["reasons"] = list(decision["reasons"]) + ["raw_retrieval_failure"]
-                upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))})
-                if should_stop_for_api_error(exc):
-                    break
-                continue
+                enforce_budget(client, max_api_requests)
+                try:
+                    payload = client.get_original_document(source_id)
+                    time.sleep(delay)
+                except IndianKanoonClientError as exc:
+                    failed = dict(base_record)
+                    failed["status"] = "failed"
+                    failed["notes"] = f"original_document_failed: {exc}"
+                    upsert_by_local_id(records, failed)
+                    decision = pre_decision.to_dict()
+                    decision["decision"] = "reject"
+                    decision["reasons"] = list(decision["reasons"]) + ["raw_retrieval_failure"]
+                    upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))})
+                    if should_stop_for_api_error(exc):
+                        break
+                    continue
 
-            content, mime_type = normalize_original_document_payload(payload)
-            extension = extension_for_content(content, mime_type)
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            raw_path = raw_dir / f"{safe_filename(source_id)}_{safe_filename(case_name or source_id)}{extension}"
-            if raw_path.exists():
-                incoming_digest = hashlib.sha256(content).hexdigest()
-                if sha256_file(raw_path) != incoming_digest:
+                content, mime_type = normalize_original_document_payload(payload)
+                extension = extension_for_content(content, mime_type)
+                raw_dir.mkdir(parents=True, exist_ok=True)
+                raw_path = raw_dir / f"{safe_filename(source_id)}_{safe_filename(case_name or source_id)}{extension}"
+                if raw_path.exists():
+                    incoming_digest = hashlib.sha256(content).hexdigest()
+                    if sha256_file(raw_path) != incoming_digest:
+                        raw_path.write_bytes(content)
+                else:
                     raw_path.write_bytes(content)
-            else:
-                raw_path.write_bytes(content)
-            digest = sha256_file(raw_path)
-            duplicate = find_duplicate_by_sha256(digest, v1_records + records)
-            full_record = dict(base_record)
-            full_record.update(
-                {
-                    "raw_file_path": str(raw_path.relative_to(REPO_ROOT)),
-                    "sha256": digest,
-                    "file_size_bytes": file_size(raw_path),
-                    "mime_type": mime_type,
+                digest = sha256_file(raw_path)
+                duplicate = find_duplicate_by_sha256(digest, v1_records + records)
+                full_record = dict(base_record)
+                full_record.update(
+                    {
+                        "raw_file_path": str(raw_path.relative_to(REPO_ROOT)),
+                        "sha256": digest,
+                        "file_size_bytes": file_size(raw_path),
+                        "mime_type": mime_type,
+                    }
+                )
+                full_text = text_from_payload(content, mime_type, pre_text)
+                decision = decide_candidate_quality(
+                    full_text,
+                    full_record,
+                    accepted_counts=accepted_counts,
+                    quotas=quotas,
+                    duplicate=duplicate is not None,
+                    corrupt=file_size(raw_path) == 0,
+                )
+                decision_dict = decision.to_dict()
+                decision_dict.update(
+                    {
+                        "pre_download_decision": pre_kind,
+                        "pre_download_reasons": pre_decision.reasons,
+                        "document_text_available": bool(document_text),
+                        "document_text_length": len(document_text),
+                        "document_text_quality": document_quality,
+                    }
+                )
+                full_record["legal_regime"] = decision.legal_regime
+                full_record["quality_scores"] = {
+                    "document_type": decision.document_type_score,
+                    "criminal_relevance": decision.criminal_relevance_score,
+                    "metadata_quality": decision.metadata_quality_score,
                 }
-            )
-            full_text = text_from_payload(content, mime_type, pre_text)
-            decision = decide_candidate_quality(
-                full_text,
-                full_record,
-                accepted_counts=accepted_counts,
-                quotas=quotas,
-                duplicate=duplicate is not None,
-                corrupt=file_size(raw_path) == 0,
-            )
-            decision_dict = decision.to_dict()
-            decision_dict.update(
-                {
-                    "pre_download_decision": pre_kind,
-                    "pre_download_reasons": pre_decision.reasons,
-                    "document_text_available": bool(document_text),
-                    "document_text_length": len(document_text),
-                    "document_text_quality": document_quality,
-                }
-            )
-            full_record["legal_regime"] = decision.legal_regime
-            full_record["quality_scores"] = {
-                "document_type": decision.document_type_score,
-                "criminal_relevance": decision.criminal_relevance_score,
-                "metadata_quality": decision.metadata_quality_score,
-            }
-            full_record["detected_statutes"] = decision.detected_statutes
-            full_record["status"] = "validated" if decision.decision == "accept_candidate" else decision.decision
-            full_record["final_automated_decision"] = decision.decision
-            full_record["notes"] = "; ".join(decision.reasons) if decision.reasons else None
-            upsert_by_local_id(records, full_record)
-            full_record["document_text_available"] = bool(document_text)
-            full_record["document_text_length"] = len(document_text)
-            full_record["document_text_quality"] = document_quality
-            upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision_dict, candidate_api_before, stats_total(client))})
-            downloaded += 1
-            query_download_counts[str(query["query_id"])] += 1
-            if decision.decision in {"accept_candidate", "needs_review"}:
-                accepted_counts[family] = accepted_counts.get(family, 0) + 1
-                upsert_by_local_id(reviews, review_record_for(full_record))
+                full_record["detected_statutes"] = decision.detected_statutes
+                full_record["status"] = "validated" if decision.decision == "accept_candidate" else decision.decision
+                full_record["final_automated_decision"] = decision.decision
+                full_record["notes"] = "; ".join(decision.reasons) if decision.reasons else None
+                upsert_by_local_id(records, full_record)
+                full_record["document_text_available"] = bool(document_text)
+                full_record["document_text_length"] = len(document_text)
+                full_record["document_text_quality"] = document_quality
+                upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision_dict, candidate_api_before, stats_total(client))})
+                downloaded += 1
+                query_download_counts[str(query["query_id"])] += 1
+                if decision.decision in {"accept_candidate", "needs_review"}:
+                    accepted_counts[family] = accepted_counts.get(family, 0) + 1
+                    upsert_by_local_id(reviews, review_record_for(full_record))
 
     write_manifest_atomic(judgment_manifest, records)
     write_manifest_atomic(review_manifest, reviews)
@@ -562,6 +631,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-api-requests", type=int, default=DEFAULT_MAX_API_REQUESTS)
     parser.add_argument("--delay", type=float, default=1.0)
     parser.add_argument("--balanced", action="store_true", help="Use Step 0.4E balanced corpus manifests")
+    parser.add_argument("--targeted-gap-fill", action="store_true", help="Use Step 0.4F targeted gap query manifest")
+    parser.add_argument("--max-search-pages", type=int, default=DEFAULT_MAX_SEARCH_PAGES)
     return parser.parse_args()
 
 
@@ -569,12 +640,14 @@ def main() -> int:
     load_project_env()
     args = parse_args()
     strategy_manifest = Path(args.strategy)
+    query_manifest = GAP_QUERY_MANIFEST if args.targeted_gap_fill else BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST
+    use_balanced_outputs = args.balanced or args.targeted_gap_fill
     if args.dry_run:
         return dry_run(
             args.limit,
             args.max_api_requests,
             strategy_manifest=strategy_manifest,
-            query_manifest=BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST,
+            query_manifest=query_manifest,
         )
     try:
         return acquire(
@@ -583,12 +656,13 @@ def main() -> int:
             query_id=args.query_id,
             offence_family=args.offence_family,
             temporal_track=args.temporal_track,
-            query_manifest=BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST,
-            judgment_manifest=BALANCED_JUDGMENTS if args.balanced else PRESCREEN_JUDGMENTS,
-            review_manifest=BALANCED_REVIEW if args.balanced else PRESCREEN_REVIEW,
-            audit_manifest=BALANCED_AUDIT if args.balanced else PRESCREEN_AUDIT,
-            raw_dir=BALANCED_RAW_DIR if args.balanced else RAW_DIR,
+            query_manifest=query_manifest,
+            judgment_manifest=BALANCED_JUDGMENTS if use_balanced_outputs else PRESCREEN_JUDGMENTS,
+            review_manifest=BALANCED_REVIEW if use_balanced_outputs else PRESCREEN_REVIEW,
+            audit_manifest=BALANCED_AUDIT if use_balanced_outputs else PRESCREEN_AUDIT,
+            raw_dir=BALANCED_RAW_DIR if use_balanced_outputs else RAW_DIR,
             delay=args.delay,
+            max_search_pages=args.max_search_pages,
         )
     except (BudgetExceeded, ValueError) as exc:
         print(str(exc), file=sys.stderr)
