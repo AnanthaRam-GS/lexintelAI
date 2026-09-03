@@ -122,7 +122,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:49.386415+00:00"
+    "timestamp": "2026-09-03T19:32:13.039008+00:00"
   },
   {
     "local_id": "v2-audit-55558",
@@ -150,7 +150,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:51.352320+00:00"
+    "timestamp": "2026-09-03T19:32:15.537128+00:00"
   },
   {
     "local_id": "v2-audit-53980582",
@@ -178,7 +178,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:53.370353+00:00"
+    "timestamp": "2026-09-03T19:32:19.048536+00:00"
   },
   {
     "local_id": "v2-audit-189160265",
@@ -206,7 +206,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:54.529872+00:00"
+    "timestamp": "2026-09-03T19:32:20.306801+00:00"
   },
   {
     "local_id": "v2-audit-288165",
@@ -234,7 +234,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:55.616977+00:00"
+    "timestamp": "2026-09-03T19:32:22.094342+00:00"
   },
   {
     "local_id": "v2-audit-262194",
@@ -262,7 +262,7 @@
       "outside_temporal_track"
     ],
     "api_requests_consumed": 2,
-    "timestamp": "2026-09-03T19:29:56.571942+00:00"
+    "timestamp": "2026-09-03T19:32:23.588161+00:00"
   },
   {
     "local_id": "v2-audit-127459994",
@@ -492,5 +492,676 @@
     "rejection_reasons": [],
     "api_requests_consumed": 3,
     "timestamp": "2026-09-03T19:30:17.495538+00:00"
+  },
+  {
+    "local_id": "v2-audit-149679501",
+    "source_document_id": "149679501",
+    "query_id": "kidnapping_recent_balanced",
+    "offence_family": "kidnapping",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 2,
+    "search_title": "Bharatiya Nyaya Sanhita, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "pre_download_decision": "reject_before_download",
+    "pre_download_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality",
+      "not_a_judgment"
+    ],
+    "document_text_available": true,
+    "document_text_length": 390592,
+    "document_text_quality": "usable",
+    "document_type_score": 0.05,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 0.56,
+    "detected_statutes": [
+      "BNS",
+      "BNSS",
+      "IPC"
+    ],
+    "detected_regime": "mixed_or_transition",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality",
+      "not_a_judgment"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:27.020135+00:00"
+  },
+  {
+    "local_id": "v2-audit-173395727",
+    "source_document_id": "173395727",
+    "query_id": "kidnapping_recent_balanced",
+    "offence_family": "kidnapping",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 3,
+    "search_title": "Santosh Paswan Son Of Ramdin Paswan vs The State Of Jharkhand on 12 February, 2024",
+    "court": null,
+    "year": 2024,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 161127,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:32:38.207141+00:00"
+  },
+  {
+    "local_id": "v2-audit-19393937",
+    "source_document_id": "19393937",
+    "query_id": "kidnapping_recent_balanced",
+    "offence_family": "kidnapping",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 4,
+    "search_title": "Santosh Paswan Son Of Ramdin Paswan vs The State Of Jharkhand on 12 February, 2024",
+    "court": null,
+    "year": 2024,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 161127,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "duplicate_candidate"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:32:42.242349+00:00"
+  },
+  {
+    "local_id": "v2-audit-83401027",
+    "source_document_id": "83401027",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "Charan Singh @ Charanjit Singh vs The State Of Uttarakhand Home ... on 20 April, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 24148,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.89,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:32:52.737096+00:00"
+  },
+  {
+    "local_id": "v2-audit-17701479",
+    "source_document_id": "17701479",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 2,
+    "search_title": "Savita vs State Of Delhi on 28 July, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:53.771301+00:00"
+  },
+  {
+    "local_id": "v2-audit-876962",
+    "source_document_id": "876962",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 3,
+    "search_title": "Siri Bhagwan vs State Of Haryana on 17 September, 2007",
+    "court": null,
+    "year": 2007,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:54.821319+00:00"
+  },
+  {
+    "local_id": "v2-audit-166101582",
+    "source_document_id": "166101582",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 4,
+    "search_title": "Rakesh & Anr. vs State Of Delhi on 25 May, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:55.910757+00:00"
+  },
+  {
+    "local_id": "v2-audit-123779490",
+    "source_document_id": "123779490",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 5,
+    "search_title": "Hompal Singh & Ors. vs State Of Delhi on 22 May, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:56.916268+00:00"
+  },
+  {
+    "local_id": "v2-audit-120626682",
+    "source_document_id": "120626682",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 7,
+    "search_title": "Mehtab Singh & Anr. vs State Of Delhi on 28 July, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:32:57.910984+00:00"
+  },
+  {
+    "local_id": "v2-audit-70774666",
+    "source_document_id": "70774666",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 8,
+    "search_title": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+    "court": null,
+    "year": 2022,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 130812,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:00.661577+00:00"
+  },
+  {
+    "local_id": "v2-audit-26223875",
+    "source_document_id": "26223875",
+    "query_id": "dowry_cruelty_recent_balanced",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 9,
+    "search_title": "Devender Singh vs The State Of Uttarakhand on 21 April, 2022",
+    "court": null,
+    "year": 2022,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 28428,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.89,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:03.125282+00:00"
+  },
+  {
+    "local_id": "v2-audit-31029978",
+    "source_document_id": "31029978",
+    "query_id": "sexual_offences_recent_balanced",
+    "offence_family": "sexual_offences",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "Veerendra vs State Of Madhya Pradesh on 13 May, 2022",
+    "court": null,
+    "year": 2022,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 99136,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:10.188161+00:00"
+  },
+  {
+    "local_id": "v2-audit-142108119",
+    "source_document_id": "142108119",
+    "query_id": "sexual_offences_recent_balanced",
+    "offence_family": "sexual_offences",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 2,
+    "search_title": "Raveendran.V.S vs The Deputy Superintendent Of Police on 20 February, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:33:11.266300+00:00"
+  },
+  {
+    "local_id": "v2-audit-17301668",
+    "source_document_id": "17301668",
+    "query_id": "sexual_offences_recent_balanced",
+    "offence_family": "sexual_offences",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 3,
+    "search_title": "State vs . (I) Tejinder Singh @ Lucky Singh on 5 January, 2013",
+    "court": null,
+    "year": 2013,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:33:12.594005+00:00"
+  },
+  {
+    "local_id": "v2-audit-179828917",
+    "source_document_id": "179828917",
+    "query_id": "sexual_offences_recent_balanced",
+    "offence_family": "sexual_offences",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 4,
+    "search_title": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+    "court": null,
+    "year": 2022,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 245186,
+    "document_text_quality": "usable",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:16.538378+00:00"
+  },
+  {
+    "local_id": "v2-audit-194128214",
+    "source_document_id": "194128214",
+    "query_id": "sexual_offences_recent_balanced",
+    "offence_family": "sexual_offences",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 6,
+    "search_title": "Indresh Kumar vs The State Of Uttar Pradesh on 12 July, 2022",
+    "court": null,
+    "year": 2022,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 9417,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.82,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:18.873959+00:00"
+  },
+  {
+    "local_id": "v2-audit-154171944",
+    "source_document_id": "154171944",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 1,
+    "search_title": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 262685,
+    "document_text_quality": "usable",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:26.096673+00:00"
+  },
+  {
+    "local_id": "v2-audit-135095591",
+    "source_document_id": "135095591",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 3,
+    "search_title": "State Of Karnataka vs Selvi J. Jayalalitha & Ors on 14 February, 2017",
+    "court": null,
+    "year": 2017,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:33:28.229664+00:00"
+  },
+  {
+    "local_id": "v2-audit-137305634",
+    "source_document_id": "137305634",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 4,
+    "search_title": "Amit Agarwal @ Vicky Bhalotia vs Directorate Of Enforcement on 8 October, 2025",
+    "court": "Jharkhand High Court",
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "metadata_or_document_fetch_failed"
+    ],
+    "api_requests_consumed": 1,
+    "timestamp": "2026-09-03T19:33:32.649424+00:00"
+  },
+  {
+    "local_id": "v2-audit-154726248",
+    "source_document_id": "154726248",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 5,
+    "search_title": "State Of vs Shahbaz Hussain @ Shahbaz Ahmed @ Shanu ... on 29 March, 2023",
+    "court": null,
+    "year": 2023,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 262678,
+    "document_text_quality": "usable",
+    "document_type_score": 0.46,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:42.131180+00:00"
+  },
+  {
+    "local_id": "v2-audit-108342404",
+    "source_document_id": "108342404",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 6,
+    "search_title": "Cbi Vs. Bibianus Toppo & Ors vs . on 17 November, 2014",
+    "court": null,
+    "year": 2014,
+    "search_filter_result": "considered",
+    "pre_download_decision": null,
+    "pre_download_reasons": [],
+    "document_text_available": null,
+    "document_text_length": null,
+    "document_text_quality": null,
+    "document_type_score": null,
+    "criminal_relevance_score": null,
+    "metadata_quality_score": null,
+    "detected_statutes": [],
+    "detected_regime": "unknown",
+    "final_automated_decision": "reject",
+    "rejection_reasons": [
+      "outside_temporal_track"
+    ],
+    "api_requests_consumed": 2,
+    "timestamp": "2026-09-03T19:33:43.849383+00:00"
+  },
+  {
+    "local_id": "v2-audit-178355286",
+    "source_document_id": "178355286",
+    "query_id": "conspiracy_common_intention_recent_balanced",
+    "offence_family": "conspiracy_common_intention",
+    "temporal_track": "recent_ipc",
+    "retrieval_rank": 7,
+    "search_title": "Special Judge (Pc Act) Cbi-13 vs Padmanabhan Nair (Supra) To on 22 April, 2019",
+    "court": null,
+    "year": 2019,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "low_document_type_score",
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 154158,
+    "document_text_quality": "usable",
+    "document_type_score": 0.3,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [
+      "low_document_type_score"
+    ],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-03T19:33:47.500404+00:00"
   }
 ]

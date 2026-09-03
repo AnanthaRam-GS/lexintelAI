@@ -48,5 +48,105 @@
     "automated_status": "accept_candidate",
     "human_review_status": "pending",
     "review_notes": null
+  },
+  {
+    "local_id": "v2-173395727",
+    "source_document_id": "173395727",
+    "case_name": "Santosh Paswan Son Of Ramdin Paswan vs The State Of Jharkhand on 12 February, 2024",
+    "offence_family": "kidnapping",
+    "source_url": "https://indiankanoon.org/doc/173395727/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-83401027",
+    "source_document_id": "83401027",
+    "case_name": "Charan Singh @ Charanjit Singh vs The State Of Uttarakhand Home ... on 20 April, 2023",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "source_url": "https://indiankanoon.org/doc/83401027/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-70774666",
+    "source_document_id": "70774666",
+    "case_name": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "source_url": "https://indiankanoon.org/doc/70774666/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-26223875",
+    "source_document_id": "26223875",
+    "case_name": "Devender Singh vs The State Of Uttarakhand on 21 April, 2022",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "source_url": "https://indiankanoon.org/doc/26223875/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-31029978",
+    "source_document_id": "31029978",
+    "case_name": "Veerendra vs State Of Madhya Pradesh on 13 May, 2022",
+    "offence_family": "sexual_offences",
+    "source_url": "https://indiankanoon.org/doc/31029978/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-179828917",
+    "source_document_id": "179828917",
+    "case_name": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+    "offence_family": "sexual_offences",
+    "source_url": "https://indiankanoon.org/doc/179828917/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-194128214",
+    "source_document_id": "194128214",
+    "case_name": "Indresh Kumar vs The State Of Uttar Pradesh on 12 July, 2022",
+    "offence_family": "sexual_offences",
+    "source_url": "https://indiankanoon.org/doc/194128214/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-154171944",
+    "source_document_id": "154171944",
+    "case_name": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023",
+    "offence_family": "conspiracy_common_intention",
+    "source_url": "https://indiankanoon.org/doc/154171944/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-154726248",
+    "source_document_id": "154726248",
+    "case_name": "State Of vs Shahbaz Hussain @ Shahbaz Ahmed @ Shanu ... on 29 March, 2023",
+    "offence_family": "conspiracy_common_intention",
+    "source_url": "https://indiankanoon.org/doc/154726248/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-178355286",
+    "source_document_id": "178355286",
+    "case_name": "Special Judge (Pc Act) Cbi-13 vs Padmanabhan Nair (Supra) To on 22 April, 2019",
+    "offence_family": "conspiracy_common_intention",
+    "source_url": "https://indiankanoon.org/doc/178355286/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
   }
 ]
