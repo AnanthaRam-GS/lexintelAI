@@ -1,0 +1,92 @@
+[
+  {
+    "query_id": "homicide_sc_hc",
+    "offence_family": "homicide",
+    "query": "murder culpable homicide Section 302 IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["pre_2015", "2015_2019", "2020_2023"],
+    "notes": "Prioritize genuine criminal appeals discussing murder or culpable homicide under IPC/CrPC."
+  },
+  {
+    "query_id": "hurt_assault_hc",
+    "offence_family": "hurt_and_assault",
+    "query": "grievous hurt assault Sections 323 325 326 IPC criminal revision",
+    "target_count": 3,
+    "court_preference": ["high_court", "district_or_sessions"],
+    "time_preference": ["2015_2019", "2020_2023"],
+    "notes": "Prefer cases with clear discussion of hurt, grievous hurt, assault, or sentencing."
+  },
+  {
+    "query_id": "theft_robbery",
+    "offence_family": "theft_and_robbery",
+    "query": "theft robbery dacoity Sections 379 392 395 IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["high_court", "supreme_court"],
+    "time_preference": ["pre_2015", "2015_2019", "2020_2023"],
+    "notes": "Select cases with usable criminal-law reasoning rather than procedural-only orders."
+  },
+  {
+    "query_id": "cheating_fraud",
+    "offence_family": "cheating_and_fraud",
+    "query": "cheating fraud Section 420 IPC criminal complaint quashing",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["2015_2019", "2020_2023"],
+    "notes": "Include cases that distinguish civil disputes from criminal cheating where available."
+  },
+  {
+    "query_id": "criminal_breach_trust",
+    "offence_family": "criminal_breach_of_trust",
+    "query": "criminal breach of trust Section 406 409 IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["high_court", "supreme_court"],
+    "time_preference": ["pre_2015", "2015_2019", "2020_2023"],
+    "notes": "Prefer cases with explicit source metadata and clear offence-family relevance."
+  },
+  {
+    "query_id": "kidnapping",
+    "offence_family": "kidnapping",
+    "query": "kidnapping abduction Section 363 364 366 IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["high_court", "supreme_court"],
+    "time_preference": ["2015_2019", "2020_2023"],
+    "notes": "Prefer judgments with factual and statutory discussion, not bail-only orders."
+  },
+  {
+    "query_id": "sexual_offences",
+    "offence_family": "sexual_offences",
+    "query": "rape sexual offence Section 376 IPC POCSO criminal appeal",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["2015_2019", "2020_2023", "2024_onwards"],
+    "notes": "Handle sensitive content carefully; require human review before downstream use."
+  },
+  {
+    "query_id": "dowry_domestic_cruelty",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "query": "dowry death cruelty Sections 304B 498A IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["pre_2015", "2015_2019", "2020_2023"],
+    "notes": "Prefer cases discussing statutory ingredients and evidentiary requirements."
+  },
+  {
+    "query_id": "conspiracy_common_intention",
+    "offence_family": "conspiracy_common_intention",
+    "query": "criminal conspiracy common intention Sections 34 120B IPC criminal appeal",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["pre_2015", "2015_2019", "2020_2023"],
+    "notes": "Select cases with clear discussion of group liability doctrines."
+  },
+  {
+    "query_id": "narcotics",
+    "offence_family": "narcotics_related",
+    "query": "NDPS Act possession recovery criminal appeal conviction acquittal",
+    "target_count": 3,
+    "court_preference": ["supreme_court", "high_court"],
+    "time_preference": ["2015_2019", "2020_2023", "2024_onwards"],
+    "notes": "Use only genuine criminal matters with clear source provenance."
+  }
+]

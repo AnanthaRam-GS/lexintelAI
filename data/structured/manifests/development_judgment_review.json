@@ -1,0 +1,132 @@
+[
+  {
+    "local_id": "dev-1769219",
+    "source_document_id": "1769219",
+    "case_name": "State (N.C.T. Of Delhi) vs Navjot Sandhu@ Afsan Guru on 4 August, 2005",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/1769219/",
+    "automated_status": "excluded_irrelevant",
+    "human_review_status": "pending",
+    "review_notes": "Original document payload is an image/navigation HTML form rather than usable judgment text; retained for acquisition audit."
+  },
+  {
+    "local_id": "dev-17904216",
+    "source_document_id": "17904216",
+    "case_name": "Shatrughna Baban Meshram vs The State Of Maharashtra on 2 November, 2020",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/17904216/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-129859128",
+    "source_document_id": "129859128",
+    "case_name": "Ramprakash vs State Of M.P. on 13 May, 2022",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/129859128/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-95184617",
+    "source_document_id": "95184617",
+    "case_name": "Arvind @ Lala vs State Of M.P. on 11 May, 2022",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/95184617/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-120387442",
+    "source_document_id": "120387442",
+    "case_name": "Neeraj Alias Nagar vs State (Nct Of Delhi) on 14 November, 2019",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/120387442/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-12493914",
+    "source_document_id": "12493914",
+    "case_name": "Nanhe vs The State Of Uttar Pradesh on 21 November, 2023",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/12493914/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-130189789",
+    "source_document_id": "130189789",
+    "case_name": "Shrishail S/O. Madivalappa Ganiger vs The State Of Karnataka on 16 March, 2026",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/130189789/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-33110059",
+    "source_document_id": "33110059",
+    "case_name": "Manish vs State Of U.P. on 3 June, 2026",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/33110059/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-56114413",
+    "source_document_id": "56114413",
+    "case_name": "Md. Anwar vs The State Of West Bengal on 5 May, 2026",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/56114413/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": "PDF payload normalized by removing UTF-8 BOM before PDF header."
+  },
+  {
+    "local_id": "dev-188212655",
+    "source_document_id": "188212655",
+    "case_name": "<b>Criminal</b> Rules of Practice and Circular Orders, 1990",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/188212655/",
+    "automated_status": "failed",
+    "human_review_status": "pending",
+    "review_notes": "Original document endpoint returned Document not Found JSON; retained for acquisition audit."
+  },
+  {
+    "local_id": "dev-44786366",
+    "source_document_id": "44786366",
+    "case_name": "Vol(1) And Vol(3)",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/44786366/",
+    "automated_status": "excluded_irrelevant",
+    "human_review_status": "pending",
+    "review_notes": "Law Commission report/volume result, not a court judgment; retained for acquisition audit."
+  },
+  {
+    "local_id": "dev-111519619",
+    "source_document_id": "111519619",
+    "case_name": "Surender Klumar vs The State on 19 December, 2013",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/111519619/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "dev-70421468",
+    "source_document_id": "70421468",
+    "case_name": "Tapan Roy Paul vs Gobinda Sarkar & Ors on 6 November, 2024",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/70421468/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  }
+]

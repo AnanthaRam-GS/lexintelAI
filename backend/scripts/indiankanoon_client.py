@@ -12,12 +12,21 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+if __package__ in {None, ""}:
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+
+from backend.scripts.env_utils import load_project_env  # noqa: E402
+
 DEFAULT_BASE_URL = "https://api.indiankanoon.org"
 USER_AGENT = "LegalAI corpus foundation/0.1"
 
 
 class IndianKanoonClientError(RuntimeError):
     """Raised when the Indian Kanoon API request fails."""
+
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class IndianKanoonClient:
@@ -57,15 +66,23 @@ class IndianKanoonClient:
         url = f"{self.base_url}{path}"
         if query:
             url = f"{url}?{query}"
-        request = urllib.request.Request(url, headers=self._headers())
+        request = urllib.request.Request(url, headers=self._headers(), data=b"", method="POST")
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 status = getattr(response, "status", 200)
                 body = response.read()
+        except urllib.error.HTTPError as exc:
+            raise IndianKanoonClientError(
+                f"Indian Kanoon API returned HTTP {exc.code}.",
+                status_code=exc.code,
+            ) from exc
         except urllib.error.URLError as exc:
             raise IndianKanoonClientError(f"Indian Kanoon API request failed: {exc}") from exc
         if status < 200 or status >= 300:
-            raise IndianKanoonClientError(f"Indian Kanoon API returned HTTP {status}.")
+            raise IndianKanoonClientError(
+                f"Indian Kanoon API returned HTTP {status}.",
+                status_code=status,
+            )
         return body
 
     def search(self, query: str, page: int = 0) -> dict[str, Any]:
@@ -99,6 +116,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    load_project_env()
     args = parse_args()
     if args.check_config:
         return check_config()
