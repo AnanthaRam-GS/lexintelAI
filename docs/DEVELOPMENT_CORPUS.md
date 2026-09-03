@@ -61,6 +61,19 @@ Every acquired development judgment must enter
 metadata quality, source traceability, and suitability before any downstream
 RAG or NLP use.
 
+Acquisition status and human review status are independent. Acquisition status
+describes automated selection and acquisition behavior, including technical
+failures, duplicate detection, or query-level exclusions. Human review status
+is the only field that determines whether a document is suitable for the
+LegalAI development corpus. For example, a candidate marked
+`excluded_irrelevant` during acquisition may still be manually accepted,
+rejected, or reassigned to a different offence family after source inspection.
+
+Use `backend/scripts/generate_judgment_review_report.py` to create the
+deterministic review packet at `docs/DEVELOPMENT_CORPUS_REVIEW.md`. Use
+`backend/scripts/review_development_judgment.py` only after a human reviewer
+has made an explicit decision.
+
 ## Attribution
 
 Indian Kanoon-acquired records must set `attribution_required` to `true` and
