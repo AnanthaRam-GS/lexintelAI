@@ -173,6 +173,14 @@ def source_id_exists(source_document_id: str, records: list[dict[str, Any]]) -> 
     )
 
 
+def active_record_count(records: list[dict[str, Any]]) -> int:
+    return sum(
+        1
+        for record in records
+        if record.get("status") in {"downloaded", "validated"}
+    )
+
+
 def should_stop_for_api_error(exc: IndianKanoonClientError) -> bool:
     return exc.status_code in {401, 403, 429}
 
@@ -218,13 +226,17 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
         print("Indian Kanoon API token is not configured.", file=sys.stderr)
         return 2
 
-    client = IndianKanoonClient()
     records = load_manifest(JUDGMENT_MANIFEST)
     review_records = load_manifest(REVIEW_MANIFEST)
+    starting_active_count = active_record_count(records)
+    if starting_active_count >= limit:
+        print(f"Corpus already has {starting_active_count} active development judgments.")
+        return 0
+    client = IndianKanoonClient()
     acquired = 0
 
     for query in queries:
-        if acquired >= limit:
+        if starting_active_count + acquired >= limit:
             break
         try:
             search_response = client.search(str(query["query"]), page=0)
@@ -236,7 +248,7 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
         time.sleep(delay)
 
         for rank, result in enumerate(extract_results(search_response), start=1):
-            if acquired >= limit:
+            if starting_active_count + acquired >= limit:
                 break
             source_document_id = extract_source_document_id(result)
             if not source_document_id:
@@ -271,7 +283,19 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
             name_part = safe_filename(case_name or source_document_id)
             raw_path = RAW_DIR / f"{safe_filename(source_document_id)}_{name_part}{extension}"
             RAW_DIR.mkdir(parents=True, exist_ok=True)
-            raw_path.write_bytes(content)
+            if raw_path.exists():
+                existing_digest = sha256_file(raw_path)
+                import hashlib
+
+                incoming_digest = hashlib.sha256(content).hexdigest()
+                if existing_digest != incoming_digest:
+                    print(
+                        f"{source_document_id}: local file exists with different content",
+                        file=sys.stderr,
+                    )
+                    continue
+            else:
+                raw_path.write_bytes(content)
             digest = sha256_file(raw_path)
 
             duplicate = find_duplicate_by_sha256(digest, records)
@@ -340,6 +364,7 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
     write_manifest_atomic(JUDGMENT_MANIFEST, records)
     write_manifest_atomic(REVIEW_MANIFEST, review_records)
     print(f"Acquired {acquired} development judgments.")
+    print(f"Active development corpus size: {starting_active_count + acquired}")
     return 0
 
 

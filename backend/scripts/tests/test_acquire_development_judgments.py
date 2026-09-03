@@ -40,6 +40,15 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
         self.assertTrue(acquire.source_id_exists("123", records))
         self.assertFalse(acquire.source_id_exists("456", records))
 
+    def test_limit_counts_existing_active_records(self) -> None:
+        records = [
+            {"status": "validated"},
+            {"status": "downloaded"},
+            {"status": "excluded_duplicate"},
+        ]
+
+        self.assertEqual(acquire.active_record_count(records), 2)
+
     def test_sha_duplicate_behavior(self) -> None:
         records = [{"local_id": "dev-1", "sha256": "abc"}]
 
@@ -126,6 +135,16 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
             self.assertEqual(result, 0)
             self.assertIn('"source_document_id": "123"', judgment_path.read_text(encoding="utf-8"))
             self.assertIn('"human_review_status": "pending"', review_path.read_text(encoding="utf-8"))
+
+    def test_acquire_stops_when_existing_active_count_meets_limit(self) -> None:
+        existing = [{"status": "validated", "source_provider": "indian_kanoon"}]
+        with patch.dict("os.environ", {"INDIAN_KANOON_API_TOKEN": "token"}):
+            with patch.object(acquire, "load_manifest", side_effect=[[{"query_id": "q1"}], existing, []]):
+                with patch.object(acquire, "IndianKanoonClient") as client_cls:
+                    result = acquire.acquire(limit=1, dry_run=False)
+
+        self.assertEqual(result, 0)
+        client_cls.assert_not_called()
 
     def test_original_document_json_payload_is_decoded(self) -> None:
         payload = (
