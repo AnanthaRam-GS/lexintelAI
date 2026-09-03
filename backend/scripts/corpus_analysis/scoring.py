@@ -17,6 +17,7 @@ from backend.scripts.corpus_analysis.statute_detector import detect_statutes
 
 
 DOCUMENT_TYPE_THRESHOLD = 0.6
+DOCUMENT_TYPE_HARD_REJECT_THRESHOLD = 0.25
 METADATA_THRESHOLD = 0.65
 ALLOWED_DECISIONS = {"accept_candidate", "needs_review", "reject"}
 
@@ -70,7 +71,10 @@ def decide_candidate_quality(
         if not quota_allows(family, accepted_counts, quotas):
             reasons.append("offence_family_quota_reached")
 
-    if duplicate or corrupt or "low_criminal_relevance" in reasons:
+    if document_type.score < DOCUMENT_TYPE_HARD_REJECT_THRESHOLD:
+        reasons.append("not_a_judgment")
+
+    if duplicate or corrupt or "low_criminal_relevance" in reasons or "not_a_judgment" in reasons:
         decision = "reject"
     elif (
         document_type.score >= DOCUMENT_TYPE_THRESHOLD
@@ -94,4 +98,3 @@ def decide_candidate_quality(
         legal_regime=regime.regime,
         recommended_offence_family=str(record.get("offence_family") or "") or None,
     )
-

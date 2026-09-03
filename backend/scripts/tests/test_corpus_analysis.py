@@ -125,6 +125,12 @@ class CorpusAnalysisTest(unittest.TestCase):
         result = decide_candidate_quality(text, COMPLETE_RECORD)
         self.assertEqual(result.decision, "needs_review")
 
+    def test_combined_decision_obvious_non_judgment_rejected(self) -> None:
+        text = "Law Commission Report Vol(1) Rules Circular Gazette IPC criminal appeal"
+        result = decide_candidate_quality(text, COMPLETE_RECORD)
+        self.assertEqual(result.decision, "reject")
+        self.assertIn("not_a_judgment", result.reasons)
+
     def test_quota_enforcement(self) -> None:
         quotas = {"homicide": 1, "theft_and_robbery": 1}
         self.assertFalse(quota_allows("homicide", {"homicide": 1}, quotas))
