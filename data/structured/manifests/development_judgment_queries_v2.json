@@ -1,0 +1,62 @@
+[
+  {
+    "query_id": "cheating_fraud_current",
+    "offence_family": "cheating_and_fraud",
+    "temporal_track": "current_transition",
+    "query": "cheating fraud Section 420 IPC criminal petition",
+    "target_quota": 1,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["supreme_court", "high_court"],
+    "notes": "Recent transition-era cheating/fraud candidates; regime must be detected from statute evidence."
+  },
+  {
+    "query_id": "theft_robbery_recent",
+    "offence_family": "theft_and_robbery",
+    "temporal_track": "recent_ipc",
+    "query": "theft robbery dacoity Sections 379 392 395 IPC criminal appeal",
+    "target_quota": 1,
+    "doctypes": "judgments",
+    "from_date": "2018-01-01",
+    "to_date": "2024-06-30",
+    "court_preference": ["high_court", "supreme_court"],
+    "notes": "Recent IPC/CrPC theft and robbery candidates."
+  },
+  {
+    "query_id": "criminal_breach_trust_recent",
+    "offence_family": "criminal_breach_of_trust",
+    "temporal_track": "recent_ipc",
+    "query": "criminal breach of trust Section 406 409 IPC criminal appeal",
+    "target_quota": 1,
+    "doctypes": "judgments",
+    "from_date": "2018-01-01",
+    "to_date": "2024-06-30",
+    "court_preference": ["high_court", "supreme_court"],
+    "notes": "Recent breach-of-trust candidates with explicit criminal provisions."
+  },
+  {
+    "query_id": "kidnapping_recent",
+    "offence_family": "kidnapping",
+    "temporal_track": "recent_ipc",
+    "query": "kidnapping abduction Section 363 364 366 IPC criminal appeal",
+    "target_quota": 1,
+    "doctypes": "judgments",
+    "from_date": "2018-01-01",
+    "to_date": "2024-06-30",
+    "court_preference": ["high_court", "supreme_court"],
+    "notes": "Recent kidnapping/abduction candidates."
+  },
+  {
+    "query_id": "dowry_cruelty_current",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "temporal_track": "current_transition",
+    "query": "dowry death cruelty Section 498A 304B IPC criminal appeal",
+    "target_quota": 1,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["supreme_court", "high_court"],
+    "notes": "Transition-era dowry/cruelty candidates; do not infer BNS/BNSS from date."
+  }
+]

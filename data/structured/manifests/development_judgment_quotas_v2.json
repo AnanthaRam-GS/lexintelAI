@@ -1,0 +1,46 @@
+[
+  {
+    "offence_family": "homicide",
+    "target_quota": 4
+  },
+  {
+    "offence_family": "hurt_and_assault",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "theft_and_robbery",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "cheating_and_fraud",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "criminal_breach_of_trust",
+    "target_quota": 2
+  },
+  {
+    "offence_family": "kidnapping",
+    "target_quota": 2
+  },
+  {
+    "offence_family": "sexual_offences",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "dowry_and_domestic_cruelty",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "conspiracy_common_intention",
+    "target_quota": 3
+  },
+  {
+    "offence_family": "narcotics_related",
+    "target_quota": 2
+  },
+  {
+    "offence_family": "other",
+    "target_quota": 2
+  }
+]
