@@ -12,6 +12,11 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+if __package__ in {None, ""}:
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+
+from backend.scripts.env_utils import load_project_env  # noqa: E402
+
 DEFAULT_BASE_URL = "https://api.indiankanoon.org"
 USER_AGENT = "LegalAI corpus foundation/0.1"
 
@@ -99,6 +104,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    load_project_env()
     args = parse_args()
     if args.check_config:
         return check_config()

@@ -22,6 +22,7 @@ from backend.scripts.corpus_utils import (  # noqa: E402
     sha256_file,
     write_manifest_atomic,
 )
+from backend.scripts.env_utils import load_project_env  # noqa: E402
 from backend.scripts.indiankanoon_client import (  # noqa: E402
     IndianKanoonClient,
     IndianKanoonClientError,
@@ -313,6 +314,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    load_project_env()
     args = parse_args()
     try:
         return acquire(
