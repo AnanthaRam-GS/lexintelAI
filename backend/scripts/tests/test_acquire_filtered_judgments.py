@@ -92,6 +92,22 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertTrue(acquire.year_within_bounds(2020, "2018-01-01", "2024-06-30"))
         self.assertFalse(acquire.year_within_bounds(2026, "2018-01-01", "2024-06-30"))
 
+    def test_current_transition_date_parsing_uses_exact_dates(self) -> None:
+        self.assertFalse(acquire.date_within_bounds("30 June, 2024", "2024-07-01", None))
+        self.assertTrue(acquire.date_within_bounds("1 July, 2024", "2024-07-01", None))
+        self.assertTrue(acquire.date_within_bounds("2024-07-02", "2024-07-01", None))
+        self.assertTrue(acquire.date_within_bounds("02/07/2024", "2024-07-01", None))
+
+    def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
+        records = [
+            {"status": "validated", "offence_family": "homicide"},
+            {"status": "needs_review", "offence_family": "homicide"},
+            {"status": "reject", "offence_family": "homicide"},
+            {"status": "rejected_pre_download", "offence_family": "hurt_and_assault"},
+        ]
+
+        self.assertEqual(acquire.gap_targets(records, {"homicide": 4, "hurt_and_assault": 1}), {"homicide": 2, "hurt_and_assault": 1})
+
     def test_extract_document_text_handles_html_entities_and_scripts(self) -> None:
         text = acquire.extract_document_text(
             {
@@ -143,6 +159,126 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
             acquire.upsert_by_local_id(reviews, acquire.review_record_for(rejected))
 
         self.assertEqual(reviews, [])
+
+    def test_full_family_is_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            queries = [
+                {
+                    "query_id": "q1",
+                    "offence_family": "theft_and_robbery",
+                    "temporal_track": "recent_ipc",
+                    "query": "theft IPC",
+                    "target_quota": 1,
+                    "doctypes": "judgments",
+                    "from_date": "2018-01-01",
+                    "to_date": "2024-06-30",
+                }
+            ]
+            (root / "queries.json").write_text(json.dumps(queries), encoding="utf-8")
+            (root / "quotas.json").write_text(json.dumps([{"offence_family": "theft_and_robbery", "target_quota": 1}]), encoding="utf-8")
+            (root / "v1.json").write_text("[]", encoding="utf-8")
+            (root / "v2.json").write_text("[]", encoding="utf-8")
+            (root / "prescreen.json").write_text("[]", encoding="utf-8")
+            (root / "judgments.json").write_text(json.dumps([{"source_document_id": "1", "status": "validated", "offence_family": "theft_and_robbery", "query_id": "old"}]), encoding="utf-8")
+            (root / "review.json").write_text("[]", encoding="utf-8")
+            (root / "audit.json").write_text("[]", encoding="utf-8")
+            client = Mock()
+            client.get_request_stats.return_value = {"total_requests": 0}
+
+            with patch.object(acquire, "QUOTA_MANIFEST", root / "quotas.json"):
+                with patch.object(acquire, "V1_JUDGMENTS", root / "v1.json"):
+                    with patch.object(acquire, "V2_JUDGMENTS", root / "v2.json"):
+                        with patch.object(acquire, "PRESCREEN_JUDGMENTS", root / "prescreen.json"):
+                            with patch.object(acquire, "IndianKanoonClient", return_value=client):
+                                acquire.acquire(
+                                    limit=2,
+                                    max_api_requests=10,
+                                    query_manifest=root / "queries.json",
+                                    judgment_manifest=root / "judgments.json",
+                                    review_manifest=root / "review.json",
+                                    audit_manifest=root / "audit.json",
+                                    raw_dir=root / "raw",
+                                    delay=0,
+                                )
+
+            client.search.assert_not_called()
+
+    def test_pagination_and_seen_ids_across_variants(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            queries = [
+                {
+                    "query_id": "q1",
+                    "offence_family": "theft_and_robbery",
+                    "temporal_track": "recent_ipc",
+                    "query": "theft IPC",
+                    "target_quota": 2,
+                    "doctypes": "judgments",
+                    "from_date": "2018-01-01",
+                    "to_date": "2024-06-30",
+                },
+                {
+                    "query_id": "q2",
+                    "offence_family": "theft_and_robbery",
+                    "temporal_track": "recent_ipc",
+                    "query": "robbery IPC",
+                    "target_quota": 2,
+                    "doctypes": "judgments",
+                    "from_date": "2018-01-01",
+                    "to_date": "2024-06-30",
+                },
+            ]
+            for path, data in [
+                (root / "queries.json", json.dumps(queries)),
+                (root / "quotas.json", json.dumps([{"offence_family": "theft_and_robbery", "target_quota": 2}])),
+                (root / "v1.json", "[]"),
+                (root / "v2.json", "[]"),
+                (root / "prescreen.json", "[]"),
+                (root / "judgments.json", "[]"),
+                (root / "review.json", "[]"),
+                (root / "audit.json", "[]"),
+            ]:
+                path.write_text(data, encoding="utf-8")
+            client = Mock()
+            client.get_request_stats.return_value = {"total_requests": 0}
+            client.search.side_effect = [
+                {"docs": [{"tid": "10", "title": "A v State"}]},
+                {"docs": [{"tid": "10", "title": "A v State"}, {"tid": "11", "title": "B v State"}]},
+                {"docs": [{"tid": "10", "title": "A v State"}, {"tid": "12", "title": "C v State"}]},
+            ]
+            client.get_document_metadata.side_effect = [
+                {"title": "A v State", "court": "Example High Court", "date": "2022-01-01"},
+                {"title": "B v State", "court": "Example High Court", "date": "2022-01-02"},
+            ]
+            client.get_document.side_effect = [
+                {"doc": "<p>A v State. Criminal Appeal. robbery Section 392 IPC conviction by Hon'ble Court.</p>"},
+                {"doc": "<p>B v State. Criminal Appeal. theft Section 379 IPC conviction by Hon'ble Court.</p>"},
+            ]
+            client.get_original_document.side_effect = [b"%PDF sample 10", b"%PDF sample 11"]
+
+            with patch.object(acquire, "QUOTA_MANIFEST", root / "quotas.json"):
+                with patch.object(acquire, "V1_JUDGMENTS", root / "v1.json"):
+                    with patch.object(acquire, "V2_JUDGMENTS", root / "v2.json"):
+                        with patch.object(acquire, "PRESCREEN_JUDGMENTS", root / "prescreen.json"):
+                            with patch.object(acquire, "REPO_ROOT", root):
+                                with patch.object(acquire, "IndianKanoonClient", return_value=client):
+                                    acquire.acquire(
+                                        limit=2,
+                                        max_api_requests=20,
+                                        query_manifest=root / "queries.json",
+                                        judgment_manifest=root / "judgments.json",
+                                        review_manifest=root / "review.json",
+                                        audit_manifest=root / "audit.json",
+                                        raw_dir=root / "raw",
+                                        delay=0,
+                                        max_search_pages=3,
+                                    )
+
+            self.assertEqual(client.search.call_count, 2)
+            self.assertEqual(client.get_document_metadata.call_count, 2)
+            source_ids = [record["source_document_id"] for record in json.loads((root / "review.json").read_text(encoding="utf-8"))]
+            self.assertEqual(source_ids, ["10", "11"])
 
     def test_mock_flow_queues_needs_review_candidate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

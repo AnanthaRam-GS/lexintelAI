@@ -188,5 +188,115 @@
     "automated_status": "accept_candidate",
     "human_review_status": "pending",
     "review_notes": null
+  },
+  {
+    "local_id": "v2-7542474",
+    "source_document_id": "7542474",
+    "case_name": "Steel Authority Of India Ltd. Through ... vs Prakash Poddar on 30 August, 2018",
+    "offence_family": "theft_and_robbery",
+    "source_url": "https://indiankanoon.org/doc/7542474/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-108783291",
+    "source_document_id": "108783291",
+    "case_name": "Banti @ Jitendra Sharma vs The State Of Madhya Pradesh on 5 May, 2020",
+    "offence_family": "theft_and_robbery",
+    "source_url": "https://indiankanoon.org/doc/108783291/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-136492342",
+    "source_document_id": "136492342",
+    "case_name": "Neelam @ Neeraj vs The State Of Madhya Pradesh on 8 February, 2019",
+    "offence_family": "theft_and_robbery",
+    "source_url": "https://indiankanoon.org/doc/136492342/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-90446963",
+    "source_document_id": "90446963",
+    "case_name": "Babu vs State Rep. By on 29 September, 2021",
+    "offence_family": "narcotics_related",
+    "source_url": "https://indiankanoon.org/doc/90446963/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-116547627",
+    "source_document_id": "116547627",
+    "case_name": "State vs . Brahma Nand, on 16 March, 2020",
+    "offence_family": "narcotics_related",
+    "source_url": "https://indiankanoon.org/doc/116547627/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-127989801",
+    "source_document_id": "127989801",
+    "case_name": "Surendra Koli vs C.B.I. on 16 October, 2023",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/127989801/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-189001274",
+    "source_document_id": "189001274",
+    "case_name": "Page No.# 1/77 vs The State Of Assam on 5 August, 2023",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/189001274/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-156271048",
+    "source_document_id": "156271048",
+    "case_name": "Md. Fakar Uddin Barbhuiya And Anr vs The State Of Assam on 18 January, 2019",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/156271048/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-15834217",
+    "source_document_id": "15834217",
+    "case_name": "Mukesh Khandelwal @ Devendra Kumar S/O ... vs State Of Rajasthan Through Pp on 29 January, 2019",
+    "offence_family": "homicide",
+    "source_url": "https://indiankanoon.org/doc/15834217/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-77330685",
+    "source_document_id": "77330685",
+    "case_name": "Crl.A./213/2020 on 12 June, 2024",
+    "offence_family": "kidnapping",
+    "source_url": "https://indiankanoon.org/doc/77330685/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-123721856",
+    "source_document_id": "123721856",
+    "case_name": "Suresh Ram vs The State Of Bihar on 13 July, 2022",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/123721856/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
   }
 ]
