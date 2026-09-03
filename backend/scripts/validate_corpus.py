@@ -21,6 +21,8 @@ DEVELOPMENT_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments.json"
 V1_QUALITY_ANALYSIS_MANIFEST = MANIFEST_DIR / "v1_quality_analysis.json"
 V2_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_v2.json"
 V2_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_v2.json"
+PRESCREEN_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_prescreen_v2.json"
+PRESCREEN_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_prescreen_v2.json"
 REQUIRED_FIELDS = {
     "document_id",
     "document_type",
@@ -301,6 +303,15 @@ def main() -> int:
         warnings.extend(v2_warnings)
         duplicate_count += v2_duplicate_count
 
+    prescreen_records = validate_json_manifest(PRESCREEN_JUDGMENTS_MANIFEST, errors)
+    if PRESCREEN_JUDGMENTS_MANIFEST.exists():
+        prescreen_errors, prescreen_warnings, prescreen_duplicate_count = validate_development_judgments(
+            prescreen_records
+        )
+        errors.extend(prescreen_errors)
+        warnings.extend(prescreen_warnings)
+        duplicate_count += prescreen_duplicate_count
+
     v1_analysis = validate_json_manifest(V1_QUALITY_ANALYSIS_MANIFEST, errors)
     if V1_QUALITY_ANALYSIS_MANIFEST.exists():
         analysis_errors, analysis_warnings = validate_quality_analysis(v1_analysis, "v1_quality")
@@ -313,7 +324,19 @@ def main() -> int:
         errors.extend(audit_errors)
         warnings.extend(audit_warnings)
 
-    print(f"Documents checked: {len(records) + len(development_records) + len(v2_records)}")
+    prescreen_audit = validate_json_manifest(PRESCREEN_AUDIT_MANIFEST, errors)
+    if PRESCREEN_AUDIT_MANIFEST.exists():
+        prescreen_audit_errors, prescreen_audit_warnings = validate_quality_analysis(
+            prescreen_audit,
+            "v2_audit",
+        )
+        errors.extend(prescreen_audit_errors)
+        warnings.extend(prescreen_audit_warnings)
+
+    print(
+        "Documents checked: "
+        f"{len(records) + len(development_records) + len(v2_records) + len(prescreen_records)}"
+    )
     print(f"Errors: {len(errors)}")
     print(f"Warnings: {len(warnings)}")
     print(f"Duplicates: {duplicate_count}")

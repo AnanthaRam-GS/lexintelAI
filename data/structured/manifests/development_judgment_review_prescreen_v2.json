@@ -1,0 +1,52 @@
+[
+  {
+    "local_id": "v2-70332624",
+    "source_document_id": "70332624",
+    "case_name": "Directorate Of Enforcement vs Mukesh Jain on 30 March, 2024",
+    "offence_family": "cheating_and_fraud",
+    "source_url": "https://indiankanoon.org/doc/70332624/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-38986681",
+    "source_document_id": "38986681",
+    "case_name": "Sunil Tyagi vs Govt Of Nct Of Delhi & Anr on 28 June, 2021",
+    "offence_family": "theft_and_robbery",
+    "source_url": "https://indiankanoon.org/doc/38986681/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-99504196",
+    "source_document_id": "99504196",
+    "case_name": "Anosh Ekka vs The Directorate Of Enforcement on 20 January, 2023",
+    "offence_family": "criminal_breach_of_trust",
+    "source_url": "https://indiankanoon.org/doc/99504196/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-27865803",
+    "source_document_id": "27865803",
+    "case_name": "Anand Kushwaha vs The State Of Madhya Pradesh on 17 May, 2019",
+    "offence_family": "kidnapping",
+    "source_url": "https://indiankanoon.org/doc/27865803/",
+    "automated_status": "needs_review",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-37639548",
+    "source_document_id": "37639548",
+    "case_name": "State Of Kerala vs Abdul Majeed",
+    "offence_family": "dowry_and_domestic_cruelty",
+    "source_url": "https://indiankanoon.org/doc/37639548/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
+  }
+]
