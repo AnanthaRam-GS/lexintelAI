@@ -1,0 +1,268 @@
+[
+  {
+    "source_document_id": "1769219",
+    "local_id": "dev-1769219",
+    "case_name": "State (N.C.T. Of Delhi) vs Navjot Sandhu@ Afsan Guru on 4 August, 2005",
+    "acquisition_status": "excluded_irrelevant",
+    "offence_family": "homicide",
+    "document_type_score": 0.21,
+    "criminal_relevance_score": 0.8,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "reject",
+    "reason_codes": [
+      "low_document_type_score",
+      "not_a_judgment"
+    ],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.343336+00:00"
+  },
+  {
+    "source_document_id": "17904216",
+    "local_id": "dev-17904216",
+    "case_name": "Shatrughna Baban Meshram vs The State Of Maharashtra on 2 November, 2020",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.343574+00:00"
+  },
+  {
+    "source_document_id": "129859128",
+    "local_id": "dev-129859128",
+    "case_name": "Ramprakash vs State Of M.P. on 13 May, 2022",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.343689+00:00"
+  },
+  {
+    "source_document_id": "95184617",
+    "local_id": "dev-95184617",
+    "case_name": "Arvind @ Lala vs State Of M.P. on 11 May, 2022",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.343801+00:00"
+  },
+  {
+    "source_document_id": "120387442",
+    "local_id": "dev-120387442",
+    "case_name": "Neeraj Alias Nagar vs State (Nct Of Delhi) on 14 November, 2019",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.343915+00:00"
+  },
+  {
+    "source_document_id": "12493914",
+    "local_id": "dev-12493914",
+    "case_name": "Nanhe vs The State Of Uttar Pradesh on 21 November, 2023",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.344038+00:00"
+  },
+  {
+    "source_document_id": "130189789",
+    "local_id": "dev-130189789",
+    "case_name": "Shrishail S/O. Madivalappa Ganiger vs The State Of Karnataka on 16 March, 2026",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.344160+00:00"
+  },
+  {
+    "source_document_id": "33110059",
+    "local_id": "dev-33110059",
+    "case_name": "Manish vs State Of U.P. on 3 June, 2026",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.66,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350010+00:00"
+  },
+  {
+    "source_document_id": "56114413",
+    "local_id": "dev-56114413",
+    "case_name": "Md. Anwar vs The State Of West Bengal on 5 May, 2026",
+    "acquisition_status": "validated",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350176+00:00"
+  },
+  {
+    "source_document_id": "188212655",
+    "local_id": "dev-188212655",
+    "case_name": "<b>Criminal</b> Rules of Practice and Circular Orders, 1990",
+    "acquisition_status": "failed",
+    "offence_family": "hurt_and_assault",
+    "document_type_score": 0.0,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 0.92,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "reject",
+    "reason_codes": [
+      "corrupt_or_invalid_content",
+      "low_document_type_score",
+      "not_a_judgment"
+    ],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350402+00:00"
+  },
+  {
+    "source_document_id": "21564716",
+    "local_id": "dev-21564716",
+    "case_name": "Md. Anwar vs The State Of West Bengal on 5 May, 2026",
+    "acquisition_status": "excluded_duplicate",
+    "offence_family": "homicide",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 0.82,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "reject",
+    "reason_codes": [
+      "duplicate_candidate"
+    ],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350533+00:00"
+  },
+  {
+    "source_document_id": "44786366",
+    "local_id": "dev-44786366",
+    "case_name": "Vol(1) And Vol(3)",
+    "acquisition_status": "excluded_irrelevant",
+    "offence_family": "hurt_and_assault",
+    "document_type_score": 0.0,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 0.84,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "reject",
+    "reason_codes": [
+      "low_document_type_score",
+      "not_a_judgment"
+    ],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350676+00:00"
+  },
+  {
+    "source_document_id": "111519619",
+    "local_id": "dev-111519619",
+    "case_name": "Surender Klumar vs The State on 19 December, 2013",
+    "acquisition_status": "validated",
+    "offence_family": "hurt_and_assault",
+    "document_type_score": 0.68,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350784+00:00"
+  },
+  {
+    "source_document_id": "70421468",
+    "local_id": "dev-70421468",
+    "case_name": "Tapan Roy Paul vs Gobinda Sarkar & Ors on 6 November, 2024",
+    "acquisition_status": "validated",
+    "offence_family": "hurt_and_assault",
+    "document_type_score": 0.52,
+    "criminal_relevance_score": 0.46,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "automated_candidate_decision": "needs_review",
+    "reason_codes": [
+      "low_document_type_score"
+    ],
+    "analysis_version": "v2_recent_criminal_filter",
+    "analyzed_at": "2026-09-03T09:13:57.350910+00:00"
+  }
+]
