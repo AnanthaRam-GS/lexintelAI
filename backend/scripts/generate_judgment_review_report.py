@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import argparse
+from collections import Counter
 import html
 import re
 import sys
@@ -19,7 +21,25 @@ MANIFEST_DIR = REPO_ROOT / "data/structured/manifests"
 JUDGMENT_MANIFEST = MANIFEST_DIR / "development_judgments.json"
 REVIEW_MANIFEST = MANIFEST_DIR / "development_judgment_review.json"
 REPORT_PATH = REPO_ROOT / "docs/DEVELOPMENT_CORPUS_REVIEW.md"
+BALANCED_JUDGMENT_MANIFEST = MANIFEST_DIR / "balanced_development_judgments.json"
+BALANCED_REVIEW_MANIFEST = MANIFEST_DIR / "balanced_development_review.json"
+BALANCED_AUDIT_MANIFEST = MANIFEST_DIR / "balanced_candidate_audit.json"
+BALANCED_REPORT_PATH = REPO_ROOT / "docs/BALANCED_DEVELOPMENT_CORPUS_REVIEW.md"
+BALANCED_COMPOSITION_PATH = REPO_ROOT / "docs/BALANCED_DEVELOPMENT_CORPUS.md"
 PREVIEW_LIMIT = 1500
+BALANCED_FAMILY_QUOTAS = {
+    "homicide": 4,
+    "hurt_and_assault": 3,
+    "theft_and_robbery": 3,
+    "cheating_and_fraud": 3,
+    "criminal_breach_of_trust": 2,
+    "kidnapping": 2,
+    "sexual_offences": 3,
+    "dowry_and_domestic_cruelty": 3,
+    "conspiracy_common_intention": 3,
+    "narcotics_related": 2,
+    "other": 2,
+}
 
 
 def clean_text_preview(text: str, limit: int = PREVIEW_LIMIT) -> str:
@@ -86,6 +106,7 @@ def generate_report(
     review_manifest: Path = REVIEW_MANIFEST,
     report_path: Path = REPORT_PATH,
     repo_root: Path = REPO_ROOT,
+    title: str = "LegalAI Development Judgment Corpus Review",
 ) -> tuple[int, int, int]:
     judgments = load_manifest(judgment_manifest)
     reviews = load_manifest(review_manifest)
@@ -94,7 +115,7 @@ def generate_report(
     unavailable_count = 0
 
     lines: list[str] = [
-        "# LegalAI Development Judgment Corpus Review",
+        f"# {title}",
         "",
         "This report is a deterministic aid for human reviewers. It does not accept,",
         "reject, classify, summarize, or infer legal meaning for any candidate.",
@@ -174,7 +195,133 @@ def generate_report(
     return len(pairs), available_count, unavailable_count
 
 
+def automated_decision(record: dict[str, Any]) -> str:
+    decision = record.get("final_automated_decision")
+    if decision:
+        return str(decision)
+    status = record.get("status")
+    if status == "validated":
+        return "accept_candidate"
+    if status == "needs_review":
+        return "needs_review"
+    return field(status) or "unknown"
+
+
+def generate_balanced_composition(
+    judgment_manifest: Path = BALANCED_JUDGMENT_MANIFEST,
+    review_manifest: Path = BALANCED_REVIEW_MANIFEST,
+    audit_manifest: Path = BALANCED_AUDIT_MANIFEST,
+    report_path: Path = BALANCED_COMPOSITION_PATH,
+) -> None:
+    judgments = load_manifest(judgment_manifest)
+    reviews = load_manifest(review_manifest)
+    audit = load_manifest(audit_manifest)
+    reviewable = [
+        record
+        for record in judgments
+        if automated_decision(record) in {"accept_candidate", "needs_review"}
+    ]
+    review_by_source = review_records_by_source_id(reviews)
+    family_counts = Counter(str(record.get("offence_family")) for record in reviewable)
+    court_counts = Counter(str(record.get("court_level")) for record in reviewable)
+    year_counts = Counter(str(record.get("year")) for record in reviewable)
+    track_counts = Counter(str(record.get("temporal_track")) for record in reviewable)
+    regime_counts = Counter(str(record.get("legal_regime")) for record in reviewable)
+    automated_counts = Counter(automated_decision(record) for record in reviewable)
+    review_counts = Counter(str(record.get("human_review_status")) for record in reviews)
+    audit_reasons = Counter(reason for record in audit for reason in record.get("rejection_reasons", []))
+
+    lines = [
+        "# LegalAI Balanced Development Judgment Corpus",
+        "",
+        "Phase 0 Step 0.4E acquired a controlled, balanced development judgment corpus for human review.",
+        "No human suitability decisions are recorded in this document.",
+        "",
+        "## Status",
+        "",
+        f"* Target reviewable candidates: {sum(BALANCED_FAMILY_QUOTAS.values())}",
+        f"* Actual reviewable candidates: {len(reviewable)}",
+        "* Corpus status: INCOMPLETE",
+        "* Reason: provider search results and strict pre-screening exhausted useful candidates before all quotas were filled.",
+        "",
+        "## Configured Quotas",
+        "",
+        "| Offence Family | Target | Actual |",
+        "| --- | ---: | ---: |",
+    ]
+    for family, target in BALANCED_FAMILY_QUOTAS.items():
+        lines.append(f"| {family} | {target} | {family_counts.get(family, 0)} |")
+
+    lines.extend(["", "## Composition", "", "| Metric | Count |", "| --- | ---: |"])
+    metrics = {
+        "total reviewable": len(reviewable),
+        "accept_candidate": automated_counts.get("accept_candidate", 0),
+        "needs_review": automated_counts.get("needs_review", 0),
+        "pending human review": review_counts.get("pending", 0),
+        "automated rejects": sum(1 for record in audit if automated_decision(record) == "reject"),
+        "duplicates": audit_reasons.get("duplicate_candidate", 0),
+        "failed retrievals": audit_reasons.get("metadata_or_document_fetch_failed", 0),
+    }
+    for name, count in metrics.items():
+        lines.append(f"| {name} | {count} |")
+
+    for heading, counts in [
+        ("Court Distribution", court_counts),
+        ("Year Distribution", year_counts),
+        ("Temporal Track Distribution", track_counts),
+        ("Legal Regime Distribution", regime_counts),
+    ]:
+        lines.extend(["", f"## {heading}", "", "| Value | Count |", "| --- | ---: |"])
+        for value, count in sorted(counts.items()):
+            lines.append(f"| {value} | {count} |")
+
+    lines.extend(["", "## Reviewable Case Inventory", "", "| Source ID | Case Name | Court | Year | Offence Family | Track | Criminal Score | Regime | Automated Decision | Human Review |", "| --- | --- | --- | ---: | --- | --- | ---: | --- | --- | --- |"])
+    for record in reviewable:
+        review = review_by_source.get(str(record.get("source_document_id")), {})
+        score = (record.get("quality_scores") or {}).get("criminal_relevance")
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    field(record.get("source_document_id")),
+                    field(record.get("case_name")).replace("|", "\\|"),
+                    field(record.get("court_level")),
+                    field(record.get("year")),
+                    field(record.get("offence_family")),
+                    field(record.get("temporal_track")),
+                    field(score),
+                    field(record.get("legal_regime")),
+                    automated_decision(record),
+                    field(review.get("human_review_status")),
+                ]
+            )
+            + " |"
+        )
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--balanced", action="store_true", help="generate Phase 0 Step 0.4E balanced corpus reports")
+    args = parser.parse_args()
+
+    if args.balanced:
+        represented, available, unavailable = generate_report(
+            judgment_manifest=BALANCED_JUDGMENT_MANIFEST,
+            review_manifest=BALANCED_REVIEW_MANIFEST,
+            report_path=BALANCED_REPORT_PATH,
+            title="LegalAI Balanced Development Judgment Corpus Review",
+        )
+        generate_balanced_composition()
+        print(f"Reviewable records represented: {represented}")
+        print(f"Content previews available: {available}")
+        print(f"Content previews unavailable: {unavailable}")
+        print(f"Wrote {BALANCED_REPORT_PATH.relative_to(REPO_ROOT)}")
+        print(f"Wrote {BALANCED_COMPOSITION_PATH.relative_to(REPO_ROOT)}")
+        return 0
+
     represented, available, unavailable = generate_report()
     print(f"Reviewable records represented: {represented}")
     print(f"Content previews available: {available}")
