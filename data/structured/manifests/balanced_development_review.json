@@ -148,5 +148,45 @@
     "automated_status": "needs_review",
     "human_review_status": "pending",
     "review_notes": null
+  },
+  {
+    "local_id": "v2-6939849",
+    "source_document_id": "6939849",
+    "case_name": "Deepak Nandwanshi vs The State Of Madhya Pradesh on 3 December, 2019",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/6939849/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-180296861",
+    "source_document_id": "180296861",
+    "case_name": "The State Of Karnataka By vs B Rajeeva (A-1) on 2 April, 2024",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/180296861/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-199957261",
+    "source_document_id": "199957261",
+    "case_name": "Manik vs The State Of Maharashtra on 25 September, 2024",
+    "offence_family": "other",
+    "source_url": "https://indiankanoon.org/doc/199957261/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
+  },
+  {
+    "local_id": "v2-22498132",
+    "source_document_id": "22498132",
+    "case_name": "The State - Through Police Sub Inspector vs James Vinod on 9 January, 2023",
+    "offence_family": "other",
+    "source_url": "https://indiankanoon.org/doc/22498132/",
+    "automated_status": "accept_candidate",
+    "human_review_status": "pending",
+    "review_notes": null
   }
 ]
