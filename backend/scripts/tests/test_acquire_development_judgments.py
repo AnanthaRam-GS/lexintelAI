@@ -127,6 +127,16 @@ class AcquireDevelopmentJudgmentsTest(unittest.TestCase):
             self.assertIn('"source_document_id": "123"', judgment_path.read_text(encoding="utf-8"))
             self.assertIn('"human_review_status": "pending"', review_path.read_text(encoding="utf-8"))
 
+    def test_original_document_json_payload_is_decoded(self) -> None:
+        payload = (
+            b'{"Content-Type":"application/pdf","doc":"JVBERiBzYW1wbGU="}'
+        )
+
+        content, mime_type = acquire.normalize_original_document_payload(payload)
+
+        self.assertEqual(content, b"%PDF sample")
+        self.assertEqual(mime_type, "application/pdf")
+
 
 if __name__ == "__main__":
     unittest.main()

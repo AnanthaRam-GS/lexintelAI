@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import json
 import mimetypes
 import os
 import sys
@@ -136,6 +138,33 @@ def extension_for_content(content: bytes, mime_type: str | None) -> str:
     return ".bin"
 
 
+def normalize_original_document_payload(payload: bytes) -> tuple[bytes, str]:
+    """Return actual document bytes and MIME type from Indian Kanoon origdoc."""
+
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        mime_type = "application/pdf" if payload.startswith(b"%PDF") else "application/octet-stream"
+        return payload, mime_type
+
+    if not isinstance(parsed, dict) or "doc" not in parsed:
+        return payload, "application/json"
+
+    encoded_doc = parsed.get("doc")
+    if not isinstance(encoded_doc, str):
+        return payload, "application/json"
+
+    try:
+        content = base64.b64decode(encoded_doc, validate=True)
+    except ValueError:
+        return payload, "application/json"
+
+    mime_type = str(parsed.get("Content-Type") or parsed.get("content_type") or "").strip()
+    if not mime_type:
+        mime_type = "application/pdf" if content.startswith(b"%PDF") else "application/octet-stream"
+    return content, mime_type
+
+
 def source_id_exists(source_document_id: str, records: list[dict[str, Any]]) -> bool:
     return any(
         record.get("source_provider") == "indian_kanoon"
@@ -229,7 +258,7 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
             year = parse_year(metadata.get("date") or result.get("date") or case_name)
 
             try:
-                content = client.get_original_document(source_document_id)
+                payload = client.get_original_document(source_document_id)
             except IndianKanoonClientError as exc:
                 print(f"{source_document_id}: original document failed: {exc}", file=sys.stderr)
                 if should_stop_for_api_error(exc):
@@ -237,7 +266,7 @@ def acquire(limit: int, dry_run: bool, query_id: str | None = None, delay: float
                 continue
             time.sleep(delay)
 
-            mime_type = "application/pdf" if content.startswith(b"%PDF") else "application/octet-stream"
+            content, mime_type = normalize_original_document_payload(payload)
             extension = extension_for_content(content, mime_type)
             name_part = safe_filename(case_name or source_document_id)
             raw_path = RAW_DIR / f"{safe_filename(source_document_id)}_{name_part}{extension}"
