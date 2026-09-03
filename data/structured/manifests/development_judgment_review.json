@@ -118,5 +118,15 @@
     "automated_status": "validated",
     "human_review_status": "pending",
     "review_notes": null
+  },
+  {
+    "local_id": "dev-70421468",
+    "source_document_id": "70421468",
+    "case_name": "Tapan Roy Paul vs Gobinda Sarkar & Ors on 6 November, 2024",
+    "offence_family": "hurt_and_assault",
+    "source_url": "https://indiankanoon.org/doc/70421468/",
+    "automated_status": "validated",
+    "human_review_status": "pending",
+    "review_notes": null
   }
 ]

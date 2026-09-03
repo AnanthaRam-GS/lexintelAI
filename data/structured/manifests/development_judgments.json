@@ -336,5 +336,31 @@
     "attribution_text": "Judgment data sourced from Indian Kanoon API.",
     "status": "validated",
     "notes": null
+  },
+  {
+    "local_id": "dev-70421468",
+    "source_provider": "indian_kanoon",
+    "source_document_id": "70421468",
+    "source_url": "https://indiankanoon.org/doc/70421468/",
+    "case_name": "Tapan Roy Paul vs Gobinda Sarkar & Ors on 6 November, 2024",
+    "case_number": null,
+    "court_name": "Calcutta High Court (Appellete Side)",
+    "court_level": "high_court",
+    "decision_date": null,
+    "year": 2024,
+    "legal_regime": "unknown",
+    "offence_family": "hurt_and_assault",
+    "known_sections": [],
+    "acquisition_query": "grievous hurt assault Sections 323 325 326 IPC criminal revision",
+    "retrieval_rank": 4,
+    "retrieved_at": "2026-09-03T06:58:02.304855+00:00",
+    "raw_file_path": "data/raw/judgments/indiankanoon/70421468_Tapan_Roy_Paul_vs_Gobinda_Sarkar_Ors_on_6_November_2024.pdf",
+    "sha256": "af0bcc002c6e8520fd4d6ff36d6bdfee1bc6cde3bb481b52a74c793272e46c5b",
+    "file_size_bytes": 223026,
+    "mime_type": "application/pdf",
+    "attribution_required": true,
+    "attribution_text": "Judgment data sourced from Indian Kanoon API.",
+    "status": "validated",
+    "notes": null
   }
 ]

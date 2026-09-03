@@ -9,9 +9,23 @@ review workflow before any larger corpus collection.
 
 ## Current Acquisition Status
 
-No judgments have been acquired yet because `INDIAN_KANOON_API_TOKEN` is not
-configured in the local environment. The query plan and acquisition tooling are
-ready for controlled use once API credentials are available.
+Credentialed acquisition reached the Stage 2 development checkpoint with ten
+validated active judgments. Acquisition toward the approximate target of 30
+judgments is paused for human review because the early source results are
+materially skewed toward homicide matters and produced several irrelevant,
+failed, or duplicate candidates.
+
+Current manifest status:
+
+- validated: 10
+- excluded irrelevant: 2
+- excluded duplicate: 1
+- failed: 1
+- pending human review: 13
+
+The active validated corpus currently contains eight homicide records and two
+hurt-and-assault records. All legal regime labels remain `unknown` until human
+review confirms statutory context.
 
 ## Planned Composition
 
