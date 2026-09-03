@@ -114,6 +114,16 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(acquire.pre_download_decision("needs_review"), "needs_more_evidence")
         self.assertEqual(acquire.pre_download_decision("reject"), "reject_before_download")
 
+    def test_reviewable_count_includes_accept_and_needs_review(self) -> None:
+        records = [
+            {"status": "validated"},
+            {"status": "needs_review"},
+            {"status": "reject"},
+            {"status": "rejected_pre_download"},
+        ]
+
+        self.assertEqual(acquire.reviewable_count(records), 2)
+
     def test_accept_and_needs_review_are_queued_pending_but_reject_is_audit_only(self) -> None:
         accepted = {"local_id": "v2-1", "source_document_id": "1", "case_name": "A v State", "offence_family": "homicide", "source_url": "url", "status": "validated"}
         uncertain = {"local_id": "v2-2", "source_document_id": "2", "case_name": "B v State", "offence_family": "kidnapping", "source_url": "url", "status": "needs_review"}
@@ -169,7 +179,16 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
                                     with patch.object(acquire, "RAW_DIR", raw_dir):
                                         with patch.object(acquire, "REPO_ROOT", root):
                                             with patch.object(acquire, "IndianKanoonClient", return_value=client):
-                                                result = acquire.acquire(limit=1, max_api_requests=10, delay=0)
+                                                result = acquire.acquire(
+                                                    limit=1,
+                                                    max_api_requests=10,
+                                                    query_manifest=root / "queries.json",
+                                                    judgment_manifest=root / "judgments.json",
+                                                    review_manifest=root / "review.json",
+                                                    audit_manifest=root / "audit.json",
+                                                    raw_dir=raw_dir,
+                                                    delay=0,
+                                                )
 
             self.assertEqual(result, 0)
             review_records = json.loads((root / "review.json").read_text(encoding="utf-8"))

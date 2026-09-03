@@ -23,6 +23,8 @@ V2_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_v2.json"
 V2_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_v2.json"
 PRESCREEN_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_prescreen_v2.json"
 PRESCREEN_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_prescreen_v2.json"
+BALANCED_AUDIT_MANIFEST = MANIFEST_DIR / "balanced_candidate_audit.json"
+BALANCED_JUDGMENTS_MANIFEST = MANIFEST_DIR / "balanced_development_judgments.json"
 REQUIRED_FIELDS = {
     "document_id",
     "document_type",
@@ -312,6 +314,15 @@ def main() -> int:
         warnings.extend(prescreen_warnings)
         duplicate_count += prescreen_duplicate_count
 
+    balanced_records = validate_json_manifest(BALANCED_JUDGMENTS_MANIFEST, errors)
+    if BALANCED_JUDGMENTS_MANIFEST.exists():
+        balanced_errors, balanced_warnings, balanced_duplicate_count = validate_development_judgments(
+            balanced_records
+        )
+        errors.extend(balanced_errors)
+        warnings.extend(balanced_warnings)
+        duplicate_count += balanced_duplicate_count
+
     v1_analysis = validate_json_manifest(V1_QUALITY_ANALYSIS_MANIFEST, errors)
     if V1_QUALITY_ANALYSIS_MANIFEST.exists():
         analysis_errors, analysis_warnings = validate_quality_analysis(v1_analysis, "v1_quality")
@@ -333,9 +344,18 @@ def main() -> int:
         errors.extend(prescreen_audit_errors)
         warnings.extend(prescreen_audit_warnings)
 
+    balanced_audit = validate_json_manifest(BALANCED_AUDIT_MANIFEST, errors)
+    if BALANCED_AUDIT_MANIFEST.exists():
+        balanced_audit_errors, balanced_audit_warnings = validate_quality_analysis(
+            balanced_audit,
+            "v2_audit",
+        )
+        errors.extend(balanced_audit_errors)
+        warnings.extend(balanced_audit_warnings)
+
     print(
         "Documents checked: "
-        f"{len(records) + len(development_records) + len(v2_records) + len(prescreen_records)}"
+        f"{len(records) + len(development_records) + len(v2_records) + len(prescreen_records) + len(balanced_records)}"
     )
     print(f"Errors: {len(errors)}")
     print(f"Warnings: {len(warnings)}")

@@ -54,6 +54,7 @@ MANIFEST_DIR = REPO_ROOT / "data/structured/manifests"
 STRATEGY_MANIFEST = MANIFEST_DIR / "development_judgment_strategy_v2.json"
 QUOTA_MANIFEST = MANIFEST_DIR / "development_judgment_quotas_v2.json"
 QUERY_MANIFEST = MANIFEST_DIR / "development_judgment_queries_v2.json"
+BALANCED_QUERY_MANIFEST = MANIFEST_DIR / "balanced_development_queries.json"
 V1_JUDGMENTS = MANIFEST_DIR / "development_judgments.json"
 V2_JUDGMENTS = MANIFEST_DIR / "development_judgments_v2.json"
 V2_REVIEW = MANIFEST_DIR / "development_judgment_review_v2.json"
@@ -61,7 +62,11 @@ V2_AUDIT = MANIFEST_DIR / "development_candidate_audit_v2.json"
 PRESCREEN_JUDGMENTS = MANIFEST_DIR / "development_judgments_prescreen_v2.json"
 PRESCREEN_REVIEW = MANIFEST_DIR / "development_judgment_review_prescreen_v2.json"
 PRESCREEN_AUDIT = MANIFEST_DIR / "development_candidate_audit_prescreen_v2.json"
+BALANCED_JUDGMENTS = MANIFEST_DIR / "balanced_development_judgments.json"
+BALANCED_REVIEW = MANIFEST_DIR / "balanced_development_review.json"
+BALANCED_AUDIT = MANIFEST_DIR / "balanced_candidate_audit.json"
 RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/v2"
+BALANCED_RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/balanced"
 DEFAULT_LIMIT = 5
 MAX_LIMIT = 50
 DEFAULT_MAX_API_REQUESTS = 100
@@ -140,9 +145,13 @@ def load_quotas(path: Path = QUOTA_MANIFEST) -> dict[str, int]:
 def active_counts(records: list[dict[str, Any]]) -> dict[str, int]:
     counts: Counter[str] = Counter()
     for record in records:
-        if record.get("status") == "validated":
+        if record.get("status") in {"validated", "needs_review"}:
             counts[str(record.get("offence_family"))] += 1
     return dict(counts)
+
+
+def reviewable_count(records: list[dict[str, Any]]) -> int:
+    return sum(1 for record in records if record.get("status") in {"validated", "needs_review"})
 
 
 def parse_iso_date(value: str | None) -> date | None:
@@ -185,7 +194,7 @@ def review_record_for(record: dict[str, Any]) -> dict[str, Any]:
         "case_name": record["case_name"],
         "offence_family": record["offence_family"],
         "source_url": record["source_url"],
-        "automated_status": record["status"],
+        "automated_status": record.get("final_automated_decision") or record["status"],
         "human_review_status": "pending",
         "review_notes": None,
     }
@@ -256,9 +265,14 @@ def filtered_queries(
     return selected
 
 
-def dry_run(limit: int, max_api_requests: int, strategy_manifest: Path = STRATEGY_MANIFEST) -> int:
+def dry_run(
+    limit: int,
+    max_api_requests: int,
+    strategy_manifest: Path = STRATEGY_MANIFEST,
+    query_manifest: Path = QUERY_MANIFEST,
+) -> int:
     strategy = json.loads(strategy_manifest.read_text(encoding="utf-8"))
-    queries = load_manifest(QUERY_MANIFEST)
+    queries = load_manifest(query_manifest)
     quotas = load_quotas()
     print("V2 filtered acquisition dry run")
     print(f"Temporal tracks: {', '.join(track['name'] for track in strategy['temporal_tracks'])}")
@@ -277,19 +291,26 @@ def acquire(
     query_id: str | None = None,
     offence_family: str | None = None,
     temporal_track: str | None = None,
+    query_manifest: Path = QUERY_MANIFEST,
+    judgment_manifest: Path = PRESCREEN_JUDGMENTS,
+    review_manifest: Path = PRESCREEN_REVIEW,
+    audit_manifest: Path = PRESCREEN_AUDIT,
+    raw_dir: Path = RAW_DIR,
     delay: float = 1.0,
 ) -> int:
     if limit < 1 or limit > MAX_LIMIT:
         raise ValueError(f"limit must be between 1 and {MAX_LIMIT}")
     client = IndianKanoonClient()
-    queries = filtered_queries(load_manifest(QUERY_MANIFEST), query_id, offence_family, temporal_track)
+    queries = filtered_queries(load_manifest(query_manifest), query_id, offence_family, temporal_track)
     if not queries:
         raise ValueError("no v2 query groups selected")
     quotas = load_quotas()
     v1_records = load_manifest(V1_JUDGMENTS)
-    records = load_manifest(PRESCREEN_JUDGMENTS)
-    reviews = load_manifest(PRESCREEN_REVIEW)
-    audit = load_manifest(PRESCREEN_AUDIT)
+    prior_v2_records = load_manifest(V2_JUDGMENTS)
+    prior_prescreen_records = load_manifest(PRESCREEN_JUDGMENTS)
+    records = load_manifest(judgment_manifest)
+    reviews = load_manifest(review_manifest)
+    audit = load_manifest(audit_manifest)
     accepted_counts = active_counts(records)
     query_download_counts: Counter[str] = Counter(
         str(record.get("query_id"))
@@ -298,9 +319,10 @@ def acquire(
         and record.get("query_id")
     )
     downloaded = 0
+    target_reviewable = limit
 
     for query in queries:
-        if downloaded >= limit:
+        if reviewable_count(records) >= target_reviewable:
             break
         query_limit = int(query.get("target_quota") or limit)
         if query_download_counts[str(query["query_id"])] >= query_limit:
@@ -326,14 +348,20 @@ def acquire(
         time.sleep(delay)
 
         for rank, result in enumerate(extract_results(search_response), start=1):
-            if downloaded >= limit:
+            if reviewable_count(records) >= target_reviewable:
                 break
             if query_download_counts[str(query["query_id"])] >= query_limit:
                 break
             if not quota_allows(family, accepted_counts, quotas):
                 break
             source_id = extract_source_document_id(result)
-            if not source_id or source_id_seen(source_id, v1_records, records):
+            if not source_id or source_id_seen(
+                source_id,
+                v1_records,
+                prior_v2_records,
+                prior_prescreen_records,
+                records,
+            ):
                 continue
             enforce_budget(client, max_api_requests)
             candidate_api_before = stats_total(client)
@@ -455,8 +483,8 @@ def acquire(
 
             content, mime_type = normalize_original_document_payload(payload)
             extension = extension_for_content(content, mime_type)
-            RAW_DIR.mkdir(parents=True, exist_ok=True)
-            raw_path = RAW_DIR / f"{safe_filename(source_id)}_{safe_filename(case_name or source_id)}{extension}"
+            raw_dir.mkdir(parents=True, exist_ok=True)
+            raw_path = raw_dir / f"{safe_filename(source_id)}_{safe_filename(case_name or source_id)}{extension}"
             if raw_path.exists():
                 incoming_digest = hashlib.sha256(content).hexdigest()
                 if sha256_file(raw_path) != incoming_digest:
@@ -501,6 +529,7 @@ def acquire(
             }
             full_record["detected_statutes"] = decision.detected_statutes
             full_record["status"] = "validated" if decision.decision == "accept_candidate" else decision.decision
+            full_record["final_automated_decision"] = decision.decision
             full_record["notes"] = "; ".join(decision.reasons) if decision.reasons else None
             upsert_by_local_id(records, full_record)
             full_record["document_text_available"] = bool(document_text)
@@ -513,10 +542,11 @@ def acquire(
                 accepted_counts[family] = accepted_counts.get(family, 0) + 1
                 upsert_by_local_id(reviews, review_record_for(full_record))
 
-    write_manifest_atomic(PRESCREEN_JUDGMENTS, records)
-    write_manifest_atomic(PRESCREEN_REVIEW, reviews)
-    write_manifest_atomic(PRESCREEN_AUDIT, audit)
+    write_manifest_atomic(judgment_manifest, records)
+    write_manifest_atomic(review_manifest, reviews)
+    write_manifest_atomic(audit_manifest, audit)
     print(f"V2 documents downloaded: {downloaded}")
+    print(f"Reviewable candidates: {reviewable_count(records)}")
     print(json.dumps(client.get_request_stats(), sort_keys=True))
     return 0
 
@@ -531,6 +561,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temporal-track")
     parser.add_argument("--max-api-requests", type=int, default=DEFAULT_MAX_API_REQUESTS)
     parser.add_argument("--delay", type=float, default=1.0)
+    parser.add_argument("--balanced", action="store_true", help="Use Step 0.4E balanced corpus manifests")
     return parser.parse_args()
 
 
@@ -539,7 +570,12 @@ def main() -> int:
     args = parse_args()
     strategy_manifest = Path(args.strategy)
     if args.dry_run:
-        return dry_run(args.limit, args.max_api_requests, strategy_manifest=strategy_manifest)
+        return dry_run(
+            args.limit,
+            args.max_api_requests,
+            strategy_manifest=strategy_manifest,
+            query_manifest=BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST,
+        )
     try:
         return acquire(
             limit=args.limit,
@@ -547,6 +583,11 @@ def main() -> int:
             query_id=args.query_id,
             offence_family=args.offence_family,
             temporal_track=args.temporal_track,
+            query_manifest=BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST,
+            judgment_manifest=BALANCED_JUDGMENTS if args.balanced else PRESCREEN_JUDGMENTS,
+            review_manifest=BALANCED_REVIEW if args.balanced else PRESCREEN_REVIEW,
+            audit_manifest=BALANCED_AUDIT if args.balanced else PRESCREEN_AUDIT,
+            raw_dir=BALANCED_RAW_DIR if args.balanced else RAW_DIR,
             delay=args.delay,
         )
     except (BudgetExceeded, ValueError) as exc:
