@@ -86,6 +86,12 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(len(selected), 1)
         self.assertEqual(selected[0]["query_id"], "q1")
 
+    def test_year_within_bounds_enforces_temporal_track(self) -> None:
+        self.assertTrue(acquire.year_within_bounds(2024, "2024-07-01", None))
+        self.assertFalse(acquire.year_within_bounds(2023, "2024-07-01", None))
+        self.assertTrue(acquire.year_within_bounds(2020, "2018-01-01", "2024-06-30"))
+        self.assertFalse(acquire.year_within_bounds(2026, "2018-01-01", "2024-06-30"))
+
 
 if __name__ == "__main__":
     unittest.main()

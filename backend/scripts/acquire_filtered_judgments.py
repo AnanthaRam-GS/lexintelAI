@@ -8,7 +8,7 @@ import json
 import sys
 import time
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -85,6 +85,24 @@ def active_counts(records: list[dict[str, Any]]) -> dict[str, int]:
         if record.get("status") == "validated":
             counts[str(record.get("offence_family"))] += 1
     return dict(counts)
+
+
+def parse_iso_date(value: str | None) -> date | None:
+    if not value:
+        return None
+    return date.fromisoformat(value)
+
+
+def year_within_bounds(year: int | None, from_date: str | None, to_date: str | None) -> bool:
+    if year is None:
+        return True
+    lower = parse_iso_date(from_date)
+    upper = parse_iso_date(to_date)
+    if lower and year < lower.year:
+        return False
+    if upper and year > upper.year:
+        return False
+    return True
 
 
 def text_from_payload(content: bytes, mime_type: str, metadata_text: str) -> str:
@@ -210,11 +228,20 @@ def acquire(
     reviews = load_manifest(V2_REVIEW)
     audit = load_manifest(V2_AUDIT)
     accepted_counts = active_counts(records)
+    query_download_counts: Counter[str] = Counter(
+        str(record.get("query_id"))
+        for record in records
+        if record.get("status") in {"validated", "needs_review", "accept_candidate"}
+        and record.get("query_id")
+    )
     downloaded = 0
 
     for query in queries:
         if downloaded >= limit:
             break
+        query_limit = int(query.get("target_quota") or limit)
+        if query_download_counts[str(query["query_id"])] >= query_limit:
+            continue
         family = str(query["offence_family"])
         if not quota_allows(family, accepted_counts, quotas):
             continue
@@ -237,6 +264,8 @@ def acquire(
 
         for rank, result in enumerate(extract_results(search_response), start=1):
             if downloaded >= limit:
+                break
+            if query_download_counts[str(query["query_id"])] >= query_limit:
                 break
             if not quota_allows(family, accepted_counts, quotas):
                 break
@@ -275,6 +304,21 @@ def acquire(
             case_name = extract_case_name(result, metadata)
             court_name = extract_court_name(result, metadata)
             year = parse_year(metadata.get("date") or result.get("date") or case_name)
+            if not year_within_bounds(year, query.get("from_date"), query.get("to_date")):
+                decision = {
+                    "decision": "reject",
+                    "reasons": ["outside_temporal_track"],
+                    "document_type_score": None,
+                    "criminal_relevance_score": None,
+                    "metadata_quality_score": None,
+                    "detected_statutes": [],
+                    "legal_regime": "unknown",
+                }
+                upsert_by_local_id(
+                    audit,
+                    {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
+                )
+                continue
             base_record = {
                 "local_id": f"v2-{source_id}",
                 "source_provider": "indian_kanoon",
@@ -373,6 +417,7 @@ def acquire(
             upsert_by_local_id(records, full_record)
             upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision.to_dict(), candidate_api_before, stats_total(client))})
             downloaded += 1
+            query_download_counts[str(query["query_id"])] += 1
             if decision.decision == "accept_candidate":
                 accepted_counts[family] = accepted_counts.get(family, 0) + 1
                 upsert_by_local_id(reviews, review_record_for(full_record))
