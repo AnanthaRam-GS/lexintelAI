@@ -42,6 +42,14 @@ class CorpusAnalysisTest(unittest.TestCase):
         self.assertFalse(result.likely_judgment)
         self.assertIn("law_commission_report", result.negative_signals)
 
+    def test_document_type_rules_and_orders_collection_rejected(self) -> None:
+        result = assess_document_type(
+            "Criminal Courts - Rules and Orders. Chapter 1. Table of Contents. IPC CrPC."
+        )
+        self.assertFalse(result.likely_judgment)
+        self.assertLess(result.score, 0.25)
+        self.assertIn("rules_and_orders_collection", result.negative_signals)
+
     def test_document_type_judgment_like_document_passes(self) -> None:
         result = assess_document_type(CRIMINAL_JUDGMENT)
         self.assertTrue(result.likely_judgment)

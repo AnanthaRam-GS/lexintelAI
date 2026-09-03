@@ -14,6 +14,7 @@ POSITIVE_SIGNALS = {
     "party_role": r"\b(?:petitioner|respondent|appellant|accused|state)\b",
 }
 NEGATIVE_SIGNALS = {
+    "rules_and_orders_collection": r"\brules\s+and\s+orders\b",
     "act_or_rules_collection": r"\b(?:act|rules|regulations|circular|gazette)\b",
     "law_commission_report": r"\blaw commission report\b",
     "report_volume": r"\b(?:vol\(|volume|report)\b",
@@ -42,7 +43,11 @@ def assess_document_type(text: str) -> DocumentTypeAssessment:
         if re.search(pattern, text, flags=re.IGNORECASE)
     ]
     score = 0.2 + (0.16 * len(positive)) - (0.18 * len(negative))
-    if "law_commission_report" in negative or "navigation_page" in negative:
+    if (
+        "law_commission_report" in negative
+        or "navigation_page" in negative
+        or "rules_and_orders_collection" in negative
+    ):
         score -= 0.25
     score = max(0.0, min(1.0, round(score, 3)))
     return DocumentTypeAssessment(
@@ -51,4 +56,3 @@ def assess_document_type(text: str) -> DocumentTypeAssessment:
         positive_signals=positive,
         negative_signals=negative,
     )
-
