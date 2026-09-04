@@ -499,7 +499,8 @@ def run_bulk_acquisition(
 
     if resume_run_id or retry_failures_run_id:
         state = load_run_state(state_root, selected_run_id)
-        if state.get("status") == "completed":
+        current_reviewable = int(state.get("reviewable_counts", {}).get("total") or 0)
+        if state.get("status") == "completed" and current_reviewable >= target_count:
             print(f"bulk run already completed: {selected_run_id}")
             return 0
         if expanded_query_manifest.exists():
@@ -541,17 +542,19 @@ def run_bulk_acquisition(
     for partition in pending_partitions:
         if reviewable_count(load_manifest(candidates_path)) >= target_count:
             break
-        if int(state.get("request_stats", {}).get("total_requests", 0)) >= max_api_requests:
+        prior_requests = int(state.get("request_stats", {}).get("total_requests", 0))
+        if prior_requests >= max_api_requests:
             state["status"] = "stopped_budget"
             save_run_state(state_root, state)
             print(f"bulk run stopped at API budget: {selected_run_id}")
             return 0
+        remaining_api_requests = max_api_requests - prior_requests
         partition["status"] = "running"
         save_run_state(state_root, state)
         before = len(load_manifest(candidates_path))
         result = acquire(
             limit=target_count,
-            max_api_requests=max_api_requests,
+            max_api_requests=remaining_api_requests,
             query_id=str(partition["partition_id"]),
             query_manifest=expanded_query_manifest,
             judgment_manifest=candidates_path,

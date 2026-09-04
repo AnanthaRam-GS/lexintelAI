@@ -213,6 +213,61 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         acquire_mock.assert_not_called()
 
+    def test_bulk_completed_smaller_gate_can_resume_to_larger_target(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        state = acquire.create_run_state(
+            run_id,
+            strategy_version="v2",
+            query_manifest="data/structured/manifests/bulk_acquisition_plan.json",
+            target_count=50,
+            api_budget=550,
+            partitions=[{"partition_id": "q1", "status": "pending", "max_pages": 1}],
+        )
+        state["status"] = "completed"
+        state["reviewable_counts"]["total"] = 50
+        state["request_stats"]["total_requests"] = 100
+        acquire.start_new_run(run_root, state)
+        (run_root / run_id / "expanded_queries.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "query_id": "q1",
+                        "offence_family": "homicide",
+                        "temporal_track": "recent_ipc",
+                        "query": "murder IPC criminal appeal",
+                        "target_quota": 150,
+                        "doctypes": "judgments",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "candidates.json").write_text(
+            json.dumps([{"source_document_id": str(index), "status": "validated"} for index in range(50)]),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "review.json").write_text("[]", encoding="utf-8")
+        (run_root / run_id / "audit.json").write_text("[]", encoding="utf-8")
+
+        with patch.object(acquire, "acquire", return_value=0) as acquire_mock:
+            result = acquire.run_bulk_acquisition(
+                run_id=None,
+                resume_run_id=run_id,
+                retry_failures_run_id=None,
+                target_count=150,
+                max_api_requests=550,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
+                max_search_pages=1,
+                delay=0,
+                state_root=run_root,
+                client=Mock(get_request_stats=Mock(return_value=acquire.empty_request_stats())),
+            )
+
+        self.assertEqual(result, 0)
+        acquire_mock.assert_called_once()
+        self.assertEqual(acquire_mock.call_args.kwargs["max_api_requests"], 450)
+
     def test_bulk_run_persists_provider_request_stats(self) -> None:
         run_root = self.root / "runs"
         run_id = "bulk_20260904_060000_abcd"
