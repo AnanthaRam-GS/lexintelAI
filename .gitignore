@@ -46,3 +46,9 @@ chroma_store/
 
 # Model / generated runtime artifacts
 *.log
+
+# Phase 0.4 temporary/debug artifacts
+extraction_output.txt
+
+# Large raw NCRB source PDFs
+data/raw/ncrb/*.pdf
