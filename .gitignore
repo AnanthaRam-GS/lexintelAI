@@ -48,5 +48,9 @@ chroma_store/
 data/raw/judgments/indiankanoon/*
 !data/raw/judgments/indiankanoon/.gitkeep
 
+# Local acquisition run checkpoints
+data/processed/acquisition_runs/*
+!data/processed/acquisition_runs/.gitkeep
+
 # Model / generated runtime artifacts
 *.log

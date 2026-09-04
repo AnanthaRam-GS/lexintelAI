@@ -122,6 +122,69 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertEqual(dry_run.call_args.args[0], acquire.TRANSITION_MAX_LIMIT)
 
+    def test_bulk_plan_expands_stage_partitions_to_queries(self) -> None:
+        plan = self.root / "bulk_plan.json"
+        plan.write_text(
+            json.dumps(
+                {
+                    "stages": [
+                        {
+                            "stage_id": "stage_a",
+                            "partitions": [
+                                {
+                                    "partition_id": "p1",
+                                    "family": "homicide",
+                                    "track": "recent_ipc",
+                                    "from_date": "2018-01-01",
+                                    "to_date": "2024-06-30",
+                                    "target": 3,
+                                    "queries": [{"query": "murder IPC criminal appeal"}],
+                                }
+                            ],
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        queries = acquire.load_bulk_queries(plan)
+
+        self.assertEqual(queries[0]["query_id"], "p1")
+        self.assertEqual(queries[0]["offence_family"], "homicide")
+        self.assertEqual(queries[0]["temporal_track"], "recent_ipc")
+        self.assertEqual(queries[0]["target_quota"], 3)
+
+    def test_bulk_resume_completed_run_does_not_call_acquire(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        state = acquire.create_run_state(
+            run_id,
+            strategy_version="v2",
+            query_manifest=str(self.queries),
+            target_count=1,
+            api_budget=10,
+            partitions=[],
+        )
+        state["status"] = "completed"
+        acquire.start_new_run(run_root, state)
+
+        with patch.object(acquire, "acquire") as acquire_mock:
+            result = acquire.run_bulk_acquisition(
+                run_id=None,
+                resume_run_id=run_id,
+                retry_failures_run_id=None,
+                target_count=1,
+                max_api_requests=10,
+                query_manifest=self.queries,
+                max_search_pages=1,
+                delay=0,
+                state_root=run_root,
+            )
+
+        self.assertEqual(result, 0)
+        acquire_mock.assert_not_called()
+
     def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
         records = [
             {"status": "validated", "offence_family": "homicide"},

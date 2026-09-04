@@ -1,0 +1,128 @@
+{
+  "plan_id": "phase0_bulk_acquisition_staged",
+  "version": 1,
+  "quality_thresholds_reference": "data/structured/manifests/development_judgment_strategy_v2.json",
+  "source_of_truth": {
+    "raw_files": "ignored local preservation under data/raw/judgments/indiankanoon/",
+    "tracked_manifests": "provenance, audit, query plans, and review state",
+    "run_state": "operational progress under data/processed/acquisition_runs/",
+    "review_status": "separate human decision state; automated decisions are not corpus acceptance"
+  },
+  "stages": [
+    {
+      "stage_id": "stage_a_500",
+      "target_count": 500,
+      "request_budget": 2500,
+      "max_pages_per_query": 5,
+      "max_candidates_per_partition": 75,
+      "batch_size": 100,
+      "family_targets": {
+        "homicide": 60,
+        "hurt_and_assault": 55,
+        "theft_and_robbery": 50,
+        "cheating_and_fraud": 50,
+        "criminal_breach_of_trust": 35,
+        "kidnapping": 35,
+        "sexual_offences": 55,
+        "dowry_and_domestic_cruelty": 45,
+        "conspiracy_common_intention": 45,
+        "narcotics_related": 45,
+        "other": 25
+      },
+      "temporal_targets": {
+        "recent_ipc": 360,
+        "current_transition": 90,
+        "landmark_historical": 50
+      },
+      "court_preferences": ["supreme_court", "high_court", "district_or_sessions"],
+      "partitions": [
+        {
+          "partition_id": "bulk_recent_ipc_homicide",
+          "family": "homicide",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 60,
+          "court_preference": ["supreme_court", "high_court"],
+          "queries": [
+            {"query": "murder IPC criminal appeal"},
+            {"query": "culpable homicide IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_theft_robbery",
+          "family": "theft_and_robbery",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 50,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "theft robbery IPC criminal appeal"},
+            {"query": "dacoity IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_cheating",
+          "family": "cheating_and_fraud",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 50,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "cheating fraud IPC criminal petition"},
+            {"query": "forgery cheating IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_current_transition_bns_bnss",
+          "family": "other",
+          "track": "current_transition",
+          "from_date": "2024-07-01",
+          "to_date": null,
+          "target": 90,
+          "court_preference": ["supreme_court", "high_court"],
+          "queries": [
+            {"query": "Bharatiya Nyaya Sanhita criminal appeal"},
+            {"query": "Bharatiya Nagarik Suraksha Sanhita bail"}
+          ]
+        },
+        {
+          "partition_id": "bulk_landmark_historical_criminal",
+          "family": "other",
+          "track": "landmark_historical",
+          "from_date": null,
+          "to_date": "2017-12-31",
+          "target": 50,
+          "court_preference": ["supreme_court"],
+          "queries": [
+            {"query": "criminal appeal Supreme Court Indian Penal Code"},
+            {"query": "Code of Criminal Procedure Supreme Court criminal appeal"}
+          ]
+        }
+      ],
+      "notes": "Stage A is a cautious 500-document operational shakedown. Expand partition count before live execution if family coverage is insufficient."
+    },
+    {
+      "stage_id": "stage_b_2000",
+      "target_count": 2000,
+      "request_budget": 10000,
+      "max_pages_per_query": 10,
+      "max_candidates_per_partition": 150,
+      "batch_size": 100,
+      "partitions": [],
+      "notes": "Stage B reuses the schema after Stage A statistics identify reliable query families and provider budget behavior."
+    },
+    {
+      "stage_id": "stage_c_5000_plus",
+      "target_count": 5000,
+      "request_budget": 25000,
+      "max_pages_per_query": 15,
+      "max_candidates_per_partition": 200,
+      "batch_size": 100,
+      "partitions": [],
+      "notes": "Stage C is intentionally not fully distributed in code; fill from measured Stage A/B statistics and review strategy."
+    }
+  ]
+}

@@ -30,6 +30,22 @@ from backend.scripts.acquire_development_judgments import (  # noqa: E402
     parse_year,
     should_stop_for_api_error,
 )
+from backend.scripts.bulk_acquisition_state import (  # noqa: E402
+    DEFAULT_BATCH_SIZE,
+    DEFAULT_RUN_ROOT,
+    append_batch,
+    build_partitions,
+    create_run_state,
+    generate_run_id,
+    load_run_state,
+    rebuild_dedupe_index,
+    run_dir,
+    run_statistics,
+    save_run_state,
+    start_new_run,
+    validate_run_id,
+    write_json_atomic,
+)
 from backend.scripts.corpus_analysis.scoring import (  # noqa: E402
     decide_candidate_quality,
     quota_allows,
@@ -79,6 +95,15 @@ MAX_LIMIT = 50
 TRANSITION_MAX_LIMIT = 10
 DEFAULT_MAX_API_REQUESTS = 100
 DEFAULT_MAX_SEARCH_PAGES = 1
+BULK_PLAN_MANIFEST = MANIFEST_DIR / "bulk_acquisition_plan.json"
+GLOBAL_DEDUPE_INDEX = MANIFEST_DIR / "global_corpus_dedupe_index.json"
+GLOBAL_DEDUPE_SOURCES = [
+    V1_JUDGMENTS,
+    V2_JUDGMENTS,
+    PRESCREEN_JUDGMENTS,
+    BALANCED_JUDGMENTS,
+    TRANSITION_CANDIDATES,
+]
 
 
 class BudgetExceeded(RuntimeError):
@@ -377,6 +402,191 @@ def dry_run(
     print(f"Criminal thresholds: {strategy['quality_thresholds']}")
     print("No Indian Kanoon API requests were made.")
     return 0
+
+
+def summarize_records(records: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "seen": len(records),
+        "processed": len(records),
+        "downloaded": sum(1 for record in records if record.get("raw_file_path")),
+        "duplicates": sum(1 for record in records if "duplicate" in str(record.get("notes") or "")),
+        "rejected": sum(1 for record in records if record.get("status") in {"reject", "rejected_pre_download", "failed"}),
+    }
+
+
+def refresh_bulk_state_counts(state: dict[str, Any], candidates: list[dict[str, Any]], client_stats: dict[str, Any] | None = None) -> None:
+    state["candidate_counts"] = summarize_records(candidates)
+    state["reviewable_counts"] = {
+        "total": reviewable_count(candidates),
+        "accept_candidate": sum(1 for record in candidates if record.get("final_automated_decision") == "accept_candidate"),
+        "needs_review": sum(1 for record in candidates if record.get("final_automated_decision") == "needs_review"),
+    }
+    if client_stats is not None:
+        state["request_stats"] = client_stats
+    state["seen_source_ids"] = sorted({str(record.get("source_document_id")) for record in candidates if record.get("source_document_id")})
+    state["processed_source_ids"] = list(state["seen_source_ids"])
+    state["downloaded_source_ids"] = sorted({str(record.get("source_document_id")) for record in candidates if record.get("raw_file_path")})
+    state["duplicate_source_ids"] = sorted({str(record.get("source_document_id")) for record in candidates if "duplicate" in str(record.get("notes") or "")})
+    state["rejected_source_ids"] = sorted(
+        {
+            str(record.get("source_document_id"))
+            for record in candidates
+            if record.get("status") in {"reject", "rejected_pre_download", "failed"}
+        }
+    )
+
+
+def bulk_manifest_paths(state_root: Path, run_id: str) -> tuple[Path, Path, Path, Path]:
+    root = run_dir(state_root, run_id)
+    return (
+        root / "candidates.json",
+        root / "review.json",
+        root / "audit.json",
+        root / "raw",
+    )
+
+
+def run_bulk_acquisition(
+    *,
+    run_id: str | None,
+    resume_run_id: str | None,
+    retry_failures_run_id: str | None,
+    target_count: int,
+    max_api_requests: int,
+    query_manifest: Path,
+    max_search_pages: int,
+    delay: float,
+    state_root: Path = DEFAULT_RUN_ROOT,
+    batch_size: int = DEFAULT_BATCH_SIZE,
+) -> int:
+    selected_run_id = retry_failures_run_id or resume_run_id or run_id or generate_run_id()
+    selected_run_id = validate_run_id(selected_run_id)
+    queries = load_bulk_queries(query_manifest)
+    if not queries:
+        raise ValueError("no bulk query groups selected")
+    expanded_query_manifest = run_dir(state_root, selected_run_id) / "expanded_queries.json"
+
+    if resume_run_id or retry_failures_run_id:
+        state = load_run_state(state_root, selected_run_id)
+        if state.get("status") == "completed":
+            print(f"bulk run already completed: {selected_run_id}")
+            return 0
+        if expanded_query_manifest.exists():
+            queries = load_manifest(expanded_query_manifest)
+    else:
+        state = create_run_state(
+            selected_run_id,
+            strategy_version="v2_recent_criminal_filter",
+            query_manifest=str(query_manifest.relative_to(REPO_ROOT)),
+            target_count=target_count,
+            api_budget=max_api_requests,
+            partitions=build_partitions(queries, target_count, max_search_pages),
+            batch_size=batch_size,
+        )
+        start_new_run(state_root, state)
+        write_manifest_atomic(expanded_query_manifest, queries)
+
+    candidates_path, review_path, audit_path, raw_dir = bulk_manifest_paths(state_root, selected_run_id)
+    state["status"] = "running"
+    save_run_state(state_root, state)
+
+    pending_partitions = [
+        partition
+        for partition in state.get("partitions", [])
+        if partition.get("status") != "completed"
+    ]
+    if retry_failures_run_id:
+        pending_partitions = [
+            partition
+            for partition in pending_partitions
+            if any(item.get("partition_id") == partition.get("partition_id") and item.get("retryable") for item in state.get("failed_queue", []))
+        ]
+
+    for partition in pending_partitions:
+        if reviewable_count(load_manifest(candidates_path)) >= target_count:
+            break
+        if int(state.get("request_stats", {}).get("total_requests", 0)) >= max_api_requests:
+            state["status"] = "stopped_budget"
+            save_run_state(state_root, state)
+            print(f"bulk run stopped at API budget: {selected_run_id}")
+            return 0
+        partition["status"] = "running"
+        save_run_state(state_root, state)
+        before = len(load_manifest(candidates_path))
+        result = acquire(
+            limit=target_count,
+            max_api_requests=max_api_requests,
+            query_id=str(partition["partition_id"]),
+            query_manifest=expanded_query_manifest,
+            judgment_manifest=candidates_path,
+            review_manifest=review_path,
+            audit_manifest=audit_path,
+            raw_dir=raw_dir,
+            delay=delay,
+            max_search_pages=int(partition.get("max_pages") or max_search_pages),
+            enforce_family_quotas=False,
+            extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
+        )
+        candidates = load_manifest(candidates_path)
+        after = len(candidates)
+        partition["status"] = "completed" if result == 0 else "failed"
+        partition["current_reviewable"] = reviewable_count([record for record in candidates if record.get("query_id") == partition["partition_id"]])
+        partition["candidates_seen"] = after - before
+        partition["pages_completed"] = list(range(int(partition.get("max_pages") or max_search_pages)))
+        partition["last_page"] = (int(partition.get("max_pages") or max_search_pages) - 1) if partition["pages_completed"] else None
+        refresh_bulk_state_counts(state, candidates)
+        if after > before:
+            new_records = candidates[before:after]
+            append_batch(state_root, state, new_records[: int(state.get("batch_size") or batch_size)])
+        save_run_state(state_root, state)
+        if result != 0:
+            state["status"] = "failed"
+            save_run_state(state_root, state)
+            return result
+
+    refresh_bulk_state_counts(state, load_manifest(candidates_path))
+    state["status"] = "completed" if reviewable_count(load_manifest(candidates_path)) >= target_count or all(p.get("status") == "completed" for p in state.get("partitions", [])) else "paused"
+    save_run_state(state_root, state)
+    stats_path = run_dir(state_root, selected_run_id) / "statistics.json"
+    write_json_atomic(stats_path, run_statistics(state))
+    print(json.dumps(run_statistics(state), sort_keys=True))
+    return 0
+
+
+def rebuild_global_dedupe_index(output_path: Path = GLOBAL_DEDUPE_INDEX) -> int:
+    manifest_paths = [path for path in GLOBAL_DEDUPE_SOURCES if path.exists()]
+    index = rebuild_dedupe_index(manifest_paths, output_path)
+    print(f"dedupe index records: {len(index)}")
+    return 0
+
+
+def load_bulk_queries(path: Path, stage_id: str | None = None) -> list[dict[str, Any]]:
+    with path.open("r", encoding="utf-8") as file_obj:
+        payload = json.load(file_obj)
+    if isinstance(payload, list):
+        return payload
+    if not isinstance(payload, dict):
+        raise ValueError(f"bulk plan must be a JSON object or query list: {path}")
+    stages = payload.get("stages")
+    if not isinstance(stages, list):
+        raise ValueError(f"bulk plan missing stages: {path}")
+    stage = next((item for item in stages if item.get("stage_id") == (stage_id or stages[0].get("stage_id"))), None)
+    if not isinstance(stage, dict):
+        raise ValueError(f"bulk plan stage not found: {stage_id}")
+    queries: list[dict[str, Any]] = []
+    for partition in stage.get("partitions", []):
+        for query in partition.get("queries", []):
+            query_record = dict(query)
+            query_record.setdefault("query_id", partition["partition_id"])
+            query_record.setdefault("offence_family", partition.get("family"))
+            query_record.setdefault("temporal_track", partition.get("track"))
+            query_record.setdefault("from_date", partition.get("from_date"))
+            query_record.setdefault("to_date", partition.get("to_date"))
+            query_record.setdefault("doctypes", "judgments")
+            query_record.setdefault("target_quota", partition.get("target"))
+            query_record.setdefault("court_preference", partition.get("court_preference"))
+            queries.append(query_record)
+    return queries
 
 
 def acquire(
@@ -679,6 +889,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--targeted-gap-fill", action="store_true", help="Use Step 0.4F targeted gap query manifest")
     parser.add_argument("--transition-validation", action="store_true", help="Use Step 0.4I transition validation manifests")
     parser.add_argument("--max-search-pages", type=int, default=DEFAULT_MAX_SEARCH_PAGES)
+    parser.add_argument("--bulk", action="store_true", help="Run explicit bulk acquisition mode with durable run state")
+    parser.add_argument("--run-id", help="Stable bulk run ID matching bulk_YYYYMMDD_HHMMSS_<suffix>")
+    parser.add_argument("--resume", help="Resume an existing bulk run ID")
+    parser.add_argument("--retry-failures", help="Retry retryable failures for an existing bulk run ID")
+    parser.add_argument("--bulk-plan", default=str(BULK_PLAN_MANIFEST))
+    parser.add_argument("--bulk-stats", help="Print deterministic statistics for an existing bulk run ID")
+    parser.add_argument("--rebuild-dedupe-index", action="store_true", help="Rebuild the generated global corpus dedupe index")
+    parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     return parser.parse_args(argv)
 
 
@@ -686,8 +904,26 @@ def main(argv: list[str] | None = None) -> int:
     load_project_env()
     args = parse_args(argv)
     strategy_manifest = Path(args.strategy)
+    if args.rebuild_dedupe_index:
+        return rebuild_global_dedupe_index()
+    if args.bulk_stats:
+        state = load_run_state(DEFAULT_RUN_ROOT, validate_run_id(args.bulk_stats))
+        print(json.dumps(run_statistics(state), indent=2, sort_keys=True))
+        return 0
     query_manifest = TRANSITION_QUERY_MANIFEST if args.transition_validation else GAP_QUERY_MANIFEST if args.targeted_gap_fill else BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST
     use_balanced_outputs = args.balanced or args.targeted_gap_fill
+    if args.bulk or args.resume or args.retry_failures:
+        return run_bulk_acquisition(
+            run_id=args.run_id,
+            resume_run_id=args.resume,
+            retry_failures_run_id=args.retry_failures,
+            target_count=args.limit,
+            max_api_requests=args.max_api_requests,
+            query_manifest=Path(args.bulk_plan) if args.bulk_plan and Path(args.bulk_plan).exists() else query_manifest,
+            max_search_pages=args.max_search_pages,
+            delay=args.delay,
+            batch_size=args.batch_size,
+        )
     if args.transition_validation and args.limit > TRANSITION_MAX_LIMIT:
         print(f"transition validation limit capped at {TRANSITION_MAX_LIMIT}", file=sys.stderr)
         args.limit = TRANSITION_MAX_LIMIT
