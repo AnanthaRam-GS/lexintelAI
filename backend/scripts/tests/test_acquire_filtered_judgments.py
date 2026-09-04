@@ -267,6 +267,7 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         acquire_mock.assert_called_once()
         self.assertEqual(acquire_mock.call_args.kwargs["max_api_requests"], 450)
+        self.assertEqual(acquire_mock.call_args.kwargs["max_limit"], 150)
 
     def test_bulk_run_persists_provider_request_stats(self) -> None:
         run_root = self.root / "runs"

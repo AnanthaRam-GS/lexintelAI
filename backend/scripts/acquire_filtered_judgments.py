@@ -566,6 +566,7 @@ def run_bulk_acquisition(
             enforce_family_quotas=False,
             extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
             client=client,
+            max_limit=max(target_count, MAX_LIMIT),
         )
         candidates = load_manifest(candidates_path)
         after = len(candidates)
@@ -716,9 +717,10 @@ def acquire(
     enforce_family_quotas: bool = True,
     extra_duplicate_manifests: list[Path] | None = None,
     client: IndianKanoonClient | None = None,
+    max_limit: int = MAX_LIMIT,
 ) -> int:
-    if limit < 1 or limit > MAX_LIMIT:
-        raise ValueError(f"limit must be between 1 and {MAX_LIMIT}")
+    if limit < 1 or limit > max_limit:
+        raise ValueError(f"limit must be between 1 and {max_limit}")
     client = client or IndianKanoonClient()
     queries = filtered_queries(load_manifest(query_manifest), query_id, offence_family, temporal_track)
     if not queries:
