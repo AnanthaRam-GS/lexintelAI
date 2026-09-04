@@ -76,6 +76,97 @@
           ]
         },
         {
+          "partition_id": "bulk_recent_ipc_hurt_assault",
+          "family": "hurt_and_assault",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 55,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "hurt assault IPC criminal appeal"},
+            {"query": "grievous hurt IPC criminal revision"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_criminal_breach_trust",
+          "family": "criminal_breach_of_trust",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 35,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "criminal breach of trust IPC criminal petition"},
+            {"query": "breach of trust IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_kidnapping",
+          "family": "kidnapping",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 35,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "kidnapping IPC criminal appeal"},
+            {"query": "abduction IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_sexual_offences",
+          "family": "sexual_offences",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 55,
+          "court_preference": ["supreme_court", "high_court"],
+          "queries": [
+            {"query": "sexual offence IPC criminal appeal"},
+            {"query": "rape IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_dowry_domestic_cruelty",
+          "family": "dowry_and_domestic_cruelty",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 45,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "dowry death IPC criminal appeal"},
+            {"query": "domestic cruelty IPC criminal petition"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_conspiracy_common_intention",
+          "family": "conspiracy_common_intention",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 45,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "criminal conspiracy IPC criminal appeal"},
+            {"query": "common intention IPC criminal appeal"}
+          ]
+        },
+        {
+          "partition_id": "bulk_recent_ipc_narcotics",
+          "family": "narcotics_related",
+          "track": "recent_ipc",
+          "from_date": "2018-01-01",
+          "to_date": "2024-06-30",
+          "target": 45,
+          "court_preference": ["high_court", "supreme_court"],
+          "queries": [
+            {"query": "NDPS criminal appeal"},
+            {"query": "narcotic drugs criminal bail"}
+          ]
+        },
+        {
           "partition_id": "bulk_current_transition_bns_bnss",
           "family": "other",
           "track": "current_transition",

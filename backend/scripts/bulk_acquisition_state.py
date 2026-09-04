@@ -28,7 +28,8 @@ RUN_STATUSES = {
     "stopped_quality",
 }
 DEFAULT_BATCH_SIZE = 100
-DEFAULT_RUN_ROOT = Path(__file__).resolve().parents[2] / "data/processed/acquisition_runs"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_RUN_ROOT = REPO_ROOT / "data/processed/acquisition_runs"
 
 
 def utc_now() -> str:
@@ -117,7 +118,12 @@ def partition_from_query(query: dict[str, Any], target: int, max_pages: int, bud
 
 def build_partitions(queries: list[dict[str, Any]], default_target: int, max_pages: int) -> list[dict[str, Any]]:
     partitions: list[dict[str, Any]] = []
+    seen_partition_ids: set[str] = set()
     for query in queries:
+        partition_id = str(query["query_id"])
+        if partition_id in seen_partition_ids:
+            continue
+        seen_partition_ids.add(partition_id)
         target = int(query.get("target_quota") or default_target)
         partitions.append(partition_from_query(query, target=target, max_pages=max_pages))
     return partitions
@@ -250,37 +256,117 @@ def iter_manifest_records(paths: list[Path]) -> list[dict[str, Any]]:
     return records
 
 
-def rebuild_dedupe_index(manifest_paths: list[Path], output_path: Path) -> list[dict[str, Any]]:
-    records = iter_manifest_records(manifest_paths)
-    by_key: dict[tuple[str, str], dict[str, Any]] = {}
-    by_sha: dict[str, dict[str, Any]] = {}
-    for record in records:
-        provider = str(record.get("source_provider") or "")
-        source_id = str(record.get("source_document_id") or "")
-        if provider and source_id and (provider, source_id) not in by_key:
-            by_key[(provider, source_id)] = {
-                "provider": provider,
-                "source_document_id": source_id,
-                "sha256": record.get("sha256"),
-                "canonical_record": record.get("local_id") or record.get("document_id"),
-                "source": record.get("source_manifest"),
-                "status": record.get("status"),
-                "first_seen_run_id": record.get("run_id"),
-            }
-        sha = record.get("sha256")
-        if sha and sha not in by_sha:
-            by_sha[str(sha)] = {
-                "provider": provider or None,
-                "source_document_id": source_id or None,
+STATUS_RANK = {
+    "human_accepted": 5,
+    "human_rejected": 4,
+    "automated_reviewable": 3,
+    "automated_rejected": 2,
+    "failed": 1,
+    "unknown": 0,
+}
+
+
+def canonical_status(record: dict[str, Any], review_by_source_id: dict[str, str] | None = None) -> str:
+    source_id = str(record.get("source_document_id") or "")
+    human_status = (review_by_source_id or {}).get(source_id)
+    if human_status == "accepted":
+        return "human_accepted"
+    if human_status == "rejected":
+        return "human_rejected"
+    decision = record.get("final_automated_decision")
+    status = record.get("status")
+    if decision in {"accept_candidate", "needs_review"} or status in {"validated", "needs_review", "accept_candidate"}:
+        return "automated_reviewable"
+    if decision == "reject" or status in {"reject", "rejected_pre_download", "excluded_duplicate", "excluded_irrelevant"}:
+        return "automated_rejected"
+    if status == "failed":
+        return "failed"
+    return "unknown"
+
+
+def _source_manifest(path: Path, record: dict[str, Any]) -> str:
+    if record.get("source_manifest"):
+        return str(record["source_manifest"])
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def rebuild_dedupe_index(
+    manifest_paths: list[Path],
+    output_path: Path,
+    review_manifest_paths: list[Path] | None = None,
+) -> dict[str, Any]:
+    review_by_source_id: dict[str, str] = {}
+    for review_path in review_manifest_paths or []:
+        for review in load_manifest(review_path):
+            source_id = review.get("source_document_id")
+            status = review.get("human_review_status")
+            if source_id and status in {"accepted", "rejected"}:
+                review_by_source_id[str(source_id)] = str(status)
+
+    source_index: dict[str, dict[str, Any]] = {}
+    sha_aliases: dict[str, list[dict[str, str]]] = {}
+    for path in manifest_paths:
+        for record in load_manifest(path):
+            provider = str(record.get("source_provider") or "")
+            source_id = str(record.get("source_document_id") or "")
+            if not provider or not source_id:
+                continue
+            source_key = f"{provider}:{source_id}"
+            status = canonical_status(record, review_by_source_id)
+            source_manifest = _source_manifest(path, record)
+            existing = source_index.get(source_key)
+            if existing is None:
+                source_index[source_key] = {
+                    "provider": provider,
+                    "source_document_id": source_id,
+                    "sha256": record.get("sha256"),
+                    "canonical_record": record.get("local_id") or record.get("document_id"),
+                    "canonical_status": status,
+                    "status_precedence": STATUS_RANK[status],
+                    "first_seen_run_id": record.get("run_id"),
+                    "seen_in_manifests": [source_manifest],
+                    "all_statuses": [status],
+                }
+            else:
+                if source_manifest not in existing["seen_in_manifests"]:
+                    existing["seen_in_manifests"].append(source_manifest)
+                if status not in existing["all_statuses"]:
+                    existing["all_statuses"].append(status)
+                if STATUS_RANK[status] > int(existing.get("status_precedence", 0)):
+                    existing["canonical_status"] = status
+                    existing["status_precedence"] = STATUS_RANK[status]
+                    existing["canonical_record"] = record.get("local_id") or record.get("document_id")
+                if not existing.get("sha256") and record.get("sha256"):
+                    existing["sha256"] = record.get("sha256")
+            provider = str(record.get("source_provider") or "")
+            sha = record.get("sha256")
+            if sha:
+                alias = {"provider": provider, "source_document_id": source_id}
+                aliases = sha_aliases.setdefault(str(sha), [])
+                if alias not in aliases:
+                    aliases.append(alias)
+
+    payload = {
+        "version": 2,
+        "status_precedence": ["human_accepted", "human_rejected", "automated_reviewable", "automated_rejected", "failed", "unknown"],
+        "source_key_index": {
+            key: source_index[key]
+            for key in sorted(source_index)
+        },
+        "sha_index": {
+            sha: {
                 "sha256": sha,
-                "canonical_record": record.get("local_id") or record.get("document_id"),
-                "source": record.get("source_manifest"),
-                "status": record.get("status"),
-                "first_seen_run_id": record.get("run_id"),
+                "alias_count": len(aliases),
+                "aliases": sorted(aliases, key=lambda item: (item["provider"], item["source_document_id"])),
             }
-    index = sorted({**{f"id:{k[0]}:{k[1]}": v for k, v in by_key.items()}, **{f"sha:{k}": v for k, v in by_sha.items()}}.values(), key=lambda item: (str(item.get("provider")), str(item.get("source_document_id")), str(item.get("sha256"))))
-    write_json_atomic(output_path, index)
-    return index
+            for sha, aliases in sorted(sha_aliases.items())
+        },
+    }
+    write_json_atomic(output_path, payload)
+    return payload
 
 
 def run_statistics(state: dict[str, Any]) -> dict[str, Any]:

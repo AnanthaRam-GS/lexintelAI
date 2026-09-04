@@ -155,6 +155,34 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(queries[0]["temporal_track"], "recent_ipc")
         self.assertEqual(queries[0]["target_quota"], 3)
 
+    def test_bulk_plan_path_supports_relative_and_absolute_repo_paths(self) -> None:
+        relative = Path("data/structured/manifests/bulk_acquisition_plan.json")
+        absolute = acquire.REPO_ROOT / relative
+
+        self.assertEqual(acquire.normalize_repo_path(relative), absolute.resolve())
+        self.assertEqual(acquire.normalize_repo_path(absolute), absolute.resolve())
+        with self.assertRaises(ValueError):
+            acquire.normalize_repo_path(self.root / "missing.json")
+        with self.assertRaises(ValueError):
+            acquire.normalize_repo_path("/tmp/outside-bulk-plan.json", must_exist=False)
+
+    def test_bulk_dry_run_makes_no_provider_or_raw_calls(self) -> None:
+        output = io.StringIO()
+        plan = acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json"
+        with patch.object(acquire, "IndianKanoonClient", side_effect=AssertionError("provider reached")):
+            with patch.object(acquire, "acquire", side_effect=AssertionError("live acquisition reached")):
+                with redirect_stdout(output):
+                    result = acquire.main([
+                        "--bulk",
+                        "--dry-run",
+                        "--bulk-plan",
+                        str(plan),
+                    ])
+
+        self.assertEqual(result, 0)
+        self.assertIn("run mode: dry-run", output.getvalue())
+        self.assertIn("No Indian Kanoon API requests were made.", output.getvalue())
+
     def test_bulk_resume_completed_run_does_not_call_acquire(self) -> None:
         run_root = self.root / "runs"
         run_id = "bulk_20260904_060000_abcd"
@@ -176,7 +204,7 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
                 retry_failures_run_id=None,
                 target_count=1,
                 max_api_requests=10,
-                query_manifest=self.queries,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
                 max_search_pages=1,
                 delay=0,
                 state_root=run_root,
@@ -184,6 +212,65 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
 
         self.assertEqual(result, 0)
         acquire_mock.assert_not_called()
+
+    def test_bulk_run_persists_provider_request_stats(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        stats = {
+            "total_requests": 4,
+            "requests_by_endpoint": {
+                "search": 1,
+                "document": 1,
+                "metadata": 1,
+                "original_document": 1,
+                "other": 0,
+            },
+            "responses_by_category": {
+                "2xx": 4,
+                "4xx": 0,
+                "429": 0,
+                "5xx": 0,
+                "other": 0,
+            },
+        }
+        client = Mock()
+        client.get_request_stats.return_value = stats
+
+        def fake_acquire(**kwargs: object) -> int:
+            Path(kwargs["judgment_manifest"]).write_text(  # type: ignore[arg-type]
+                json.dumps(
+                    [
+                        {
+                            "source_document_id": "1",
+                            "status": "validated",
+                            "final_automated_decision": "accept_candidate",
+                            "raw_file_path": "raw/1.pdf",
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            Path(kwargs["review_manifest"]).write_text("[]", encoding="utf-8")  # type: ignore[arg-type]
+            Path(kwargs["audit_manifest"]).write_text("[]", encoding="utf-8")  # type: ignore[arg-type]
+            return 0
+
+        with patch.object(acquire, "acquire", side_effect=fake_acquire):
+            result = acquire.run_bulk_acquisition(
+                run_id=run_id,
+                resume_run_id=None,
+                retry_failures_run_id=None,
+                target_count=1,
+                max_api_requests=10,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
+                max_search_pages=1,
+                delay=0,
+                state_root=run_root,
+                client=client,
+            )
+
+        self.assertEqual(result, 0)
+        state = acquire.load_run_state(run_root, run_id)
+        self.assertEqual(state["request_stats"], stats)
 
     def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
         records = [

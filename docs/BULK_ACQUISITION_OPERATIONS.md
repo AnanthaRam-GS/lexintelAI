@@ -9,6 +9,7 @@ Bulk acquisition is explicit:
 ```bash
 python3 backend/scripts/acquire_filtered_judgments.py \
   --bulk \
+  --bulk-stage stage_a_500 \
   --run-id bulk_20260904_060000_abcd \
   --bulk-plan data/structured/manifests/bulk_acquisition_plan.json \
   --limit 500 \
@@ -63,6 +64,25 @@ Bulk mode protects idempotency by carrying forward known records from:
 * BNS / BNSS transition validation candidates
 
 The generated dedupe index at `data/structured/manifests/global_corpus_dedupe_index.json` is reconstructable from manifests and should be treated as a cache, not an irreplaceable source of truth.
+
+The index has one canonical `source_key_index` entry per `(provider, source_document_id)`. Content aliases are tracked separately in `sha_index`, where one SHA-256 may list multiple source IDs.
+
+Canonical status uses this precedence:
+
+* `human_accepted`
+* `human_rejected`
+* `automated_reviewable`
+* `automated_rejected`
+* `failed`
+* `unknown`
+
+Human review manifests therefore override earlier acquisition-only status when deciding whether a known source should be treated as active for dedupe purposes.
+
+## Dry Run And Paths
+
+`--bulk --dry-run` validates CLI options, normalizes the bulk plan path, validates the selected stage, and prints a deterministic summary. It does not create run state, instantiate live acquisition, call Indian Kanoon, or download raw files.
+
+Bulk plan paths may be relative repository paths or absolute paths inside the repository. Missing paths and paths outside the repository fail with a clear validation error.
 
 ## Budgets And Rate Control
 
