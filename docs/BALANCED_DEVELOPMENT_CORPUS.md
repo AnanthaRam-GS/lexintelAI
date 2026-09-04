@@ -71,11 +71,11 @@ No human suitability decisions are recorded in this document.
 | --- | ---: |
 | 2018 | 1 |
 | 2019 | 6 |
-| 2020 | 4 |
+| 2020 | 3 |
 | 2021 | 3 |
 | 2022 | 6 |
 | 2023 | 7 |
-| 2024 | 3 |
+| 2024 | 4 |
 
 ## Temporal Track Distribution
 
@@ -122,5 +122,5 @@ No human suitability decisions are recorded in this document.
 | 189001274 | Page No.# 1/77 vs The State Of Assam on 5 August, 2023 | high_court | 2023 | homicide | recent_ipc | 1.0 | ipc_crpc | accept_candidate | pending |
 | 156271048 | Md. Fakar Uddin Barbhuiya And Anr vs The State Of Assam on 18 January, 2019 | high_court | 2019 | homicide | recent_ipc | 1.0 | ipc_crpc | accept_candidate | pending |
 | 15834217 | Mukesh Khandelwal @ Devendra Kumar S/O ... vs State Of Rajasthan Through Pp on 29 January, 2019 | high_court | 2019 | homicide | recent_ipc | 0.91 | ipc_crpc | accept_candidate | pending |
-| 77330685 | Crl.A./213/2020 on 12 June, 2024 | high_court | 2020 | kidnapping | recent_ipc | 0.79 | ipc_crpc | accept_candidate | pending |
+| 77330685 | Crl.A./213/2020 on 12 June, 2024 | high_court | 2024 | kidnapping | recent_ipc | 0.79 | ipc_crpc | accept_candidate | pending |
 | 123721856 | Suresh Ram vs The State Of Bihar on 13 July, 2022 | high_court | 2022 | hurt_and_assault | recent_ipc | 0.89 | ipc_crpc | accept_candidate | pending |

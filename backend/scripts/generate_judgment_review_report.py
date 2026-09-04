@@ -14,6 +14,7 @@ if __package__ in {None, ""}:
     sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 from backend.scripts.corpus_utils import load_manifest  # noqa: E402
+from backend.scripts.pdf_text_extraction import extract_pdf_text  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -27,6 +28,7 @@ BALANCED_AUDIT_MANIFEST = MANIFEST_DIR / "balanced_candidate_audit.json"
 BALANCED_REPORT_PATH = REPO_ROOT / "docs/BALANCED_DEVELOPMENT_CORPUS_REVIEW.md"
 BALANCED_COMPOSITION_PATH = REPO_ROOT / "docs/BALANCED_DEVELOPMENT_CORPUS.md"
 PREVIEW_LIMIT = 1500
+PDF_PREVIEW_LIMIT = 3000
 BALANCED_FAMILY_QUOTAS = {
     "homicide": 4,
     "hurt_and_assault": 3,
@@ -52,28 +54,40 @@ def clean_text_preview(text: str, limit: int = PREVIEW_LIMIT) -> str:
     return text[:limit].rstrip()
 
 
-def preview_for(record: dict[str, Any], repo_root: Path = REPO_ROOT) -> tuple[str, bool]:
+def preview_for(record: dict[str, Any], repo_root: Path = REPO_ROOT) -> tuple[str, bool, list[str]]:
     raw_file_path = record.get("raw_file_path")
     if not raw_file_path:
-        return "Preview unavailable because no local raw path is recorded.", False
+        return "Preview unavailable because no local raw path is recorded.", False, ["* Preview source: unavailable"]
 
     raw_path = repo_root / str(raw_file_path)
     if not raw_path.exists():
-        return "Preview unavailable because the local raw file is missing.", False
+        return "Preview unavailable because the local raw file is missing.", False, ["* Preview source: unavailable"]
 
     mime_type = str(record.get("mime_type") or "").lower()
     suffix = raw_path.suffix.lower()
     if mime_type == "application/pdf" or suffix == ".pdf":
-        return "Preview unavailable until PDF parsing dependency is installed.", False
+        extraction = extract_pdf_text(raw_path)
+        provenance = [
+            "* Preview source: PDF native text",
+            f"* PDF pages: {extraction.page_count}",
+            f"* Pages containing extractable text: {extraction.pages_with_text}",
+            f"* Pages without extractable text: {extraction.pages_without_text}",
+            f"* PDF extraction status: {extraction.extraction_status}",
+        ]
+        if extraction.extraction_status == "failed" and extraction.error:
+            provenance.append(f"* PDF extraction error: {extraction.error}")
+        if extraction.text:
+            return extraction.text[:PDF_PREVIEW_LIMIT].rstrip(), extraction.extraction_status in {"usable", "sparse"}, provenance
+        return "Preview unavailable because the PDF has no native extractable text. OCR may be required later.", False, provenance
 
     if mime_type.startswith("text/") or suffix in {".html", ".htm", ".txt", ".json"}:
         text = raw_path.read_text(encoding="utf-8", errors="ignore")
         preview = clean_text_preview(text)
         if preview:
-            return preview, True
-        return "Preview unavailable because no readable text was found.", False
+            return preview, True, ["* Preview source: local text/HTML"]
+        return "Preview unavailable because no readable text was found.", False, ["* Preview source: local text/HTML"]
 
-    return "Preview unavailable for this raw file type.", False
+    return "Preview unavailable for this raw file type.", False, ["* Preview source: unavailable"]
 
 
 def review_records_by_source_id(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -99,6 +113,36 @@ def field(value: Any) -> str:
     if value is None or value == "":
         return ""
     return str(value)
+
+
+def year_from_title(value: Any) -> int | None:
+    if not value:
+        return None
+    matches = re.findall(r"\bon\s+\d{1,2}\s+[A-Za-z]+,?\s+(\d{4})\b", str(value), flags=re.IGNORECASE)
+    if matches:
+        return int(matches[-1])
+    return None
+
+
+def metadata_warnings(record: dict[str, Any], provenance: list[str]) -> list[str]:
+    warnings: list[str] = []
+    case_name = field(record.get("case_name"))
+    if not record.get("case_number"):
+        warnings.append("missing case number")
+    if re.fullmatch(r"[A-Za-z.]+/?\d+/\d+(?:\s+on\s+.+)?", case_name):
+        warnings.append("generic case-title format")
+    if "daily orders" in field(record.get("court_name")).lower():
+        warnings.append("daily-order source")
+    title_year = year_from_title(case_name)
+    if title_year is not None and record.get("year") not in {title_year, str(title_year)}:
+        warnings.append(f"title year {title_year} differs from recorded year {record.get('year')}")
+    if any(line.endswith("sparse") for line in provenance):
+        warnings.append("sparse PDF/text extraction")
+    if any(line.endswith("empty") for line in provenance):
+        warnings.append("textless PDF; OCR may be required later")
+    if any(line.endswith("failed") for line in provenance):
+        warnings.append("PDF text extraction failed")
+    return warnings
 
 
 def generate_report(
@@ -128,7 +172,8 @@ def generate_report(
     ]
 
     for judgment, review in pairs:
-        preview, available = preview_for(judgment, repo_root=repo_root)
+        preview, available, provenance = preview_for(judgment, repo_root=repo_root)
+        warnings = metadata_warnings(judgment, provenance)
         if available:
             available_count += 1
         else:
@@ -155,6 +200,7 @@ def generate_report(
                 f"* Decision date: {field(judgment.get('decision_date'))}",
                 f"* Year: {field(judgment.get('year'))}",
                 f"* Case number if available: {field(judgment.get('case_number'))}",
+                f"* Metadata warnings: {', '.join(warnings) if warnings else 'none'}",
                 "",
                 "### Integrity",
                 "",
@@ -165,6 +211,8 @@ def generate_report(
                 f"* Attribution required: {field(judgment.get('attribution_required'))}",
                 "",
                 "### Content Preview",
+                "",
+                *provenance,
                 "",
                 preview,
                 "",

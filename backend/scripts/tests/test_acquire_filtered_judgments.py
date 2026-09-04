@@ -98,6 +98,9 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertTrue(acquire.date_within_bounds("2024-07-02", "2024-07-01", None))
         self.assertTrue(acquire.date_within_bounds("02/07/2024", "2024-07-01", None))
 
+    def test_document_year_prefers_decision_date_over_case_number(self) -> None:
+        self.assertEqual(acquire.document_year("Crl.A./213/2020 on 12 June, 2024"), 2024)
+
     def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
         records = [
             {"status": "validated", "offence_family": "homicide"},
