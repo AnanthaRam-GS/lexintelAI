@@ -517,12 +517,6 @@ def run_bulk_acquisition(
         )
         start_new_run(state_root, state)
         write_manifest_atomic(expanded_query_manifest, queries)
-    starting_request_stats = state.get("request_stats") or empty_request_stats()
-    client = client or IndianKanoonClient()
-
-    def cumulative_client_stats() -> dict[str, Any]:
-        return merge_request_stats(starting_request_stats, client.get_request_stats())
-
     candidates_path, review_path, audit_path, raw_dir = bulk_manifest_paths(state_root, selected_run_id)
     state["status"] = "running"
     save_run_state(state_root, state)
@@ -552,22 +546,31 @@ def run_bulk_acquisition(
         partition["status"] = "running"
         save_run_state(state_root, state)
         before = len(load_manifest(candidates_path))
-        result = acquire(
-            limit=target_count,
-            max_api_requests=remaining_api_requests,
-            query_id=str(partition["partition_id"]),
-            query_manifest=expanded_query_manifest,
-            judgment_manifest=candidates_path,
-            review_manifest=review_path,
-            audit_manifest=audit_path,
-            raw_dir=raw_dir,
-            delay=delay,
-            max_search_pages=int(partition.get("max_pages") or max_search_pages),
-            enforce_family_quotas=False,
-            extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
-            client=client,
-            max_limit=max(target_count, MAX_LIMIT),
-        )
+        partition_client = client or IndianKanoonClient()
+        try:
+            result = acquire(
+                limit=target_count,
+                max_api_requests=remaining_api_requests,
+                query_id=str(partition["partition_id"]),
+                query_manifest=expanded_query_manifest,
+                judgment_manifest=candidates_path,
+                review_manifest=review_path,
+                audit_manifest=audit_path,
+                raw_dir=raw_dir,
+                delay=delay,
+                max_search_pages=int(partition.get("max_pages") or max_search_pages),
+                enforce_family_quotas=False,
+                extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
+                client=partition_client,
+                max_limit=max(target_count, MAX_LIMIT),
+            )
+        except BudgetExceeded:
+            candidates = load_manifest(candidates_path)
+            refresh_bulk_state_counts(state, candidates, merge_request_stats(state.get("request_stats") or empty_request_stats(), partition_client.get_request_stats()))
+            state["status"] = "stopped_budget"
+            save_run_state(state_root, state)
+            print(f"bulk run stopped at API budget: {selected_run_id}")
+            return 0
         candidates = load_manifest(candidates_path)
         after = len(candidates)
         partition["status"] = "completed" if result == 0 else "failed"
@@ -575,7 +578,7 @@ def run_bulk_acquisition(
         partition["candidates_seen"] = after - before
         partition["pages_completed"] = list(range(int(partition.get("max_pages") or max_search_pages)))
         partition["last_page"] = (int(partition.get("max_pages") or max_search_pages) - 1) if partition["pages_completed"] else None
-        refresh_bulk_state_counts(state, candidates, cumulative_client_stats())
+        refresh_bulk_state_counts(state, candidates, merge_request_stats(state.get("request_stats") or empty_request_stats(), partition_client.get_request_stats()))
         if after > before:
             new_records = candidates[before:after]
             append_batch(state_root, state, new_records[: int(state.get("batch_size") or batch_size)])
@@ -585,7 +588,7 @@ def run_bulk_acquisition(
             save_run_state(state_root, state)
             return result
 
-    refresh_bulk_state_counts(state, load_manifest(candidates_path), cumulative_client_stats())
+    refresh_bulk_state_counts(state, load_manifest(candidates_path))
     state["status"] = "completed" if reviewable_count(load_manifest(candidates_path)) >= target_count or all(p.get("status") == "completed" for p in state.get("partitions", [])) else "paused"
     save_run_state(state_root, state)
     stats_path = run_dir(state_root, selected_run_id) / "statistics.json"
