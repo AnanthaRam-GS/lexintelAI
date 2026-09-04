@@ -597,6 +597,10 @@ def run_bulk_acquisition(
         if not order:
             break
         partition = order[0]
+        family = str(partition.get("family") or "")
+        current_total_reviewable = reviewable_count(candidates)
+        family_gap = max(int(family_targets.get(family, partition.get("target") or target_count)) - int(family_current.get(family, 0)), 0)
+        visit_target_count = min(target_count, current_total_reviewable + family_gap) if family_gap else target_count
         remaining_api_requests = max_api_requests - prior_requests
         partition["status"] = "running"
         partition["scheduler_visits"] = int(partition.get("scheduler_visits") or 0) + 1
@@ -607,7 +611,7 @@ def run_bulk_acquisition(
         before_counts = partition_record_counts(candidates, str(partition["partition_id"]))
         try:
             result = acquire(
-                limit=target_count,
+                limit=visit_target_count,
                 max_api_requests=remaining_api_requests,
                 query_id=str(partition["partition_id"]),
                 query_manifest=expanded_query_manifest,
