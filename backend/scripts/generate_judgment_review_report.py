@@ -272,25 +272,34 @@ def generate_balanced_composition(
     targeted_additions = [record for record in reviewable if str(record.get("query_id") or "").startswith("gap_")]
     step_04e_records = [record for record in reviewable if record not in targeted_additions]
     review_by_source = review_records_by_source_id(reviews)
+    accepted_source_ids = {
+        str(review.get("source_document_id"))
+        for review in reviews
+        if review.get("human_review_status") == "accepted"
+    }
+    accepted_records = [
+        record
+        for record in reviewable
+        if str(record.get("source_document_id")) in accepted_source_ids
+    ]
     family_counts = Counter(str(record.get("offence_family")) for record in reviewable)
+    accepted_family_counts = Counter(str(record.get("offence_family")) for record in accepted_records)
     court_counts = Counter(str(record.get("court_level")) for record in reviewable)
     year_counts = Counter(str(record.get("year")) for record in reviewable)
     track_counts = Counter(str(record.get("temporal_track")) for record in reviewable)
     regime_counts = Counter(str(record.get("legal_regime")) for record in reviewable)
+    accepted_regime_counts = Counter(str(record.get("legal_regime")) for record in accepted_records)
     automated_counts = Counter(automated_decision(record) for record in reviewable)
     review_counts = Counter(str(record.get("human_review_status")) for record in reviews)
     audit_reasons = Counter(reason for record in audit for reason in record.get("rejection_reasons", []))
 
     target_total = sum(BALANCED_FAMILY_QUOTAS.values())
-    remaining_gaps = {
-        family: max(target - family_counts.get(family, 0), 0)
-        for family, target in BALANCED_FAMILY_QUOTAS.items()
-    }
-    corpus_status = "READY FOR HUMAN REVIEW" if len(reviewable) >= target_total and not any(remaining_gaps.values()) else "INCOMPLETE"
+    all_reviewed = review_counts.get("pending", 0) == 0 and review_counts.get("needs_review", 0) == 0
+    corpus_status = "REVIEWED DEVELOPMENT CORPUS READY" if all_reviewed else "AWAITING HUMAN REVIEW"
     status_reason = (
-        "target reached with all configured offence-family quotas filled."
-        if corpus_status == "READY FOR HUMAN REVIEW"
-        else "provider search results and strict pre-screening exhausted useful candidates before all quotas were filled."
+        "all acquired candidates have explicit human decisions; accepted distribution reflects approved reclassifications and rejections."
+        if all_reviewed
+        else "one or more acquired candidates still await explicit human review."
     )
 
     lines = [
@@ -298,12 +307,15 @@ def generate_balanced_composition(
         "",
         "Phase 0 Step 0.4E acquired the initial controlled, balanced development judgment corpus.",
         "Phase 0 Step 0.4F supplemented only underfilled offence-family gaps.",
-        "No human suitability decisions are recorded in this document.",
+        "Phase 0 Step 0.4H records explicit human review decisions approved outside automation.",
         "",
         "## Status",
         "",
         f"* Target reviewable candidates: {target_total}",
-        f"* Actual reviewable candidates: {len(reviewable)}",
+        f"* Acquired reviewable candidates: {len(reviewable)}",
+        f"* Human accepted: {review_counts.get('accepted', 0)}",
+        f"* Human rejected: {review_counts.get('rejected', 0)}",
+        f"* Human pending: {review_counts.get('pending', 0)}",
         f"* Step 0.4E reviewable candidates: {len(step_04e_records)}",
         f"* Step 0.4F targeted additions: {len(targeted_additions)}",
         f"* Corpus status: {corpus_status}",
@@ -320,6 +332,8 @@ def generate_balanced_composition(
     lines.extend(["", "## Composition", "", "| Metric | Count |", "| --- | ---: |"])
     metrics = {
         "total reviewable": len(reviewable),
+        "human accepted": review_counts.get("accepted", 0),
+        "human rejected": review_counts.get("rejected", 0),
         "accept_candidate": automated_counts.get("accept_candidate", 0),
         "needs_review": automated_counts.get("needs_review", 0),
         "pending human review": review_counts.get("pending", 0),
@@ -330,15 +344,31 @@ def generate_balanced_composition(
     for name, count in metrics.items():
         lines.append(f"| {name} | {count} |")
 
-    lines.extend(["", "## Remaining Gaps", "", "| Offence Family | Remaining Gap |", "| --- | ---: |"])
+    lines.extend(["", "## Accepted Corpus Distribution", "", "| Offence Family | Accepted Count |", "| --- | ---: |"])
     for family in BALANCED_FAMILY_QUOTAS:
-        lines.append(f"| {family} | {remaining_gaps[family]} |")
+        lines.append(f"| {family} | {accepted_family_counts.get(family, 0)} |")
+
+    lines.extend(["", "## Human Review Changes", ""])
+    lines.extend(
+        [
+            "* 199957261: other -> homicide",
+            "* 22498132: other -> hurt_and_assault",
+            "* 7542474: rejected because the criminal theft proceeding is collateral to service/disciplinary litigation.",
+            "* 154726248: rejected as a semantic duplicate of retained source ID 154171944.",
+        ]
+    )
+
+    lines.extend(["", "## Post-Review Quota Differences", "", "| Offence Family | Target | Accepted | Difference |", "| --- | ---: | ---: | ---: |"])
+    for family in BALANCED_FAMILY_QUOTAS:
+        accepted = accepted_family_counts.get(family, 0)
+        lines.append(f"| {family} | {BALANCED_FAMILY_QUOTAS[family]} | {accepted} | {accepted - BALANCED_FAMILY_QUOTAS[family]} |")
 
     for heading, counts in [
         ("Court Distribution", court_counts),
         ("Year Distribution", year_counts),
         ("Temporal Track Distribution", track_counts),
         ("Legal Regime Distribution", regime_counts),
+        ("Accepted Legal Regime Distribution", accepted_regime_counts),
     ]:
         lines.extend(["", f"## {heading}", "", "| Value | Count |", "| --- | ---: |"])
         for value, count in sorted(counts.items()):
