@@ -1,0 +1,93 @@
+[
+  {
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "query": "Bharatiya Nyaya Sanhita criminal appeal",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["supreme_court", "high_court"],
+    "priority": 1,
+    "notes": "Regime-oriented transition validation query using statute-name terminology."
+  },
+  {
+    "query_id": "transition_bns_bail",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "query": "BNS bail criminal petition",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["high_court", "supreme_court"],
+    "priority": 2,
+    "notes": "Short-form BNS discovery query."
+  },
+  {
+    "query_id": "transition_bnss_bail",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "query": "BNSS bail criminal petition",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["high_court", "supreme_court"],
+    "priority": 3,
+    "notes": "BNSS discovery query for procedural transition matters."
+  },
+  {
+    "query_id": "transition_bnss_full_name",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "query": "Bharatiya Nagarik Suraksha Sanhita criminal petition",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["high_court", "supreme_court"],
+    "priority": 4,
+    "notes": "Full-name BNSS transition discovery query."
+  },
+  {
+    "query_id": "transition_bns_murder",
+    "offence_family": "homicide",
+    "temporal_track": "current_transition",
+    "query": "BNS murder criminal appeal",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["supreme_court", "high_court"],
+    "priority": 5,
+    "notes": "Offence-specific current-law discovery without section mapping assumptions."
+  },
+  {
+    "query_id": "transition_bns_theft_cheating",
+    "offence_family": "theft_and_robbery",
+    "temporal_track": "current_transition",
+    "query": "BNS theft cheating criminal appeal",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["high_court", "supreme_court"],
+    "priority": 6,
+    "notes": "General property/economic offence transition query."
+  },
+  {
+    "query_id": "transition_bns_assault",
+    "offence_family": "hurt_and_assault",
+    "temporal_track": "current_transition",
+    "query": "BNS assault grievous hurt criminal appeal",
+    "target_quota": 10,
+    "doctypes": "judgments",
+    "from_date": "2024-07-01",
+    "to_date": null,
+    "court_preference": ["high_court", "supreme_court"],
+    "priority": 7,
+    "notes": "Hurt/assault current-law validation query."
+  }
+]

@@ -101,6 +101,27 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
     def test_document_year_prefers_decision_date_over_case_number(self) -> None:
         self.assertEqual(acquire.document_year("Crl.A./213/2020 on 12 June, 2024"), 2024)
 
+    def test_regime_evidence_snippets_are_bounded(self) -> None:
+        snippets = acquire.regime_evidence_snippets(
+            "The proceeding cites Indian Penal Code, CrPC, Bharatiya Nyaya Sanhita, 2023 and BNSS."
+        )
+
+        self.assertTrue(any("Bharatiya Nyaya Sanhita" in snippet for snippet in snippets))
+        self.assertTrue(all(len(snippet) <= 180 for snippet in snippets))
+
+    def test_transition_cli_caps_limit_at_ten(self) -> None:
+        with patch.object(acquire, "load_project_env"):
+            with patch.object(acquire, "dry_run", return_value=0) as dry_run:
+                result = acquire.main([
+                    "--dry-run",
+                    "--transition-validation",
+                    "--limit",
+                    "50",
+                ])
+
+        self.assertEqual(result, 0)
+        self.assertEqual(dry_run.call_args.args[0], acquire.TRANSITION_MAX_LIMIT)
+
     def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
         records = [
             {"status": "validated", "offence_family": "homicide"},

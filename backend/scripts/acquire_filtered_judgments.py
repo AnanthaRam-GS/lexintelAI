@@ -57,6 +57,7 @@ QUOTA_MANIFEST = MANIFEST_DIR / "development_judgment_quotas_v2.json"
 QUERY_MANIFEST = MANIFEST_DIR / "development_judgment_queries_v2.json"
 BALANCED_QUERY_MANIFEST = MANIFEST_DIR / "balanced_development_queries.json"
 GAP_QUERY_MANIFEST = MANIFEST_DIR / "development_judgment_gap_queries.json"
+TRANSITION_QUERY_MANIFEST = MANIFEST_DIR / "transition_validation_queries.json"
 V1_JUDGMENTS = MANIFEST_DIR / "development_judgments.json"
 V2_JUDGMENTS = MANIFEST_DIR / "development_judgments_v2.json"
 V2_REVIEW = MANIFEST_DIR / "development_judgment_review_v2.json"
@@ -67,10 +68,15 @@ PRESCREEN_AUDIT = MANIFEST_DIR / "development_candidate_audit_prescreen_v2.json"
 BALANCED_JUDGMENTS = MANIFEST_DIR / "balanced_development_judgments.json"
 BALANCED_REVIEW = MANIFEST_DIR / "balanced_development_review.json"
 BALANCED_AUDIT = MANIFEST_DIR / "balanced_candidate_audit.json"
+TRANSITION_CANDIDATES = MANIFEST_DIR / "transition_validation_candidates.json"
+TRANSITION_REVIEW = MANIFEST_DIR / "transition_validation_review.json"
+TRANSITION_AUDIT = MANIFEST_DIR / "transition_validation_audit.json"
 RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/v2"
 BALANCED_RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/balanced"
+TRANSITION_RAW_DIR = REPO_ROOT / "data/raw/judgments/indiankanoon/transition_validation"
 DEFAULT_LIMIT = 5
 MAX_LIMIT = 50
+TRANSITION_MAX_LIMIT = 10
 DEFAULT_MAX_API_REQUESTS = 100
 DEFAULT_MAX_SEARCH_PAGES = 1
 
@@ -251,6 +257,30 @@ def metadata_text(result: dict[str, Any], metadata: dict[str, Any], document: di
     return "\n".join(parts)
 
 
+def regime_evidence_snippets(text: str, limit: int = 8) -> list[str]:
+    snippets: list[str] = []
+    patterns = (
+        r"Bharatiya\s+Nyaya\s+Sanhita,?\s*2023",
+        r"Bharatiya\s+Nagarik\s+Suraksha\s+Sanhita,?\s*2023",
+        r"\bBNS\b",
+        r"\bBNSS\b",
+        r"Indian\s+Penal\s+Code",
+        r"Code\s+of\s+Criminal\s+Procedure",
+        r"\bIPC\b",
+        r"\bCrPC\b",
+    )
+    for pattern in patterns:
+        for match in re.finditer(pattern, text, flags=re.IGNORECASE):
+            start = max(match.start() - 60, 0)
+            end = min(match.end() + 60, len(text))
+            snippet = " ".join(text[start:end].split())
+            if snippet and snippet not in snippets:
+                snippets.append(snippet[:180])
+            if len(snippets) >= limit:
+                return snippets
+    return snippets
+
+
 def review_record_for(record: dict[str, Any]) -> dict[str, Any]:
     return {
         "local_id": record["local_id"],
@@ -362,6 +392,8 @@ def acquire(
     raw_dir: Path = RAW_DIR,
     delay: float = 1.0,
     max_search_pages: int = DEFAULT_MAX_SEARCH_PAGES,
+    enforce_family_quotas: bool = True,
+    extra_duplicate_manifests: list[Path] | None = None,
 ) -> int:
     if limit < 1 or limit > MAX_LIMIT:
         raise ValueError(f"limit must be between 1 and {MAX_LIMIT}")
@@ -373,13 +405,18 @@ def acquire(
     v1_records = load_manifest(V1_JUDGMENTS)
     prior_v2_records = load_manifest(V2_JUDGMENTS)
     prior_prescreen_records = load_manifest(PRESCREEN_JUDGMENTS)
+    extra_duplicate_records = [
+        record
+        for manifest in (extra_duplicate_manifests or [])
+        for record in load_manifest(manifest)
+    ]
     records = load_manifest(judgment_manifest)
     reviews = load_manifest(review_manifest)
     audit = load_manifest(audit_manifest)
     accepted_counts = active_counts(records)
     seen_source_ids = {
         str(record.get("source_document_id"))
-        for record_set in (v1_records, prior_v2_records, prior_prescreen_records, records, audit)
+        for record_set in (v1_records, prior_v2_records, prior_prescreen_records, extra_duplicate_records, records, audit)
         for record in record_set
         if record.get("source_document_id")
     }
@@ -399,14 +436,14 @@ def acquire(
         if query_download_counts[str(query["query_id"])] >= query_limit:
             continue
         family = str(query["offence_family"])
-        if not quota_allows(family, accepted_counts, quotas):
+        if enforce_family_quotas and not quota_allows(family, accepted_counts, quotas):
             continue
         for page in range(max(1, max_search_pages)):
             if reviewable_count(records) >= target_reviewable:
                 break
             if query_download_counts[str(query["query_id"])] >= query_limit:
                 break
-            if not quota_allows(family, accepted_counts, quotas):
+            if enforce_family_quotas and not quota_allows(family, accepted_counts, quotas):
                 break
             enforce_budget(client, max_api_requests)
             try:
@@ -432,7 +469,7 @@ def acquire(
                     break
                 if query_download_counts[str(query["query_id"])] >= query_limit:
                     break
-                if not quota_allows(family, accepted_counts, quotas):
+                if enforce_family_quotas and not quota_allows(family, accepted_counts, quotas):
                     break
                 source_id = extract_source_document_id(result)
                 if not source_id or source_id in seen_source_ids:
@@ -583,7 +620,7 @@ def acquire(
                     full_text,
                     full_record,
                     accepted_counts=accepted_counts,
-                    quotas=quotas,
+                    quotas=quotas if enforce_family_quotas else None,
                     duplicate=duplicate is not None,
                     corrupt=file_size(raw_path) == 0,
                 )
@@ -604,6 +641,7 @@ def acquire(
                     "metadata_quality": decision.metadata_quality_score,
                 }
                 full_record["detected_statutes"] = decision.detected_statutes
+                full_record["regime_evidence"] = regime_evidence_snippets(full_text)
                 full_record["status"] = "validated" if decision.decision == "accept_candidate" else decision.decision
                 full_record["final_automated_decision"] = decision.decision
                 full_record["notes"] = "; ".join(decision.reasons) if decision.reasons else None
@@ -627,7 +665,7 @@ def acquire(
     return 0
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT)
@@ -639,16 +677,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--delay", type=float, default=1.0)
     parser.add_argument("--balanced", action="store_true", help="Use Step 0.4E balanced corpus manifests")
     parser.add_argument("--targeted-gap-fill", action="store_true", help="Use Step 0.4F targeted gap query manifest")
+    parser.add_argument("--transition-validation", action="store_true", help="Use Step 0.4I transition validation manifests")
     parser.add_argument("--max-search-pages", type=int, default=DEFAULT_MAX_SEARCH_PAGES)
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     load_project_env()
-    args = parse_args()
+    args = parse_args(argv)
     strategy_manifest = Path(args.strategy)
-    query_manifest = GAP_QUERY_MANIFEST if args.targeted_gap_fill else BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST
+    query_manifest = TRANSITION_QUERY_MANIFEST if args.transition_validation else GAP_QUERY_MANIFEST if args.targeted_gap_fill else BALANCED_QUERY_MANIFEST if args.balanced else QUERY_MANIFEST
     use_balanced_outputs = args.balanced or args.targeted_gap_fill
+    if args.transition_validation and args.limit > TRANSITION_MAX_LIMIT:
+        print(f"transition validation limit capped at {TRANSITION_MAX_LIMIT}", file=sys.stderr)
+        args.limit = TRANSITION_MAX_LIMIT
     if args.dry_run:
         return dry_run(
             args.limit,
@@ -664,12 +706,14 @@ def main() -> int:
             offence_family=args.offence_family,
             temporal_track=args.temporal_track,
             query_manifest=query_manifest,
-            judgment_manifest=BALANCED_JUDGMENTS if use_balanced_outputs else PRESCREEN_JUDGMENTS,
-            review_manifest=BALANCED_REVIEW if use_balanced_outputs else PRESCREEN_REVIEW,
-            audit_manifest=BALANCED_AUDIT if use_balanced_outputs else PRESCREEN_AUDIT,
-            raw_dir=BALANCED_RAW_DIR if use_balanced_outputs else RAW_DIR,
+            judgment_manifest=TRANSITION_CANDIDATES if args.transition_validation else BALANCED_JUDGMENTS if use_balanced_outputs else PRESCREEN_JUDGMENTS,
+            review_manifest=TRANSITION_REVIEW if args.transition_validation else BALANCED_REVIEW if use_balanced_outputs else PRESCREEN_REVIEW,
+            audit_manifest=TRANSITION_AUDIT if args.transition_validation else BALANCED_AUDIT if use_balanced_outputs else PRESCREEN_AUDIT,
+            raw_dir=TRANSITION_RAW_DIR if args.transition_validation else BALANCED_RAW_DIR if use_balanced_outputs else RAW_DIR,
             delay=args.delay,
             max_search_pages=args.max_search_pages,
+            enforce_family_quotas=not args.transition_validation,
+            extra_duplicate_manifests=[BALANCED_JUDGMENTS] if args.transition_validation else None,
         )
     except (BudgetExceeded, ValueError) as exc:
         print(str(exc), file=sys.stderr)
