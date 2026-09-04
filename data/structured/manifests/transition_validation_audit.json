@@ -1,0 +1,311 @@
+[
+  {
+    "local_id": "v2-audit-106120784",
+    "source_document_id": "106120784",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 1,
+    "search_title": "Ponnama N K vs State Of Kerala on 9 March, 2026",
+    "court": null,
+    "year": 2026,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 7262,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.63,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS"
+    ],
+    "detected_regime": "bns_bnss",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:15.358861+00:00"
+  },
+  {
+    "local_id": "v2-audit-41507960",
+    "source_document_id": "41507960",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 2,
+    "search_title": "Sujal Vishwas Attavar vs The State Of Maharashtra on 4 May, 2026",
+    "court": null,
+    "year": 2026,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 27922,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS",
+      "BNSS",
+      "CrPC"
+    ],
+    "detected_regime": "mixed_or_transition",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:20.047570+00:00"
+  },
+  {
+    "local_id": "v2-audit-64689335",
+    "source_document_id": "64689335",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 3,
+    "search_title": "Ramanbhai Bholidas Patel vs State Of Gujarat on 12 June, 2026",
+    "court": null,
+    "year": 2026,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 73674,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:23.385305+00:00"
+  },
+  {
+    "local_id": "v2-audit-120995867",
+    "source_document_id": "120995867",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 4,
+    "search_title": "Bijoy Lakshmi Ghosh @ Bijay Laxmi Ghosh vs State Of West Bengal And Ors on 23 December, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 22531,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 1.0,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "ipc_crpc",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:28.473418+00:00"
+  },
+  {
+    "local_id": "v2-audit-49977156",
+    "source_document_id": "49977156",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 5,
+    "search_title": "Sunil Baban Wanve And Another vs The State Of Maharashtra And Another on 19 September, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 18156,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.85,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS",
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "mixed_or_transition",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:30.887278+00:00"
+  },
+  {
+    "local_id": "v2-audit-22716486",
+    "source_document_id": "22716486",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 6,
+    "search_title": "Bhima Mukunda Karad vs The State Of Maharashtra And Another on 19 September, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 18146,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.85,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS",
+      "CrPC",
+      "IPC"
+    ],
+    "detected_regime": "mixed_or_transition",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:34.224447+00:00"
+  },
+  {
+    "local_id": "v2-audit-172466729",
+    "source_document_id": "172466729",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 7,
+    "search_title": "Kiran S/O Umesh Choudappanavar vs State Of Karnataka on 25 September, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 6984,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.63,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS"
+    ],
+    "detected_regime": "bns_bnss",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:37.896845+00:00"
+  },
+  {
+    "local_id": "v2-audit-117242710",
+    "source_document_id": "117242710",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 8,
+    "search_title": "Abdul Kareem vs State Of Kerala on 10 April, 2025",
+    "court": null,
+    "year": 2025,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 5593,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.99,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS",
+      "BNSS"
+    ],
+    "detected_regime": "bns_bnss",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:40.906794+00:00"
+  },
+  {
+    "local_id": "v2-audit-140476000",
+    "source_document_id": "140476000",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 9,
+    "search_title": "Anil Kurre vs State Of Chhattisgarh on 16 July, 2026",
+    "court": null,
+    "year": 2026,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 6919,
+    "document_text_quality": "usable",
+    "document_type_score": 0.64,
+    "criminal_relevance_score": 0.49,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS"
+    ],
+    "detected_regime": "bns_bnss",
+    "final_automated_decision": "needs_review",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:43.780197+00:00"
+  },
+  {
+    "local_id": "v2-audit-2835675",
+    "source_document_id": "2835675",
+    "query_id": "transition_bns_criminal_appeal",
+    "offence_family": "other",
+    "temporal_track": "current_transition",
+    "retrieval_rank": 10,
+    "search_title": "Ikshan Singh Mehta vs State Of Haryana on 31 August, 2026",
+    "court": null,
+    "year": 2026,
+    "search_filter_result": "considered",
+    "pre_download_decision": "needs_more_evidence",
+    "pre_download_reasons": [
+      "insufficient_metadata_quality"
+    ],
+    "document_text_available": true,
+    "document_text_length": 4788,
+    "document_text_quality": "usable",
+    "document_type_score": 0.82,
+    "criminal_relevance_score": 0.75,
+    "metadata_quality_score": 1.0,
+    "detected_statutes": [
+      "BNS"
+    ],
+    "detected_regime": "bns_bnss",
+    "final_automated_decision": "accept_candidate",
+    "rejection_reasons": [],
+    "api_requests_consumed": 3,
+    "timestamp": "2026-09-04T06:27:45.979601+00:00"
+  }
+]

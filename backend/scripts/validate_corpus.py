@@ -25,6 +25,8 @@ PRESCREEN_AUDIT_MANIFEST = MANIFEST_DIR / "development_candidate_audit_prescreen
 PRESCREEN_JUDGMENTS_MANIFEST = MANIFEST_DIR / "development_judgments_prescreen_v2.json"
 BALANCED_AUDIT_MANIFEST = MANIFEST_DIR / "balanced_candidate_audit.json"
 BALANCED_JUDGMENTS_MANIFEST = MANIFEST_DIR / "balanced_development_judgments.json"
+TRANSITION_AUDIT_MANIFEST = MANIFEST_DIR / "transition_validation_audit.json"
+TRANSITION_CANDIDATES_MANIFEST = MANIFEST_DIR / "transition_validation_candidates.json"
 REQUIRED_FIELDS = {
     "document_id",
     "document_type",
@@ -323,6 +325,15 @@ def main() -> int:
         warnings.extend(balanced_warnings)
         duplicate_count += balanced_duplicate_count
 
+    transition_records = validate_json_manifest(TRANSITION_CANDIDATES_MANIFEST, errors)
+    if TRANSITION_CANDIDATES_MANIFEST.exists():
+        transition_errors, transition_warnings, transition_duplicate_count = validate_development_judgments(
+            transition_records
+        )
+        errors.extend(transition_errors)
+        warnings.extend(transition_warnings)
+        duplicate_count += transition_duplicate_count
+
     v1_analysis = validate_json_manifest(V1_QUALITY_ANALYSIS_MANIFEST, errors)
     if V1_QUALITY_ANALYSIS_MANIFEST.exists():
         analysis_errors, analysis_warnings = validate_quality_analysis(v1_analysis, "v1_quality")
@@ -353,9 +364,18 @@ def main() -> int:
         errors.extend(balanced_audit_errors)
         warnings.extend(balanced_audit_warnings)
 
+    transition_audit = validate_json_manifest(TRANSITION_AUDIT_MANIFEST, errors)
+    if TRANSITION_AUDIT_MANIFEST.exists():
+        transition_audit_errors, transition_audit_warnings = validate_quality_analysis(
+            transition_audit,
+            "transition_audit",
+        )
+        errors.extend(transition_audit_errors)
+        warnings.extend(transition_audit_warnings)
+
     print(
         "Documents checked: "
-        f"{len(records) + len(development_records) + len(v2_records) + len(prescreen_records) + len(balanced_records)}"
+        f"{len(records) + len(development_records) + len(v2_records) + len(prescreen_records) + len(balanced_records) + len(transition_records)}"
     )
     print(f"Errors: {len(errors)}")
     print(f"Warnings: {len(warnings)}")
