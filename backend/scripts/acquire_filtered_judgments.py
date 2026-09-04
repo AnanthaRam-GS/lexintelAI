@@ -225,6 +225,13 @@ def date_within_bounds(value: Any, from_date: str | None, to_date: str | None, f
     return True
 
 
+def document_year(value: Any) -> int | None:
+    parsed = parse_document_date(value)
+    if parsed:
+        return parsed.year
+    return parse_year(value)
+
+
 def year_within_bounds(year: int | None, from_date: str | None, to_date: str | None) -> bool:
     return date_within_bounds(None, from_date, to_date, fallback_year=year)
 
@@ -287,7 +294,7 @@ def audit_entry(
         "retrieval_rank": rank,
         "search_title": result.get("title") or result.get("doc_title"),
         "court": (metadata or result).get("court") or (metadata or result).get("docsource"),
-        "year": parse_year((metadata or result).get("date") or result.get("title")),
+        "year": document_year((metadata or result).get("date") or result.get("title")),
         "search_filter_result": "considered",
         "pre_download_decision": decision.get("pre_download_decision"),
         "pre_download_reasons": decision.get("pre_download_reasons", []),
@@ -463,7 +470,7 @@ def acquire(
                 case_name = extract_case_name(result, metadata)
                 court_name = extract_court_name(result, metadata)
                 date_source = metadata.get("date") or result.get("date") or case_name
-                year = parse_year(date_source)
+                year = document_year(date_source)
                 if not date_within_bounds(date_source, query.get("from_date"), query.get("to_date"), fallback_year=year):
                     decision = {
                         "decision": "reject",
