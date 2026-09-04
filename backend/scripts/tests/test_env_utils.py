@@ -141,7 +141,7 @@ class EnvUtilsTest(unittest.TestCase):
             hdrs=None,
             fp=None,
         )
-        client = IndianKanoonClient(token="test-token-placeholder")
+        client = IndianKanoonClient(token="test-token-placeholder", max_retries=0)
 
         with patch("urllib.request.urlopen", side_effect=error) as urlopen:
             with self.assertRaises(IndianKanoonClientError) as raised:
@@ -154,7 +154,7 @@ class EnvUtilsTest(unittest.TestCase):
     def test_client_search_accepts_date_and_doctype_filters(self) -> None:
         response = BytesIO(b'{"docs":[]}')
         response.status = 200
-        client = IndianKanoonClient(token="test-token-placeholder")
+        client = IndianKanoonClient(token="test-token-placeholder", max_retries=0)
 
         with patch("urllib.request.urlopen", return_value=response) as urlopen:
             client.search(
@@ -176,7 +176,7 @@ class EnvUtilsTest(unittest.TestCase):
     def test_client_request_instrumentation_tracks_safe_counts(self) -> None:
         response = BytesIO(b'{"docs":[]}')
         response.status = 200
-        client = IndianKanoonClient(token="test-token-placeholder")
+        client = IndianKanoonClient(token="test-token-placeholder", max_retries=0)
 
         with patch("urllib.request.urlopen", return_value=response):
             client.search("criminal appeal")
@@ -195,7 +195,7 @@ class EnvUtilsTest(unittest.TestCase):
             hdrs=None,
             fp=None,
         )
-        client = IndianKanoonClient(token="test-token-placeholder")
+        client = IndianKanoonClient(token="test-token-placeholder", max_retries=0)
 
         with patch("urllib.request.urlopen", side_effect=error):
             with self.assertRaises(IndianKanoonClientError):
@@ -205,6 +205,33 @@ class EnvUtilsTest(unittest.TestCase):
         self.assertEqual(stats["total_requests"], 1)
         self.assertEqual(stats["requests_by_endpoint"]["search"], 1)
         self.assertEqual(stats["responses_by_category"]["429"], 1)
+
+    def test_client_retries_429_with_bounded_backoff(self) -> None:
+        error = HTTPError(
+            url="https://api.indiankanoon.org/search/",
+            code=429,
+            msg="Too Many Requests",
+            hdrs=None,
+            fp=None,
+        )
+        response = BytesIO(b'{"docs":[]}')
+        response.status = 200
+        sleeps: list[float] = []
+        client = IndianKanoonClient(
+            token="test-token-placeholder",
+            min_request_interval_ms=0,
+            max_retries=1,
+            retry_backoff_seconds=0.25,
+            sleeper=sleeps.append,
+        )
+
+        with patch("urllib.request.urlopen", side_effect=[error, response]) as urlopen:
+            result = client.search("criminal appeal")
+
+        self.assertEqual(result, {"docs": []})
+        self.assertEqual(urlopen.call_count, 2)
+        self.assertEqual(sleeps, [0.25])
+        self.assertEqual(client.get_request_stats()["responses_by_category"]["429"], 1)
 
 
 if __name__ == "__main__":

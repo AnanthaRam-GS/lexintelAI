@@ -21,6 +21,9 @@ from backend.scripts.env_utils import load_project_env  # noqa: E402
 
 DEFAULT_BASE_URL = "https://api.indiankanoon.org"
 USER_AGENT = "LegalAI corpus foundation/0.1"
+DEFAULT_MIN_REQUEST_INTERVAL_MS = 1000
+DEFAULT_MAX_RETRIES = 2
+DEFAULT_RETRY_BACKOFF_SECONDS = 2.0
 
 
 class IndianKanoonClientError(RuntimeError):
@@ -39,11 +42,28 @@ class IndianKanoonClient:
         token: str | None = None,
         base_url: str | None = None,
         timeout: int = 30,
+        min_request_interval_ms: int | None = None,
+        max_retries: int | None = None,
+        retry_backoff_seconds: float | None = None,
+        sleeper: Any | None = None,
     ) -> None:
         self.token = token or os.getenv("INDIAN_KANOON_API_TOKEN", "")
         self.base_url = (base_url or os.getenv("INDIAN_KANOON_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
         self.timeout = timeout
         self._request_stats: Counter[str] = Counter()
+        self.min_request_interval_ms = (
+            min_request_interval_ms
+            if min_request_interval_ms is not None
+            else int(os.getenv("INDIAN_KANOON_MIN_REQUEST_INTERVAL_MS", DEFAULT_MIN_REQUEST_INTERVAL_MS))
+        )
+        self.max_retries = max_retries if max_retries is not None else int(os.getenv("INDIAN_KANOON_MAX_RETRIES", DEFAULT_MAX_RETRIES))
+        self.retry_backoff_seconds = (
+            retry_backoff_seconds
+            if retry_backoff_seconds is not None
+            else float(os.getenv("INDIAN_KANOON_RETRY_BACKOFF_SECONDS", DEFAULT_RETRY_BACKOFF_SECONDS))
+        )
+        self._sleeper = sleeper
+        self._last_request_at = 0.0
 
     def _headers(self) -> dict[str, str]:
         if not self.token:
@@ -81,6 +101,31 @@ class IndianKanoonClient:
         else:
             self._request_stats["status:other"] += 1
 
+    def _sleep(self, seconds: float) -> None:
+        if seconds <= 0:
+            return
+        if self._sleeper is not None:
+            self._sleeper(seconds)
+            return
+        import time
+
+        time.sleep(seconds)
+
+    def _rate_limit(self) -> None:
+        if self.min_request_interval_ms <= 0:
+            return
+        import time
+
+        now = time.monotonic()
+        elapsed = now - self._last_request_at
+        target = self.min_request_interval_ms / 1000
+        if self._last_request_at and elapsed < target:
+            self._sleep(target - elapsed)
+        self._last_request_at = time.monotonic()
+
+    def _retryable_status(self, status_code: int | None) -> bool:
+        return status_code == 429 or (status_code is not None and 500 <= status_code < 600)
+
     def get_request_stats(self) -> dict[str, Any]:
         return {
             "total_requests": self._request_stats["total_requests"],
@@ -117,26 +162,38 @@ class IndianKanoonClient:
             url = f"{url}?{query}"
         request = urllib.request.Request(url, headers=self._headers(), data=b"", method="POST")
         endpoint = self._endpoint_for_path(path)
-        try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                status = getattr(response, "status", 200)
-                body = response.read()
-        except urllib.error.HTTPError as exc:
-            self._record_response(endpoint, exc.code)
-            raise IndianKanoonClientError(
-                f"Indian Kanoon API returned HTTP {exc.code}.",
-                status_code=exc.code,
-            ) from exc
-        except urllib.error.URLError as exc:
-            self._record_response(endpoint, None)
-            raise IndianKanoonClientError(f"Indian Kanoon API request failed: {exc}") from exc
-        self._record_response(endpoint, status)
-        if status < 200 or status >= 300:
-            raise IndianKanoonClientError(
-                f"Indian Kanoon API returned HTTP {status}.",
-                status_code=status,
-            )
-        return body
+        for attempt in range(self.max_retries + 1):
+            self._rate_limit()
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    status = getattr(response, "status", 200)
+                    body = response.read()
+            except urllib.error.HTTPError as exc:
+                self._record_response(endpoint, exc.code)
+                if attempt < self.max_retries and self._retryable_status(exc.code):
+                    self._sleep(self.retry_backoff_seconds * (attempt + 1))
+                    continue
+                raise IndianKanoonClientError(
+                    f"Indian Kanoon API returned HTTP {exc.code}.",
+                    status_code=exc.code,
+                ) from exc
+            except urllib.error.URLError as exc:
+                self._record_response(endpoint, None)
+                if attempt < self.max_retries:
+                    self._sleep(self.retry_backoff_seconds * (attempt + 1))
+                    continue
+                raise IndianKanoonClientError(f"Indian Kanoon API request failed: {exc}") from exc
+            self._record_response(endpoint, status)
+            if status < 200 or status >= 300:
+                if attempt < self.max_retries and self._retryable_status(status):
+                    self._sleep(self.retry_backoff_seconds * (attempt + 1))
+                    continue
+                raise IndianKanoonClientError(
+                    f"Indian Kanoon API returned HTTP {status}.",
+                    status_code=status,
+                )
+            return body
+        raise IndianKanoonClientError("Indian Kanoon API request failed after retries.")
 
     def search(
         self,
