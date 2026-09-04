@@ -563,6 +563,7 @@ def run_bulk_acquisition(
                 extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
                 client=partition_client,
                 max_limit=max(target_count, MAX_LIMIT),
+                checkpoint_each_candidate=True,
             )
         except BudgetExceeded:
             candidates = load_manifest(candidates_path)
@@ -721,6 +722,7 @@ def acquire(
     extra_duplicate_manifests: list[Path] | None = None,
     client: IndianKanoonClient | None = None,
     max_limit: int = MAX_LIMIT,
+    checkpoint_each_candidate: bool = False,
 ) -> int:
     if limit < 1 or limit > max_limit:
         raise ValueError(f"limit must be between 1 and {max_limit}")
@@ -755,6 +757,12 @@ def acquire(
     )
     downloaded = 0
     target_reviewable = limit
+
+    def checkpoint_manifests() -> None:
+        if checkpoint_each_candidate:
+            write_manifest_atomic(judgment_manifest, records)
+            write_manifest_atomic(review_manifest, reviews)
+            write_manifest_atomic(audit_manifest, audit)
 
     for query in queries:
         if reviewable_count(records) >= target_reviewable:
@@ -827,6 +835,7 @@ def acquire(
                         audit,
                         {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
                     )
+                    checkpoint_manifests()
                     if should_stop_for_api_error(exc):
                         break
                     continue
@@ -849,6 +858,7 @@ def acquire(
                         audit,
                         {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
                     )
+                    checkpoint_manifests()
                     continue
                 base_record = {
                     "local_id": f"v2-{source_id}",
@@ -902,6 +912,7 @@ def acquire(
                     rejected["notes"] = "; ".join(pre_decision.reasons)
                     upsert_by_local_id(records, rejected)
                     upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision_dict, candidate_api_before, stats_total(client))})
+                    checkpoint_manifests()
                     continue
 
                 enforce_budget(client, max_api_requests)
@@ -917,6 +928,7 @@ def acquire(
                     decision["decision"] = "reject"
                     decision["reasons"] = list(decision["reasons"]) + ["raw_retrieval_failure"]
                     upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))})
+                    checkpoint_manifests()
                     if should_stop_for_api_error(exc):
                         break
                     continue
@@ -982,6 +994,7 @@ def acquire(
                 if decision.decision in {"accept_candidate", "needs_review"}:
                     accepted_counts[family] = accepted_counts.get(family, 0) + 1
                     upsert_by_local_id(reviews, review_record_for(full_record))
+                checkpoint_manifests()
 
     write_manifest_atomic(judgment_manifest, records)
     write_manifest_atomic(review_manifest, reviews)

@@ -1,0 +1,134 @@
+{
+  "run_id": "bulk_20260904_000000_stagea",
+  "stage_id": "stage_a_500",
+  "planned_target": 500,
+  "status": "stopped_budget",
+  "completed_gate": "A1",
+  "attempted_gate": "A2_checkpoint_75",
+  "gate_metrics": [
+    {
+      "gate": "A1",
+      "target": 50,
+      "new_reviewable": 50,
+      "cumulative_reviewable": 50,
+      "api_calls": 319,
+      "calls_per_reviewable": 6.38,
+      "duplicates": 0,
+      "failures": 0,
+      "stop_reason": "target_reached"
+    },
+    {
+      "gate": "A2_checkpoint_75",
+      "target": 75,
+      "new_reviewable": 12,
+      "cumulative_reviewable": 62,
+      "api_calls": 381,
+      "calls_per_new_reviewable": 31.75,
+      "duplicates": 0,
+      "failures": 0,
+      "stop_reason": "stopped_budget"
+    }
+  ],
+  "cumulative_metrics": {
+    "search_candidates": 64,
+    "unique_candidates": 64,
+    "pre_download_rejects": 2,
+    "document_api_analyzes": 296,
+    "original_documents_downloaded": 75,
+    "durable_reviewable_candidates": 62,
+    "duplicates_by_source_id": 0,
+    "duplicates_by_sha": 0,
+    "provider_failures": 0,
+    "retry_events": 0,
+    "total_api_calls": 700,
+    "calls_per_reviewable": 11.29
+  },
+  "api_usage": {
+    "search": 33,
+    "document": 296,
+    "metadata": 296,
+    "original_document": 75,
+    "other": 0,
+    "total": 700,
+    "configured_budget": 700
+  },
+  "family_distribution": {
+    "homicide": 29,
+    "theft_and_robbery": 21,
+    "cheating_and_fraud": 12
+  },
+  "family_gaps": {
+    "homicide": 31,
+    "hurt_and_assault": 55,
+    "theft_and_robbery": 29,
+    "cheating_and_fraud": 38,
+    "criminal_breach_of_trust": 35,
+    "kidnapping": 35,
+    "sexual_offences": 55,
+    "dowry_and_domestic_cruelty": 45,
+    "conspiracy_common_intention": 45,
+    "narcotics_related": 45,
+    "other": 25
+  },
+  "court_distribution": {
+    "high_court": 49,
+    "supreme_court": 7,
+    "district_or_sessions": 6
+  },
+  "year_distribution": {
+    "2018": 4,
+    "2019": 8,
+    "2020": 6,
+    "2021": 3,
+    "2022": 7,
+    "2023": 9,
+    "2024": 23,
+    "unknown": 2
+  },
+  "temporal_distribution": {
+    "recent_ipc": 62
+  },
+  "legal_regime_distribution": {
+    "ipc_crpc": 62,
+    "bns_bnss": 0,
+    "mixed_or_transition": 0,
+    "unknown": 0
+  },
+  "storage_metrics": {
+    "raw_files": 62,
+    "total_bytes": 22292318,
+    "mean_bytes": 359553.52,
+    "median_bytes": 343984,
+    "minimum_bytes": 14171,
+    "maximum_bytes": 1616100
+  },
+  "native_text_extraction": {
+    "usable": 56,
+    "sparse": 0,
+    "empty": 0,
+    "failed": 0,
+    "non_pdf_text_html": 6,
+    "coverage_percent": 90.32
+  },
+  "quality_guards": {
+    "provider_failure_rate_le_5_percent": true,
+    "native_text_usability_ge_90_percent": true,
+    "catastrophic_non_judgment_noise": false,
+    "family_coverage_balanced_enough_for_scale": false
+  },
+  "live_resume_validation": {
+    "checkpoint_pause_performed": true,
+    "resumed": true,
+    "counters_preserved": true,
+    "repeated_completed_work_observed": false,
+    "duplicate_records_after_resume": 0,
+    "retry_queue_preserved": true,
+    "batch_sequence_preserved": true
+  },
+  "deviations": [
+    "A2 stopped at 62 cumulative reviewable because the 700-call cumulative budget was reached before the 75-reviewable checkpoint.",
+    "A2 exposed insufficient per-candidate checkpointing for budget stops; code was updated before any further live acquisition.",
+    "Local raw files were accidentally removed during cleanup and restored from durable candidate source IDs using 62 original-document recovery calls.",
+    "Stage A did not continue to A3/A4 because budget efficiency and family coverage require tuning."
+  ]
+}
