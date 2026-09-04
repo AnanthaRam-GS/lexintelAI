@@ -2,9 +2,7 @@
 
 Run ID: `bulk_20260904_000000_stagea`
 
-R1 performed implementation and accounting correction only. No live acquisition was run in R1, and the ignored durable run checkpoint was not rewritten to fabricate historical per-partition metrics.
-
-Status: stopped during the A2 checkpoint. A1 completed; A2 reached 62 cumulative reviewable records before the 700-call cumulative acquisition budget was exhausted. A3 and A4 were not run.
+Current checkpoint: R2 reached 100 cumulative reviewable records. The run stopped at the requested R2 target and did not continue toward 150.
 
 ## Scheduler Tuning
 
@@ -13,181 +11,156 @@ Status: stopped during the A2 checkpoint. A1 completed; A2 reached 62 cumulative
 | scheduler | target-aware round robin |
 | scheduling unit | one search page per partition visit |
 | cursor state | `state.scheduler.cursor` |
-| zero-representation priority | true |
 | low-yield guard | enabled |
 | low-yield action | pause partition as `paused_low_yield` and rotate |
-| min unique candidates | 20 |
 | max requests without reviewable | 120 |
 | max calls per reviewable | 30.0 |
 
-The scheduler now prefers positive-target families with zero current representation, then fewer scheduler visits, then larger family gap, then the rotating partition cursor. Future resume runs persist per-partition request and funnel metrics.
-
 ## Gate Summary
 
-| Gate | Target | New Reviewable | Cumulative | Acquisition Calls | Calls/Reviewable | Duplicates | Failures | Stop Reason |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| A1 | 50 | 50 | 50 | 319 | 6.38 | 0 | 0 | target_reached |
-| A2 checkpoint | 75 | 12 | 62 | 381 | 31.75 | 0 | 0 | stopped_budget |
-| A2 | 150 | not run | 62 | not run | not run | not run | not run | stopped_for_tuning |
-| A3 | 300 | not run | 62 | not run | not run | not run | not run | not run |
-| A4 | 500 | not run | 62 | not run | not run | not run | not run | not run |
+| Gate | Target | New Reviewable | Cumulative | Acquisition Calls | Calls/Reviewable | Stop Reason |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| A1 | 50 | 50 | 50 | 319 | 6.38 | target_reached |
+| A2 checkpoint | 75 | 12 | 62 | 381 | 31.75 | stopped_budget |
+| R2 | 100 | 38 | 100 | 304 | 8.0 | target_reached |
+| A2 | 150 | not run | 100 | not run | not run | stop_before_150 |
 
 ## API Accounting
 
-| Metric | Requests |
-| --- | ---: |
-| acquisition search | 33 |
-| acquisition document | 296 |
-| acquisition metadata | 296 |
-| acquisition original_document | 75 |
-| acquisition other | 0 |
-| total acquisition requests | 700 |
-| recovery or maintenance requests | 62 |
-| total provider requests including recovery | 762 |
+| Endpoint | Incremental R2 | Cumulative Acquisition |
+| --- | ---: | ---: |
+| search | 16 | 49 |
+| document | 124 | 420 |
+| metadata | 124 | 420 |
+| original_document | 40 | 115 |
+| other | 0 | 0 |
+| total | 304 | 1004 |
 
-Configured cumulative acquisition budget at stop: 700.
-
-Cumulative acquisition calls per durable reviewable candidate: 11.29.
-
-Recovery calls are excluded from acquisition yield. They restored local raw files from durable source IDs after local cleanup and are reported separately.
+R2 calls per reviewable: 8.0.
+Cumulative acquisition calls per reviewable: 10.04.
+Recovery/maintenance requests remain separate: 62.
 
 ## Funnel Semantics
 
-| Metric | Count |
-| --- | ---: |
-| search result occurrences | not reconstructable from pre-R1 provider responses |
-| unique source IDs seen in audit | 227 |
-| document endpoint requests | 296 |
-| metadata endpoint requests | 296 |
-| original download attempts | 75 |
-| successful unique originals in candidate manifest | 62 |
-| reviewable unique records | 62 |
-| candidate manifest records | 64 |
-| pre-download rejected records | 2 |
+| Metric | R2 Incremental | Cumulative |
+| --- | ---: | ---: |
+| search result occurrences | not_reconstructable_from provider responses; partition metrics search_candidates=41 | not_reconstructable_from provider responses; audit rows=350 |
+| unique source IDs seen | 41 | 350 |
+| document API candidates | 124 | 420 |
+| metadata API candidates | 124 | 420 |
+| original download attempts | 40 | 115 |
+| successful unique originals | 40 | 102 |
+| reviewable unique records | 38 | 100 |
 
-Reconciliation: 75 is the acquisition original-document request count. 64 is the durable candidate-manifest record count after screening/upsert. Of those durable records, 62 are reviewable and 2 are pre-download rejections.
+Search-result occurrences remain non-reconstructable from pre-R2 provider responses; persisted partition metrics now retain candidate counters for future visits.
 
-## Invariants
+## Family Distribution
 
-| Check | Result |
-| --- | --- |
-| review entries equal reviewable records | pass |
-| candidate records equal reviewable plus pre-download rejects | pass |
-| successful unique originals equal reviewable records | pass |
-| SHA-256 mismatches zero | pass |
+| Family | Before | New | Cumulative | Target | Gap |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| cheating_and_fraud | 12 | 0 | 12 | 50 | 38 |
+| conspiracy_common_intention | 0 | 4 | 4 | 45 | 41 |
+| criminal_breach_of_trust | 0 | 4 | 4 | 35 | 31 |
+| dowry_and_domestic_cruelty | 0 | 7 | 7 | 45 | 38 |
+| homicide | 29 | 0 | 29 | 60 | 31 |
+| hurt_and_assault | 0 | 1 | 1 | 55 | 54 |
+| kidnapping | 0 | 4 | 4 | 35 | 31 |
+| narcotics_related | 0 | 7 | 7 | 45 | 38 |
+| other | 0 | 3 | 3 | 25 | 22 |
+| sexual_offences | 0 | 8 | 8 | 55 | 47 |
+| theft_and_robbery | 21 | 0 | 21 | 50 | 29 |
 
-## Hash Verification
+## Partition Yield
 
-| Metric | Count |
-| --- | ---: |
-| checked restored durable raw files | 62 |
-| hash matches | 62 |
-| missing files | 0 |
-| mismatches | 0 |
+| Partition | Requests | Search Candidates | Unique Sources | Original Attempts | New Reviewable | Duplicates | Rejects | Failures | Calls/Reviewable | Status |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| bulk_recent_ipc_hurt_assault | 33 | 3 | 3 | 3 | 1 | 2 | 0 | 0 | 33.0 | pending |
+| bulk_recent_ipc_criminal_breach_trust | 47 | 4 | 4 | 4 | 4 | 0 | 0 | 0 | 11.75 | pending |
+| bulk_recent_ipc_kidnapping | 34 | 4 | 4 | 4 | 4 | 0 | 0 | 0 | 8.5 | pending |
+| bulk_recent_ipc_sexual_offences | 51 | 8 | 8 | 8 | 8 | 0 | 0 | 0 | 6.38 | pending |
+| bulk_recent_ipc_dowry_domestic_cruelty | 43 | 7 | 7 | 7 | 7 | 0 | 0 | 0 | 6.14 | pending |
+| bulk_recent_ipc_conspiracy_common_intention | 36 | 5 | 5 | 4 | 4 | 0 | 1 | 0 | 9.0 | pending |
+| bulk_recent_ipc_narcotics | 49 | 7 | 7 | 7 | 7 | 0 | 0 | 0 | 7.0 | pending |
+| bulk_current_transition_bns_bnss | 11 | 3 | 3 | 3 | 3 | 0 | 0 | 0 | 3.67 | pending |
 
-## Family Progress
+## Coverage
 
-Historical per-partition request spend was not persisted before R1. Future acquisition visits now persist search/document/metadata/original/total requests, search candidates, unique candidates, reviewable added, pre-download rejects, duplicates, failures, and calls per reviewable.
+Temporal incremental: `{"current_transition": 3, "recent_ipc": 35}`
 
-| Family | Target | Current | Gap | Active Partitions | Paused Low Yield | Requests Spent | Reviewable Yield |
-| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
-| homicide | 60 | 29 | 31 | 0 | 0 | not_available_pre_r1 | 29 |
-| hurt_and_assault | 55 | 0 | 55 | 1 | 0 | not_available_pre_r1 | 0 |
-| theft_and_robbery | 50 | 21 | 29 | 0 | 0 | not_available_pre_r1 | 21 |
-| cheating_and_fraud | 50 | 12 | 38 | 0 | 0 | not_available_pre_r1 | 12 |
-| criminal_breach_of_trust | 35 | 0 | 35 | 1 | 0 | not_available_pre_r1 | 0 |
-| kidnapping | 35 | 0 | 35 | 1 | 0 | not_available_pre_r1 | 0 |
-| sexual_offences | 55 | 0 | 55 | 1 | 0 | not_available_pre_r1 | 0 |
-| dowry_and_domestic_cruelty | 45 | 0 | 45 | 1 | 0 | not_available_pre_r1 | 0 |
-| conspiracy_common_intention | 45 | 0 | 45 | 1 | 0 | not_available_pre_r1 | 0 |
-| narcotics_related | 45 | 0 | 45 | 1 | 0 | not_available_pre_r1 | 0 |
-| other | 25 | 0 | 25 | 2 | 0 | not_available_pre_r1 | 0 |
+Temporal cumulative: `{"current_transition": 3, "recent_ipc": 97}`
 
-## Court Distribution
+Legal regime incremental: `{"ipc_crpc": 31, "mixed_or_transition": 3, "unknown": 4}`
 
-| Court | Count |
-| --- | ---: |
-| district_or_sessions | 6 |
-| high_court | 49 |
-| supreme_court | 7 |
+Legal regime cumulative: `{"ipc_crpc": 93, "mixed_or_transition": 3, "unknown": 4}`
 
-## Year Distribution
+Court incremental: `{"high_court": 29, "supreme_court": 8, "unknown": 1}`
 
-| Year | Count |
-| --- | ---: |
-| 2018 | 4 |
-| 2019 | 8 |
-| 2020 | 6 |
-| 2021 | 3 |
-| 2022 | 7 |
-| 2023 | 9 |
-| 2024 | 23 |
-| unknown | 2 |
+Court cumulative: `{"district_or_sessions": 6, "high_court": 78, "supreme_court": 15, "unknown": 1}`
 
-## Temporal And Regime Distribution
+Year incremental: `{"2018": 7, "2019": 11, "2020": 4, "2021": 4, "2022": 1, "2023": 6, "2024": 1, "2025": 3, "unknown": 1}`
 
-| Temporal Track | Count |
-| --- | ---: |
-| recent_ipc | 62 |
+Year cumulative: `{"2018": 11, "2019": 19, "2020": 10, "2021": 7, "2022": 8, "2023": 15, "2024": 24, "2025": 3, "unknown": 3}`
 
-| Legal Regime | Count |
-| --- | ---: |
-| ipc_crpc | 62 |
-| bns_bnss | 0 |
-| mixed_or_transition | 0 |
-| unknown | 0 |
+## Deduplication
+
+Source-ID skips: not_reconstructable_from pre-R2 duplicate-skip logs.
+SHA aliases among active reviewable records: 0.
+Duplicate downloads avoided: 0.
+R2 duplicate records rejected: 2.
+Duplicate active records: 0.
 
 ## Storage
 
-| Metric | Value |
+| Metric | R2 Reviewable Raw Files |
 | --- | ---: |
-| raw files | 62 |
-| total bytes | 22292318 |
-| mean bytes | 359553.52 |
-| median bytes | 343984 |
-| minimum bytes | 14171 |
-| maximum bytes | 1616100 |
+| count | 38 |
+| maximum_bytes | 1949497 |
+| mean_bytes | 388323.16 |
+| median_bytes | 241646.0 |
+| minimum_bytes | 26300 |
+| total_bytes | 14756280 |
 
-## Text Extraction
+Raw files are ignored; tracked binaries added: 0.
 
-| Metric | Count |
+## Text Availability
+
+| Metric | R2 |
 | --- | ---: |
-| PDF documents | 56 |
-| PDF usable | 56 |
-| PDF sparse | 0 |
-| PDF empty | 0 |
-| PDF failed | 0 |
-| HTML/text documents | 6 |
-| overall usable text documents | 62 |
+| html_or_text_documents | 4 |
+| overall_text_availability_percent | 10.53 |
+| overall_usable_text_documents | 4 |
+| pdf_documents | 34 |
+| pdf_empty | 0 |
+| pdf_failed | 34 |
+| pdf_native_coverage_percent | 0.0 |
+| pdf_sparse | 0 |
+| pdf_usable | 0 |
 
-PDF native text coverage: 100.0%.
+## Live Resume Integrity
 
-Overall text availability: 100.0%.
+- batch_numbering_continued: True
+- completed_work_repeated: False
+- duplicate_active_records: 0
+- family_partition_metrics_preserved: True
+- historical_counters_preserved: True
+- retry_queue_preserved: True
 
-## Resume Validation
+## Human QA Sample
 
-The pilot paused at the A1 completed checkpoint and resumed explicitly toward a 75-reviewable checkpoint.
-
-| Check | Result |
-| --- | --- |
-| checkpoint pause performed | yes |
-| resumed same run | yes |
-| counters preserved | yes |
-| completed source work repeated | no observed duplicate records |
-| duplicate records after resume | 0 |
-| retry queue preserved | yes, empty |
-| batch sequence preserved | yes, three batch files |
+- path: `docs/BULK_PILOT_R2_REVIEW.md`
+- sample size: 10
+- selection method: current-transition first, then newly activated families, then unusual court/status records
+- human statuses: pending
 
 ## Quality Guards
 
-| Guard | Result |
-| --- | --- |
-| provider failure rate <= 5% | pass |
-| PDF native text coverage = 100% | pass |
-| catastrophic non-judgment/noise does not dominate | pass |
-| family coverage balanced enough for immediate scale | fail before R1 scheduler tuning |
-| budget efficiency acceptable without tuning | fail before R1 scheduler tuning |
+- global_budget_reached: False
+- low_yield_triggered: False
+- multiple_partitions_paused_low_yield: False
+- provider_issue_triggered: False
+- stopped_before_150: True
+- target_reached: True
 
 ## Recommendation
 
-PILOT TUNING VALIDATED - READY TO RESUME TOWARD 150.
+READY FOR REVIEW. Stop before any further live acquisition toward 150 until the R2 QA sample has been inspected.
