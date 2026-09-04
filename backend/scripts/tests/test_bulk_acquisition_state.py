@@ -244,6 +244,148 @@ class BulkAcquisitionStateTest(unittest.TestCase):
             self.assertEqual(loaded["status"], "stopped_budget")
             self.assertEqual(loaded["request_stats"]["total_requests"], 3)
 
+    def test_fair_scheduler_visits_positive_target_families_before_oversampling_first(self) -> None:
+        families = [
+            "homicide",
+            "hurt_and_assault",
+            "theft_and_robbery",
+            "cheating_and_fraud",
+            "criminal_breach_of_trust",
+            "kidnapping",
+            "sexual_offences",
+            "dowry_and_domestic_cruelty",
+            "conspiracy_common_intention",
+            "narcotics_related",
+            "other",
+        ]
+        partitions = [
+            {
+                "partition_id": f"p_{family}",
+                "family": family,
+                "target": 20,
+                "status": "pending",
+                "scheduler_visits": 0,
+            }
+            for family in families
+        ]
+        family_targets = {family: 20 for family in families}
+        candidates = [
+            {
+                "source_document_id": str(index),
+                "offence_family": "homicide",
+                "status": "validated",
+            }
+            for index in range(200)
+        ]
+        family_current = bulk.family_counts_from_candidates(candidates)
+        visited: list[str] = []
+
+        for step in range(len(families) - 1):
+            order = bulk.fair_partition_order(partitions, family_targets, family_current, cursor=step)
+            selected = order[0]
+            selected["scheduler_visits"] += 1
+            family_current[str(selected["family"])] = family_current.get(str(selected["family"]), 0) + 1
+            visited.append(str(selected["family"]))
+
+        self.assertNotIn("homicide", visited)
+        self.assertEqual(set(visited), set(families) - {"homicide"})
+
+    def test_low_yield_guard_pauses_partition_and_preserves_budget_metrics(self) -> None:
+        partition = {"partition_id": "p1", "family": "hurt_and_assault", "target": 20, "status": "running"}
+        delta = bulk.empty_request_stats()
+        delta["total_requests"] = 121
+        delta["requests_by_endpoint"]["search"] = 1
+        delta["requests_by_endpoint"]["metadata"] = 60
+        delta["requests_by_endpoint"]["document"] = 60
+
+        metrics = bulk.record_partition_metrics(partition, delta, search_candidates=20, unique_candidates=20)
+
+        self.assertEqual(metrics["total_requests"], 121)
+        self.assertIsNone(metrics["calls_per_reviewable"])
+        self.assertTrue(
+            bulk.low_yield_guard_triggered(
+                partition,
+                {
+                    "enabled": True,
+                    "min_unique_candidates": 20,
+                    "max_requests_without_reviewable": 120,
+                    "max_calls_per_reviewable": 30.0,
+                },
+            )
+        )
+        partition["status"] = "paused_low_yield"
+        state = bulk.create_run_state(
+            "bulk_20260904_060000_dddd",
+            strategy_version="v2",
+            query_manifest="synthetic.json",
+            target_count=40,
+            api_budget=200,
+            partitions=[
+                partition,
+                {"partition_id": "p2", "family": "theft_and_robbery", "target": 20, "status": "pending"},
+            ],
+        )
+        state["request_stats"] = bulk.merge_request_stats(state["request_stats"], delta)
+        order = bulk.fair_partition_order(
+            state["partitions"],
+            {"hurt_and_assault": 20, "theft_and_robbery": 20},
+            {},
+            cursor=1,
+        )
+
+        self.assertEqual(state["request_stats"]["total_requests"], 121)
+        self.assertEqual([partition["partition_id"] for partition in order], ["p2"])
+
+    def test_resume_scheduler_order_is_deterministic_and_counters_are_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            partitions = [
+                {
+                    "partition_id": "p1",
+                    "family": "homicide",
+                    "target": 5,
+                    "status": "pending",
+                    "scheduler_visits": 1,
+                    "metrics": {"total_requests": 10, "reviewable_added": 2},
+                },
+                {
+                    "partition_id": "p2",
+                    "family": "theft_and_robbery",
+                    "target": 5,
+                    "status": "pending",
+                    "scheduler_visits": 1,
+                    "metrics": {"total_requests": 8, "reviewable_added": 1},
+                },
+                {
+                    "partition_id": "p3",
+                    "family": "cheating_and_fraud",
+                    "target": 5,
+                    "status": "pending",
+                    "scheduler_visits": 0,
+                    "metrics": {"total_requests": 0, "reviewable_added": 0},
+                },
+            ]
+            state = bulk.create_run_state(
+                "bulk_20260904_060000_eeee",
+                strategy_version="v2",
+                query_manifest="synthetic.json",
+                target_count=15,
+                api_budget=100,
+                partitions=partitions,
+            )
+            state["scheduler"] = {"cursor": 1, "policy": "target_aware_round_robin"}
+            state["request_stats"]["total_requests"] = 18
+            bulk.start_new_run(root, state)
+
+            loaded = bulk.load_run_state(root, "bulk_20260904_060000_eeee")
+            targets = {"homicide": 5, "theft_and_robbery": 5, "cheating_and_fraud": 5}
+            order_before = [p["partition_id"] for p in bulk.fair_partition_order(partitions, targets, {}, cursor=1)]
+            order_after = [p["partition_id"] for p in bulk.fair_partition_order(loaded["partitions"], targets, {}, cursor=1)]
+
+            self.assertEqual(order_before, order_after)
+            self.assertEqual(loaded["request_stats"]["total_requests"], 18)
+            self.assertEqual(loaded["partitions"][0]["metrics"]["total_requests"], 10)
+
 
 if __name__ == "__main__":
     unittest.main()

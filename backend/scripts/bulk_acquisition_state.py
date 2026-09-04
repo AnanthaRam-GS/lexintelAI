@@ -94,6 +94,174 @@ def empty_request_stats() -> dict[str, Any]:
     }
 
 
+def empty_partition_metrics() -> dict[str, Any]:
+    return {
+        "search_requests": 0,
+        "document_requests": 0,
+        "metadata_requests": 0,
+        "original_requests": 0,
+        "total_requests": 0,
+        "search_candidates": 0,
+        "unique_candidates": 0,
+        "reviewable_added": 0,
+        "pre_download_rejected": 0,
+        "duplicates": 0,
+        "failures": 0,
+        "calls_per_reviewable": None,
+    }
+
+
+def ensure_partition_metrics(partition: dict[str, Any]) -> dict[str, Any]:
+    metrics = dict(empty_partition_metrics())
+    metrics.update(partition.get("metrics") or {})
+    reviewable = int(metrics.get("reviewable_added") or 0)
+    total = int(metrics.get("total_requests") or 0)
+    metrics["calls_per_reviewable"] = round(total / reviewable, 2) if reviewable else None
+    partition["metrics"] = metrics
+    partition.setdefault("scheduler_visits", 0)
+    partition.setdefault("next_page", len(partition.get("pages_completed") or []))
+    return metrics
+
+
+def request_stats_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
+    delta = empty_request_stats()
+    delta["total_requests"] = max(0, int(after.get("total_requests", 0)) - int(before.get("total_requests", 0)))
+    for group in ("requests_by_endpoint", "responses_by_category"):
+        for key in delta[group]:
+            delta[group][key] = max(0, int(after.get(group, {}).get(key, 0)) - int(before.get(group, {}).get(key, 0)))
+    return delta
+
+
+def record_partition_metrics(
+    partition: dict[str, Any],
+    request_delta: dict[str, Any],
+    *,
+    search_candidates: int = 0,
+    unique_candidates: int = 0,
+    reviewable_added: int = 0,
+    pre_download_rejected: int = 0,
+    duplicates: int = 0,
+    failures: int = 0,
+) -> dict[str, Any]:
+    metrics = ensure_partition_metrics(partition)
+    endpoints = request_delta.get("requests_by_endpoint", {})
+    metrics["search_requests"] += int(endpoints.get("search", 0))
+    metrics["document_requests"] += int(endpoints.get("document", 0))
+    metrics["metadata_requests"] += int(endpoints.get("metadata", 0))
+    metrics["original_requests"] += int(endpoints.get("original_document", 0))
+    metrics["total_requests"] += int(request_delta.get("total_requests", 0))
+    metrics["search_candidates"] += int(search_candidates)
+    metrics["unique_candidates"] += int(unique_candidates)
+    metrics["reviewable_added"] += int(reviewable_added)
+    metrics["pre_download_rejected"] += int(pre_download_rejected)
+    metrics["duplicates"] += int(duplicates)
+    metrics["failures"] += int(failures)
+    reviewable = int(metrics.get("reviewable_added") or 0)
+    metrics["calls_per_reviewable"] = round(int(metrics["total_requests"]) / reviewable, 2) if reviewable else None
+    partition["metrics"] = metrics
+    return metrics
+
+
+def family_counts_from_candidates(candidates: list[dict[str, Any]]) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for record in candidates:
+        if record.get("status") in {"validated", "needs_review"}:
+            counts[str(record.get("offence_family"))] += 1
+    return dict(counts)
+
+
+def active_partition_status(status: str | None) -> bool:
+    return status not in {"completed", "failed", "paused_low_yield"}
+
+
+def family_progress(
+    partitions: list[dict[str, Any]],
+    family_targets: dict[str, int],
+    family_current: dict[str, int] | None = None,
+) -> dict[str, dict[str, Any]]:
+    current = family_current or {}
+    progress: dict[str, dict[str, Any]] = {
+        family: {
+            "target": int(target),
+            "current": int(current.get(family, 0)),
+            "gap": max(int(target) - int(current.get(family, 0)), 0),
+            "partitions_active": 0,
+            "partitions_paused_low_yield": 0,
+            "requests_spent": 0,
+            "reviewable_yield": 0,
+        }
+        for family, target in family_targets.items()
+    }
+    for partition in partitions:
+        family = str(partition.get("family") or "unknown")
+        if family not in progress:
+            progress[family] = {
+                "target": 0,
+                "current": int(current.get(family, 0)),
+                "gap": 0,
+                "partitions_active": 0,
+                "partitions_paused_low_yield": 0,
+                "requests_spent": 0,
+                "reviewable_yield": 0,
+            }
+        metrics = ensure_partition_metrics(partition)
+        if active_partition_status(partition.get("status")):
+            progress[family]["partitions_active"] += 1
+        if partition.get("status") == "paused_low_yield":
+            progress[family]["partitions_paused_low_yield"] += 1
+        progress[family]["requests_spent"] += int(metrics.get("total_requests") or partition.get("request_count") or 0)
+        progress[family]["reviewable_yield"] += int(metrics.get("reviewable_added") or partition.get("current_reviewable") or 0)
+    return progress
+
+
+def fair_partition_order(
+    partitions: list[dict[str, Any]],
+    family_targets: dict[str, int],
+    family_current: dict[str, int] | None = None,
+    cursor: int = 0,
+) -> list[dict[str, Any]]:
+    current = family_current or {}
+    total = len(partitions) or 1
+
+    def sort_key(index_partition: tuple[int, dict[str, Any]]) -> tuple[int, int, int, int, str]:
+        index, partition = index_partition
+        family = str(partition.get("family") or "")
+        target = int(family_targets.get(family, partition.get("target") or 0))
+        gap = max(target - int(current.get(family, 0)), 0)
+        represented = 1 if int(current.get(family, 0)) > 0 else 0
+        rotated = (index - cursor) % total
+        return (represented, int(partition.get("scheduler_visits") or 0), -gap, rotated, str(partition.get("partition_id") or ""))
+
+    eligible = [
+        (index, partition)
+        for index, partition in enumerate(partitions)
+        if int(partition.get("target") or 0) > 0
+        and active_partition_status(partition.get("status"))
+        and max(int(family_targets.get(str(partition.get("family") or ""), partition.get("target") or 0)) - int(current.get(str(partition.get("family") or ""), 0)), 0) > 0
+    ]
+    return [partition for _, partition in sorted(eligible, key=sort_key)]
+
+
+def low_yield_guard_triggered(partition: dict[str, Any], guard: dict[str, Any] | None) -> bool:
+    guard = guard or {}
+    if not guard.get("enabled", True):
+        return False
+    metrics = ensure_partition_metrics(partition)
+    unique_candidates = int(metrics.get("unique_candidates") or 0)
+    total_requests = int(metrics.get("total_requests") or 0)
+    reviewable = int(metrics.get("reviewable_added") or 0)
+    min_candidates = int(guard.get("min_unique_candidates", guard.get("min_candidates_processed", 0)) or 0)
+    if unique_candidates < min_candidates:
+        return False
+    max_without = int(guard.get("max_requests_without_reviewable", 0) or 0)
+    if reviewable == 0 and max_without and total_requests >= max_without:
+        return True
+    max_calls = guard.get("max_calls_per_reviewable")
+    if reviewable and max_calls is not None and (total_requests / reviewable) > float(max_calls):
+        return True
+    return False
+
+
 def partition_from_query(query: dict[str, Any], target: int, max_pages: int, budget: int | None = None) -> dict[str, Any]:
     return {
         "partition_id": str(query["query_id"]),
@@ -113,6 +281,9 @@ def partition_from_query(query: dict[str, Any], target: int, max_pages: int, bud
         "request_budget": budget,
         "request_count": 0,
         "max_pages": max_pages,
+        "next_page": 0,
+        "scheduler_visits": 0,
+        "metrics": empty_partition_metrics(),
     }
 
 

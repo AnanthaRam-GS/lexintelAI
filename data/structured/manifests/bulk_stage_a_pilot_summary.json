@@ -1,79 +1,250 @@
 {
-  "run_id": "bulk_20260904_000000_stagea",
-  "stage_id": "stage_a_500",
-  "planned_target": 500,
-  "status": "stopped_budget",
-  "completed_gate": "A1",
+  "api_accounting": {
+    "acquisition_requests": 700,
+    "configured_cumulative_budget_at_stop": 700,
+    "recovery_excluded_from_yield": true,
+    "recovery_or_maintenance_requests": 62,
+    "request_stats_by_endpoint": {
+      "document": 296,
+      "metadata": 296,
+      "original_document": 75,
+      "other": 0,
+      "search": 33
+    },
+    "responses_by_category": {
+      "2xx": 700,
+      "429": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "other": 0
+    },
+    "total_provider_requests": 762
+  },
   "attempted_gate": "A2_checkpoint_75",
+  "completed_gate": "A1",
+  "court_distribution": {
+    "district_or_sessions": 6,
+    "high_court": 49,
+    "supreme_court": 7
+  },
+  "deviations": [
+    "No live acquisition was performed in R1.",
+    "Existing pre-R1 run state was preserved and not rewritten to fabricate historical per-partition metrics.",
+    "Recovery/maintenance original-document calls are counted separately from acquisition yield."
+  ],
+  "family_distribution": {
+    "cheating_and_fraud": 12,
+    "homicide": 29,
+    "theft_and_robbery": 21
+  },
+  "family_progress": {
+    "cheating_and_fraud": {
+      "current": 12,
+      "gap": 38,
+      "partitions_active": 0,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 12,
+      "target": 50
+    },
+    "conspiracy_common_intention": {
+      "current": 0,
+      "gap": 45,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 45
+    },
+    "criminal_breach_of_trust": {
+      "current": 0,
+      "gap": 35,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 35
+    },
+    "dowry_and_domestic_cruelty": {
+      "current": 0,
+      "gap": 45,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 45
+    },
+    "homicide": {
+      "current": 29,
+      "gap": 31,
+      "partitions_active": 0,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 29,
+      "target": 60
+    },
+    "hurt_and_assault": {
+      "current": 0,
+      "gap": 55,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 55
+    },
+    "kidnapping": {
+      "current": 0,
+      "gap": 35,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 35
+    },
+    "narcotics_related": {
+      "current": 0,
+      "gap": 45,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 45
+    },
+    "other": {
+      "current": 0,
+      "gap": 25,
+      "partitions_active": 2,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 25
+    },
+    "sexual_offences": {
+      "current": 0,
+      "gap": 55,
+      "partitions_active": 1,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 0,
+      "target": 55
+    },
+    "theft_and_robbery": {
+      "current": 21,
+      "gap": 29,
+      "partitions_active": 0,
+      "partitions_paused_low_yield": 0,
+      "requests_spent": "not_available_pre_r1",
+      "reviewable_yield": 21,
+      "target": 50
+    }
+  },
+  "funnel_semantics": {
+    "candidate_manifest_records": 64,
+    "document_api_candidates": "296 document endpoint requests; pre-R1 did not persist unique per-partition document-attempt counters",
+    "metadata_api_candidates": "296 metadata endpoint requests; pre-R1 did not persist unique per-partition metadata-attempt counters",
+    "original_download_attempts": 75,
+    "pre_download_rejected_records": 2,
+    "reconciliation": "75 original attempts are acquisition calls, while 64 is the durable candidate-manifest count after screening/upsert; 62 unique records remain reviewable with restored local raw files.",
+    "reviewable_unique_records": 62,
+    "search_result_occurrences": "not_reconstructable_from_provider_responses_pre_r1; audit has 227 considered source-id rows",
+    "successful_unique_originals": 62,
+    "unique_source_ids_seen": 227
+  },
   "gate_metrics": [
     {
-      "gate": "A1",
-      "target": 50,
-      "new_reviewable": 50,
-      "cumulative_reviewable": 50,
-      "api_calls": 319,
+      "acquisition_requests": 319,
       "calls_per_reviewable": 6.38,
+      "cumulative_reviewable": 50,
       "duplicates": 0,
       "failures": 0,
-      "stop_reason": "target_reached"
+      "gate": "A1",
+      "new_reviewable": 50,
+      "stop_reason": "target_reached",
+      "target": 50
     },
     {
-      "gate": "A2_checkpoint_75",
-      "target": 75,
-      "new_reviewable": 12,
-      "cumulative_reviewable": 62,
-      "api_calls": 381,
+      "acquisition_requests": 381,
       "calls_per_new_reviewable": 31.75,
+      "cumulative_reviewable": 62,
       "duplicates": 0,
       "failures": 0,
-      "stop_reason": "stopped_budget"
+      "gate": "A2_checkpoint_75",
+      "new_reviewable": 12,
+      "stop_reason": "stopped_budget",
+      "target": 75
     }
   ],
-  "cumulative_metrics": {
-    "search_candidates": 64,
-    "unique_candidates": 64,
-    "pre_download_rejects": 2,
-    "document_api_analyzes": 296,
-    "original_documents_downloaded": 75,
-    "durable_reviewable_candidates": 62,
-    "duplicates_by_source_id": 0,
-    "duplicates_by_sha": 0,
-    "provider_failures": 0,
-    "retry_events": 0,
-    "total_api_calls": 700,
-    "calls_per_reviewable": 11.29
+  "hash_verification": {
+    "checked": 62,
+    "matches": 62,
+    "mismatches": 0,
+    "missing": 0
   },
-  "api_usage": {
-    "search": 33,
-    "document": 296,
-    "metadata": 296,
-    "original_document": 75,
-    "other": 0,
-    "total": 700,
-    "configured_budget": 700
+  "invariants": {
+    "candidate_records_equal_reviewable_plus_pre_download_rejects": true,
+    "hash_mismatches_zero": true,
+    "review_entries_equal_reviewable_records": true,
+    "successful_unique_originals_equal_reviewable_records": true
   },
-  "family_distribution": {
-    "homicide": 29,
-    "theft_and_robbery": 21,
-    "cheating_and_fraud": 12
+  "legal_regime_distribution": {
+    "bns_bnss": 0,
+    "ipc_crpc": 62,
+    "mixed_or_transition": 0,
+    "unknown": 0
   },
-  "family_gaps": {
-    "homicide": 31,
-    "hurt_and_assault": 55,
-    "theft_and_robbery": 29,
-    "cheating_and_fraud": 38,
-    "criminal_breach_of_trust": 35,
-    "kidnapping": 35,
-    "sexual_offences": 55,
-    "dowry_and_domestic_cruelty": 45,
-    "conspiracy_common_intention": 45,
-    "narcotics_related": 45,
-    "other": 25
+  "low_yield_guard": {
+    "action": "pause_partition_and_rotate",
+    "enabled": true,
+    "max_calls_per_reviewable": 30.0,
+    "max_requests_without_reviewable": 120,
+    "min_unique_candidates": 20
   },
-  "court_distribution": {
-    "high_court": 49,
-    "supreme_court": 7,
-    "district_or_sessions": 6
+  "planned_target": 500,
+  "quality_guards": {
+    "budget_efficiency_requires_scheduler_tuning": true,
+    "catastrophic_non_judgment_noise": false,
+    "family_coverage_balanced_enough_for_scale": false,
+    "pdf_native_text_coverage_100_percent": true,
+    "provider_failure_rate_le_5_percent": true
+  },
+  "r1_live_acquisition_performed": false,
+  "recommendation": "PILOT TUNING VALIDATED - READY TO RESUME TOWARD 150",
+  "run_id": "bulk_20260904_000000_stagea",
+  "scheduler_policy": {
+    "algorithm": "target_aware_round_robin",
+    "cursor_state": "state.scheduler.cursor",
+    "tie_breakers": [
+      "scheduler_visits",
+      "largest_family_gap",
+      "rotating_partition_index",
+      "partition_id"
+    ],
+    "unit": "one_search_page_per_partition_visit",
+    "zero_representation_priority": true
+  },
+  "stage_id": "stage_a_500",
+  "status": "stopped_budget",
+  "storage_metrics": {
+    "maximum_bytes": 1616100,
+    "mean_bytes": 359553.52,
+    "median_bytes": 343984.0,
+    "minimum_bytes": 14171,
+    "raw_files": 62,
+    "total_bytes": 22292318
+  },
+  "temporal_distribution": {
+    "recent_ipc": 62
+  },
+  "text_extraction_metrics": {
+    "html_or_text_documents": 6,
+    "overall_text_availability_percent": 100.0,
+    "overall_usable_text_documents": 62,
+    "pdf_coverage_percent": 100.0,
+    "pdf_documents": 56,
+    "pdf_empty": 0,
+    "pdf_failed": 0,
+    "pdf_sparse": 0,
+    "pdf_usable": 56
   },
   "year_distribution": {
     "2018": 4,
@@ -84,51 +255,5 @@
     "2023": 9,
     "2024": 23,
     "unknown": 2
-  },
-  "temporal_distribution": {
-    "recent_ipc": 62
-  },
-  "legal_regime_distribution": {
-    "ipc_crpc": 62,
-    "bns_bnss": 0,
-    "mixed_or_transition": 0,
-    "unknown": 0
-  },
-  "storage_metrics": {
-    "raw_files": 62,
-    "total_bytes": 22292318,
-    "mean_bytes": 359553.52,
-    "median_bytes": 343984,
-    "minimum_bytes": 14171,
-    "maximum_bytes": 1616100
-  },
-  "native_text_extraction": {
-    "usable": 56,
-    "sparse": 0,
-    "empty": 0,
-    "failed": 0,
-    "non_pdf_text_html": 6,
-    "coverage_percent": 90.32
-  },
-  "quality_guards": {
-    "provider_failure_rate_le_5_percent": true,
-    "native_text_usability_ge_90_percent": true,
-    "catastrophic_non_judgment_noise": false,
-    "family_coverage_balanced_enough_for_scale": false
-  },
-  "live_resume_validation": {
-    "checkpoint_pause_performed": true,
-    "resumed": true,
-    "counters_preserved": true,
-    "repeated_completed_work_observed": false,
-    "duplicate_records_after_resume": 0,
-    "retry_queue_preserved": true,
-    "batch_sequence_preserved": true
-  },
-  "deviations": [
-    "A2 stopped at 62 cumulative reviewable because the 700-call cumulative budget was reached before the 75-reviewable checkpoint.",
-    "A2 exposed insufficient per-candidate checkpointing for budget stops; code was updated before any further live acquisition.",
-    "Local raw files were accidentally removed during cleanup and restored from durable candidate source IDs using 62 original-document recovery calls.",
-    "Stage A did not continue to A3/A4 because budget efficiency and family coverage require tuning."
-  ]
+  }
 }
