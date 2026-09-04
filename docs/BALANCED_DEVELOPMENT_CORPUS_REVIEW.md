@@ -133,7 +133,7 @@ the accused as security for the amo
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -307,7 +307,7 @@ comp
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -495,7 +495,7 @@ IT infrastructure. It was further directed
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -635,7 +635,7 @@ Gujarat Maritime Board) moved applications under sectio
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -791,7 +791,7 @@ jurisdictio
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -959,7 +959,7 @@ Santosh Kuma
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1088,7 +1088,7 @@ examined one witness. The Trial Court, aft
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1142,7 +1142,7 @@ JUDGMENT/ORDER IN - CRIMINAL REVISION No. 1482 of 2019 at Allahabad Dated-13.5.2
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1263,7 +1263,7 @@ conducted in Sess
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1400,7 +1400,7 @@ trial court is partly accepted. Death
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1520,7 +1520,7 @@ The Hig
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1651,7 +1651,7 @@ Code of Criminal Procedure. Statements under S
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1809,7 +1809,7 @@ PRONOUNC
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -1967,7 +1967,7 @@ PRONOUNC
 
 Human decision:
 
-* Pending
+* Rejected
 
 Review notes:
 
@@ -2125,7 +2125,7 @@ accused persons namely Sh. Subhash H
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -2235,7 +2235,7 @@ caus
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -2396,7 +2396,7 @@ The Trial Court has framed charges against accused Nos.1 to
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -2411,7 +2411,7 @@ Review notes:
 * Acquisition status: validated
 * Acquisition query/query ID: criminal appeal IPC conviction sentence
 * Retrieval rank: 2
-* Assigned offence family: other
+* Assigned offence family: homicide
 * Current legal regime value: ipc_crpc
 
 ### Court Metadata
@@ -2559,7 +2559,7 @@ imprisonment and a fine
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -2574,7 +2574,7 @@ Review notes:
 * Acquisition status: validated
 * Acquisition query/query ID: criminal appeal IPC conviction sentence
 * Retrieval rank: 6
-* Assigned offence family: other
+* Assigned offence family: hurt_and_assault
 * Current legal regime value: ipc_crpc
 
 ### Court Metadata
@@ -2775,7 +2775,7 @@ PASSED BY THE I ADDL. DISTRICT AND SES
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -2920,7 +2920,7 @@ against the re
 
 Human decision:
 
-* Pending
+* Rejected
 
 Review notes:
 
@@ -3042,7 +3042,7 @@ Source of implication is memo under Section 27 of
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3152,7 +3152,7 @@ applicant record
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3282,7 +3282,7 @@ them as, he is the police of Narcotic Intelligence Burea
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3420,7 +3420,7 @@ seized all the pullanda
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3474,7 +3474,7 @@ JUDGMENT/ORDER IN - CAPITAL CASES No. 4 of 2019 at Allahabad Dated-16.10.2023 CA
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3599,7 +3599,7 @@ and Azizul Hoque were handed over to the Police.
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3757,7 +3757,7 @@ Uddin Mazarbhuya was returning home from Si
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -3912,7 +3912,7 @@ Section 31 Cr.P.C.
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -4039,7 +4039,7 @@ son, Amit Nayak, aged about 15 years, went missing since 10-00 a.m. on 09.05.201
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
@@ -4176,7 +4176,7 @@ Patna High Court CR. APP (DB) No.427 of
 
 Human decision:
 
-* Pending
+* Accepted
 
 Review notes:
 
