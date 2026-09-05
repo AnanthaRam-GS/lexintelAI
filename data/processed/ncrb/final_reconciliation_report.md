@@ -1,5 +1,7 @@
-# FINAL STRUCTURAL RECONCILIATION REPORT
+# FINAL STRUCTURAL RECONCILIATION REPORT (HISTORICAL INTERMEDIATE ARTIFACT)
 ## NCRB Table 1A.4 Pages 48-79 Extraction
+
+> **Historical status:** This report preserves the intermediate reconciliation performed before the continuation extraction was completed. Its incomplete-extraction counts, missing-aggregate findings, and original recommendation are retained for audit history only and are superseded by the completed extraction and combined dataset documented below.
 
 **Generated:** 2026-09-04 12:15:32
 
@@ -289,7 +291,7 @@ The extraction assigns HIGH confidence to all records, but:
 
 ---
 
-## 12. FINAL RECOMMENDATION
+## 12. HISTORICAL INTERMEDIATE RECOMMENDATION (SUPERSEDED)
 
 ### Status: ?? **CONDITIONAL PASS WITH REQUIRED FIX**
 
@@ -333,7 +335,20 @@ The extraction assigns HIGH confidence to all records, but:
 3. Inconsistent with existing pages 1-47 structure (which includes aggregates)
 4. Data integrity cannot be verified without complete aggregate coverage
 
-**Next Step:** Fix extraction script and re-extract pages 48-79 with complete aggregate row capture.
+**Historical next step:** Fix extraction script and re-extract pages 48-79 with complete aggregate row capture. This was subsequently completed; see the superseding result below.
+
+## 13. SUPERSEDING COMPLETION RESULT
+
+The continuation extraction was subsequently completed and combined with the validated pages 1-47 dataset. The final combined dataset is `ncrb_stats_2024_complete.csv` and contains:
+
+- **6,139 rows**
+- **39 entities**
+- **36 individual State/UT entities**: 29 States + 7 UTs
+- **3 aggregate entities**: `TOTAL STATE(S)`, `TOTAL UT(S)`, and `TOTAL ALL INDIA`
+- **158 offense categories**
+- **0 duplicate logical keys** (`year`, `state`, `offense_category`, `ipc_section`)
+
+All earlier missing-aggregate findings and the instruction not to proceed refer only to the intermediate extraction captured in this historical report. They do not describe the final combined dataset.
 
 ---
 

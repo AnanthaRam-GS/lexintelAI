@@ -37,18 +37,18 @@
 ## Extraction Statistics
 
 ### Record Counts
-- **Total Records Extracted:** 2331
-- **NULL Case Counts:** 0
+- **Total Records Extracted:** 2395
+- **Blank Case Counts:** 0
 - **Explicit Zeros:** 620
 - **Non-Zero Values:** 1711
 
 ### Confidence Distribution
-- **HIGH Confidence:** 2331 (100.0%)
+- **HIGH Confidence:** 2395 (100.0%)
 - **MEDIUM Confidence:** 0 (0.0%)
 - **LOW Confidence:** 0 (0.0%)
 
 ### Verification Status
-- **Auto-Extracted:** 2331
+- **Auto-Extracted:** 2395
 - **Visually Verified:** 0
 - **Review Required:** 0
 - **Unresolved:** 0
@@ -59,9 +59,9 @@
 - **Non-Integer Values:** 0
 
 ### Entity Coverage
-- **States/UTs Extracted:** 35
-- **Expected States/UTs:** 28 states + 8 UTs = 36
-- **Aggregate Rows:** 63
+- **Individual State/UT entities:** 36 (29 States + 7 UTs)
+- **Aggregate entities:** 3 (`TOTAL STATE(S)`, `TOTAL UT(S)`, `TOTAL ALL INDIA`)
+- **Aggregate rows:** 189 (3 aggregate entities x 63 crime heads)
 - **Crime Head Categories:** 63
 - **Expected Crime Heads:** 63
 
@@ -163,12 +163,12 @@ Manual spot-checks were performed on the following PDF pages against extracted C
 
 1. **Raw Extraction:** `ncrb_2024_table_1A4_pages_48_79_raw.csv`
    - Format: year, table_page, pdf_page, state, offense_category, column_start, column_end, ipc_section, bns_section, case_count_raw, case_count, extraction_method, confidence, verification_status
-   - Records: 2331
+  - Records: 2395
 
 2. **Standardized:** `ncrb_stats_2024_pages_48_79.csv`
    - Format: year, state, offense_category, ipc_section, bns_section, case_count, conviction_count, acquittal_count
-   - Records: 2331
-   - Note: conviction_count and acquittal_count are NULL (not available in this table)
+  - Records: 2395
+  - Note: conviction_count and acquittal_count are blank/NULL because conviction/acquittal outcomes are not provided at this source grain; no values were inferred.
 
 3. **Review File:** `ncrb_2024_table_1A4_pages_48_79_review.csv`
    - Records requiring manual review: 0
@@ -188,12 +188,10 @@ Manual spot-checks were performed on the following PDF pages against extracted C
 - [x] Create review file (empty - all records HIGH confidence)
 - [x] Generate audit report
 
-### ? Pending
-- [ ] **Create combined dataset** (after user approval of extraction validation)
-  - Combine validated pages 1-47 with new pages 48-79
-  - Output: `ncrb_2024_table_1A4_complete_raw.csv`
-  - Output: `ncrb_stats_2024_complete.csv`
-- [ ] User review and approval
+### ? Completed
+- [x] Combine validated pages 1-47 with pages 48-79
+- [x] Create `ncrb_stats_2024_complete.csv`
+- [x] Validate the combined dataset
 
 ---
 
@@ -202,7 +200,7 @@ Manual spot-checks were performed on the following PDF pages against extracted C
 **Status:** ? EXTRACTION VALIDATED
 
 - All 32 pages processed successfully
-- 2331 records extracted with HIGH confidence
+- 2395 records extracted with HIGH confidence
 - 0 records requiring manual review
 - All spot-checks passed
 - Existing files remain unchanged

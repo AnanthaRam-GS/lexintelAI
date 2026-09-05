@@ -1,7 +1,10 @@
-"""Validation script for NCRB Table 1A.4 datasets (Raw and Standardized).
+"""Validate the original NCRB Table 1A.4 pages 1-47 segment.
 
 Checks file existence, schema conformity, missing values, duplicates,
 numerical consistency, state/UT coverage, crime-head coverage, and aggregates.
+
+This script validates the original 47-page segment only. It does not validate
+the completed 6,139-row combined dataset.
 """
 
 import sys
@@ -70,7 +73,8 @@ def validate_table_1a4() -> Dict[str, Any]:
     print(f"  Total Raw Rows: {len(raw_rows)}")
     print(f"  Total Standardized Rows: {len(std_rows)}")
 
-    # Check year is 2024, conviction/acquittal are NULL in standardized
+    # Check year is 2024; outcomes remain blank because this source grain does
+    # not provide conviction or acquittal results.
     invalid_years = [r for r in std_rows if r.get("year") != "2024"]
     non_null_conviction = [r for r in std_rows if r.get("conviction_count") not in ("", None)]
     non_null_acquittal = [r for r in std_rows if r.get("acquittal_count") not in ("", None)]
@@ -121,7 +125,7 @@ def validate_table_1a4() -> Dict[str, Any]:
 
     print(f"\nF. STATE / UT COVERAGE AUDIT:")
     print(f"  Total unique state entities: {len(all_states)}")
-    print(f"  Individual States & UTs count: {len(individual_states_uts)} (Expected: 36: 28 States + 8 UTs)")
+    print(f"  Individual States & UTs count: {len(individual_states_uts)} (Expected: 36: 29 States + 7 UTs)")
     print(f"  Aggregate entities count: {len(aggregate_states)}: {aggregate_states}")
 
     # -------------------------------------------------------------

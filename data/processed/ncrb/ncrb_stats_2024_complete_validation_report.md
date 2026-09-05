@@ -18,8 +18,8 @@ The final combined output is:
 - Duplicate logical keys (year + state + offense_category + ipc_section): 0
 - NULL case_count: 41
 - zero case_count: 1836
-- NULL conviction_count: 0
-- NULL acquittal_count: 0
+- conviction_count: blank/NULL for all rows because conviction outcomes are not provided at this source grain; no values were inferred
+- acquittal_count: blank/NULL for all rows because acquittal outcomes are not provided at this source grain; no values were inferred
 - Missing IPC section: 1841
 - Missing BNS section: 4961
 - Invalid year: 0
