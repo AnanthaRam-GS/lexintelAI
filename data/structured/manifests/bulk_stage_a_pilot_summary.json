@@ -1,31 +1,31 @@
 {
   "api_accounting": {
-    "acquisition_requests": 1831,
+    "acquisition_requests": 1999,
     "configured_cumulative_budget_at_stop": 700,
     "recovery_excluded_from_yield": true,
     "recovery_or_maintenance_requests": 62,
     "request_stats_by_endpoint": {
-      "document": 748,
-      "metadata": 746,
-      "original_document": 251,
+      "document": 806,
+      "metadata": 805,
+      "original_document": 276,
       "other": 0,
-      "search": 86
+      "search": 112
     },
     "responses_by_category": {
-      "2xx": 1827,
+      "2xx": 1976,
       "429": 0,
-      "4xx": 0,
+      "4xx": 19,
       "5xx": 0,
       "other": 4
     },
-    "total_provider_requests": 1893
+    "total_provider_requests": 2061
   },
-  "attempted_gate": "R4_target_225",
+  "attempted_gate": "R5_target_300",
   "completed_gate": "A1",
   "court_distribution": {
-    "district_or_sessions": 10,
-    "high_court": 178,
-    "supreme_court": 31,
+    "district_or_sessions": 15,
+    "high_court": 196,
+    "supreme_court": 32,
     "unknown": 6
   },
   "deviations": [
@@ -35,15 +35,15 @@
   ],
   "family_distribution": {
     "cheating_and_fraud": 12,
-    "conspiracy_common_intention": 14,
-    "criminal_breach_of_trust": 8,
-    "dowry_and_domestic_cruelty": 22,
+    "conspiracy_common_intention": 19,
+    "criminal_breach_of_trust": 13,
+    "dowry_and_domestic_cruelty": 28,
     "homicide": 29,
     "hurt_and_assault": 12,
     "kidnapping": 17,
     "narcotics_related": 23,
     "other": 40,
-    "sexual_offences": 27,
+    "sexual_offences": 35,
     "theft_and_robbery": 21
   },
   "family_progress": {
@@ -57,30 +57,30 @@
       "target": 50
     },
     "conspiracy_common_intention": {
-      "current": 14,
-      "gap": 31,
-      "partitions_active": 1,
+      "current": 19,
+      "gap": 26,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 106,
-      "reviewable_yield": 14,
+      "requests_spent": 135,
+      "reviewable_yield": 19,
       "target": 45
     },
     "criminal_breach_of_trust": {
-      "current": 8,
-      "gap": 27,
-      "partitions_active": 1,
+      "current": 13,
+      "gap": 22,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 133,
-      "reviewable_yield": 8,
+      "requests_spent": 182,
+      "reviewable_yield": 13,
       "target": 35
     },
     "dowry_and_domestic_cruelty": {
-      "current": 22,
-      "gap": 23,
-      "partitions_active": 1,
+      "current": 28,
+      "gap": 17,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 142,
-      "reviewable_yield": 22,
+      "requests_spent": 179,
+      "reviewable_yield": 28,
       "target": 45
     },
     "homicide": {
@@ -95,27 +95,27 @@
     "hurt_and_assault": {
       "current": 12,
       "gap": 43,
-      "partitions_active": 1,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 154,
+      "requests_spent": 156,
       "reviewable_yield": 12,
       "target": 55
     },
     "kidnapping": {
       "current": 17,
       "gap": 18,
-      "partitions_active": 1,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 112,
+      "requests_spent": 116,
       "reviewable_yield": 17,
       "target": 35
     },
     "narcotics_related": {
       "current": 23,
       "gap": 22,
-      "partitions_active": 1,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 149,
+      "requests_spent": 153,
       "reviewable_yield": 23,
       "target": 45
     },
@@ -129,12 +129,12 @@
       "target": 25
     },
     "sexual_offences": {
-      "current": 27,
-      "gap": 28,
-      "partitions_active": 1,
+      "current": 35,
+      "gap": 20,
+      "partitions_active": 0,
       "partitions_paused_low_yield": 0,
-      "requests_spent": 146,
-      "reviewable_yield": 27,
+      "requests_spent": 189,
+      "reviewable_yield": 35,
       "target": 55
     },
     "theft_and_robbery": {
@@ -197,7 +197,7 @@
   },
   "legal_regime_distribution": {
     "bns_bnss": 13,
-    "ipc_crpc": 190,
+    "ipc_crpc": 214,
     "mixed_or_transition": 17,
     "unknown": 5
   },
@@ -1455,7 +1455,399 @@
       }
     }
   },
-  "recommendation": "READY FOR REVIEW - R4 reached 225 cumulative reviewable; do not continue toward 300 before QA",
+  "r5_continuation": {
+    "criminal_breach_of_trust_behavior": "continued improving: R5-only 49 requests for 5 reviewable = 9.8 calls/reviewable; cumulative partition 13 reviewable over 182 requests = 14.0; completed max pages without low-yield pause",
+    "cumulative_acquisition_requests": 1999,
+    "cumulative_calls_per_reviewable": 8.03,
+    "cumulative_court_distribution": {
+      "district_or_sessions": 15,
+      "high_court": 196,
+      "supreme_court": 32,
+      "unknown": 6
+    },
+    "cumulative_funnel": {
+      "document_api_candidates": 806,
+      "metadata_api_candidates": 805,
+      "original_download_attempts": 276,
+      "reviewable_unique_records": 249,
+      "search_result_occurrences": "not reconstructable from provider responses; durable candidate records=272",
+      "successful_unique_originals": 263,
+      "unique_source_ids_seen": 272
+    },
+    "cumulative_legal_regime_distribution": {
+      "bns_bnss": 13,
+      "ipc_crpc": 214,
+      "mixed_or_transition": 17,
+      "unknown": 5
+    },
+    "cumulative_temporal_distribution": {
+      "current_transition": 30,
+      "landmark_historical": 10,
+      "recent_ipc": 209
+    },
+    "cumulative_year_distribution": {
+      "1960": 1,
+      "1975": 2,
+      "1977": 1,
+      "1978": 1,
+      "1979": 1,
+      "1980": 1,
+      "2016": 2,
+      "2017": 1,
+      "2018": 30,
+      "2019": 35,
+      "2020": 29,
+      "2021": 20,
+      "2022": 18,
+      "2023": 43,
+      "2024": 34,
+      "2025": 14,
+      "2026": 13,
+      "unknown": 3
+    },
+    "deduplication": {
+      "active_duplicates": 0,
+      "duplicate_downloads_avoided": 0,
+      "duplicate_rejects": 1,
+      "sha_aliases": {},
+      "source_id_skips": "not tracked as explicit skip counter"
+    },
+    "durable_status_after_pre_fix_runner": "paused",
+    "ending_reviewable": 249,
+    "families_visited": [
+      "hurt_and_assault",
+      "criminal_breach_of_trust",
+      "kidnapping",
+      "sexual_offences",
+      "dowry_and_domestic_cruelty",
+      "conspiracy_common_intention",
+      "narcotics_related"
+    ],
+    "family_distribution": {
+      "cheating_and_fraud": {
+        "before": 12,
+        "cumulative": 12,
+        "gap": 38,
+        "new": 0,
+        "target": 50
+      },
+      "conspiracy_common_intention": {
+        "before": 14,
+        "cumulative": 19,
+        "gap": 26,
+        "new": 5,
+        "target": 45
+      },
+      "criminal_breach_of_trust": {
+        "before": 8,
+        "cumulative": 13,
+        "gap": 22,
+        "new": 5,
+        "target": 35
+      },
+      "dowry_and_domestic_cruelty": {
+        "before": 22,
+        "cumulative": 28,
+        "gap": 17,
+        "new": 6,
+        "target": 45
+      },
+      "homicide": {
+        "before": 29,
+        "cumulative": 29,
+        "gap": 31,
+        "new": 0,
+        "target": 60
+      },
+      "hurt_and_assault": {
+        "before": 12,
+        "cumulative": 12,
+        "gap": 43,
+        "new": 0,
+        "target": 55
+      },
+      "kidnapping": {
+        "before": 17,
+        "cumulative": 17,
+        "gap": 18,
+        "new": 0,
+        "target": 35
+      },
+      "narcotics_related": {
+        "before": 23,
+        "cumulative": 23,
+        "gap": 22,
+        "new": 0,
+        "target": 45
+      },
+      "other": {
+        "before": 40,
+        "cumulative": 40,
+        "gap": 0,
+        "new": 0,
+        "target": 25
+      },
+      "sexual_offences": {
+        "before": 27,
+        "cumulative": 35,
+        "gap": 20,
+        "new": 8,
+        "target": 55
+      },
+      "theft_and_robbery": {
+        "before": 21,
+        "cumulative": 21,
+        "gap": 29,
+        "new": 0,
+        "target": 50
+      }
+    },
+    "family_gap_cap_behavior": "held for R5; other remained 40/25 and received no new records despite temporal gaps",
+    "human_qa_sample": {
+      "path": "docs/BULK_PILOT_R5_REVIEW.md",
+      "sample_size": 15,
+      "selection_basis": "hurt/assault, criminal breach, low-count families, district/session, unusual regime, provider fallback, needs-review",
+      "statuses": "pending"
+    },
+    "hurt_and_assault_behavior": "R5-only 2 provider-failed search requests and 0 new reviewable records; cumulative partition remains 12 reviewable over 156 requests = 13.0; the pre-fix runner advanced pages on no-progress 4xx responses, now fixed for future resumes",
+    "incremental_api_requests": 168,
+    "incremental_calls_per_reviewable": 7.0,
+    "incremental_court_distribution": {
+      "district_or_sessions": 5,
+      "high_court": 18,
+      "supreme_court": 1
+    },
+    "incremental_funnel": {
+      "document_api_candidates": 58,
+      "metadata_api_candidates": 59,
+      "original_download_attempts": 25,
+      "reviewable_unique_records": 24,
+      "search_result_occurrences": "not reconstructable from provider responses; partition metrics search_candidates=25",
+      "successful_unique_originals": 25,
+      "unique_source_ids_seen": 25
+    },
+    "incremental_legal_regime_distribution": {
+      "ipc_crpc": 24
+    },
+    "incremental_requests_by_endpoint": {
+      "document": 58,
+      "metadata": 59,
+      "original_document": 25,
+      "other": 0,
+      "search": 26
+    },
+    "incremental_reviewable": 24,
+    "incremental_temporal_distribution": {
+      "recent_ipc": 24
+    },
+    "incremental_year_distribution": {
+      "2018": 2,
+      "2019": 3,
+      "2020": 3,
+      "2021": 5,
+      "2022": 4,
+      "2023": 6,
+      "2024": 1
+    },
+    "live_resume_integrity": {
+      "active_duplicates": 0,
+      "batch_numbering_continued": true,
+      "completed_work_replay": 0,
+      "historical_counters_preserved": true,
+      "partition_metrics_preserved": true,
+      "retry_queue_preserved": true,
+      "scheduler_state_preserved": true
+    },
+    "partition_outcomes": [
+      {
+        "calls_per_reviewable": null,
+        "document_requests": 0,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "hurt_and_assault",
+        "metadata_requests": 0,
+        "new_reviewable": 0,
+        "original_attempts": 0,
+        "partition_id": "bulk_recent_ipc_hurt_assault",
+        "pre_download_rejects": 0,
+        "requests": 2,
+        "search_candidates": 0,
+        "status": "completed",
+        "successful_originals": 0,
+        "unique_sources": 0
+      },
+      {
+        "calls_per_reviewable": 9.8,
+        "document_requests": 20,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "criminal_breach_of_trust",
+        "metadata_requests": 20,
+        "new_reviewable": 5,
+        "original_attempts": 5,
+        "partition_id": "bulk_recent_ipc_criminal_breach_trust",
+        "pre_download_rejects": 0,
+        "requests": 49,
+        "search_candidates": 5,
+        "status": "completed",
+        "successful_originals": 5,
+        "unique_sources": 5
+      },
+      {
+        "calls_per_reviewable": null,
+        "document_requests": 0,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "kidnapping",
+        "metadata_requests": 0,
+        "new_reviewable": 0,
+        "original_attempts": 0,
+        "partition_id": "bulk_recent_ipc_kidnapping",
+        "pre_download_rejects": 0,
+        "requests": 4,
+        "search_candidates": 0,
+        "status": "completed",
+        "successful_originals": 0,
+        "unique_sources": 0
+      },
+      {
+        "calls_per_reviewable": 5.38,
+        "document_requests": 15,
+        "duplicates": 1,
+        "failures": 0,
+        "family": "sexual_offences",
+        "metadata_requests": 15,
+        "new_reviewable": 8,
+        "original_attempts": 9,
+        "partition_id": "bulk_recent_ipc_sexual_offences",
+        "pre_download_rejects": 0,
+        "requests": 43,
+        "search_candidates": 9,
+        "status": "completed",
+        "successful_originals": 8,
+        "unique_sources": 9
+      },
+      {
+        "calls_per_reviewable": 6.17,
+        "document_requests": 13,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "dowry_and_domestic_cruelty",
+        "metadata_requests": 14,
+        "new_reviewable": 6,
+        "original_attempts": 6,
+        "partition_id": "bulk_recent_ipc_dowry_domestic_cruelty",
+        "pre_download_rejects": 0,
+        "requests": 37,
+        "search_candidates": 6,
+        "status": "completed",
+        "successful_originals": 6,
+        "unique_sources": 6
+      },
+      {
+        "calls_per_reviewable": 5.8,
+        "document_requests": 10,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "conspiracy_common_intention",
+        "metadata_requests": 10,
+        "new_reviewable": 5,
+        "original_attempts": 5,
+        "partition_id": "bulk_recent_ipc_conspiracy_common_intention",
+        "pre_download_rejects": 0,
+        "requests": 29,
+        "search_candidates": 5,
+        "status": "completed",
+        "successful_originals": 5,
+        "unique_sources": 5
+      },
+      {
+        "calls_per_reviewable": null,
+        "document_requests": 0,
+        "duplicates": 0,
+        "failures": 0,
+        "family": "narcotics_related",
+        "metadata_requests": 0,
+        "new_reviewable": 0,
+        "original_attempts": 0,
+        "partition_id": "bulk_recent_ipc_narcotics",
+        "pre_download_rejects": 0,
+        "requests": 4,
+        "search_candidates": 0,
+        "status": "completed",
+        "successful_originals": 0,
+        "unique_sources": 0
+      }
+    ],
+    "paused_low_yield_partitions": [],
+    "quality_guards": {
+      "duplicate_guard_triggered": true,
+      "family_gap_cap_triggered": true,
+      "global_budget_triggered": false,
+      "low_yield_triggered": false,
+      "partition_budget_triggered": false,
+      "provider_failure_triggered": true,
+      "quality_noise_triggered": false
+    },
+    "recommendation": "PILOT R5 NEEDS TUNING BEFORE 500",
+    "recovery_or_maintenance_requests": 62,
+    "starting_reviewable": 225,
+    "stop_reason": "provider_4xx_search_failures_and_no_remaining_safe_family_target_pages",
+    "storage": {
+      "incremental_downloaded_raw_files": {
+        "count": 25,
+        "maximum_bytes": 2195886,
+        "mean_bytes": 332672.12,
+        "median_bytes": 210005,
+        "minimum_bytes": 23708,
+        "total_bytes": 8316803
+      },
+      "incremental_reviewable_raw_files": {
+        "count": 24,
+        "maximum_bytes": 2195886,
+        "mean_bytes": 338373.08,
+        "median_bytes": 219866.0,
+        "minimum_bytes": 23708,
+        "total_bytes": 8120954
+      },
+      "raw_ignored": true,
+      "tracked_binaries": 0
+    },
+    "target_reviewable": 300,
+    "text_availability": {
+      "cumulative": {
+        "document_endpoint_fallback_count": 1,
+        "html_or_text_documents": 35,
+        "overall_text_availability_percent": 100.0,
+        "overall_usable_text_documents": 249,
+        "pdf_documents": 214,
+        "pdf_empty": 0,
+        "pdf_failed": 0,
+        "pdf_native_coverage_percent": 100.0,
+        "pdf_sparse": 0,
+        "pdf_usable": 214
+      },
+      "incremental": {
+        "document_endpoint_fallback_count": 0,
+        "html_or_text_documents": 4,
+        "overall_text_availability_percent": 100.0,
+        "overall_usable_text_documents": 24,
+        "pdf_documents": 20,
+        "pdf_empty": 0,
+        "pdf_failed": 0,
+        "pdf_native_coverage_percent": 100.0,
+        "pdf_sparse": 0,
+        "pdf_usable": 20
+      }
+    },
+    "transition_regime_qa": {
+      "new_bns_bnss": 0,
+      "new_mixed_or_transition": 0,
+      "qa_sample_includes_transition_records": false,
+      "suspicious_regime_behavior": "none from R5; no current-transition records acquired because other family gap was zero"
+    }
+  },
+  "recommendation": "PILOT R5 NEEDS TUNING BEFORE 500 - provider 4xx stop and max-page exhaustion left run at 249",
   "run_id": "bulk_20260904_000000_stagea",
   "scheduler_policy": {
     "algorithm": "target_aware_round_robin",
@@ -1470,30 +1862,31 @@
     "zero_representation_priority": true
   },
   "stage_id": "stage_a_500",
-  "status": "completed",
+  "status": "paused",
   "storage_metrics": {
-    "count": 225,
-    "maximum_bytes": 1949497,
-    "mean_bytes": 343291.56,
-    "median_bytes": 285334,
+    "count": 249,
+    "maximum_bytes": 2195886,
+    "mean_bytes": 342817.49,
+    "median_bytes": 263940,
     "minimum_bytes": 44,
-    "total_bytes": 77240601
+    "total_bytes": 85361555
   },
   "temporal_distribution": {
     "current_transition": 30,
     "landmark_historical": 10,
-    "recent_ipc": 185
+    "recent_ipc": 209
   },
   "text_extraction_metrics": {
-    "html_or_text_documents": 31,
+    "document_endpoint_fallback_count": 1,
+    "html_or_text_documents": 35,
     "overall_text_availability_percent": 100.0,
-    "overall_usable_text_documents": 225,
-    "pdf_documents": 194,
+    "overall_usable_text_documents": 249,
+    "pdf_documents": 214,
     "pdf_empty": 0,
     "pdf_failed": 0,
     "pdf_native_coverage_percent": 100.0,
     "pdf_sparse": 0,
-    "pdf_usable": 194
+    "pdf_usable": 214
   },
   "year_distribution": {
     "1960": 1,
@@ -1504,13 +1897,13 @@
     "1980": 1,
     "2016": 2,
     "2017": 1,
-    "2018": 28,
-    "2019": 32,
-    "2020": 26,
-    "2021": 15,
-    "2022": 14,
-    "2023": 37,
-    "2024": 33,
+    "2018": 30,
+    "2019": 35,
+    "2020": 29,
+    "2021": 20,
+    "2022": 18,
+    "2023": 43,
+    "2024": 34,
     "2025": 14,
     "2026": 13,
     "unknown": 3
