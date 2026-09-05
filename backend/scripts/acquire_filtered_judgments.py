@@ -654,6 +654,11 @@ def run_bulk_acquisition(
         delta = request_stats_delta(before_stats, partition_client.get_request_stats())
         if int(delta.get("total_requests", 0)) == 0 and before_stats == partition_client.get_request_stats() and prior_requests == 0:
             delta = partition_client.get_request_stats()
+        provider_stop = (
+            int(delta.get("responses_by_category", {}).get("429", 0))
+            + int(delta.get("responses_by_category", {}).get("4xx", 0))
+            + int(delta.get("responses_by_category", {}).get("5xx", 0))
+        ) > 0 and after_counts["total"] == before_counts["total"]
         record_partition_metrics(
             partition,
             delta,
@@ -675,6 +680,8 @@ def run_bulk_acquisition(
         max_pages_for_partition = int(partition.get("max_pages") or max_search_pages)
         if result != 0:
             partition["status"] = "failed"
+        elif provider_stop:
+            partition["status"] = "pending"
         elif partition["current_reviewable"] >= int(partition.get("target") or target_count) or partition["next_page"] >= max_pages_for_partition:
             partition["status"] = "completed"
         elif low_yield_guard_triggered(partition, low_yield_guard):
@@ -694,6 +701,11 @@ def run_bulk_acquisition(
             state["status"] = "failed"
             save_run_state(state_root, state)
             return result
+        if provider_stop:
+            state["status"] = "stopped_provider"
+            save_run_state(state_root, state)
+            print(f"bulk run stopped on provider response: {selected_run_id}")
+            return 0
 
     refresh_bulk_state_counts(state, load_manifest(candidates_path))
     terminal_statuses = {"completed", "failed", "paused_low_yield"}
