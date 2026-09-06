@@ -1,0 +1,45 @@
+{
+  "index_version": "legalai-chroma-index-v1",
+  "collection_name": "legalai_trusted_judgments_v1",
+  "embedding_model": "deterministic-mock",
+  "embedding_dimension": 32,
+  "normalized": true,
+  "input_chunk_count": 1356,
+  "indexed_chunk_count": 1356,
+  "failed_chunk_count": 0,
+  "document_count": 70,
+  "source_type_counts": {
+    "document_text_fallback": 1,
+    "local_text": 225,
+    "pdf_native": 1130
+  },
+  "regime_counts": {
+    "bns_bnss": 13,
+    "ipc_crpc": 1277,
+    "mixed_or_transition": 31,
+    "unknown": 35
+  },
+  "family_counts": {
+    "cheating_and_fraud": 146,
+    "conspiracy_common_intention": 197,
+    "criminal_breach_of_trust": 37,
+    "dowry_and_domestic_cruelty": 98,
+    "homicide": 288,
+    "hurt_and_assault": 97,
+    "kidnapping": 111,
+    "narcotics_related": 118,
+    "other": 41,
+    "sexual_offences": 168,
+    "theft_and_robbery": 55
+  },
+  "build_timestamp": "2026-09-06T19:59:52.504488+00:00",
+  "build_mode": "mock_validation_only",
+  "persist_dir": "chroma_store",
+  "inserted": 1356,
+  "updated": 0,
+  "skipped_unchanged": 0,
+  "collection_count": 1356,
+  "failures": [],
+  "model_available_locally": false,
+  "semantic_validation": "deferred_until_real_bge_m3_available"
+}
