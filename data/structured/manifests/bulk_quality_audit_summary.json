@@ -1,0 +1,512 @@
+{
+  "generated_at": "2026-09-06T18:54:43.689830+00:00",
+  "run_id": "bulk_20260904_000000_stagea",
+  "corpus_size": 249,
+  "sample_size": 50,
+  "sampling_strategy": {
+    "version": "bulk-quality-audit-stratified-v1",
+    "random_seed": "legalai-phase0-step0.4l",
+    "target_sample_size": 50,
+    "algorithm": [
+      "filter durable reviewable bulk records only",
+      "guarantee one record for each populated offence family",
+      "guarantee populated legal-regime, temporal-track, and court-level representation",
+      "force bounded special-case coverage",
+      "fill remaining slots proportionally by offence-family distribution using stable SHA-256 ordering"
+    ]
+  },
+  "sampling_distribution": {
+    "offence_family": {
+      "cheating_and_fraud": {
+        "corpus_count": 12,
+        "sample_count": 2
+      },
+      "conspiracy_common_intention": {
+        "corpus_count": 19,
+        "sample_count": 4
+      },
+      "criminal_breach_of_trust": {
+        "corpus_count": 13,
+        "sample_count": 3
+      },
+      "dowry_and_domestic_cruelty": {
+        "corpus_count": 28,
+        "sample_count": 6
+      },
+      "homicide": {
+        "corpus_count": 29,
+        "sample_count": 6
+      },
+      "hurt_and_assault": {
+        "corpus_count": 12,
+        "sample_count": 2
+      },
+      "kidnapping": {
+        "corpus_count": 17,
+        "sample_count": 3
+      },
+      "narcotics_related": {
+        "corpus_count": 23,
+        "sample_count": 6
+      },
+      "other": {
+        "corpus_count": 40,
+        "sample_count": 13
+      },
+      "sexual_offences": {
+        "corpus_count": 35,
+        "sample_count": 2
+      },
+      "theft_and_robbery": {
+        "corpus_count": 21,
+        "sample_count": 3
+      }
+    },
+    "legal_regime": {
+      "bns_bnss": {
+        "corpus_count": 13,
+        "sample_count": 5
+      },
+      "ipc_crpc": {
+        "corpus_count": 214,
+        "sample_count": 37
+      },
+      "mixed_or_transition": {
+        "corpus_count": 17,
+        "sample_count": 5
+      },
+      "unknown": {
+        "corpus_count": 5,
+        "sample_count": 3
+      }
+    },
+    "temporal_track": {
+      "current_transition": {
+        "corpus_count": 30,
+        "sample_count": 10
+      },
+      "landmark_historical": {
+        "corpus_count": 10,
+        "sample_count": 3
+      },
+      "recent_ipc": {
+        "corpus_count": 209,
+        "sample_count": 37
+      }
+    },
+    "court": {
+      "district_or_sessions": {
+        "corpus_count": 15,
+        "sample_count": 7
+      },
+      "high_court": {
+        "corpus_count": 196,
+        "sample_count": 34
+      },
+      "supreme_court": {
+        "corpus_count": 32,
+        "sample_count": 6
+      },
+      "unknown": {
+        "corpus_count": 6,
+        "sample_count": 3
+      }
+    }
+  },
+  "special_case_counts": {
+    "needs_review_ambiguous_automated": 19,
+    "current_transition": 10,
+    "mixed_or_transition": 5,
+    "unknown_regime": 3,
+    "district_or_sessions": 7,
+    "fallback_document_text_records": 1,
+    "low_yield_partitions": 8
+  },
+  "reviewed_count": 50,
+  "pending_count": 0,
+  "human_audit_state": {
+    "pending": 0,
+    "reviewed": 50,
+    "accepted_for_rag": 42,
+    "rejected_for_rag": 7,
+    "needs_review": 1
+  },
+  "metrics": {
+    "reviewed_count": 50,
+    "metrics_available": true,
+    "criminal_relevance_precision": {
+      "numerator": 43,
+      "denominator": 50,
+      "percent": 86.0
+    },
+    "document_type_precision": {
+      "numerator": 47,
+      "denominator": 50,
+      "percent": 94.0
+    },
+    "offence_family_accuracy": {
+      "numerator": 33,
+      "denominator": 42,
+      "percent": 78.57
+    },
+    "legal_regime_accuracy": {
+      "numerator": 48,
+      "denominator": 50,
+      "percent": 96.0
+    },
+    "court_metadata_accuracy": {
+      "numerator": 47,
+      "denominator": 47,
+      "percent": 100.0
+    },
+    "exact_decision_date_accuracy_completeness": {
+      "numerator": 0,
+      "denominator": 50,
+      "percent": 0.0
+    },
+    "year_accuracy": {
+      "numerator": 49,
+      "denominator": 50,
+      "percent": 98.0
+    },
+    "text_usability_rate": {
+      "numerator": 50,
+      "denominator": 50,
+      "percent": 100.0
+    },
+    "duplicate_or_noise_problem_rate": {
+      "numerator": 7,
+      "denominator": 50,
+      "percent": 14.0
+    },
+    "clean_record_rate": {
+      "numerator": 43,
+      "denominator": 50,
+      "percent": 86.0
+    },
+    "rag_suitability_rate": {
+      "numerator": 42,
+      "denominator": 50,
+      "percent": 84.0
+    },
+    "any_human_correction_rate": {
+      "numerator": 50,
+      "denominator": 50,
+      "percent": 100.0
+    },
+    "offence_family_correction_rate": {
+      "numerator": 9,
+      "denominator": 50,
+      "percent": 18.0
+    },
+    "legal_regime_correction_rate": {
+      "numerator": 2,
+      "denominator": 50,
+      "percent": 4.0
+    },
+    "court_metadata_correction_rate": {
+      "numerator": 0,
+      "denominator": 50,
+      "percent": 0.0
+    },
+    "date_metadata_correction_rate": {
+      "numerator": 50,
+      "denominator": 50,
+      "percent": 100.0
+    },
+    "label_correction_rate": {
+      "numerator": 11,
+      "denominator": 50,
+      "percent": 22.0
+    },
+    "uncertainty_rate": {
+      "numerator": 11,
+      "denominator": 450,
+      "percent": 2.44
+    },
+    "denominator_accounting": {
+      "offence_family_accuracy": {
+        "reviewed": 50,
+        "included_determinate_criminal_or_rag_reviewable": 42,
+        "excluded_rag_rejected_noncriminal_or_noise": 7,
+        "excluded_uncertain_nonrejected": 1,
+        "policy": "Exclude RAG-rejected non-criminal/noise records and uncertain family reviews; offence family is not meaningful for rejected non-criminal noise."
+      },
+      "legal_regime_accuracy": {
+        "reviewed": 50,
+        "included_determinate": 50,
+        "excluded_uncertain": 0,
+        "policy": "Include rejected records when regime was still determinately reviewable from the legal/source text; exclude only uncertain reviews."
+      },
+      "court_metadata_accuracy": {
+        "reviewed": 50,
+        "included_determinate": 47,
+        "excluded_uncertain": 3
+      }
+    },
+    "stratified": {
+      "offence_family": {
+        "cheating_and_fraud": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "conspiracy_common_intention": {
+          "reviewed": 4,
+          "rag_accept": 4,
+          "rag_accept_percent": 100.0
+        },
+        "criminal_breach_of_trust": {
+          "reviewed": 3,
+          "rag_accept": 3,
+          "rag_accept_percent": 100.0
+        },
+        "dowry_and_domestic_cruelty": {
+          "reviewed": 6,
+          "rag_accept": 5,
+          "rag_accept_percent": 83.33
+        },
+        "homicide": {
+          "reviewed": 6,
+          "rag_accept": 6,
+          "rag_accept_percent": 100.0
+        },
+        "hurt_and_assault": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "kidnapping": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        },
+        "narcotics_related": {
+          "reviewed": 6,
+          "rag_accept": 5,
+          "rag_accept_percent": 83.33
+        },
+        "other": {
+          "reviewed": 13,
+          "rag_accept": 9,
+          "rag_accept_percent": 69.23
+        },
+        "sexual_offences": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "theft_and_robbery": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        }
+      },
+      "legal_regime": {
+        "bns_bnss": {
+          "reviewed": 5,
+          "rag_accept": 2,
+          "rag_accept_percent": 40.0
+        },
+        "ipc_crpc": {
+          "reviewed": 37,
+          "rag_accept": 32,
+          "rag_accept_percent": 86.49
+        },
+        "mixed_or_transition": {
+          "reviewed": 5,
+          "rag_accept": 5,
+          "rag_accept_percent": 100.0
+        },
+        "unknown": {
+          "reviewed": 3,
+          "rag_accept": 3,
+          "rag_accept_percent": 100.0
+        }
+      },
+      "temporal_track": {
+        "current_transition": {
+          "reviewed": 10,
+          "rag_accept": 7,
+          "rag_accept_percent": 70.0
+        },
+        "landmark_historical": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        },
+        "recent_ipc": {
+          "reviewed": 37,
+          "rag_accept": 33,
+          "rag_accept_percent": 89.19
+        }
+      },
+      "court_level": {
+        "district_or_sessions": {
+          "reviewed": 7,
+          "rag_accept": 6,
+          "rag_accept_percent": 85.71
+        },
+        "high_court": {
+          "reviewed": 34,
+          "rag_accept": 30,
+          "rag_accept_percent": 88.24
+        },
+        "supreme_court": {
+          "reviewed": 6,
+          "rag_accept": 6,
+          "rag_accept_percent": 100.0
+        },
+        "unknown": {
+          "reviewed": 3,
+          "rag_accept": 0,
+          "rag_accept_percent": 0.0
+        }
+      },
+      "query_id": {
+        "bulk_current_transition_bns_bnss": {
+          "reviewed": 10,
+          "rag_accept": 7,
+          "rag_accept_percent": 70.0
+        },
+        "bulk_landmark_historical_criminal": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        },
+        "bulk_recent_ipc_cheating": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_conspiracy_common_intention": {
+          "reviewed": 4,
+          "rag_accept": 4,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_criminal_breach_trust": {
+          "reviewed": 3,
+          "rag_accept": 3,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_dowry_domestic_cruelty": {
+          "reviewed": 6,
+          "rag_accept": 5,
+          "rag_accept_percent": 83.33
+        },
+        "bulk_recent_ipc_homicide": {
+          "reviewed": 6,
+          "rag_accept": 6,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_hurt_assault": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_kidnapping": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        },
+        "bulk_recent_ipc_narcotics": {
+          "reviewed": 6,
+          "rag_accept": 5,
+          "rag_accept_percent": 83.33
+        },
+        "bulk_recent_ipc_sexual_offences": {
+          "reviewed": 2,
+          "rag_accept": 2,
+          "rag_accept_percent": 100.0
+        },
+        "bulk_recent_ipc_theft_robbery": {
+          "reviewed": 3,
+          "rag_accept": 2,
+          "rag_accept_percent": 66.67
+        }
+      }
+    }
+  },
+  "correction_matrices": {
+    "offence_family": {
+      "cheating_and_fraud": {
+        "other": 1,
+        "cheating_and_fraud": 1
+      },
+      "conspiracy_common_intention": {
+        "conspiracy_common_intention": 2,
+        "homicide": 1,
+        "cheating_and_fraud": 1
+      },
+      "criminal_breach_of_trust": {
+        "criminal_breach_of_trust": 2,
+        "cheating_and_fraud": 1
+      },
+      "dowry_and_domestic_cruelty": {
+        "dowry_and_domestic_cruelty": 5
+      },
+      "homicide": {
+        "homicide": 5,
+        "hurt_and_assault": 1
+      },
+      "hurt_and_assault": {
+        "hurt_and_assault": 2
+      },
+      "kidnapping": {
+        "kidnapping": 1,
+        "sexual_offences": 1
+      },
+      "narcotics_related": {
+        "narcotics_related": 5
+      },
+      "other": {
+        "other": 6,
+        "cheating_and_fraud": 1,
+        "sexual_offences": 1,
+        "homicide": 1
+      },
+      "sexual_offences": {
+        "sexual_offences": 2
+      },
+      "theft_and_robbery": {
+        "theft_and_robbery": 2
+      }
+    },
+    "legal_regime": {
+      "bns_bnss": {
+        "bns_bnss": 5
+      },
+      "ipc_crpc": {
+        "ipc_crpc": 37
+      },
+      "mixed_or_transition": {
+        "mixed_or_transition": 4,
+        "bns_bnss": 1
+      },
+      "unknown": {
+        "ipc_crpc": 1,
+        "unknown": 2
+      }
+    }
+  },
+  "rag_decision_manifest": {
+    "path": "data/structured/manifests/bulk_quality_audit_rag_decisions.json",
+    "records": 50,
+    "accept": 42,
+    "reject": 7,
+    "needs_review": 1
+  },
+  "preview_stats": {
+    "sample_records": 50,
+    "preview_available": 50,
+    "preview_unavailable": 0,
+    "pdf_based": 42,
+    "fallback_text_based": 8
+  },
+  "no_network_guarantee": {
+    "provider_import_required": false,
+    "provider_client_constructed": false,
+    "llm_dependency": false,
+    "embedding_or_rag_work": false
+  }
+}

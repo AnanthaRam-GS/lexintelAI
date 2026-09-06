@@ -1,0 +1,326 @@
+"""Tests for offline bulk corpus quality audit tooling."""
+
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from backend.scripts import review_bulk_quality_audit as audit
+
+
+def candidate(
+    source_id: str,
+    family: str,
+    regime: str = "ipc_crpc",
+    track: str = "recent_ipc",
+    court: str = "high_court",
+    status: str = "validated",
+    decision: str = "accept_candidate",
+    query_id: str | None = None,
+    mime_type: str = "application/pdf",
+    size: int = 1000,
+) -> dict[str, object]:
+    return {
+        "local_id": f"v2-{source_id}",
+        "source_provider": "indian_kanoon",
+        "source_document_id": source_id,
+        "source_url": f"https://indiankanoon.org/doc/{source_id}/",
+        "case_name": f"Case {source_id}",
+        "court_name": court,
+        "court_level": court,
+        "decision_date": None,
+        "year": 2024,
+        "legal_regime": regime,
+        "offence_family": family,
+        "known_sections": [],
+        "detected_statutes": ["IPC"],
+        "regime_evidence": ["Section 302 IPC"],
+        "acquisition_query": "query",
+        "query_id": query_id or f"q-{family}",
+        "temporal_track": track,
+        "raw_file_path": f"raw/{source_id}.pdf",
+        "sha256": f"sha-{source_id}",
+        "file_size_bytes": size,
+        "mime_type": mime_type,
+        "attribution_required": True,
+        "attribution_text": "Judgment data sourced from Indian Kanoon API.",
+        "status": status,
+        "final_automated_decision": decision,
+        "quality_scores": {"document_type": 0.9, "criminal_relevance": 0.9, "metadata_quality": 1.0},
+        "document_text_available": True,
+        "document_text_length": 1200,
+        "document_text_quality": "usable",
+    }
+
+
+class BulkQualityAuditTest(unittest.TestCase):
+    def test_deterministic_sample_selection_and_no_duplicates(self) -> None:
+        records = [candidate(str(index), family) for index, family in enumerate(sorted(audit.OFFENCE_FAMILIES) * 6, start=1)]
+
+        first, _first_reasons = audit.allocate_sample(records, 25)
+        second, _second_reasons = audit.allocate_sample(records, 25)
+
+        self.assertEqual([r["source_document_id"] for r in first], [r["source_document_id"] for r in second])
+        self.assertEqual(len(first), 25)
+        self.assertEqual(len({r["source_document_id"] for r in first}), 25)
+
+    def test_represents_populated_families_regimes_tracks_and_courts(self) -> None:
+        records = [
+            candidate("1", "homicide", "ipc_crpc", "recent_ipc", "high_court"),
+            candidate("2", "other", "bns_bnss", "current_transition", "supreme_court"),
+            candidate("3", "sexual_offences", "mixed_or_transition", "landmark_historical", "district_or_sessions"),
+            candidate("4", "theft_and_robbery", "unknown", "recent_ipc", "unknown"),
+        ]
+
+        selected, _reasons = audit.allocate_sample(records, 4)
+
+        self.assertEqual({r["offence_family"] for r in selected}, {r["offence_family"] for r in records})
+        self.assertEqual({r["legal_regime"] for r in selected}, {r["legal_regime"] for r in records})
+        self.assertEqual({r["temporal_track"] for r in selected}, {r["temporal_track"] for r in records})
+        self.assertEqual({r["court_level"] for r in selected}, {r["court_level"] for r in records})
+
+    def test_sample_manifest_schema_defaults_pending(self) -> None:
+        record = candidate("10", "homicide")
+        sample = audit.sample_record(record, 1, ["minimum_offence_family:homicide"])
+
+        self.assertEqual(sample["human_audit_status"], "pending")
+        self.assertEqual(sample["source_document_id"], "10")
+        self.assertEqual(sample["offence_family_automated"], "homicide")
+        self.assertIn("criminal_relevance", sample)
+        self.assertIsNone(sample["rag_suitability"])
+
+    def test_apply_review_does_not_overwrite_automated_or_provenance_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "sample.json"
+            sample = audit.sample_record(candidate("11", "homicide"), 1, ["reason"])
+            path.write_text(json.dumps([sample]), encoding="utf-8")
+
+            audit.apply_review(
+                "11",
+                "Ananthu",
+                sample_path=path,
+                criminal_relevance="correct",
+                document_type="judgment",
+                offence_family_review="corrected",
+                corrected_offence_family="other",
+                legal_regime_review="confirmed",
+                court_metadata_review="correct",
+                date_metadata_review="uncertain",
+                text_quality="usable",
+                duplicate_or_noise="no",
+                rag_suitability="accept",
+                notes="bounded note",
+            )
+
+            updated = json.loads(path.read_text(encoding="utf-8"))[0]
+            self.assertEqual(updated["offence_family_automated"], "homicide")
+            self.assertEqual(updated["corrected_offence_family"], "other")
+            self.assertEqual(updated["source_url"], sample["source_url"])
+            self.assertEqual(updated["raw_file_path"], sample["raw_file_path"])
+            self.assertEqual(updated["sha256"], sample["sha256"])
+            self.assertEqual(updated["human_audit_status"], "reviewed")
+
+    def test_partial_metrics_exclude_uncertain_from_accuracy_denominators(self) -> None:
+        reviewed = audit.sample_record(candidate("12", "homicide"), 1, ["reason"])
+        reviewed.update(
+            {
+                "human_audit_status": "reviewed",
+                "criminal_relevance": "correct",
+                "document_type": "uncertain",
+                "offence_family_review": "confirmed",
+                "legal_regime_review": "uncertain",
+                "court_metadata_review": "correct",
+                "date_metadata_review": "uncertain",
+                "text_quality": "usable",
+                "duplicate_or_noise": "no",
+                "rag_suitability": "accept",
+            }
+        )
+
+        metrics = audit.compute_metrics([reviewed])
+
+        self.assertEqual(metrics["criminal_relevance_precision"]["denominator"], 1)
+        self.assertEqual(metrics["document_type_precision"]["denominator"], 0)
+        self.assertIsNone(metrics["document_type_precision"]["percent"])
+        self.assertEqual(metrics["rag_suitability_rate"]["percent"], 100.0)
+
+    def test_correction_matrix_generation(self) -> None:
+        reviewed = audit.sample_record(candidate("13", "homicide"), 1, ["reason"])
+        reviewed.update(
+            {
+                "human_audit_status": "reviewed",
+                "offence_family_review": "corrected",
+                "corrected_offence_family": "other",
+                "legal_regime_review": "confirmed",
+            }
+        )
+
+        matrices = audit.correction_matrices([reviewed])
+
+        self.assertEqual(matrices["offence_family"]["homicide"]["other"], 1)
+        self.assertEqual(matrices["legal_regime"]["ipc_crpc"]["ipc_crpc"], 1)
+
+    def test_preview_fallback_for_provider_original_unavailable_record(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            raw = root / "raw/20.json"
+            raw.parent.mkdir()
+            raw.write_text('{"errmsg":"Original document not available"}', encoding="utf-8")
+            sample = audit.sample_record(
+                candidate("20", "other", mime_type="application/json", size=44),
+                1,
+                ["provider_original_unavailable_or_fallback"],
+            )
+            sample["raw_file_path"] = "raw/20.json"
+            sample["regime_evidence"] = ["Stored document endpoint text evidence under Section 379 CrPC."]
+
+            preview = audit.preview_for(sample, repo_root=root)
+
+            self.assertTrue(preview["available"])
+            self.assertEqual(preview["source"], "document_text_fallback_evidence")
+            self.assertIn("Section 379", preview["text"])
+
+    def test_no_network_or_llm_dependency_for_generation_helpers(self) -> None:
+        records = [candidate(str(index), "homicide") for index in range(249)]
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            candidates = root / "candidates.json"
+            sample_path = root / "sample.json"
+            candidates.write_text(json.dumps(records), encoding="utf-8")
+            with patch("backend.scripts.review_bulk_quality_audit.REPO_ROOT", root):
+                sample = audit.generate_sample(candidates, sample_path, 5)
+
+        self.assertEqual(len(sample), 5)
+        self.assertNotIn("indiankanoon_client", sys.modules)
+
+    def test_approved_human_decision_manifest_counts(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists() or not audit.RAG_DECISIONS_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit manifests are not present")
+        sample = audit.load_manifest(audit.SAMPLE_MANIFEST)
+        decisions = audit.load_manifest(audit.RAG_DECISIONS_MANIFEST)
+
+        self.assertEqual(len(sample), 50)
+        self.assertEqual(sum(1 for item in sample if item["human_audit_status"] == "reviewed"), 50)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "accept"), 42)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "reject"), 7)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "needs_review"), 1)
+        self.assertEqual(len(decisions), 50)
+
+    def test_approved_corrections_and_automated_values_preserved(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(by_id["87917455"]["offence_family_automated"], "other")
+        self.assertEqual(by_id["87917455"]["corrected_offence_family"], "cheating_and_fraud")
+        self.assertEqual(by_id["15148168"]["legal_regime_automated"], "mixed_or_transition")
+        self.assertEqual(by_id["15148168"]["corrected_legal_regime"], "bns_bnss")
+        self.assertEqual(by_id["169784101"]["legal_regime_automated"], "unknown")
+        self.assertEqual(by_id["169784101"]["corrected_legal_regime"], "ipc_crpc")
+
+    def test_duplicate_relationships_and_rejections_are_retained(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(by_id["70072092"]["duplicate_of"], "194768350")
+        self.assertEqual(by_id["105760653"]["duplicate_of"], "186425747")
+        self.assertEqual(by_id["27724816"]["rag_suitability"], "reject")
+        self.assertEqual(by_id["100481688"]["rag_suitability"], "reject")
+        self.assertEqual(by_id["131426670"]["rag_suitability"], "reject")
+
+    def test_corrected_dates_do_not_overwrite_automated_dates(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertIsNone(by_id["120980289"]["judgment_date"])
+        self.assertEqual(by_id["120980289"]["corrected_date"], "2024-03-06")
+        self.assertEqual(by_id["120980289"]["date_metadata_review"], "corrected")
+
+    def test_unsampled_bulk_records_and_rejected_records_remain_present(self) -> None:
+        if not audit.BULK_CANDIDATES.exists() or not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("bulk run manifests are not present")
+        corpus = audit.reviewable_records(audit.load_manifest(audit.BULK_CANDIDATES))
+        sampled = {record["source_document_id"] for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(len(corpus), 249)
+        self.assertEqual(len(corpus) - len(sampled), 199)
+        self.assertIn("70072092", {str(record["source_document_id"]) for record in corpus})
+        self.assertIn("105760653", {str(record["source_document_id"]) for record in corpus})
+
+    def test_generated_metrics_and_correction_matrices(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        summary = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))
+
+        self.assertEqual(summary["metrics"]["rag_suitability_rate"]["numerator"], 42)
+        self.assertEqual(summary["metrics"]["rag_suitability_rate"]["denominator"], 50)
+        self.assertEqual(summary["metrics"]["offence_family_accuracy"]["denominator"], 42)
+        self.assertEqual(summary["correction_matrices"]["legal_regime"]["unknown"]["ipc_crpc"], 1)
+        self.assertEqual(summary["rag_decision_manifest"]["records"], 50)
+
+    def test_frozen_automated_values_for_known_corrections(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+        expected_families = {
+            "47759402": "other",
+            "199689273": "conspiracy_common_intention",
+            "176391710": "criminal_breach_of_trust",
+            "87669225": "conspiracy_common_intention",
+            "1726075": "other",
+        }
+
+        for source_id, automated_family in expected_families.items():
+            self.assertEqual(by_id[source_id]["offence_family_automated"], automated_family)
+            self.assertNotEqual(
+                by_id[source_id]["offence_family_automated"],
+                by_id[source_id]["corrected_offence_family"],
+            )
+
+    def test_reconciled_metric_semantics(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        metrics = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))["metrics"]
+
+        self.assertEqual(metrics["duplicate_or_noise_problem_rate"], {"numerator": 7, "denominator": 50, "percent": 14.0})
+        self.assertEqual(metrics["clean_record_rate"], {"numerator": 43, "denominator": 50, "percent": 86.0})
+        self.assertEqual(metrics["any_human_correction_rate"], {"numerator": 50, "denominator": 50, "percent": 100.0})
+        self.assertEqual(metrics["offence_family_correction_rate"], {"numerator": 9, "denominator": 50, "percent": 18.0})
+        self.assertEqual(metrics["legal_regime_correction_rate"], {"numerator": 2, "denominator": 50, "percent": 4.0})
+        self.assertEqual(metrics["date_metadata_correction_rate"], {"numerator": 50, "denominator": 50, "percent": 100.0})
+        self.assertEqual(metrics["label_correction_rate"], {"numerator": 11, "denominator": 50, "percent": 22.0})
+        self.assertEqual(metrics["exact_decision_date_accuracy_completeness"], {"numerator": 0, "denominator": 50, "percent": 0.0})
+        self.assertEqual(metrics["year_accuracy"], {"numerator": 49, "denominator": 50, "percent": 98.0})
+
+    def test_offence_family_denominator_accounting(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        accounting = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))["metrics"]["denominator_accounting"]
+
+        self.assertEqual(accounting["offence_family_accuracy"]["reviewed"], 50)
+        self.assertEqual(accounting["offence_family_accuracy"]["included_determinate_criminal_or_rag_reviewable"], 42)
+        self.assertEqual(accounting["offence_family_accuracy"]["excluded_rag_rejected_noncriminal_or_noise"], 7)
+        self.assertEqual(accounting["offence_family_accuracy"]["excluded_uncertain_nonrejected"], 1)
+        self.assertEqual(accounting["legal_regime_accuracy"]["included_determinate"], 50)
+
+    def test_rag_decision_manifest_includes_frozen_and_effective_values(self) -> None:
+        if not audit.RAG_DECISIONS_MANIFEST.exists():
+            self.skipTest("generated RAG decisions manifest is not present")
+        decisions = {record["source_document_id"]: record for record in audit.load_manifest(audit.RAG_DECISIONS_MANIFEST)}
+
+        self.assertEqual(decisions["47759402"]["automated_offence_family"], "other")
+        self.assertEqual(decisions["47759402"]["effective_offence_family"], "sexual_offences")
+        self.assertEqual(decisions["169784101"]["automated_legal_regime"], "unknown")
+        self.assertEqual(decisions["169784101"]["effective_legal_regime"], "ipc_crpc")
+        self.assertEqual(decisions["120980289"]["automated_date"], None)
+        self.assertEqual(decisions["120980289"]["corrected_date"], "2024-03-06")
+
+
+if __name__ == "__main__":
+    unittest.main()
