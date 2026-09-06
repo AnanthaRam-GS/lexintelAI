@@ -41,9 +41,7 @@
   --color-info-surface: #e8f1fa;
   --color-info-border: #9fc0e1;
 
-  /* Typography: next/font replaces these fallbacks on the root layout. */
-  --font-display: Georgia, 'Times New Roman', serif;
-  --font-ui: Arial, Helvetica, sans-serif;
+  /* Typography: the root layout's next/font classes define these shared tokens. */
 
   /* Geometry and elevation: compact internal corners and shared elevation. */
   --radius-compact: 0.375rem;
