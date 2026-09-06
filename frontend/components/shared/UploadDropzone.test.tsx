@@ -56,6 +56,51 @@ describe('UploadDropzone', () => {
     expect(screen.getByText('second.pdf')).toBeVisible();
   });
 
+  it('keeps the valid single-file selection when a replacement is invalid', async () => {
+    const onFilesSelected = vi.fn();
+    const user = userEvent.setup();
+    const valid = new File(['judgment'], 'judgment.pdf', { type: 'application/pdf' });
+    const invalid = new File(['notes'], 'notes.txt', { type: 'text/plain' });
+
+    render(<UploadDropzone onFilesSelected={onFilesSelected} />);
+
+    await user.upload(screen.getByLabelText('Choose PDF files'), valid);
+    fireEvent.drop(screen.getByTestId('upload-dropzone'), {
+      dataTransfer: { files: [invalid] },
+    });
+
+    expect(screen.getByText('judgment.pdf')).toBeVisible();
+    expect(screen.getByText('8 B')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Remove judgment.pdf' })).toBeVisible();
+    expect(screen.getByRole('alert')).toHaveTextContent('notes.txt is not an accepted file type.');
+    expect(onFilesSelected).toHaveBeenCalledTimes(1);
+    expect(onFilesSelected).toHaveBeenLastCalledWith([valid]);
+  });
+
+  it('keeps the visually hidden file input out of sequential keyboard focus', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <>
+        <button type="button">Before upload</button>
+        <UploadDropzone onFilesSelected={() => undefined} />
+        <button type="button">After upload</button>
+      </>,
+    );
+
+    const input = screen.getByLabelText('Choose PDF files');
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'Before upload' })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'Browse files' })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'After upload' })).toHaveFocus();
+    expect(input).not.toHaveFocus();
+  });
+
   it('gives browse and remove controls a tokenized visible-focus treatment', async () => {
     const user = userEvent.setup();
     const pdf = new File(['judgment'], 'judgment.pdf', { type: 'application/pdf' });

@@ -23,7 +23,8 @@ export interface IngestionProgressProps {
 const clampProgress = (progress: number) =>
   Number.isNaN(progress) ? 0 : Math.min(100, Math.max(0, progress));
 
-const fallbackFailureMessage = 'Ingestion could not be completed. Retry this document.';
+const fallbackFailureTitle = 'Ingestion failed';
+const fallbackFailureMessage = 'Retry this document.';
 
 function StageIcon({ stage }: { stage: IngestionStage }) {
   if (stage === 'COMPLETED') {
@@ -84,7 +85,7 @@ function progressClass(stage: IngestionStage) {
 export function IngestionProgress({ jobs }: IngestionProgressProps) {
   if (jobs.length === 0) {
     return (
-      <p className="rounded-[var(--radius-standard)] bg-[var(--color-surface-subtle)] p-4 text-sm text-[var(--color-muted)]">
+      <p className="text-type-body-sm rounded-[var(--radius-standard)] bg-[var(--color-surface-subtle)] p-4 text-[var(--color-muted)]">
         No ingestion jobs yet.
       </p>
     );
@@ -114,11 +115,14 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
             <div className="flex min-w-0 items-center gap-3">
               <StageIcon stage={job.stage} />
               <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                <p className="truncate font-medium text-[var(--color-ink)]" title={job.filename}>
+                <p
+                  className="text-type-body truncate font-medium text-[var(--color-ink)]"
+                  title={job.filename}
+                >
                   {job.filename}
                 </p>
                 <p
-                  className={`mt-1 flex shrink-0 items-center gap-2 text-xs font-semibold sm:mt-0 ${stageLabelClass(job.stage)}`}
+                  className={`text-type-caption mt-1 flex shrink-0 items-center gap-2 font-semibold sm:mt-0 ${stageLabelClass(job.stage)}`}
                 >
                   <span>Stage</span>
                   <span>{job.stage}</span>
@@ -126,34 +130,39 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
               </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-3">
-              <div
-                aria-label={`${job.filename} progress`}
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={progress}
-                className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-surface-subtle)]"
-                role="progressbar"
-              >
-                <div
-                  aria-hidden="true"
-                  className={`h-full rounded-full transition-[width] duration-[var(--motion-standard)] ${progressClass(job.stage)}`}
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="w-10 shrink-0 text-right text-xs text-[var(--color-muted)]">
-                {progress}%
-              </p>
-            </div>
-
-            <div className="empty:hidden empty:pt-0 pt-3" data-ingestion-error-region>
+            <div
+              className="mt-2 flex h-[var(--size-ingestion-status)] items-center overflow-hidden"
+              data-ingestion-error-region
+            >
               {isFailed ? (
-                <ErrorMessage
-                  message={fallbackFailureMessage}
-                  title={`Unable to ingest ${job.filename}`}
-                  variant="inline"
-                />
-              ) : null}
+                <div className="w-full">
+                  <ErrorMessage
+                    message={fallbackFailureMessage}
+                    title={fallbackFailureTitle}
+                    variant="inline"
+                  />
+                </div>
+              ) : (
+                <div className="flex w-full items-center gap-3" data-ingestion-progress-region>
+                  <div
+                    aria-label={`${job.filename} progress`}
+                    aria-valuemax={100}
+                    aria-valuemin={0}
+                    aria-valuenow={progress}
+                    className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-surface-subtle)]"
+                    role="progressbar"
+                  >
+                    <div
+                      aria-hidden="true"
+                      className={`h-full rounded-full transition-[width] duration-[var(--motion-standard)] ${progressClass(job.stage)}`}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="text-type-caption w-10 shrink-0 text-right text-[var(--color-muted)]">
+                    {progress}%
+                  </p>
+                </div>
+              )}
             </div>
           </li>
         );

@@ -162,4 +162,29 @@ describe('PreviewGallery', () => {
       }),
     ).toHaveAttribute('aria-valuenow', '58');
   });
+
+  it('demonstrates an indexing-to-failed polling update without replacing adjacent rows', async () => {
+    const user = userEvent.setup();
+
+    render(<PreviewGallery />);
+
+    const indexingRow = screen.getByText('Arnesh Kumar arrest guidance.pdf').closest('li');
+    const followingRow = screen.getByText('Lalita Kumari FIR ruling.pdf').closest('li');
+
+    expect(indexingRow).not.toBeNull();
+    expect(followingRow).not.toBeNull();
+    expect(within(indexingRow as HTMLElement).getByText('INDEXING')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Advance progress' }));
+
+    const failedRow = screen.getByText('Arnesh Kumar arrest guidance.pdf').closest('li');
+    const unchangedFollowingRow = screen.getByText('Lalita Kumari FIR ruling.pdf').closest('li');
+
+    expect(failedRow).toBe(indexingRow);
+    expect(unchangedFollowingRow).toBe(followingRow);
+    expect(within(failedRow as HTMLElement).getByText('FAILED')).toBeInTheDocument();
+    expect(within(failedRow as HTMLElement).getByRole('alert')).toHaveTextContent(
+      'Retry this document.',
+    );
+  });
 });

@@ -64,6 +64,46 @@ const config: Config = {
         display: ['var(--font-display)'],
         ui: ['var(--font-ui)'],
       },
+      fontSize: {
+        'type-heading-sm': [
+          'var(--font-size-heading-sm)',
+          { lineHeight: 'var(--line-height-heading-sm)' },
+        ],
+        'type-heading-md': [
+          'var(--font-size-heading-md)',
+          { lineHeight: 'var(--line-height-heading-md)' },
+        ],
+        'type-heading-lg': [
+          'var(--font-size-heading-lg)',
+          { lineHeight: 'var(--line-height-heading-lg)' },
+        ],
+        'type-heading-xl': [
+          'var(--font-size-heading-xl)',
+          { lineHeight: 'var(--line-height-heading-xl)' },
+        ],
+        'type-heading-2xl': [
+          'var(--font-size-heading-2xl)',
+          { lineHeight: 'var(--line-height-heading-2xl)' },
+        ],
+        'type-body': ['var(--font-size-body)', { lineHeight: 'var(--line-height-body)' }],
+        'type-body-relaxed': [
+          'var(--font-size-body)',
+          { lineHeight: 'var(--line-height-body-relaxed)' },
+        ],
+        'type-body-sm': ['var(--font-size-body-sm)', { lineHeight: 'var(--line-height-body-sm)' }],
+        'type-body-sm-relaxed': [
+          'var(--font-size-body-sm)',
+          { lineHeight: 'var(--line-height-body-sm-relaxed)' },
+        ],
+        'type-body-lg': ['var(--font-size-body-lg)', { lineHeight: 'var(--line-height-body-lg)' }],
+        'type-label': ['var(--font-size-label)', { lineHeight: 'var(--line-height-label)' }],
+        'type-caption': ['var(--font-size-caption)', { lineHeight: 'var(--line-height-caption)' }],
+        'type-control': ['var(--font-size-control)', { lineHeight: 'var(--line-height-control)' }],
+        'type-control-compact': [
+          'var(--font-size-control-compact)',
+          { lineHeight: 'var(--line-height-control-compact)' },
+        ],
+      },
       transitionDuration: {
         fast: 'var(--motion-fast)',
         standard: 'var(--motion-standard)',

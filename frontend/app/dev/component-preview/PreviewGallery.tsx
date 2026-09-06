@@ -27,10 +27,10 @@ const panelClass =
   'rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-component)] sm:p-6';
 
 const sectionHeadingClass =
-  'font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--color-ink)]';
+  'font-display text-type-heading-lg font-semibold text-[var(--color-ink)]';
 
 const modeButtonBaseClass =
-  'inline-flex min-h-11 flex-1 items-center justify-center rounded-[var(--radius-compact)] px-4 text-sm font-semibold transition-colors duration-[var(--motion-fast)]';
+  'text-type-control inline-flex min-h-11 flex-1 items-center justify-center rounded-[var(--radius-compact)] px-4 font-semibold transition-colors duration-[var(--motion-fast)]';
 
 function copyJobs(jobs: IngestionJob[]) {
   return jobs.map((job) => ({ ...job }));
@@ -65,11 +65,11 @@ export function PreviewGallery() {
             <Landmark className="sm:hidden" size={24} strokeWidth={1.8} />
             <Scale className="hidden sm:block" size={24} strokeWidth={1.8} />
           </span>
-          <p className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--color-ink)]">
+          <p className="font-display text-type-heading-lg font-semibold text-[var(--color-ink)]">
             LegalAI
           </p>
           <span aria-hidden="true" className="hidden h-8 w-px bg-[var(--color-border)] sm:block" />
-          <p className="hidden truncate text-sm text-[var(--color-body)] sm:block">
+          <p className="text-type-body-sm hidden truncate text-[var(--color-body)] sm:block">
             Indian Criminal Law RAG Assistant
           </p>
         </div>
@@ -77,10 +77,10 @@ export function PreviewGallery() {
 
       <main className="mx-auto max-w-[90rem] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--color-ink)] sm:text-4xl">
+          <h1 className="font-display text-type-heading-xl sm:text-type-heading-2xl font-semibold tracking-tight text-[var(--color-ink)]">
             LegalAI Component Library
           </h1>
-          <p className="mt-2 text-[var(--color-muted)]">
+          <p className="text-type-body mt-2 text-[var(--color-muted)]">
             Shared UX for Public, Professional &amp; Admin modes
           </p>
         </div>
@@ -98,7 +98,7 @@ export function PreviewGallery() {
                       className="flex min-h-28 flex-col items-center justify-center gap-3"
                       key={size}
                     >
-                      <span className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+                      <span className="text-type-caption font-semibold uppercase tracking-wide text-[var(--color-muted)]">
                         {size}
                       </span>
                       <LoadingSpinner
@@ -117,7 +117,9 @@ export function PreviewGallery() {
               </h2>
               <div className={`${panelClass} space-y-4`}>
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-[var(--color-muted)]">Inline</p>
+                  <p className="text-type-label mb-2 font-semibold text-[var(--color-muted)]">
+                    Inline
+                  </p>
                   <ErrorMessage
                     message="The legal reference could not be loaded. Please try again."
                     onRetry={() => acknowledgeRetry('inline')}
@@ -126,7 +128,9 @@ export function PreviewGallery() {
                   />
                 </div>
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-[var(--color-muted)]">Banner</p>
+                  <p className="text-type-label mb-2 font-semibold text-[var(--color-muted)]">
+                    Banner
+                  </p>
                   <ErrorMessage
                     message="We could not process this document right now."
                     onRetry={() => acknowledgeRetry('banner')}
@@ -135,7 +139,9 @@ export function PreviewGallery() {
                   />
                 </div>
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-[var(--color-muted)]">Full page</p>
+                  <p className="text-type-label mb-2 font-semibold text-[var(--color-muted)]">
+                    Full page
+                  </p>
                   <ErrorMessage
                     message="Your request is safe to retry. No document changes were made."
                     onRetry={() => acknowledgeRetry('full-page')}
@@ -146,7 +152,7 @@ export function PreviewGallery() {
                 </div>
                 <p
                   aria-live="polite"
-                  className="min-h-6 text-sm font-medium text-[var(--color-success-foreground)]"
+                  className="text-type-body-sm min-h-6 font-medium text-[var(--color-success-foreground)]"
                 >
                   {retryMessage}
                 </p>
@@ -165,7 +171,10 @@ export function PreviewGallery() {
                   multiple
                   onFilesSelected={(files) => setSelectedFileCount(files.length)}
                 />
-                <p aria-live="polite" className="mt-4 min-h-6 text-sm text-[var(--color-muted)]">
+                <p
+                  aria-live="polite"
+                  className="text-type-body-sm mt-4 min-h-6 text-[var(--color-muted)]"
+                >
                   {selectedFileCount > 0
                     ? `${selectedFileCount} PDF${selectedFileCount === 1 ? '' : 's'} selected for this local preview.`
                     : 'No PDFs selected.'}
@@ -179,7 +188,7 @@ export function PreviewGallery() {
                   4. IngestionProgress
                 </h2>
                 <button
-                  className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-ink)] px-4 text-sm font-semibold text-[var(--color-ink)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-ink)] hover:text-[var(--color-inverse)]"
+                  className="text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-ink)] px-4 font-semibold text-[var(--color-ink)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-ink)] hover:text-[var(--color-inverse)]"
                   onClick={advanceProgress}
                   type="button"
                 >

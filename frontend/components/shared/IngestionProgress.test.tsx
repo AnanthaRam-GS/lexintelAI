@@ -71,10 +71,8 @@ describe('IngestionProgress', () => {
       />,
     );
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Ingestion could not be completed. Retry this document.',
-    );
-    expect(screen.getByRole('alert')).toHaveTextContent('Unable to ingest failed.pdf');
+    expect(screen.getByRole('alert')).toHaveTextContent('Retry this document.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Ingestion failed');
     expect(screen.queryByText('Indexing could not be completed.')).not.toBeInTheDocument();
   });
 
@@ -94,7 +92,7 @@ describe('IngestionProgress', () => {
     );
 
     const alert = screen.getByRole('alert');
-    expect(alert).toHaveTextContent('Ingestion could not be completed. Retry this document.');
+    expect(alert).toHaveTextContent('Retry this document.');
     expect(alert).not.toHaveTextContent('RuntimeError');
     expect(alert).not.toHaveTextContent('/srv/indexer.py:42');
   });
@@ -121,7 +119,7 @@ describe('IngestionProgress', () => {
     const alerts = screen.getAllByRole('alert');
     expect(alerts).toHaveLength(unsafeErrors.length);
     alerts.forEach((alert) => {
-      expect(alert).toHaveTextContent('Ingestion could not be completed. Retry this document.');
+      expect(alert).toHaveTextContent('Retry this document.');
     });
     unsafeErrors.forEach((error) => {
       expect(document.body.textContent).not.toContain(error);
@@ -163,33 +161,52 @@ describe('IngestionProgress', () => {
     );
   });
 
-  it('keeps the same reserved error region when a polling job fails', () => {
+  it('keeps progress and failure feedback in the same fixed-height polling region', () => {
     const { rerender } = render(
       <IngestionProgress
-        jobs={[{ id: 'polling', filename: 'polling.pdf', stage: 'INDEXING', progress: 80 }]}
+        jobs={[
+          { id: 'polling', filename: 'polling.pdf', stage: 'INDEXING', progress: 80 },
+          { id: 'following', filename: 'following.pdf', stage: 'QUEUED', progress: 0 },
+        ]}
       />,
     );
 
     const initialRow = screen.getByText('polling.pdf').closest('li');
+    const initialFollowingRow = screen.getByText('following.pdf').closest('li');
     const initialErrorRegion = initialRow?.querySelector('[data-ingestion-error-region]');
 
     expect(initialRow).not.toBeNull();
+    expect(initialFollowingRow).not.toBeNull();
     expect(initialErrorRegion).not.toBeNull();
+    expect(initialErrorRegion).toHaveClass('h-[var(--size-ingestion-status)]');
+    expect(
+      within(initialErrorRegion as HTMLElement).getByRole('progressbar', {
+        name: 'polling.pdf progress',
+      }),
+    ).toHaveAttribute('aria-valuenow', '80');
     expect(within(initialErrorRegion as HTMLElement).queryByRole('alert')).not.toBeInTheDocument();
 
     rerender(
       <IngestionProgress
-        jobs={[{ id: 'polling', filename: 'polling.pdf', stage: 'FAILED', progress: 80 }]}
+        jobs={[
+          { id: 'polling', filename: 'polling.pdf', stage: 'FAILED', progress: 80 },
+          { id: 'following', filename: 'following.pdf', stage: 'QUEUED', progress: 0 },
+        ]}
       />,
     );
 
     const failedRow = screen.getByText('polling.pdf').closest('li');
+    const failedFollowingRow = screen.getByText('following.pdf').closest('li');
     const failedErrorRegion = failedRow?.querySelector('[data-ingestion-error-region]');
 
     expect(failedRow).toBe(initialRow);
+    expect(failedFollowingRow).toBe(initialFollowingRow);
     expect(failedErrorRegion).toBe(initialErrorRegion);
     expect(within(failedErrorRegion as HTMLElement).getByRole('alert')).toHaveTextContent(
-      'Ingestion could not be completed. Retry this document.',
+      'Retry this document.',
     );
+    expect(
+      within(failedErrorRegion as HTMLElement).queryByRole('progressbar'),
+    ).not.toBeInTheDocument();
   });
 });

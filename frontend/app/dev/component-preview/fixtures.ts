@@ -79,8 +79,9 @@ export const advancedIngestionJobs: IngestionJob[] = [
   {
     id: 'job-arnesh-indexing',
     filename: 'Arnesh Kumar arrest guidance.pdf',
-    stage: 'COMPLETED',
-    progress: 100,
+    stage: 'FAILED',
+    progress: 84,
+    error: 'Indexing could not be completed. Retry this document.',
   },
   {
     id: 'job-lalita-completed',

@@ -41,6 +41,11 @@ export function UploadDropzone({
     });
 
     setErrors(validation.errors);
+
+    if (!multiple && validation.valid.length === 0) {
+      return;
+    }
+
     setFiles(validation.valid);
     onFilesSelected(validation.valid);
   };
@@ -111,14 +116,14 @@ export function UploadDropzone({
           size={28}
           strokeWidth={1.8}
         />
-        <p className="mt-3 font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--color-ink)]">
+        <p className="font-display text-type-heading-sm mt-3 font-semibold text-[var(--color-ink)]">
           {isDragging ? 'Drop PDF files here' : 'Drag & drop PDF files here'}
         </p>
-        <p className="mt-1 text-sm leading-6 text-[var(--color-muted)]">
+        <p className="text-type-body-sm-relaxed mt-1 text-[var(--color-muted)]">
           PDF files up to {maxSizeMB} MB{multiple ? ' each' : ''}.
         </p>
         <button
-          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 text-sm font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
+          className="text-type-control mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
           disabled={disabled}
           onClick={() => inputRef.current?.click()}
           type="button"
@@ -133,6 +138,7 @@ export function UploadDropzone({
           multiple={multiple}
           onChange={handleInputChange}
           ref={inputRef}
+          tabIndex={-1}
           type="file"
         />
       </div>
@@ -155,8 +161,10 @@ export function UploadDropzone({
                 strokeWidth={1.8}
               />
               <div className="min-w-0 flex-1 text-left">
-                <p className="truncate font-medium text-[var(--color-ink)]">{file.name}</p>
-                <p className="mt-0.5 text-sm text-[var(--color-muted)]">
+                <p className="text-type-body truncate font-medium text-[var(--color-ink)]">
+                  {file.name}
+                </p>
+                <p className="text-type-label mt-0.5 text-[var(--color-muted)]">
                   {formatFileSize(file.size)}
                 </p>
               </div>
