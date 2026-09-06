@@ -15,9 +15,34 @@ describe('LoadingSpinner', () => {
     );
   });
 
-  it('marks a full-screen spinner without trapping focus', () => {
-    render(<LoadingSpinner size="md" fullScreen />);
+  it('marks a full-screen spinner and preserves focus on an existing control', () => {
+    const { rerender } = render(
+      <>
+        <button type="button">Continue</button>
+        <LoadingSpinner size="md" />
+      </>,
+    );
+
+    const control = screen.getByRole('button', { name: 'Continue' });
+    control.focus();
+
+    rerender(
+      <>
+        <button type="button">Continue</button>
+        <LoadingSpinner size="md" fullScreen />
+      </>,
+    );
 
     expect(screen.getByRole('status')).toHaveAttribute('data-full-screen', 'true');
+    expect(control).toHaveFocus();
+  });
+
+  it('uses CSS reduced-motion suppression for its animated ring', () => {
+    render(<LoadingSpinner />);
+
+    const ring = screen.getByRole('status').querySelector('[aria-hidden="true"]');
+
+    expect(ring).toHaveClass('animate-spin', 'motion-reduce:animate-none');
+    expect(ring).not.toHaveAttribute('style');
   });
 });

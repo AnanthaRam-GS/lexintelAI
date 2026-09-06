@@ -7,7 +7,7 @@ import { ErrorMessage } from './ErrorMessage';
 describe('ErrorMessage', () => {
   afterEach(cleanup);
 
-  it('calls retry and keeps technical detail collapsed by default', async () => {
+  it('opens technical detail and calls Retry from the keyboard', async () => {
     const retry = vi.fn();
     const user = userEvent.setup();
 
@@ -21,10 +21,24 @@ describe('ErrorMessage', () => {
       />,
     );
 
-    expect(screen.getByText('Reference service unavailable.')).not.toBeVisible();
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeVisible();
+    const technicalDetail = screen.getByText('Reference service unavailable.');
+    const details = technicalDetail.closest('details');
+    const disclosure = screen.getByText('Technical details');
+    const retryButton = screen.getByRole('button', { name: 'Retry' });
 
-    await user.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(technicalDetail).not.toBeVisible();
+    expect(details).not.toHaveAttribute('open');
+
+    await user.tab();
+    expect(disclosure).toHaveFocus();
+    await user.keyboard('[Space]');
+
+    expect(details).toHaveAttribute('open');
+    expect(technicalDetail).toBeVisible();
+
+    await user.tab();
+    expect(retryButton).toHaveFocus();
+    await user.keyboard('{Enter}');
 
     expect(retry).toHaveBeenCalledOnce();
   });
@@ -41,6 +55,7 @@ describe('ErrorMessage', () => {
 
       expect(screen.getByRole('alert')).toHaveTextContent(`Title for ${variant}`);
       expect(screen.getByRole('alert')).toHaveTextContent(`Message for ${variant}`);
+      expect(screen.getByRole('alert')).toHaveAttribute('data-variant', variant);
 
       unmount();
     });
