@@ -213,6 +213,62 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         acquire_mock.assert_not_called()
 
+    def test_bulk_completed_smaller_gate_can_resume_to_larger_target(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        state = acquire.create_run_state(
+            run_id,
+            strategy_version="v2",
+            query_manifest="data/structured/manifests/bulk_acquisition_plan.json",
+            target_count=50,
+            api_budget=550,
+            partitions=[{"partition_id": "q1", "status": "pending", "max_pages": 1}],
+        )
+        state["status"] = "completed"
+        state["reviewable_counts"]["total"] = 50
+        state["request_stats"]["total_requests"] = 100
+        acquire.start_new_run(run_root, state)
+        (run_root / run_id / "expanded_queries.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "query_id": "q1",
+                        "offence_family": "homicide",
+                        "temporal_track": "recent_ipc",
+                        "query": "murder IPC criminal appeal",
+                        "target_quota": 150,
+                        "doctypes": "judgments",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "candidates.json").write_text(
+            json.dumps([{"source_document_id": str(index), "status": "validated"} for index in range(50)]),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "review.json").write_text("[]", encoding="utf-8")
+        (run_root / run_id / "audit.json").write_text("[]", encoding="utf-8")
+
+        with patch.object(acquire, "acquire", return_value=0) as acquire_mock:
+            result = acquire.run_bulk_acquisition(
+                run_id=None,
+                resume_run_id=run_id,
+                retry_failures_run_id=None,
+                target_count=150,
+                max_api_requests=550,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
+                max_search_pages=1,
+                delay=0,
+                state_root=run_root,
+                client=Mock(get_request_stats=Mock(return_value=acquire.empty_request_stats())),
+            )
+
+        self.assertEqual(result, 0)
+        acquire_mock.assert_called_once()
+        self.assertEqual(acquire_mock.call_args.kwargs["max_api_requests"], 450)
+        self.assertEqual(acquire_mock.call_args.kwargs["max_limit"], 150)
+
     def test_bulk_run_persists_provider_request_stats(self) -> None:
         run_root = self.root / "runs"
         run_id = "bulk_20260904_060000_abcd"
@@ -271,6 +327,122 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
         self.assertEqual(result, 0)
         state = acquire.load_run_state(run_root, run_id)
         self.assertEqual(state["request_stats"], stats)
+
+    def test_bulk_visit_target_is_capped_by_family_gap(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        state = acquire.create_run_state(
+            run_id,
+            strategy_version="v2",
+            query_manifest="data/structured/manifests/bulk_acquisition_plan.json",
+            target_count=50,
+            api_budget=100,
+            partitions=[{"partition_id": "q1", "family": "other", "target": 25, "status": "pending", "max_pages": 1}],
+        )
+        acquire.start_new_run(run_root, state)
+        (run_root / run_id / "expanded_queries.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "query_id": "q1",
+                        "offence_family": "other",
+                        "temporal_track": "current_transition",
+                        "query": "Bharatiya Nyaya Sanhita criminal appeal",
+                        "target_quota": 25,
+                        "doctypes": "judgments",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "candidates.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "source_document_id": str(index),
+                        "status": "validated",
+                        "offence_family": "other",
+                        "query_id": "q1",
+                    }
+                    for index in range(24)
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "review.json").write_text("[]", encoding="utf-8")
+        (run_root / run_id / "audit.json").write_text("[]", encoding="utf-8")
+
+        with patch.object(acquire, "acquire", return_value=0) as acquire_mock:
+            result = acquire.run_bulk_acquisition(
+                run_id=None,
+                resume_run_id=run_id,
+                retry_failures_run_id=None,
+                target_count=50,
+                max_api_requests=100,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
+                max_search_pages=1,
+                delay=0,
+                state_root=run_root,
+                client=Mock(get_request_stats=Mock(return_value=acquire.empty_request_stats())),
+            )
+
+        self.assertEqual(result, 0)
+        self.assertEqual(acquire_mock.call_args.kwargs["limit"], 25)
+
+    def test_bulk_no_progress_provider_4xx_stops_without_completing_partition(self) -> None:
+        run_root = self.root / "runs"
+        run_id = "bulk_20260904_060000_abcd"
+        state = acquire.create_run_state(
+            run_id,
+            strategy_version="v2",
+            query_manifest="data/structured/manifests/bulk_acquisition_plan.json",
+            target_count=10,
+            api_budget=100,
+            partitions=[{"partition_id": "q1", "family": "homicide", "target": 10, "status": "pending", "max_pages": 5}],
+        )
+        acquire.start_new_run(run_root, state)
+        (run_root / run_id / "expanded_queries.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "query_id": "q1",
+                        "offence_family": "homicide",
+                        "temporal_track": "recent_ipc",
+                        "query": "murder IPC criminal appeal",
+                        "target_quota": 10,
+                        "doctypes": "judgments",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (run_root / run_id / "candidates.json").write_text("[]", encoding="utf-8")
+        (run_root / run_id / "review.json").write_text("[]", encoding="utf-8")
+        (run_root / run_id / "audit.json").write_text("[]", encoding="utf-8")
+        stats = acquire.empty_request_stats()
+        stats["total_requests"] = 2
+        stats["requests_by_endpoint"]["search"] = 2
+        stats["responses_by_category"]["4xx"] = 2
+        client = Mock(get_request_stats=Mock(return_value=stats))
+
+        with patch.object(acquire, "acquire", return_value=0):
+            result = acquire.run_bulk_acquisition(
+                run_id=None,
+                resume_run_id=run_id,
+                retry_failures_run_id=None,
+                target_count=10,
+                max_api_requests=100,
+                query_manifest=acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json",
+                max_search_pages=5,
+                delay=0,
+                state_root=run_root,
+                client=client,
+            )
+
+        self.assertEqual(result, 0)
+        loaded = acquire.load_run_state(run_root, run_id)
+        self.assertEqual(loaded["status"], "stopped_provider")
+        self.assertEqual(loaded["partitions"][0]["status"], "pending")
 
     def test_gap_targets_are_computed_from_reviewable_records(self) -> None:
         records = [

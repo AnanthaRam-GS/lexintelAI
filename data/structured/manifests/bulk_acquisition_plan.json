@@ -16,6 +16,20 @@
       "max_pages_per_query": 5,
       "max_candidates_per_partition": 75,
       "batch_size": 100,
+      "scheduler_policy": {
+        "algorithm": "target_aware_round_robin",
+        "unit": "one_search_page_per_partition_visit",
+        "cursor_state": "state.scheduler.cursor",
+        "zero_representation_priority": true,
+        "tie_breakers": ["scheduler_visits", "largest_family_gap", "rotating_partition_index", "partition_id"]
+      },
+      "low_yield_guard": {
+        "enabled": true,
+        "min_unique_candidates": 20,
+        "max_requests_without_reviewable": 120,
+        "max_calls_per_reviewable": 30.0,
+        "action": "pause_partition_and_rotate"
+      },
       "family_targets": {
         "homicide": 60,
         "hurt_and_assault": 55,

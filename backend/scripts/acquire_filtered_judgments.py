@@ -37,9 +37,16 @@ from backend.scripts.bulk_acquisition_state import (  # noqa: E402
     append_batch,
     build_partitions,
     create_run_state,
+    empty_partition_metrics,
+    fair_partition_order,
+    family_counts_from_candidates,
+    family_progress,
+    low_yield_guard_triggered,
     generate_run_id,
     load_run_state,
+    record_partition_metrics,
     rebuild_dedupe_index,
+    request_stats_delta,
     run_dir,
     run_statistics,
     save_run_state,
@@ -465,6 +472,21 @@ def refresh_bulk_state_counts(state: dict[str, Any], candidates: list[dict[str, 
     )
 
 
+def records_for_partition(records: list[dict[str, Any]], partition_id: str) -> list[dict[str, Any]]:
+    return [record for record in records if str(record.get("query_id")) == partition_id]
+
+
+def partition_record_counts(records: list[dict[str, Any]], partition_id: str) -> dict[str, int]:
+    selected = records_for_partition(records, partition_id)
+    return {
+        "total": len(selected),
+        "reviewable": reviewable_count(selected),
+        "pre_download_rejected": sum(1 for record in selected if record.get("status") == "rejected_pre_download"),
+        "duplicates": sum(1 for record in selected if "duplicate" in str(record.get("notes") or "")),
+        "failures": sum(1 for record in selected if record.get("status") == "failed"),
+    }
+
+
 def bulk_manifest_paths(state_root: Path, run_id: str) -> tuple[Path, Path, Path, Path]:
     root = run_dir(state_root, run_id)
     return (
@@ -493,13 +515,18 @@ def run_bulk_acquisition(
     selected_run_id = retry_failures_run_id or resume_run_id or run_id or generate_run_id()
     selected_run_id = validate_run_id(selected_run_id)
     queries = load_bulk_queries(query_manifest, bulk_stage)
+    plan_info = load_bulk_plan(query_manifest, bulk_stage)
+    stage = plan_info["stage"]
+    family_targets = {str(key): int(value) for key, value in (stage.get("family_targets") or {}).items()}
+    low_yield_guard = stage.get("low_yield_guard") or {}
     if not queries:
         raise ValueError("no bulk query groups selected")
     expanded_query_manifest = run_dir(state_root, selected_run_id) / "expanded_queries.json"
 
     if resume_run_id or retry_failures_run_id:
         state = load_run_state(state_root, selected_run_id)
-        if state.get("status") == "completed":
+        current_reviewable = int(state.get("reviewable_counts", {}).get("total") or 0)
+        if state.get("status") == "completed" and current_reviewable >= target_count:
             print(f"bulk run already completed: {selected_run_id}")
             return 0
         if expanded_query_manifest.exists():
@@ -516,73 +543,173 @@ def run_bulk_acquisition(
         )
         start_new_run(state_root, state)
         write_manifest_atomic(expanded_query_manifest, queries)
-    starting_request_stats = state.get("request_stats") or empty_request_stats()
-    client = client or IndianKanoonClient()
-
-    def cumulative_client_stats() -> dict[str, Any]:
-        return merge_request_stats(starting_request_stats, client.get_request_stats())
-
     candidates_path, review_path, audit_path, raw_dir = bulk_manifest_paths(state_root, selected_run_id)
+    query_by_id = {str(query.get("query_id")): query for query in queries}
+    for partition in state.get("partitions", []):
+        query = query_by_id.get(str(partition.get("partition_id"))) or {}
+        partition.setdefault("family", query.get("offence_family"))
+        partition.setdefault("target", int(query.get("target_quota") or target_count))
+        partition.setdefault("max_pages", max_search_pages)
+        partition.setdefault("metrics", empty_partition_metrics())
+        partition.setdefault("next_page", len(partition.get("pages_completed") or []))
+        partition.setdefault("scheduler_visits", 0)
+        if (
+            partition.get("status") == "completed"
+            and int(partition.get("current_reviewable") or 0) < int(partition.get("target") or target_count)
+            and int(partition.get("next_page") or 0) < int(partition.get("max_pages") or max_search_pages)
+        ):
+            partition["status"] = "pending"
+    state.setdefault(
+        "scheduler",
+        {
+            "policy": (stage.get("scheduler_policy") or {}).get("algorithm", "target_aware_round_robin"),
+            "cursor": 0,
+            "unit": (stage.get("scheduler_policy") or {}).get("unit", "one_search_page_per_partition_visit"),
+        },
+    )
     state["status"] = "running"
     save_run_state(state_root, state)
 
-    pending_partitions = [
-        partition
-        for partition in state.get("partitions", [])
-        if partition.get("status") != "completed"
-    ]
-    if retry_failures_run_id:
-        pending_partitions = [
-            partition
-            for partition in pending_partitions
-            if any(item.get("partition_id") == partition.get("partition_id") and item.get("retryable") for item in state.get("failed_queue", []))
-        ]
-
-    for partition in pending_partitions:
-        if reviewable_count(load_manifest(candidates_path)) >= target_count:
+    while True:
+        candidates = load_manifest(candidates_path)
+        if reviewable_count(candidates) >= target_count:
             break
-        if int(state.get("request_stats", {}).get("total_requests", 0)) >= max_api_requests:
+        prior_requests = int(state.get("request_stats", {}).get("total_requests", 0))
+        if prior_requests >= max_api_requests:
             state["status"] = "stopped_budget"
             save_run_state(state_root, state)
             print(f"bulk run stopped at API budget: {selected_run_id}")
             return 0
-        partition["status"] = "running"
-        save_run_state(state_root, state)
-        before = len(load_manifest(candidates_path))
-        result = acquire(
-            limit=target_count,
-            max_api_requests=max_api_requests,
-            query_id=str(partition["partition_id"]),
-            query_manifest=expanded_query_manifest,
-            judgment_manifest=candidates_path,
-            review_manifest=review_path,
-            audit_manifest=audit_path,
-            raw_dir=raw_dir,
-            delay=delay,
-            max_search_pages=int(partition.get("max_pages") or max_search_pages),
-            enforce_family_quotas=False,
-            extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
-            client=client,
+        family_current = family_counts_from_candidates(candidates)
+        order = fair_partition_order(
+            state.get("partitions", []),
+            family_targets,
+            family_current,
+            int(state.get("scheduler", {}).get("cursor") or 0),
         )
+        if retry_failures_run_id:
+            retry_partition_ids = {
+                str(item.get("partition_id"))
+                for item in state.get("failed_queue", [])
+                if item.get("retryable")
+            }
+            order = [partition for partition in order if str(partition.get("partition_id")) in retry_partition_ids]
+        if not order:
+            break
+        partition = order[0]
+        family = str(partition.get("family") or "")
+        current_total_reviewable = reviewable_count(candidates)
+        family_gap = max(int(family_targets.get(family, partition.get("target") or target_count)) - int(family_current.get(family, 0)), 0)
+        visit_target_count = min(target_count, current_total_reviewable + family_gap) if family_gap else target_count
+        remaining_api_requests = max_api_requests - prior_requests
+        partition["status"] = "running"
+        partition["scheduler_visits"] = int(partition.get("scheduler_visits") or 0) + 1
+        next_page = int(partition.get("next_page") or 0)
+        save_run_state(state_root, state)
+        partition_client = client or IndianKanoonClient()
+        before_stats = partition_client.get_request_stats()
+        before_counts = partition_record_counts(candidates, str(partition["partition_id"]))
+        try:
+            result = acquire(
+                limit=visit_target_count,
+                max_api_requests=remaining_api_requests,
+                query_id=str(partition["partition_id"]),
+                query_manifest=expanded_query_manifest,
+                judgment_manifest=candidates_path,
+                review_manifest=review_path,
+                audit_manifest=audit_path,
+                raw_dir=raw_dir,
+                delay=delay,
+                max_search_pages=1,
+                start_search_page=next_page,
+                enforce_family_quotas=False,
+                extra_duplicate_manifests=GLOBAL_DEDUPE_SOURCES,
+                client=partition_client,
+                max_limit=max(target_count, MAX_LIMIT),
+                checkpoint_each_candidate=True,
+            )
+        except BudgetExceeded:
+            candidates = load_manifest(candidates_path)
+            delta = request_stats_delta(before_stats, partition_client.get_request_stats())
+            if int(delta.get("total_requests", 0)) == 0 and before_stats == partition_client.get_request_stats() and prior_requests == 0:
+                delta = partition_client.get_request_stats()
+            after_counts = partition_record_counts(candidates, str(partition["partition_id"]))
+            record_partition_metrics(
+                partition,
+                delta,
+                search_candidates=max(after_counts["total"] - before_counts["total"], 0),
+                unique_candidates=max(after_counts["total"] - before_counts["total"], 0),
+                reviewable_added=max(after_counts["reviewable"] - before_counts["reviewable"], 0),
+                pre_download_rejected=max(after_counts["pre_download_rejected"] - before_counts["pre_download_rejected"], 0),
+                duplicates=max(after_counts["duplicates"] - before_counts["duplicates"], 0),
+                failures=max(after_counts["failures"] - before_counts["failures"], 0),
+            )
+            refresh_bulk_state_counts(state, candidates, merge_request_stats(state.get("request_stats") or empty_request_stats(), delta))
+            state["status"] = "stopped_budget"
+            save_run_state(state_root, state)
+            print(f"bulk run stopped at API budget: {selected_run_id}")
+            return 0
         candidates = load_manifest(candidates_path)
-        after = len(candidates)
-        partition["status"] = "completed" if result == 0 else "failed"
-        partition["current_reviewable"] = reviewable_count([record for record in candidates if record.get("query_id") == partition["partition_id"]])
-        partition["candidates_seen"] = after - before
-        partition["pages_completed"] = list(range(int(partition.get("max_pages") or max_search_pages)))
-        partition["last_page"] = (int(partition.get("max_pages") or max_search_pages) - 1) if partition["pages_completed"] else None
-        refresh_bulk_state_counts(state, candidates, cumulative_client_stats())
-        if after > before:
-            new_records = candidates[before:after]
+        after_counts = partition_record_counts(candidates, str(partition["partition_id"]))
+        delta = request_stats_delta(before_stats, partition_client.get_request_stats())
+        if int(delta.get("total_requests", 0)) == 0 and before_stats == partition_client.get_request_stats() and prior_requests == 0:
+            delta = partition_client.get_request_stats()
+        provider_stop = (
+            int(delta.get("responses_by_category", {}).get("429", 0))
+            + int(delta.get("responses_by_category", {}).get("4xx", 0))
+            + int(delta.get("responses_by_category", {}).get("5xx", 0))
+        ) > 0 and after_counts["total"] == before_counts["total"]
+        record_partition_metrics(
+            partition,
+            delta,
+            search_candidates=max(after_counts["total"] - before_counts["total"], 0),
+            unique_candidates=max(after_counts["total"] - before_counts["total"], 0),
+            reviewable_added=max(after_counts["reviewable"] - before_counts["reviewable"], 0),
+            pre_download_rejected=max(after_counts["pre_download_rejected"] - before_counts["pre_download_rejected"], 0),
+            duplicates=max(after_counts["duplicates"] - before_counts["duplicates"], 0),
+            failures=max(after_counts["failures"] - before_counts["failures"], 0),
+        )
+        partition["current_reviewable"] = after_counts["reviewable"]
+        partition["candidates_seen"] = int(partition.get("candidates_seen") or 0) + max(after_counts["total"] - before_counts["total"], 0)
+        pages_completed = list(partition.get("pages_completed") or [])
+        if next_page not in pages_completed:
+            pages_completed.append(next_page)
+        partition["pages_completed"] = sorted(pages_completed)
+        partition["last_page"] = next_page
+        partition["next_page"] = next_page + 1
+        max_pages_for_partition = int(partition.get("max_pages") or max_search_pages)
+        if result != 0:
+            partition["status"] = "failed"
+        elif provider_stop:
+            partition["status"] = "pending"
+        elif partition["current_reviewable"] >= int(partition.get("target") or target_count) or partition["next_page"] >= max_pages_for_partition:
+            partition["status"] = "completed"
+        elif low_yield_guard_triggered(partition, low_yield_guard):
+            partition["status"] = "paused_low_yield"
+        else:
+            partition["status"] = "pending"
+        scheduler = dict(state.get("scheduler") or {})
+        partition_index = state.get("partitions", []).index(partition)
+        scheduler["cursor"] = (partition_index + 1) % max(len(state.get("partitions", [])), 1)
+        state["scheduler"] = scheduler
+        refresh_bulk_state_counts(state, candidates, merge_request_stats(state.get("request_stats") or empty_request_stats(), delta))
+        new_records = records_for_partition(candidates, str(partition["partition_id"]))[before_counts["total"] : after_counts["total"]]
+        if new_records:
             append_batch(state_root, state, new_records[: int(state.get("batch_size") or batch_size)])
         save_run_state(state_root, state)
         if result != 0:
             state["status"] = "failed"
             save_run_state(state_root, state)
             return result
+        if provider_stop:
+            state["status"] = "stopped_provider"
+            save_run_state(state_root, state)
+            print(f"bulk run stopped on provider response: {selected_run_id}")
+            return 0
 
-    refresh_bulk_state_counts(state, load_manifest(candidates_path), cumulative_client_stats())
-    state["status"] = "completed" if reviewable_count(load_manifest(candidates_path)) >= target_count or all(p.get("status") == "completed" for p in state.get("partitions", [])) else "paused"
+    refresh_bulk_state_counts(state, load_manifest(candidates_path))
+    terminal_statuses = {"completed", "failed", "paused_low_yield"}
+    state["status"] = "completed" if reviewable_count(load_manifest(candidates_path)) >= target_count or all(p.get("status") in terminal_statuses for p in state.get("partitions", [])) else "paused"
     save_run_state(state_root, state)
     stats_path = run_dir(state_root, selected_run_id) / "statistics.json"
     write_json_atomic(stats_path, run_statistics(state))
@@ -669,6 +796,8 @@ def bulk_dry_run(
     max_api_requests: int,
     max_search_pages: int,
     batch_size: int,
+    run_id: str | None = None,
+    state_root: Path = DEFAULT_RUN_ROOT,
 ) -> int:
     loaded = load_bulk_plan(plan_path, stage_id)
     plan = loaded["plan"]
@@ -685,6 +814,49 @@ def bulk_dry_run(
     print(f"global request budget: {stage.get('request_budget', max_api_requests)}")
     print(f"max pages: {stage.get('max_pages_per_query', max_search_pages)}")
     print(f"batch size: {stage.get('batch_size', batch_size)}")
+    scheduler_policy = stage.get("scheduler_policy") or {
+        "algorithm": "target_aware_round_robin",
+        "unit": "one_search_page_per_partition_visit",
+    }
+    low_yield_guard = stage.get("low_yield_guard") or {"enabled": False}
+    print(f"scheduler policy: {json.dumps(scheduler_policy, sort_keys=True)}")
+    print(f"low-yield guard: {json.dumps(low_yield_guard, sort_keys=True)}")
+    partition_budgets = {
+        partition.get("partition_id"): partition.get("request_budget")
+        for partition in stage.get("partitions") or []
+        if partition.get("request_budget") is not None
+    }
+    print(f"partition budgets: {json.dumps(partition_budgets, sort_keys=True)}")
+    if run_id:
+        state = load_run_state(state_root, validate_run_id(run_id))
+        candidates_path, _, _, _ = bulk_manifest_paths(state_root, run_id)
+        candidates = load_manifest(candidates_path)
+        current = family_counts_from_candidates(candidates)
+        print(f"current durable reviewable count: {reviewable_count(candidates)}")
+        print(
+            "family gaps: "
+            + json.dumps(
+                {
+                    family: values["gap"]
+                    for family, values in family_progress(state.get("partitions", []), stage.get("family_targets") or {}, current).items()
+                },
+                sort_keys=True,
+            )
+        )
+        active = [
+            partition.get("partition_id")
+            for partition in fair_partition_order(
+                state.get("partitions", []),
+                {str(key): int(value) for key, value in (stage.get("family_targets") or {}).items()},
+                current,
+                int(state.get("scheduler", {}).get("cursor") or 0),
+            )
+        ]
+        print(f"active partitions: {json.dumps(active, sort_keys=True)}")
+    else:
+        print("current durable reviewable count: 0")
+        print(f"family gaps: {json.dumps(stage.get('family_targets') or {}, sort_keys=True)}")
+        print(f"active partitions: {json.dumps([partition.get('partition_id') for partition in stage.get('partitions') or []], sort_keys=True)}")
     min_interval = os.getenv("INDIAN_KANOON_MIN_REQUEST_INTERVAL_MS", str(DEFAULT_MIN_REQUEST_INTERVAL_MS))
     max_retries = os.getenv("INDIAN_KANOON_MAX_RETRIES", str(DEFAULT_MAX_RETRIES))
     print(f"rate-limit settings: min_interval_ms={min_interval}, max_retries={max_retries}")
@@ -713,9 +885,12 @@ def acquire(
     enforce_family_quotas: bool = True,
     extra_duplicate_manifests: list[Path] | None = None,
     client: IndianKanoonClient | None = None,
+    max_limit: int = MAX_LIMIT,
+    checkpoint_each_candidate: bool = False,
+    start_search_page: int = 0,
 ) -> int:
-    if limit < 1 or limit > MAX_LIMIT:
-        raise ValueError(f"limit must be between 1 and {MAX_LIMIT}")
+    if limit < 1 or limit > max_limit:
+        raise ValueError(f"limit must be between 1 and {max_limit}")
     client = client or IndianKanoonClient()
     queries = filtered_queries(load_manifest(query_manifest), query_id, offence_family, temporal_track)
     if not queries:
@@ -748,6 +923,12 @@ def acquire(
     downloaded = 0
     target_reviewable = limit
 
+    def checkpoint_manifests() -> None:
+        if checkpoint_each_candidate:
+            write_manifest_atomic(judgment_manifest, records)
+            write_manifest_atomic(review_manifest, reviews)
+            write_manifest_atomic(audit_manifest, audit)
+
     for query in queries:
         if reviewable_count(records) >= target_reviewable:
             break
@@ -757,7 +938,7 @@ def acquire(
         family = str(query["offence_family"])
         if enforce_family_quotas and not quota_allows(family, accepted_counts, quotas):
             continue
-        for page in range(max(1, max_search_pages)):
+        for page in range(start_search_page, start_search_page + max(1, max_search_pages)):
             if reviewable_count(records) >= target_reviewable:
                 break
             if query_download_counts[str(query["query_id"])] >= query_limit:
@@ -819,6 +1000,7 @@ def acquire(
                         audit,
                         {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
                     )
+                    checkpoint_manifests()
                     if should_stop_for_api_error(exc):
                         break
                     continue
@@ -841,6 +1023,7 @@ def acquire(
                         audit,
                         {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))},
                     )
+                    checkpoint_manifests()
                     continue
                 base_record = {
                     "local_id": f"v2-{source_id}",
@@ -894,6 +1077,7 @@ def acquire(
                     rejected["notes"] = "; ".join(pre_decision.reasons)
                     upsert_by_local_id(records, rejected)
                     upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, pre_decision_dict, candidate_api_before, stats_total(client))})
+                    checkpoint_manifests()
                     continue
 
                 enforce_budget(client, max_api_requests)
@@ -909,6 +1093,7 @@ def acquire(
                     decision["decision"] = "reject"
                     decision["reasons"] = list(decision["reasons"]) + ["raw_retrieval_failure"]
                     upsert_by_local_id(audit, {"local_id": f"v2-audit-{source_id}", **audit_entry(query, rank, source_id, result, metadata, decision, candidate_api_before, stats_total(client))})
+                    checkpoint_manifests()
                     if should_stop_for_api_error(exc):
                         break
                     continue
@@ -974,6 +1159,7 @@ def acquire(
                 if decision.decision in {"accept_candidate", "needs_review"}:
                     accepted_counts[family] = accepted_counts.get(family, 0) + 1
                     upsert_by_local_id(reviews, review_record_for(full_record))
+                checkpoint_manifests()
 
     write_manifest_atomic(judgment_manifest, records)
     write_manifest_atomic(review_manifest, reviews)
@@ -1033,6 +1219,7 @@ def main(argv: list[str] | None = None) -> int:
                     max_api_requests=args.max_api_requests,
                     max_search_pages=args.max_search_pages,
                     batch_size=args.batch_size,
+                    run_id=args.run_id or args.resume or args.retry_failures,
                 )
             return run_bulk_acquisition(
                 run_id=args.run_id,
