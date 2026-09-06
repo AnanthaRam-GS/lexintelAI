@@ -1,0 +1,74 @@
+{
+  "processing_version": "legalai-judgment-normalizer-v1+legalai-legal-chunker-v1",
+  "input_document_count": 70,
+  "processed_document_count": 70,
+  "failed_document_count": 0,
+  "processed": 70,
+  "skipped_unchanged": 0,
+  "reprocessed": 70,
+  "failures": [],
+  "total_paragraphs": 4195,
+  "total_chunks": 1356,
+  "source_type_counts": {
+    "document_text_fallback": 1,
+    "local_text": 9,
+    "pdf_native": 60
+  },
+  "page_provenance": {
+    "pdf_documents": 60,
+    "pdf_chunks": 1130,
+    "pdf_chunks_with_page_provenance": 1130,
+    "non_pdf_documents": 10,
+    "non_pdf_null_page_chunks": 226,
+    "missing_or_invalid_provenance": 0
+  },
+  "chunk_size_statistics": {
+    "min": 1,
+    "max": 851,
+    "mean": 665.44,
+    "median": 701.0,
+    "p95": 850
+  },
+  "chunks_per_document": {
+    "min": 1,
+    "max": 117,
+    "mean": 19.37,
+    "median": 11.5,
+    "p95": 81
+  },
+  "diagnostics": {
+    "removed_header_count": 600,
+    "removed_footer_count": 805,
+    "documents_with_no_text": [],
+    "documents_with_unusually_low_text": [],
+    "documents_with_unusually_large_paragraphs": [],
+    "documents_with_fallback_text": [
+      "indian_kanoon:1291057"
+    ],
+    "documents_with_missing_page_provenance": []
+  },
+  "integrity": {
+    "duplicate_chunk_ids": 0,
+    "invalid_paragraph_ranges": 0,
+    "invalid_page_ranges": 0,
+    "empty_chunks": 0
+  },
+  "configuration": {
+    "target_estimated_tokens": 650,
+    "max_estimated_tokens": 900,
+    "overlap_estimated_tokens": 100
+  },
+  "trusted_input": {
+    "development_accepted_input": 28,
+    "bulk_audit_accepted_input": 42,
+    "total_before_dedupe": 70,
+    "cross_set_duplicates": 0,
+    "final_unique_documents": 70,
+    "excluded_policy": {
+      "bulk_rejected": 7,
+      "bulk_needs_review": 1,
+      "bulk_unaudited": 199,
+      "development_rejected": 2
+    }
+  }
+}

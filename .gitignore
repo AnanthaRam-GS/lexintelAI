@@ -52,6 +52,12 @@ data/raw/judgments/indiankanoon/*
 data/processed/acquisition_runs/*
 !data/processed/acquisition_runs/.gitkeep
 
+# Local document-processing outputs
+data/processed/judgments_normalized/*
+!data/processed/judgments_normalized/.gitkeep
+data/processed/judgment_chunks/*
+!data/processed/judgment_chunks/.gitkeep
+
 # Model / generated runtime artifacts
 *.log
 
