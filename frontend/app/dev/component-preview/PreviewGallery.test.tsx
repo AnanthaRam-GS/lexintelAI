@@ -26,6 +26,17 @@ describe('PreviewGallery', () => {
     ]);
   });
 
+  it('provides the approved responsive brand marks as decorative graphics', () => {
+    render(<PreviewGallery />);
+
+    const banner = screen.getAllByRole('banner')[0];
+    const brandMark = banner.querySelector('[aria-hidden="true"]');
+
+    expect(brandMark).not.toBeNull();
+    expect(brandMark?.querySelector('svg.lucide-scale')).not.toBeNull();
+    expect(brandMark?.querySelector('svg.lucide-landmark')).not.toBeNull();
+  });
+
   it('demonstrates every shared component in order and switches response mode', async () => {
     const user = userEvent.setup();
 

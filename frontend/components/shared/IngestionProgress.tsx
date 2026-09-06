@@ -91,7 +91,7 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
   }
 
   return (
-    <ul aria-label="Ingestion jobs" className="space-y-3" data-testid="ingestion-jobs">
+    <ul aria-label="Ingestion jobs" className="space-y-2" data-testid="ingestion-jobs">
       {jobs.map((job) => {
         const progress = clampProgress(job.progress);
         const isFailed = job.stage === 'FAILED';
@@ -108,17 +108,17 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
 
         return (
           <li
-            className={`min-w-0 rounded-[var(--radius-standard)] border p-4 ${rowBorder} ${rowSurface}`}
+            className={`min-w-0 rounded-[var(--radius-standard)] border p-3 sm:p-4 ${rowBorder} ${rowSurface}`}
             key={job.id}
           >
-            <div className="flex min-w-0 items-start gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <StageIcon stage={job.stage} />
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between sm:gap-3">
                 <p className="truncate font-medium text-[var(--color-ink)]" title={job.filename}>
                   {job.filename}
                 </p>
                 <p
-                  className={`mt-1 flex min-h-6 items-center gap-2 text-sm font-semibold ${stageLabelClass(job.stage)}`}
+                  className={`mt-1 flex shrink-0 items-center gap-2 text-xs font-semibold sm:mt-0 ${stageLabelClass(job.stage)}`}
                 >
                   <span>Stage</span>
                   <span>{job.stage}</span>
@@ -126,7 +126,7 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
               </div>
             </div>
 
-            <div className="mt-3 min-h-8">
+            <div className="mt-2 flex items-center gap-3">
               <div
                 aria-label={`${job.filename} progress`}
                 aria-valuemax={100}
@@ -141,10 +141,12 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-1 text-right text-xs text-[var(--color-muted)]">{progress}%</p>
+              <p className="w-10 shrink-0 text-right text-xs text-[var(--color-muted)]">
+                {progress}%
+              </p>
             </div>
 
-            <div className="mt-3 min-h-24">
+            <div className="empty:hidden empty:pt-0 pt-3" data-ingestion-error-region>
               {isFailed ? (
                 <ErrorMessage
                   message={fallbackFailureMessage}

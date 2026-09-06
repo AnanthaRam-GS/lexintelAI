@@ -4,7 +4,7 @@
  * UI font families. Geometry, elevation, and motion tokens keep components
  * visually consistent and leave markup ready for a future dark theme.
  */
-@config "../tailwind.config.mts";
+@config "../tailwind.config.ts";
 @import 'tailwindcss';
 
 :root {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Scale } from 'lucide-react';
+import { Landmark, Scale } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -62,7 +62,8 @@ export function PreviewGallery() {
             aria-hidden="true"
             className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-ink)] text-[var(--color-brass)]"
           >
-            <Scale size={24} strokeWidth={1.8} />
+            <Landmark className="sm:hidden" size={24} strokeWidth={1.8} />
+            <Scale className="hidden sm:block" size={24} strokeWidth={1.8} />
           </span>
           <p className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--color-ink)]">
             LegalAI

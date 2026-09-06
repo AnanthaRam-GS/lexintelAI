@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { IngestionProgress, type IngestionJob } from './IngestionProgress';
@@ -160,6 +160,36 @@ describe('IngestionProgress', () => {
     expect(screen.getByRole('progressbar', { name: 'polling.pdf progress' })).toHaveAttribute(
       'aria-valuenow',
       '48',
+    );
+  });
+
+  it('keeps the same reserved error region when a polling job fails', () => {
+    const { rerender } = render(
+      <IngestionProgress
+        jobs={[{ id: 'polling', filename: 'polling.pdf', stage: 'INDEXING', progress: 80 }]}
+      />,
+    );
+
+    const initialRow = screen.getByText('polling.pdf').closest('li');
+    const initialErrorRegion = initialRow?.querySelector('[data-ingestion-error-region]');
+
+    expect(initialRow).not.toBeNull();
+    expect(initialErrorRegion).not.toBeNull();
+    expect(within(initialErrorRegion as HTMLElement).queryByRole('alert')).not.toBeInTheDocument();
+
+    rerender(
+      <IngestionProgress
+        jobs={[{ id: 'polling', filename: 'polling.pdf', stage: 'FAILED', progress: 80 }]}
+      />,
+    );
+
+    const failedRow = screen.getByText('polling.pdf').closest('li');
+    const failedErrorRegion = failedRow?.querySelector('[data-ingestion-error-region]');
+
+    expect(failedRow).toBe(initialRow);
+    expect(failedErrorRegion).toBe(initialErrorRegion);
+    expect(within(failedErrorRegion as HTMLElement).getByRole('alert')).toHaveTextContent(
+      'Ingestion could not be completed. Retry this document.',
     );
   });
 });
