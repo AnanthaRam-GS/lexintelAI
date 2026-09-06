@@ -121,12 +121,12 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
                   className={`mt-1 flex min-h-6 items-center gap-2 text-sm font-semibold ${stageLabelClass(job.stage)}`}
                 >
                   <span>Stage</span>
-                  <span aria-label={`${job.filename} stage`}>{job.stage}</span>
+                  <span>{job.stage}</span>
                 </p>
               </div>
             </div>
 
-            <div className="mt-3 min-h-8" aria-label={`${job.filename} progress region`}>
+            <div className="mt-3 min-h-8">
               <div
                 aria-label={`${job.filename} progress`}
                 aria-valuemax={100}

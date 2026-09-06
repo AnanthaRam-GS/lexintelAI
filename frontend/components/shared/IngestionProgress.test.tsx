@@ -42,6 +42,20 @@ describe('IngestionProgress', () => {
     );
   });
 
+  it('keeps generic stage and progress wrappers free from unsupported accessible names', () => {
+    render(
+      <IngestionProgress
+        jobs={[{ id: 'named', filename: 'named.pdf', stage: 'EXTRACTING', progress: 42 }]}
+      />,
+    );
+
+    const stage = screen.getByText('EXTRACTING', { exact: true });
+    const progress = screen.getByRole('progressbar', { name: 'named.pdf progress' });
+
+    expect(stage).not.toHaveAttribute('aria-label');
+    expect(progress.parentElement).not.toHaveAttribute('aria-label');
+  });
+
   it('renders failed-job errors through a safe shared alert', () => {
     render(
       <IngestionProgress

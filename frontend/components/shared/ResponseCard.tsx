@@ -5,7 +5,7 @@ import type { Citation, ResponseCardProps } from './response-types';
 export type { AnswerContent, Citation, LegalSection, ResponseCardProps } from './response-types';
 
 const linkClass =
-  'font-semibold text-[var(--color-info-foreground)] underline decoration-[var(--color-info)] underline-offset-4 transition-colors duration-[var(--motion-fast)] hover:text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]';
+  'inline-flex min-h-11 items-center font-semibold text-[var(--color-info-foreground)] underline decoration-[var(--color-info)] underline-offset-4 transition-colors duration-[var(--motion-fast)] hover:text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] sm:min-h-0';
 
 const clampConfidence = (confidence: number) => Math.min(100, Math.max(0, Math.round(confidence)));
 
@@ -93,13 +93,14 @@ function ProfessionalResponse({
                         {legalSection.explanation}
                       </p>
                     ) : null}
-                    {typeof legalSection.confidence === 'number' ? (
+                    {typeof legalSection.confidence === 'number' &&
+                    Number.isFinite(legalSection.confidence) ? (
                       <p className="mt-2 text-sm font-semibold text-[var(--color-success-foreground)]">
                         {clampConfidence(legalSection.confidence)}% confidence
                       </p>
                     ) : null}
                     <a
-                      className={`${linkClass} mt-2 inline-block text-sm`}
+                      className={`${linkClass} mt-2 text-sm`}
                       href={legalSection.sourceUrl}
                       rel="noreferrer"
                       target="_blank"
@@ -134,7 +135,7 @@ function ProfessionalResponse({
                       </blockquote>
                     ) : null}
                     <a
-                      className={`${linkClass} mt-2 inline-block text-sm`}
+                      className={`${linkClass} mt-2 text-sm`}
                       href={citation.sourceUrl}
                       rel="noreferrer"
                       target="_blank"
@@ -226,7 +227,7 @@ function PublicResponse({
                   </p>
                 ) : null}
                 <a
-                  className={`${linkClass} mt-2 inline-block`}
+                  className={`${linkClass} mt-2`}
                   href={legalSection.sourceUrl}
                   rel="noreferrer"
                   target="_blank"

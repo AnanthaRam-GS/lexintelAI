@@ -7,6 +7,25 @@ import { PreviewGallery } from './PreviewGallery';
 describe('PreviewGallery', () => {
   afterEach(cleanup);
 
+  it('uses only the approved copy before the first component section', () => {
+    render(<PreviewGallery />);
+
+    const banner = screen.getAllByRole('banner')[0];
+    const main = screen.getByRole('main');
+    const introduction = main.firstElementChild;
+    const aboveFoldCopy = [
+      ...Array.from(banner.querySelectorAll('p'), (element) => element.textContent),
+      ...Array.from(introduction?.children ?? [], (element) => element.textContent),
+    ];
+
+    expect(aboveFoldCopy).toEqual([
+      'LegalAI',
+      'Indian Criminal Law RAG Assistant',
+      'LegalAI Component Library',
+      'Shared UX for Public, Professional & Admin modes',
+    ]);
+  });
+
   it('demonstrates every shared component in order and switches response mode', async () => {
     const user = userEvent.setup();
 

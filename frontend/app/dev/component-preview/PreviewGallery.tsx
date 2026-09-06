@@ -1,5 +1,6 @@
 'use client';
 
+import { Scale } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -59,18 +60,17 @@ export function PreviewGallery() {
         <div className="mx-auto flex max-w-[90rem] items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <span
             aria-hidden="true"
-            className="inline-flex size-10 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-ink)] font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--color-brass)]"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-ink)] text-[var(--color-brass)]"
           >
-            §
+            <Scale size={24} strokeWidth={1.8} />
           </span>
-          <div className="min-w-0">
-            <p className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-ink)]">
-              LegalAI
-            </p>
-            <p className="truncate text-xs text-[var(--color-muted)]">
-              Indian criminal law research assistant
-            </p>
-          </div>
+          <p className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--color-ink)]">
+            LegalAI
+          </p>
+          <span aria-hidden="true" className="hidden h-8 w-px bg-[var(--color-border)] sm:block" />
+          <p className="hidden truncate text-sm text-[var(--color-body)] sm:block">
+            Indian Criminal Law RAG Assistant
+          </p>
         </div>
       </header>
 
@@ -80,12 +80,12 @@ export function PreviewGallery() {
             LegalAI Component Library
           </h1>
           <p className="mt-2 text-[var(--color-muted)]">
-            Shared UX for Public, Professional, and Admin modes
+            Shared UX for Public, Professional &amp; Admin modes
           </p>
         </div>
 
         <div className="grid gap-8 [@media(min-width:1100px)]:grid-cols-2">
-          <div className="space-y-8">
+          <div className="min-w-0 space-y-8">
             <section aria-labelledby="loading-spinner-heading" className="space-y-4">
               <h2 className={sectionHeadingClass} id="loading-spinner-heading">
                 1. LoadingSpinner
@@ -153,7 +153,7 @@ export function PreviewGallery() {
             </section>
           </div>
 
-          <div className="space-y-8">
+          <div className="min-w-0 space-y-8">
             <section aria-labelledby="upload-dropzone-heading" className="space-y-4">
               <h2 className={sectionHeadingClass} id="upload-dropzone-heading">
                 3. UploadDropzone

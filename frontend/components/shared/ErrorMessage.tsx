@@ -39,7 +39,7 @@ export function ErrorMessage({
 
           {technicalDetail ? (
             <details className="mt-3 text-sm">
-              <summary className="w-fit cursor-pointer font-medium text-[var(--color-error-foreground)]">
+              <summary className="inline-flex min-h-11 w-fit cursor-pointer items-center font-medium text-[var(--color-error-foreground)] sm:min-h-0">
                 Technical details
               </summary>
               <p className="mt-2 rounded-[var(--radius-compact)] bg-[var(--color-surface-raised)] p-3 text-[var(--color-body)]">

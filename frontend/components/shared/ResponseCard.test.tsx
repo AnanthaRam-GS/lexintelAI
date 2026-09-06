@@ -197,4 +197,18 @@ describe('ResponseCard', () => {
     expect(screen.getByText('100% confidence')).toBeInTheDocument();
     expect(screen.getByText('0% confidence')).toBeInTheDocument();
   });
+
+  it('omits a non-finite professional confidence value', () => {
+    render(
+      <ResponseCard
+        citations={[]}
+        content={content}
+        mode="professional"
+        sections={[{ ...sections[0], confidence: Number.NaN }]}
+      />,
+    );
+
+    expect(screen.queryByText(/confidence/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
+  });
 });

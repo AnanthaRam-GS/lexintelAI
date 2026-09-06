@@ -4,7 +4,7 @@
  * UI font families. Geometry, elevation, and motion tokens keep components
  * visually consistent and leave markup ready for a future dark theme.
  */
-@config "../tailwind.config.ts";
+@config "../tailwind.config.mts";
 @import 'tailwindcss';
 
 :root {
@@ -15,10 +15,10 @@
   --color-surface-subtle: #efe9dc;
   --color-ink: #0b294d;
   --color-body: #1d2b3c;
-  --color-muted: #657180;
+  --color-muted: #606c7c;
   --color-inverse: #ffffff;
   --color-border: #d7d0c2;
-  --color-brass: #a86f28;
+  --color-brass: #a06824;
   --color-brass-hover: #8b591f;
   --color-brass-active: #704617;
   --color-focus: #1f67b1;
