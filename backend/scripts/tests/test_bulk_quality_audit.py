@@ -143,8 +143,8 @@ class BulkQualityAuditTest(unittest.TestCase):
 
         metrics = audit.compute_metrics([reviewed])
 
-        self.assertEqual(metrics["criminal_relevance_precision"]["reviewed"], 1)
-        self.assertEqual(metrics["document_type_precision"]["reviewed"], 0)
+        self.assertEqual(metrics["criminal_relevance_precision"]["denominator"], 1)
+        self.assertEqual(metrics["document_type_precision"]["denominator"], 0)
         self.assertIsNone(metrics["document_type_precision"]["percent"])
         self.assertEqual(metrics["rag_suitability_rate"]["percent"], 100.0)
 
@@ -196,6 +196,73 @@ class BulkQualityAuditTest(unittest.TestCase):
 
         self.assertEqual(len(sample), 5)
         self.assertNotIn("indiankanoon_client", sys.modules)
+
+    def test_approved_human_decision_manifest_counts(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists() or not audit.RAG_DECISIONS_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit manifests are not present")
+        sample = audit.load_manifest(audit.SAMPLE_MANIFEST)
+        decisions = audit.load_manifest(audit.RAG_DECISIONS_MANIFEST)
+
+        self.assertEqual(len(sample), 50)
+        self.assertEqual(sum(1 for item in sample if item["human_audit_status"] == "reviewed"), 50)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "accept"), 42)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "reject"), 7)
+        self.assertEqual(sum(1 for item in sample if item["rag_suitability"] == "needs_review"), 1)
+        self.assertEqual(len(decisions), 50)
+
+    def test_approved_corrections_and_automated_values_preserved(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(by_id["87917455"]["offence_family_automated"], "other")
+        self.assertEqual(by_id["87917455"]["corrected_offence_family"], "cheating_and_fraud")
+        self.assertEqual(by_id["15148168"]["legal_regime_automated"], "mixed_or_transition")
+        self.assertEqual(by_id["15148168"]["corrected_legal_regime"], "bns_bnss")
+        self.assertEqual(by_id["169784101"]["legal_regime_automated"], "unknown")
+        self.assertEqual(by_id["169784101"]["corrected_legal_regime"], "ipc_crpc")
+
+    def test_duplicate_relationships_and_rejections_are_retained(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(by_id["70072092"]["duplicate_of"], "194768350")
+        self.assertEqual(by_id["105760653"]["duplicate_of"], "186425747")
+        self.assertEqual(by_id["27724816"]["rag_suitability"], "reject")
+        self.assertEqual(by_id["100481688"]["rag_suitability"], "reject")
+        self.assertEqual(by_id["131426670"]["rag_suitability"], "reject")
+
+    def test_corrected_dates_do_not_overwrite_automated_dates(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertIsNone(by_id["120980289"]["judgment_date"])
+        self.assertEqual(by_id["120980289"]["corrected_date"], "2024-03-06")
+        self.assertEqual(by_id["120980289"]["date_metadata_review"], "corrected")
+
+    def test_unsampled_bulk_records_and_rejected_records_remain_present(self) -> None:
+        if not audit.BULK_CANDIDATES.exists() or not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("bulk run manifests are not present")
+        corpus = audit.reviewable_records(audit.load_manifest(audit.BULK_CANDIDATES))
+        sampled = {record["source_document_id"] for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+
+        self.assertEqual(len(corpus), 249)
+        self.assertEqual(len(corpus) - len(sampled), 199)
+        self.assertIn("70072092", {str(record["source_document_id"]) for record in corpus})
+        self.assertIn("105760653", {str(record["source_document_id"]) for record in corpus})
+
+    def test_generated_metrics_and_correction_matrices(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        summary = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))
+
+        self.assertEqual(summary["metrics"]["rag_suitability_rate"]["numerator"], 42)
+        self.assertEqual(summary["metrics"]["rag_suitability_rate"]["denominator"], 50)
+        self.assertEqual(summary["metrics"]["offence_family_accuracy"]["denominator"], 42)
+        self.assertEqual(summary["correction_matrices"]["legal_regime"]["unknown"]["ipc_crpc"], 1)
+        self.assertEqual(summary["rag_decision_manifest"]["records"], 50)
 
 
 if __name__ == "__main__":

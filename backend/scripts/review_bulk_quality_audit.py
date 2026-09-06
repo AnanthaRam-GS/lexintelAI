@@ -26,6 +26,7 @@ RUN_ROOT = REPO_ROOT / "data/processed/acquisition_runs" / RUN_ID
 BULK_CANDIDATES = RUN_ROOT / "candidates.json"
 SAMPLE_MANIFEST = REPO_ROOT / "data/structured/manifests/bulk_quality_audit_sample.json"
 SUMMARY_MANIFEST = REPO_ROOT / "data/structured/manifests/bulk_quality_audit_summary.json"
+RAG_DECISIONS_MANIFEST = REPO_ROOT / "data/structured/manifests/bulk_quality_audit_rag_decisions.json"
 REVIEW_PACKET = REPO_ROOT / "docs/BULK_CORPUS_QUALITY_AUDIT_REVIEW.md"
 SUMMARY_DOC = REPO_ROOT / "docs/BULK_CORPUS_QUALITY_AUDIT.md"
 SAMPLE_SIZE = 50
@@ -480,7 +481,7 @@ def completed_reviews(samples: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def ratio(correct: int, total: int) -> dict[str, Any]:
-    return {"correct": correct, "reviewed": total, "percent": round(correct * 100 / total, 2) if total else None}
+    return {"numerator": correct, "denominator": total, "percent": round(correct * 100 / total, 2) if total else None}
 
 
 def compute_metrics(samples: list[dict[str, Any]]) -> dict[str, Any]:
@@ -523,8 +524,8 @@ def compute_metrics(samples: list[dict[str, Any]]) -> dict[str, Any]:
                 uncertain += 1
         if record.get("offence_family_review") == "corrected" or record.get("legal_regime_review") == "corrected" or record.get("court_metadata_review") == "corrected" or record.get("date_metadata_review") == "corrected":
             correction_count += 1
-    metrics["human_correction_rate"] = ratio(len(reviewed) - correction_count, len(reviewed))
-    metrics["uncertainty_rate"] = ratio(len(reviewed) * len(REVIEW_ENUMS) - uncertain, len(reviewed) * len(REVIEW_ENUMS))
+    metrics["human_correction_rate"] = ratio(correction_count, len(reviewed))
+    metrics["uncertainty_rate"] = ratio(uncertain, len(reviewed) * len(REVIEW_ENUMS))
     metrics["stratified"] = stratified_metrics(reviewed)
     return metrics
 
@@ -570,6 +571,42 @@ def correction_matrices(samples: list[dict[str, Any]]) -> dict[str, dict[str, di
     }
 
 
+def rag_decision_record(sample: dict[str, Any]) -> dict[str, Any]:
+    effective_family = (
+        sample.get("corrected_offence_family")
+        if sample.get("offence_family_review") == "corrected"
+        else sample.get("offence_family_automated")
+    )
+    effective_regime = (
+        sample.get("corrected_legal_regime")
+        if sample.get("legal_regime_review") == "corrected"
+        else sample.get("legal_regime_automated")
+    )
+    return {
+        "source_document_id": sample.get("source_document_id"),
+        "human_rag_suitability": sample.get("rag_suitability"),
+        "effective_offence_family": effective_family,
+        "effective_legal_regime": effective_regime,
+        "corrected_date": sample.get("corrected_date"),
+        "duplicate_of": sample.get("duplicate_of"),
+        "human_review_status": sample.get("human_audit_status"),
+    }
+
+
+def generate_rag_decisions(
+    sample_path: Path = SAMPLE_MANIFEST,
+    output_path: Path = RAG_DECISIONS_MANIFEST,
+) -> list[dict[str, Any]]:
+    samples = load_manifest(sample_path)
+    decisions = sorted(
+        [rag_decision_record(sample) for sample in samples if sample.get("human_audit_status") == "reviewed"],
+        key=lambda item: str(item.get("source_document_id")),
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(decisions, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return decisions
+
+
 def special_case_counts(samples: list[dict[str, Any]]) -> dict[str, int]:
     return {
         "needs_review_ambiguous_automated": sum(1 for s in samples if s.get("automated_status") == "needs_review" or s.get("automated_decision") == "needs_review"),
@@ -606,6 +643,7 @@ def generate_summary(
     corpus = reviewable_records(load_manifest(candidates_path))
     samples = load_manifest(sample_path)
     pending = sum(1 for sample in samples if sample.get("human_audit_status") == "pending")
+    rag_decisions = generate_rag_decisions(sample_path)
     summary = {
         "generated_at": utc_now(),
         "run_id": RUN_ID,
@@ -636,6 +674,13 @@ def generate_summary(
         },
         "metrics": compute_metrics(samples),
         "correction_matrices": correction_matrices(samples),
+        "rag_decision_manifest": {
+            "path": str(RAG_DECISIONS_MANIFEST.relative_to(REPO_ROOT)),
+            "records": len(rag_decisions),
+            "accept": sum(1 for item in rag_decisions if item.get("human_rag_suitability") == "accept"),
+            "reject": sum(1 for item in rag_decisions if item.get("human_rag_suitability") == "reject"),
+            "needs_review": sum(1 for item in rag_decisions if item.get("human_rag_suitability") == "needs_review"),
+        },
         "preview_stats": preview_stats(samples, repo_root),
         "no_network_guarantee": {
             "provider_import_required": False,
@@ -656,7 +701,7 @@ def generate_summary_doc(summary_path: Path = SUMMARY_MANIFEST, output_path: Pat
         "",
         f"Run ID: `{summary['run_id']}`",
         "",
-        "Status: pending human audit.",
+        "Status: completed human audit for the 50-record stratified sample.",
         "",
         f"Corpus size: {summary['corpus_size']}",
         f"Sample target: {summary['sampling_strategy']['target_sample_size']}",
@@ -684,7 +729,43 @@ def generate_summary_doc(summary_path: Path = SUMMARY_MANIFEST, output_path: Pat
         "- RAG suitability rate: accept / reviewed records",
         "- human correction rate and uncertainty rate",
         "",
-        "Initial metrics are pending/not_available until explicit human decisions are applied.",
+        "The remaining 199 bulk records are unaudited/pending. These metrics describe only the reviewed stratified sample unless explicitly labeled as sample-based estimates.",
+        "",
+        "## Human Decision Totals",
+        "",
+        f"- reviewed: {summary['reviewed_count']} / {summary['sample_size']}",
+        f"- pending sample records: {summary['pending_count']}",
+        f"- RAG accept: {summary['human_audit_state']['accepted_for_rag']}",
+        f"- RAG reject: {summary['human_audit_state']['rejected_for_rag']}",
+        f"- RAG needs_review: {summary['human_audit_state']['needs_review']}",
+        "",
+        "## Measured Metrics",
+        "",
+        "| Metric | Numerator | Denominator | Percentage |",
+        "| --- | ---: | ---: | ---: |",
+        *metric_rows(summary["metrics"]),
+        "",
+        "## Correction Matrices",
+        "",
+        "### Offence Family",
+        "",
+        matrix_table(summary["correction_matrices"]["offence_family"]),
+        "",
+        "### Legal Regime",
+        "",
+        matrix_table(summary["correction_matrices"]["legal_regime"]),
+        "",
+        "## Duplicate And Noise Findings",
+        "",
+        "- CIC RTI/noise cluster rejected: 27724816, 100481688, 131426670",
+        "- Patna duplicate pair: retained 194768350, rejected duplicate 70072092",
+        "- Bombay duplicate pair: retained 186425747, rejected duplicate 105760653",
+        "- Other non-criminal/noise rejections: 125812430, 120980289",
+        "",
+        "## Date Metadata Findings",
+        "",
+        "- Explicit corrected dates were recorded separately from provider date metadata.",
+        "- 120980289 has a provider title/date mismatch; human corrected decision date is 2024-03-06.",
         "",
         "## Sample Distribution",
         "",
@@ -715,6 +796,38 @@ def generate_summary_doc(summary_path: Path = SUMMARY_MANIFEST, output_path: Pat
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def metric_rows(metrics: dict[str, Any]) -> list[str]:
+    rows = []
+    labels = [
+        ("criminal_relevance_precision", "criminal relevance precision"),
+        ("document_type_precision", "document type precision"),
+        ("offence_family_accuracy", "offence-family accuracy"),
+        ("legal_regime_accuracy", "legal-regime accuracy"),
+        ("court_metadata_accuracy", "court metadata accuracy"),
+        ("date_metadata_accuracy", "date metadata accuracy"),
+        ("text_usability_rate", "text usability"),
+        ("duplicate_noise_rate", "duplicate/noise clean rate"),
+        ("rag_suitability_rate", "RAG suitability rate"),
+        ("human_correction_rate", "human correction rate"),
+        ("uncertainty_rate", "uncertainty rate"),
+    ]
+    for key, label in labels:
+        value = metrics.get(key) or {}
+        percent = value.get("percent")
+        rows.append(f"| {label} | {value.get('numerator')} | {value.get('denominator')} | {percent if percent is not None else 'not_available'} |")
+    return rows
+
+
+def matrix_table(matrix: dict[str, dict[str, int]]) -> str:
+    if not matrix:
+        return "| Automated | Human | Count |\n| --- | --- | ---: |\n| none | none | 0 |"
+    lines = ["| Automated | Human | Count |", "| --- | --- | ---: |"]
+    for automated, human_counts in matrix.items():
+        for human, count in sorted(human_counts.items()):
+            lines.append(f"| {automated} | {human} | {count} |")
+    return "\n".join(lines)
 
 
 def apply_review(
