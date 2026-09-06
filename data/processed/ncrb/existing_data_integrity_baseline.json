@@ -1,0 +1,18 @@
+{
+  "raw": {
+    "path": "data/processed/ncrb/ncrb_2024_table_1A4_raw.csv",
+    "size": 548250,
+    "mtime": 1788459920.740919,
+    "mtime_str": "2026-09-03 23:55:20",
+    "sha256": "1213da1802536c294e237e1c03a24d62e4fed43821fd7a124252957cf504546a",
+    "rows": 3744
+  },
+  "std": {
+    "path": "data/processed/ncrb/ncrb_stats_2024.csv",
+    "size": 266068,
+    "mtime": 1788459920.8894958,
+    "mtime_str": "2026-09-03 23:55:20",
+    "sha256": "ecbe649ad5d69392f70fbd41f9a16742327292230e2a1468dc6015b9b35f3af0",
+    "rows": 3744
+  }
+}
