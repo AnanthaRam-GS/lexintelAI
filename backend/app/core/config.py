@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://user:password@localhost:5432/legalai"
 
     chroma_persist_dir: str = "./chroma_store"
-    chroma_collection_name: str = "judgments"
+    chroma_collection_name: str = "legalai_trusted_judgments_v1"
 
     indian_kanoon_api_token: str = ""
     indian_kanoon_base_url: str = "https://api.indiankanoon.org"
@@ -37,9 +37,12 @@ class Settings(BaseSettings):
     inlegalbert_model_path: str = "./models/inlegalbert-finetuned"
     inlegalbert_classification_threshold: float = 0.5
 
+    embedding_model: str = "BAAI/bge-m3"
+    embedding_device: str = "cpu"
+    embedding_batch_size: int = 16
+    embedding_normalize: bool = True
     bge_m3_model: str = "BAAI/bge-m3"
     bge_reranker_model: str = "BAAI/bge-reranker-v2-m3"
-    embedding_batch_size: int = 16
     retrieval_top_k: int = 20
     rerank_top_k: int = 5
 
