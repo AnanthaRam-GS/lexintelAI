@@ -25,28 +25,6 @@ const clampProgress = (progress: number) =>
 
 const fallbackFailureMessage = 'Ingestion could not be completed. Retry this document.';
 
-function safeFailureMessage(error?: string) {
-  const message = error?.trim();
-
-  if (!message) {
-    return fallbackFailureMessage;
-  }
-
-  const hasUnsafeDetail =
-    /\b(?:stack trace|traceback|exception|runtimeerror|database|permission denied)\b/i.test(
-      message,
-    ) ||
-    /(?:^|\n)\s*at\s+\S+/i.test(message) ||
-    /(?:\/Users\/|\/home\/|[A-Z]:\\)/i.test(message);
-
-  if (hasUnsafeDetail) {
-    return fallbackFailureMessage;
-  }
-
-  const safeMessage = message.split(/\r?\n/, 1)[0].trim();
-  return /\bretry\b/i.test(safeMessage) ? safeMessage : `${safeMessage} Retry this document.`;
-}
-
 function StageIcon({ stage }: { stage: IngestionStage }) {
   if (stage === 'COMPLETED') {
     return (
@@ -169,7 +147,7 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
             <div className="mt-3 min-h-24">
               {isFailed ? (
                 <ErrorMessage
-                  message={safeFailureMessage(job.error)}
+                  message={fallbackFailureMessage}
                   title={`Unable to ingest ${job.filename}`}
                   variant="inline"
                 />

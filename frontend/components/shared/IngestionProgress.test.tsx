@@ -57,10 +57,11 @@ describe('IngestionProgress', () => {
       />,
     );
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Indexing could not be completed.');
-    expect(screen.getByRole('alert')).toHaveTextContent('Retry this document.');
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Ingestion could not be completed. Retry this document.',
+    );
     expect(screen.getByRole('alert')).toHaveTextContent('Unable to ingest failed.pdf');
-    expect(screen.queryByText(/stack|exception|traceback/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('Indexing could not be completed.')).not.toBeInTheDocument();
   });
 
   it('does not expose stack or exception details from a failed job', () => {
@@ -82,6 +83,35 @@ describe('IngestionProgress', () => {
     expect(alert).toHaveTextContent('Ingestion could not be completed. Retry this document.');
     expect(alert).not.toHaveTextContent('RuntimeError');
     expect(alert).not.toHaveTextContent('/srv/indexer.py:42');
+  });
+
+  it('replaces every untrusted backend failure with fixed safe copy', () => {
+    const unsafeErrors = [
+      'TypeError: unable to read /srv/customer-data.json',
+      'psql: ERROR: relation clients does not exist',
+      'token=super-secret-value-123',
+    ];
+
+    render(
+      <IngestionProgress
+        jobs={unsafeErrors.map((error, index) => ({
+          id: `unsafe-${index}`,
+          filename: `unsafe-${index}.pdf`,
+          stage: 'FAILED' as const,
+          progress: 72,
+          error,
+        }))}
+      />,
+    );
+
+    const alerts = screen.getAllByRole('alert');
+    expect(alerts).toHaveLength(unsafeErrors.length);
+    alerts.forEach((alert) => {
+      expect(alert).toHaveTextContent('Ingestion could not be completed. Retry this document.');
+    });
+    unsafeErrors.forEach((error) => {
+      expect(document.body.textContent).not.toContain(error);
+    });
   });
 
   it('renders a quiet empty state when there are no jobs', () => {
