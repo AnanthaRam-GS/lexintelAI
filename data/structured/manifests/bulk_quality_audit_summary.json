@@ -1,0 +1,167 @@
+{
+  "generated_at": "2026-09-06T18:32:53.199118+00:00",
+  "run_id": "bulk_20260904_000000_stagea",
+  "corpus_size": 249,
+  "sample_size": 50,
+  "sampling_strategy": {
+    "version": "bulk-quality-audit-stratified-v1",
+    "random_seed": "legalai-phase0-step0.4l",
+    "target_sample_size": 50,
+    "algorithm": [
+      "filter durable reviewable bulk records only",
+      "guarantee one record for each populated offence family",
+      "guarantee populated legal-regime, temporal-track, and court-level representation",
+      "force bounded special-case coverage",
+      "fill remaining slots proportionally by offence-family distribution using stable SHA-256 ordering"
+    ]
+  },
+  "sampling_distribution": {
+    "offence_family": {
+      "cheating_and_fraud": {
+        "corpus_count": 12,
+        "sample_count": 2
+      },
+      "conspiracy_common_intention": {
+        "corpus_count": 19,
+        "sample_count": 4
+      },
+      "criminal_breach_of_trust": {
+        "corpus_count": 13,
+        "sample_count": 3
+      },
+      "dowry_and_domestic_cruelty": {
+        "corpus_count": 28,
+        "sample_count": 6
+      },
+      "homicide": {
+        "corpus_count": 29,
+        "sample_count": 6
+      },
+      "hurt_and_assault": {
+        "corpus_count": 12,
+        "sample_count": 2
+      },
+      "kidnapping": {
+        "corpus_count": 17,
+        "sample_count": 3
+      },
+      "narcotics_related": {
+        "corpus_count": 23,
+        "sample_count": 6
+      },
+      "other": {
+        "corpus_count": 40,
+        "sample_count": 13
+      },
+      "sexual_offences": {
+        "corpus_count": 35,
+        "sample_count": 2
+      },
+      "theft_and_robbery": {
+        "corpus_count": 21,
+        "sample_count": 3
+      }
+    },
+    "legal_regime": {
+      "bns_bnss": {
+        "corpus_count": 13,
+        "sample_count": 5
+      },
+      "ipc_crpc": {
+        "corpus_count": 214,
+        "sample_count": 37
+      },
+      "mixed_or_transition": {
+        "corpus_count": 17,
+        "sample_count": 5
+      },
+      "unknown": {
+        "corpus_count": 5,
+        "sample_count": 3
+      }
+    },
+    "temporal_track": {
+      "current_transition": {
+        "corpus_count": 30,
+        "sample_count": 10
+      },
+      "landmark_historical": {
+        "corpus_count": 10,
+        "sample_count": 3
+      },
+      "recent_ipc": {
+        "corpus_count": 209,
+        "sample_count": 37
+      }
+    },
+    "court": {
+      "district_or_sessions": {
+        "corpus_count": 15,
+        "sample_count": 7
+      },
+      "high_court": {
+        "corpus_count": 196,
+        "sample_count": 34
+      },
+      "supreme_court": {
+        "corpus_count": 32,
+        "sample_count": 6
+      },
+      "unknown": {
+        "corpus_count": 6,
+        "sample_count": 3
+      }
+    }
+  },
+  "special_case_counts": {
+    "needs_review_ambiguous_automated": 19,
+    "current_transition": 10,
+    "mixed_or_transition": 5,
+    "unknown_regime": 3,
+    "district_or_sessions": 7,
+    "fallback_document_text_records": 1,
+    "low_yield_partitions": 8
+  },
+  "reviewed_count": 0,
+  "pending_count": 50,
+  "human_audit_state": {
+    "pending": 50,
+    "reviewed": 0,
+    "accepted_for_rag": 0,
+    "rejected_for_rag": 0,
+    "needs_review": 0
+  },
+  "metrics": {
+    "reviewed_count": 0,
+    "metrics_available": false,
+    "criminal_relevance_precision": null,
+    "document_type_precision": null,
+    "offence_family_accuracy": null,
+    "legal_regime_accuracy": null,
+    "court_metadata_accuracy": null,
+    "date_metadata_accuracy": null,
+    "text_usability_rate": null,
+    "duplicate_noise_rate": null,
+    "rag_suitability_rate": null,
+    "human_correction_rate": null,
+    "uncertainty_rate": null,
+    "stratified": {}
+  },
+  "correction_matrices": {
+    "offence_family": {},
+    "legal_regime": {}
+  },
+  "preview_stats": {
+    "sample_records": 50,
+    "preview_available": 50,
+    "preview_unavailable": 0,
+    "pdf_based": 42,
+    "fallback_text_based": 8
+  },
+  "no_network_guarantee": {
+    "provider_import_required": false,
+    "provider_client_constructed": false,
+    "llm_dependency": false,
+    "embedding_or_rag_work": false
+  }
+}
