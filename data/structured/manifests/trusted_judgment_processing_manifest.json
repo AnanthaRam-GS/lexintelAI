@@ -1,0 +1,3145 @@
+{
+  "processing_version": "legalai-judgment-normalizer-v1+legalai-legal-chunker-v1",
+  "normalizer_version": "legalai-judgment-normalizer-v1",
+  "chunker_version": "legalai-legal-chunker-v1",
+  "development_accepted_input": 28,
+  "bulk_audit_accepted_input": 42,
+  "total_before_dedupe": 70,
+  "cross_set_duplicates": 0,
+  "duplicates": [],
+  "final_unique_documents": 70,
+  "excluded_policy": {
+    "bulk_rejected": 7,
+    "bulk_needs_review": 1,
+    "bulk_unaudited": 199,
+    "development_rejected": 2
+  },
+  "documents": [
+    {
+      "document_id": "indian_kanoon:100558061",
+      "provider": "indian_kanoon",
+      "source_document_id": "100558061",
+      "source_url": "https://indiankanoon.org/doc/100558061/",
+      "case_title": "Thota Venkateswarao vs The State Of Ap on 6 January, 2025",
+      "court": {
+        "court_name": "Andhra Pradesh High Court - Amravati",
+        "court_level": "high_court"
+      },
+      "decision_date": "2025-01-06",
+      "decision_year": 2025,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "mixed_or_transition",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/100558061_Thota_Venkateswarao_vs_The_State_Of_Ap_on_6_January_2025.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "5b2a837967819416197d80ea088e7324eea1aa816e34b562617b7b8c672f5e26",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "mixed_or_transition",
+        "court": {
+          "court_name": "Andhra Pradesh High Court - Amravati",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2025,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "No.5197 of 2024 This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A32 seeking antici",
+          "4896 of 2024 3. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A46 seeking antici",
+          "5230 of 2024 5. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioners/A35 and A51 seeki",
+          "5256 of 2024 7. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A43 seeking antici",
+          "5367 of 2024 9. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A4 seeking anticip",
+          "475 of 2024 11. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A64 seeking antici",
+          "487 of 2024 13. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A47 seeking antici",
+          "503 of 2024 15. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioners/A19 and A20 seeki"
+        ]
+      },
+      "regime_evidence": [
+        "No.5197 of 2024 This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A32 seeking antici",
+        "4896 of 2024 3. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A46 seeking antici",
+        "5230 of 2024 5. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioners/A35 and A51 seeki",
+        "5256 of 2024 7. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A43 seeking antici",
+        "5367 of 2024 9. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A4 seeking anticip",
+        "475 of 2024 11. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A64 seeking antici",
+        "487 of 2024 13. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioner/A47 seeking antici",
+        "503 of 2024 15. This Criminal Petition under Section 482 of Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), has been filed by the petitioners/A19 and A20 seeki"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:102778545",
+      "provider": "indian_kanoon",
+      "source_document_id": "102778545",
+      "source_url": "https://indiankanoon.org/doc/102778545/",
+      "case_title": "Mrinal Sharma vs The State Of Madhya Pradesh on 14 July, 2022",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2022-07-14",
+      "decision_year": 2022,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/102778545_Mrinal_Sharma_vs_The_State_Of_Madhya_Pradesh_on_14_July_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "5922b1f7c160447faf8eb692e9c176258c1faf566471e569343585ef3999c3c1",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "nviction U/s Sentence Fine Default (in lieu of fine) 307 of IPC 7 years RI 5,000/- 6 months RI 3. In the application, it is",
+          "pellant no.1 would make out an offence under Section 323 of IPC only. It was also mentioned that the rest of the arguments",
+          "hority to register the FIR for offence under Section 307 of IPC and should have registered the FIR for offence under Sectio",
+          "ld have registered the FIR for offence under Section 323 of IPC and could have enhanced the offence only after receiving th",
+          "MA AND ANOTHER VS. STATE OF MADHYA PRADESH ) Section 307 of IPC, which clearly indicates malafide intention of the Investig",
+          "kull bone suffers fracture, no offence under Section 307 of IPC would be made out. Furthermore, the police had referred the",
+          "bmitted that for making out an offence under Section 307 of IPC, it is not necessary that the victim must suffer a fracture",
+          "d is sufficient to make out an offence under Section 307 of IPC. It is further submitted that it is incorrect to show that"
+        ]
+      },
+      "regime_evidence": [
+        "nviction U/s Sentence Fine Default (in lieu of fine) 307 of IPC 7 years RI 5,000/- 6 months RI 3. In the application, it is",
+        "pellant no.1 would make out an offence under Section 323 of IPC only. It was also mentioned that the rest of the arguments",
+        "hority to register the FIR for offence under Section 307 of IPC and should have registered the FIR for offence under Sectio",
+        "ld have registered the FIR for offence under Section 323 of IPC and could have enhanced the offence only after receiving th",
+        "MA AND ANOTHER VS. STATE OF MADHYA PRADESH ) Section 307 of IPC, which clearly indicates malafide intention of the Investig",
+        "kull bone suffers fracture, no offence under Section 307 of IPC would be made out. Furthermore, the police had referred the",
+        "bmitted that for making out an offence under Section 307 of IPC, it is not necessary that the victim must suffer a fracture",
+        "d is sufficient to make out an offence under Section 307 of IPC. It is further submitted that it is incorrect to show that"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:103812991",
+      "provider": "indian_kanoon",
+      "source_document_id": "103812991",
+      "source_url": "https://indiankanoon.org/doc/103812991/",
+      "case_title": "Javarayi Gowda M vs State By Ccb Police on 28 April, 2025",
+      "court": {
+        "court_name": "Karnataka High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2025-04-28",
+      "decision_year": 2025,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "mixed_or_transition",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/103812991_Javarayi_Gowda_M_vs_State_By_Ccb_Police_on_28_April_2025.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "177302810af80c5e6285310be511f00ff27ec78f478789d38b4a2c5369b6e03a",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "mixed_or_transition",
+        "court": {
+          "court_name": "Karnataka High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2025,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "EN (PROHIBITION) ACT, 1986 AND UNDER SECTION 296, 79 OF THE BHARATIYA NYAYA SANHITA, 2023 FILED BY THE RESPONDENTS PENDING ON THE FILED OF THE 1ST AD",
+          "men (Prohibition) Act, 1986; and Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023. The petitioners seek quashing of the said FIR and other co",
+          "nts to constitute offences under Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023, are not met. It was further contended that in the absence",
+          "d State Public Prosecutor submitted that Section 296 of the Bharatiya Nyaya Sanhita, 2023, does not require that a specific person must be annoyed by",
+          "ubmitted that the offences under Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023, are cognizable in nature. Section 296 penalizes individual",
+          "d rupees, or both. 7. A plain reading of Section 296 of the Bharatiya Nyaya Sanhita, 2023, reveals that in order to constitute an offence under this",
+          "in prosecution under Section 296 BNS. 10. Section 79 of the Bharatiya Nyaya Sanhita, 2023, provides that any person who, with the intention of insult",
+          "ns 296 and <a href=\"/doc/66627887/\" id=\"a_13\">79</a> of the Bharatiya Nyaya Sanhita, 2023. The petitioners seek quashing of the said FIR and other co"
+        ]
+      },
+      "regime_evidence": [
+        "EN (PROHIBITION) ACT, 1986 AND UNDER SECTION 296, 79 OF THE BHARATIYA NYAYA SANHITA, 2023 FILED BY THE RESPONDENTS PENDING ON THE FILED OF THE 1ST AD",
+        "men (Prohibition) Act, 1986; and Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023. The petitioners seek quashing of the said FIR and other co",
+        "nts to constitute offences under Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023, are not met. It was further contended that in the absence",
+        "d State Public Prosecutor submitted that Section 296 of the Bharatiya Nyaya Sanhita, 2023, does not require that a specific person must be annoyed by",
+        "ubmitted that the offences under Sections 296 and 79 of the Bharatiya Nyaya Sanhita, 2023, are cognizable in nature. Section 296 penalizes individual",
+        "d rupees, or both. 7. A plain reading of Section 296 of the Bharatiya Nyaya Sanhita, 2023, reveals that in order to constitute an offence under this",
+        "in prosecution under Section 296 BNS. 10. Section 79 of the Bharatiya Nyaya Sanhita, 2023, provides that any person who, with the intention of insult",
+        "ns 296 and <a href=\"/doc/66627887/\" id=\"a_13\">79</a> of the Bharatiya Nyaya Sanhita, 2023. The petitioners seek quashing of the said FIR and other co"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:108783291",
+      "provider": "indian_kanoon",
+      "source_document_id": "108783291",
+      "source_url": "https://indiankanoon.org/doc/108783291/",
+      "case_title": "Banti @ Jitendra Sharma vs The State Of Madhya Pradesh on 5 May, 2020",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2020,
+      "effective_offence_family": "theft_and_robbery",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/108783291_Banti_Jitendra_Sharma_vs_The_State_Of_Madhya_Pradesh_on_5_May_2020.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "187b6bab3da07a7af971ca1aa71c0daa7bce0ca0ad4c051df43b4abe1365bf83",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "theft_and_robbery",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2020,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:111592349",
+      "provider": "indian_kanoon",
+      "source_document_id": "111592349",
+      "source_url": "https://indiankanoon.org/doc/111592349/",
+      "case_title": "Jinofer Kawasji Bhujwala vs The State Of Gujarat on 19 June, 2020",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2020,
+      "effective_offence_family": "criminal_breach_of_trust",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/111592349_Jinofer_Kawasji_Bhujwala_vs_The_State_Of_Gujarat_on_19_June_2020.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "5c0734329637539dd8d1b1a42296bbb2dee29297dd7b156ccf37b268b0799acd",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "criminal_breach_of_trust",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2020,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:116547627",
+      "provider": "indian_kanoon",
+      "source_document_id": "116547627",
+      "source_url": "https://indiankanoon.org/doc/116547627/",
+      "case_title": "State vs . Brahma Nand, on 16 March, 2020",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": null,
+      "decision_year": 2020,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "unknown",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/116547627_State_vs_._Brahma_Nand_on_16_March_2020.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "62a6f6ae09a0c25f14da97eb94680247f994b342380f5be791ef399e42b81f6b",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "unknown",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2020,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:123692674",
+      "provider": "indian_kanoon",
+      "source_document_id": "123692674",
+      "source_url": "https://indiankanoon.org/doc/123692674/",
+      "case_title": "Manvir Singh And Others vs State Of U.P. on 7 February, 2024",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2024-02-07",
+      "decision_year": 2024,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/123692674_Manvir_Singh_And_Others_vs_State_Of_U.P._on_7_February_2024.html",
+      "raw_mime_type": "text/html",
+      "sha256": "8f2586b09eb363f75e0c06dcf025fccee32e81d1ba3de0cec540b75f2d758ffe",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "tion 302 of the Code to one under Section 304 Part I of the Indian Penal Code . 56. Further, having regard to the facts and circumstances",
+          "ion 304</a> Part I of the <a href=\"/doc/1569253/\" id=\"a_72\">Indian Penal Code</a>. </p> <p data-structure=\"Conclusion\" id=\"p_62\">56. Fur",
+          "have been convicted for the offence under Section 302 / 34 IPC and awarded the sentence of life imprisonment and also unde",
+          "ntence of life imprisonment and also under Section 307 / 34 IPC and awarded the sentence of 5 years' rigorous imprisonment",
+          "urther appellant No. 4 has been convicted under Section 323 IPC and directed to pay a fine of Rs. 500/- and in default to u",
+          "ed vide Case Crime No. 21 of 1982, under Sections 302 , 307 IPC, P.S. Jahangirpur Khurja, District- Bulandshahr registered",
+          "Mahesh and Brijesh under Sections 302 read with section 34 IPC and 307 read with section 34 IPC. All the accused appellant",
+          "s 302 read with section 34 IPC and 307 read with section 34 IPC. All the accused appellants abjured the charges and claimed"
+        ]
+      },
+      "regime_evidence": [
+        "tion 302 of the Code to one under Section 304 Part I of the Indian Penal Code . 56. Further, having regard to the facts and circumstances",
+        "ion 304</a> Part I of the <a href=\"/doc/1569253/\" id=\"a_72\">Indian Penal Code</a>. </p> <p data-structure=\"Conclusion\" id=\"p_62\">56. Fur",
+        "have been convicted for the offence under Section 302 / 34 IPC and awarded the sentence of life imprisonment and also unde",
+        "ntence of life imprisonment and also under Section 307 / 34 IPC and awarded the sentence of 5 years' rigorous imprisonment",
+        "urther appellant No. 4 has been convicted under Section 323 IPC and directed to pay a fine of Rs. 500/- and in default to u",
+        "ed vide Case Crime No. 21 of 1982, under Sections 302 , 307 IPC, P.S. Jahangirpur Khurja, District- Bulandshahr registered",
+        "Mahesh and Brijesh under Sections 302 read with section 34 IPC and 307 read with section 34 IPC. All the accused appellant",
+        "s 302 read with section 34 IPC and 307 read with section 34 IPC. All the accused appellants abjured the charges and claimed"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:123721856",
+      "provider": "indian_kanoon",
+      "source_document_id": "123721856",
+      "source_url": "https://indiankanoon.org/doc/123721856/",
+      "case_title": "Suresh Ram vs The State Of Bihar on 13 July, 2022",
+      "court": {
+        "court_name": "Patna High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/123721856_Suresh_Ram_vs_The_State_Of_Bihar_on_13_July_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "6fa9870b4e4dcb2237794347fa19fc8057b1ffd206075d2811f5257264ef3a02",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Patna High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:125041151",
+      "provider": "indian_kanoon",
+      "source_document_id": "125041151",
+      "source_url": "https://indiankanoon.org/doc/125041151/",
+      "case_title": "Rinku @ Prempal vs State Of U.P. on 24 April, 2023",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-04-24",
+      "decision_year": 2023,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/125041151_Rinku_Prempal_vs_State_Of_U.P._on_24_April_2023.html",
+      "raw_mime_type": "text/html",
+      "sha256": "ec51fd1c4af55eb08165e10725e1895b620bcdb141de5f1dd28bbac7bd85b75a",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "kidnapping",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "376B, 376C, 376D, 376DA, 376DB], [376E, section 509 of the Indian Penal Code (45 of 1860) or section 67B of the Information Technology A",
+          "e shall be liable to punishment under this Act or under the Indian Penal code as provides for punishment which is greater in degree.\" 50.",
+          "76E, <a href=\"/doc/68146/\" id=\"a_96\">section 509</a> of the Indian Penal Code (45 of 1860) or <a href=\"/doc/176300164/\" id=\"a_97\">section",
+          "e shall be liable to punishment under this Act or under the Indian Penal code as provides for punishment which is greater in degree.&quot",
+          "orroborated her evidence in her statement under Section 164 CrPC that the appellant-accused used criminal force against her",
+          "this statement of appellant-accused made under Section 313 CrPC. Neither of these witnesses have stated that informant had",
+          "ment under <a href=\"/doc/497457/\" id=\"a_63\">Section 164</a> CrPC that the appellant-accused used criminal force against her",
+          "made under <a href=\"/doc/767287/\" id=\"a_85\">Section 313</a> CrPC. Neither of these witnesses have stated that informant had"
+        ]
+      },
+      "regime_evidence": [
+        "376B, 376C, 376D, 376DA, 376DB], [376E, section 509 of the Indian Penal Code (45 of 1860) or section 67B of the Information Technology A",
+        "e shall be liable to punishment under this Act or under the Indian Penal code as provides for punishment which is greater in degree.\" 50.",
+        "76E, <a href=\"/doc/68146/\" id=\"a_96\">section 509</a> of the Indian Penal Code (45 of 1860) or <a href=\"/doc/176300164/\" id=\"a_97\">section",
+        "e shall be liable to punishment under this Act or under the Indian Penal code as provides for punishment which is greater in degree.&quot",
+        "orroborated her evidence in her statement under Section 164 CrPC that the appellant-accused used criminal force against her",
+        "this statement of appellant-accused made under Section 313 CrPC. Neither of these witnesses have stated that informant had",
+        "ment under <a href=\"/doc/497457/\" id=\"a_63\">Section 164</a> CrPC that the appellant-accused used criminal force against her",
+        "made under <a href=\"/doc/767287/\" id=\"a_85\">Section 313</a> CrPC. Neither of these witnesses have stated that informant had"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:127989801",
+      "provider": "indian_kanoon",
+      "source_document_id": "127989801",
+      "source_url": "https://indiankanoon.org/doc/127989801/",
+      "case_title": "Surendra Koli vs C.B.I. on 16 October, 2023",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/127989801_Surendra_Koli_vs_C.B.I._on_16_October_2023.html",
+      "raw_mime_type": "text/html",
+      "sha256": "78ed973cc7828130b86ed82193e426218518d804e25e8f847c793d08fc5e2bf1",
+      "text_source_type": "local_text",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:1291057",
+      "provider": "indian_kanoon",
+      "source_document_id": "1291057",
+      "source_url": "https://indiankanoon.org/doc/1291057/",
+      "case_title": "Rajendra Singh Yadav vs Chandra Sen And Ors. on 26 October, 1978",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "1978-10-26",
+      "decision_year": 1978,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "landmark_historical",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/1291057_Rajendra_Singh_Yadav_vs_Chandra_Sen_And_Ors._on_26_October_1978.json",
+      "raw_mime_type": "application/json",
+      "sha256": "33fc4bfbee8f948fb0a8365e8e631bf603950eeb8f1fcff9197fe6d79c246210",
+      "text_source_type": "document_text_fallback",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 1978,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "diction) Act, 1970 (28 of 1970) or under Section 379 of the CrPC, 1973 (2 of 1974). 16. Plainly, this rule clothes the court",
+          "is preferred by the 12 appellants under Section 379 of the CrPC, 1973 read with Section 1 of the Supreme Court (Enlargement",
+          "diction) Act, 1970 (28 of 1970) or under Section 379 of the CrPC, 1973 (2 of 1974); (d) an appeal under Section 476B of the",
+          ", 1973 (2 of 1974); (d) an appeal under Section 476B of the CrPC, 1898 (5 of 1898). (e) an appeal under Clause (b) of Sub-se",
+          "all courts including the Supreme Court. Chapter XXIX of the CrPC , 1973, Act 2 of 1974, deals with appeals. Section 374(1) p",
+          "ellate Jurisdiction) Act, 1970 and under Section 379 of the CrPC. By the impugned rule the appeal on being registered is put",
+          "ocedure Code of 1898 which is similar to Section 384 of the CrPC of 1973 may be referred to. In Govinda Kadtuji Kadam v. Sta",
+          "es 13, 14 and 15 is almost similar to the provisions of the CrPC referred to above . In an appeal sent by the appellant from"
+        ]
+      },
+      "regime_evidence": [
+        "diction) Act, 1970 (28 of 1970) or under Section 379 of the CrPC, 1973 (2 of 1974). 16. Plainly, this rule clothes the court",
+        "is preferred by the 12 appellants under Section 379 of the CrPC, 1973 read with Section 1 of the Supreme Court (Enlargement",
+        "diction) Act, 1970 (28 of 1970) or under Section 379 of the CrPC, 1973 (2 of 1974); (d) an appeal under Section 476B of the",
+        ", 1973 (2 of 1974); (d) an appeal under Section 476B of the CrPC, 1898 (5 of 1898). (e) an appeal under Clause (b) of Sub-se",
+        "all courts including the Supreme Court. Chapter XXIX of the CrPC , 1973, Act 2 of 1974, deals with appeals. Section 374(1) p",
+        "ellate Jurisdiction) Act, 1970 and under Section 379 of the CrPC. By the impugned rule the appeal on being registered is put",
+        "ocedure Code of 1898 which is similar to Section 384 of the CrPC of 1973 may be referred to. In Govinda Kadtuji Kadam v. Sta",
+        "es 13, 14 and 15 is almost similar to the provisions of the CrPC referred to above . In an appeal sent by the appellant from"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:131331418",
+      "provider": "indian_kanoon",
+      "source_document_id": "131331418",
+      "source_url": "https://indiankanoon.org/doc/131331418/",
+      "case_title": "Sri Tanay Das vs The State Of Tripura on 2 May, 2022",
+      "court": {
+        "court_name": "Tripura High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2022-05-02",
+      "decision_year": 2022,
+      "effective_offence_family": "criminal_breach_of_trust",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/131331418_Sri_Tanay_Das_vs_The_State_Of_Tripura_on_2_May_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "3e748c21a089cb6c90c84805acdf3af6d6fabd87be6c88c2dd227d6aae22ff5e",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "criminal_breach_of_trust",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Tripura High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ne) year for commission of offence under Section 406 of the Indian Penal Code. 2. Brief Facts: 2.1. R.K. Pur PS Case No. 487/2011, dated",
+          "r-in-Charge of R.K.Pur PS under Sections 420 and 406 of the Indian Penal Code against the accused persons, namely, Amar Dey, Tanay Das, a",
+          "n of ―fraudulently‖ as contemplated under Section 25 of the Indian Penal Code. 50. In the opinion of Court, the legislature by way of inc",
+          "nder <a href=\"/doc/988620/\" id=\"a_1\">Section 406</a> of the Indian Penal Code. </p><p data-structure=\"Issue\" id=\"p_4\">2. Brief Facts",
+          "420</a> and <a href=\"/doc/988620/\" id=\"a_3\">406</a> of the Indian Penal Code against the accused persons, namely, Amar Dey, Tanay Das,",
+          "der <a href=\"/doc/1961417/\" id=\"a_46\">Section 25</a> of the Indian Penal Code. </p><p data-structure=\"Precedent\" id=\"p_113\">50.",
+          "Manoranjan Debnath under Sections 406 , 420 and 109 of the IPC read with Section 3 of the TPID Act, 2000. 2.3. After takin",
+          "used person, namely,Tanoy Das under Sections 406 and 420 of IPC, read with Section 3 of TPID Act, 2000 to which the accused"
+        ]
+      },
+      "regime_evidence": [
+        "ne) year for commission of offence under Section 406 of the Indian Penal Code. 2. Brief Facts: 2.1. R.K. Pur PS Case No. 487/2011, dated",
+        "r-in-Charge of R.K.Pur PS under Sections 420 and 406 of the Indian Penal Code against the accused persons, namely, Amar Dey, Tanay Das, a",
+        "n of ―fraudulently‖ as contemplated under Section 25 of the Indian Penal Code. 50. In the opinion of Court, the legislature by way of inc",
+        "nder <a href=\"/doc/988620/\" id=\"a_1\">Section 406</a> of the Indian Penal Code. </p><p data-structure=\"Issue\" id=\"p_4\">2. Brief Facts",
+        "420</a> and <a href=\"/doc/988620/\" id=\"a_3\">406</a> of the Indian Penal Code against the accused persons, namely, Amar Dey, Tanay Das,",
+        "der <a href=\"/doc/1961417/\" id=\"a_46\">Section 25</a> of the Indian Penal Code. </p><p data-structure=\"Precedent\" id=\"p_113\">50.",
+        "Manoranjan Debnath under Sections 406 , 420 and 109 of the IPC read with Section 3 of the TPID Act, 2000. 2.3. After takin",
+        "used person, namely,Tanoy Das under Sections 406 and 420 of IPC, read with Section 3 of TPID Act, 2000 to which the accused"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:134051117",
+      "provider": "indian_kanoon",
+      "source_document_id": "134051117",
+      "source_url": "https://indiankanoon.org/doc/134051117/",
+      "case_title": "Prabhakar S/O. Karbhari Kambale vs The State Of Maharashtra on 5 July, 2019",
+      "court": {
+        "court_name": "Bombay High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2019-07-05",
+      "decision_year": 2019,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/134051117_Prabhakar_S_O._Karbhari_Kambale_vs_The_State_Of_Maharashtra_on_5_July_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "fbab18406a0e47b06fb7e2e54dbd86dc613661d6d65bcaa5de5be1d22a63d39a",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Bombay High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "ctions 498-A, 323 , 504 and 506 read with Section 34 of the Indian Penal Code (\" IPC \"). 3. It has been alleged on behalf of prosecution",
+          "d with <a href=\"/doc/37788/\" id=\"a_4\">Section 34</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_5\">IPC</a>&quot;). </p",
+          "ants preferred present application under Section 482 of the Code of Criminal Procedure (\" Cr.P.C .\") seeking relief to quash and set aside the Fir",
+          "er <a href=\"/doc/1679850/\" id=\"a_1\">Section 482</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_2\">Cr.P.C</a>.&quot;) s",
+          "04 and 506 read with Section 34 of the Indian Penal Code (\" IPC \"). 3. It has been alleged on behalf of prosecution that th",
+          "e punishable under Sections 498-A, 323, and 504 etc. of the IPC . The complainant categorically described the episode of he",
+          "ble Apex Court elucidated the fact that, \" Section 498-A of IPC is a cognizable and non bailable offence has lent it a dubi",
+          "Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_5\">IPC</a>&quot;). </p> <p data-structure=\"Issue\" id=\"p_4\"> </p><p"
+        ]
+      },
+      "regime_evidence": [
+        "ctions 498-A, 323 , 504 and 506 read with Section 34 of the Indian Penal Code (\" IPC \"). 3. It has been alleged on behalf of prosecution",
+        "d with <a href=\"/doc/37788/\" id=\"a_4\">Section 34</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_5\">IPC</a>&quot;). </p",
+        "ants preferred present application under Section 482 of the Code of Criminal Procedure (\" Cr.P.C .\") seeking relief to quash and set aside the Fir",
+        "er <a href=\"/doc/1679850/\" id=\"a_1\">Section 482</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_2\">Cr.P.C</a>.&quot;) s",
+        "04 and 506 read with Section 34 of the Indian Penal Code (\" IPC \"). 3. It has been alleged on behalf of prosecution that th",
+        "e punishable under Sections 498-A, 323, and 504 etc. of the IPC . The complainant categorically described the episode of he",
+        "ble Apex Court elucidated the fact that, \" Section 498-A of IPC is a cognizable and non bailable offence has lent it a dubi",
+        "Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_5\">IPC</a>&quot;). </p> <p data-structure=\"Issue\" id=\"p_4\"> </p><p"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:13518275",
+      "provider": "indian_kanoon",
+      "source_document_id": "13518275",
+      "source_url": "https://indiankanoon.org/doc/13518275/",
+      "case_title": "Fir No. 18/02 State vs . Amarjeet Singh Arora (Po) & Ors. on 2 July, 2019",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2019-07-02",
+      "decision_year": 2019,
+      "effective_offence_family": "criminal_breach_of_trust",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/13518275_Fir_No._18_02_State_vs_._Amarjeet_Singh_Arora_Po_Ors._on_2_July_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "ddbc1424579dace4909effc641d8bb049d36e6bfc50b3bb925ba2ccde2da731e",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "criminal_breach_of_trust",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ffences punishable under Section 406 / 409 / 34 & 411 , the Indian Penal Code (45 of 1860) (hereinafter referred to as \" IPC \"). 2. The c",
+          "expression `dishonestly' is defined under Section 24 of the Indian Penal Code.\" 24. Supreme Court of India in Ram Narain Popli vs Central",
+          ">34</a> &amp; <a href=\"/doc/812083/\" id=\"a_10\">411</a>, the Indian Penal Code (45 of 1860) (hereinafter referred to as &quot;<a href=\"/do",
+          "<a href=\"/doc/898393/\" id=\"a_36\">Section 24</a> of the Indian Penal Code.&quot; </blockquote><p data-structure=\"Precedent\" id=\"p_47\"",
+          "ora & Ors FIR No. 18/2002 PS : Hauz Qazi U/s 406/409/411/34 IPC Date of Institution : 31.08.2002 Date of reserving of order",
+          "S : Hauz Qazi has been filed : Section 406 / 409 / 411 / 34 IPC 6. Offence for which charge has been framed : U.s 406/34, I",
+          "C 6. Offence for which charge has been framed : U.s 406/34, IPC . 7. Plea of accused : Not guilty. 8. Final Order : Acquitt",
+          "ndian Penal Code (45 of 1860) (hereinafter referred to as \" IPC \"). 2. The case of the prosecution is that one complaint wa"
+        ]
+      },
+      "regime_evidence": [
+        "ffences punishable under Section 406 / 409 / 34 & 411 , the Indian Penal Code (45 of 1860) (hereinafter referred to as \" IPC \"). 2. The c",
+        "expression `dishonestly' is defined under Section 24 of the Indian Penal Code.\" 24. Supreme Court of India in Ram Narain Popli vs Central",
+        ">34</a> &amp; <a href=\"/doc/812083/\" id=\"a_10\">411</a>, the Indian Penal Code (45 of 1860) (hereinafter referred to as &quot;<a href=\"/do",
+        "<a href=\"/doc/898393/\" id=\"a_36\">Section 24</a> of the Indian Penal Code.&quot; </blockquote><p data-structure=\"Precedent\" id=\"p_47\"",
+        "ora & Ors FIR No. 18/2002 PS : Hauz Qazi U/s 406/409/411/34 IPC Date of Institution : 31.08.2002 Date of reserving of order",
+        "S : Hauz Qazi has been filed : Section 406 / 409 / 411 / 34 IPC 6. Offence for which charge has been framed : U.s 406/34, I",
+        "C 6. Offence for which charge has been framed : U.s 406/34, IPC . 7. Plea of accused : Not guilty. 8. Final Order : Acquitt",
+        "ndian Penal Code (45 of 1860) (hereinafter referred to as \" IPC \"). 2. The case of the prosecution is that one complaint wa"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:135745358",
+      "provider": "indian_kanoon",
+      "source_document_id": "135745358",
+      "source_url": "https://indiankanoon.org/doc/135745358/",
+      "case_title": "Karmanbhai Revabhai Bharwad (Decd.) vs State Of Gujarat on 21 October, 2021",
+      "court": {
+        "court_name": "Gujarat High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2021-10-21",
+      "decision_year": 2021,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/135745358_Karmanbhai_Revabhai_Bharwad_Decd._vs_State_Of_Gujarat_on_21_October_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "e13f7dad6c73ace5c9a71236be54b69a4f0b077a67fa83aa92ecd007f7c029bc",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Gujarat High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "f the police to register the crime under Section 154 of the Code of Criminal Procedure, 1973 (Cr. P. C.) and take up investigation immediately. In",
+          "<a href=\"/doc/1980578/\" id=\"a_34\">Section 154</a> of the Code of Criminal Procedure, 1973 (Cr. P. C.) and take up investigation im",
+          "d for the offences punishable under Sections 186 and 114 of IPC, dated 08.09.2019. 2.3. After the death of the original pet",
+          "al petitioner and his brother under Sections 186 and 114 of IPC. They were arrested and then released on 09.09.2019. 4. Mr.",
+          "in police custody and an FIR under Sections 186 and 114 of IPC was registered by the police, which Mr. Dastoor submitted t",
+          "The F.I.R. impugned is filed under Sections 186 and 114 of IPC by A.S.I. Jaydip Sinh Jorubha, Buckle No.0822, in-charge po",
+          "rred appellant in relation to the offence under Section 182 IPC was rendered ab initio against law. 7.2 In case of Sudalaim",
+          "fence which are punishable under Sections 172 to 188 of the IPC would be taken cognizance by the Court only on a complaint"
+        ]
+      },
+      "regime_evidence": [
+        "f the police to register the crime under Section 154 of the Code of Criminal Procedure, 1973 (Cr. P. C.) and take up investigation immediately. In",
+        "<a href=\"/doc/1980578/\" id=\"a_34\">Section 154</a> of the Code of Criminal Procedure, 1973 (Cr. P. C.) and take up investigation im",
+        "d for the offences punishable under Sections 186 and 114 of IPC, dated 08.09.2019. 2.3. After the death of the original pet",
+        "al petitioner and his brother under Sections 186 and 114 of IPC. They were arrested and then released on 09.09.2019. 4. Mr.",
+        "in police custody and an FIR under Sections 186 and 114 of IPC was registered by the police, which Mr. Dastoor submitted t",
+        "The F.I.R. impugned is filed under Sections 186 and 114 of IPC by A.S.I. Jaydip Sinh Jorubha, Buckle No.0822, in-charge po",
+        "rred appellant in relation to the offence under Section 182 IPC was rendered ab initio against law. 7.2 In case of Sudalaim",
+        "fence which are punishable under Sections 172 to 188 of the IPC would be taken cognizance by the Court only on a complaint"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:136492342",
+      "provider": "indian_kanoon",
+      "source_document_id": "136492342",
+      "source_url": "https://indiankanoon.org/doc/136492342/",
+      "case_title": "Neelam @ Neeraj vs The State Of Madhya Pradesh on 8 February, 2019",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "theft_and_robbery",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/136492342_Neelam_Neeraj_vs_The_State_Of_Madhya_Pradesh_on_8_February_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "9db1f897f6485f9d09e8888ace276134d6ebce8020600c4029eefa4b481bfbff",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "theft_and_robbery",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:136781165",
+      "provider": "indian_kanoon",
+      "source_document_id": "136781165",
+      "source_url": "https://indiankanoon.org/doc/136781165/",
+      "case_title": "State vs Praveen @ Kaira Etc on 21 September, 2023",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2023-09-21",
+      "decision_year": 2023,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/136781165_State_vs_Praveen_Kaira_Etc_on_21_September_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "c6ade011186c00101271be742a1b840669dd4797065430bcf89088ef400a15f4",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ions in this case upon which the charge under section 353 , Indian Penal Code is based are the same as those constituting the charge unde",
+          "e same as those constituting the charge under section 186 , Indian Penal Code but it cannot be ignored that sections 186 and 353 , Indian",
+          "l Code but it cannot be ignored that sections 186 and 353 , Indian Penal Code relate to two distinct offences and while the offence under",
+          "dients of the two offences are also distinct. Section 186 , Indian Penal Code is applicable to a case where the accused voluntarily obstr",
+          ". Praveen @ Kaira Etc. Page No. 64 of 76 -65- section 353 , Indian Penal Code the ingredient of assault or use of criminal force while th",
+          "ences is also different. Section 186 occurs in Ch. X of the Indian Penal Code dealing with Contempts of the lawful authority of public se",
+          "is guilty of two distinct offences, one under section 211 , Indian Penal Code, which is an offence against public justice, and the other",
+          "ppellants for the distinct offence under section 353 of the Indian Penal Code, though it is practically based on the same facts as for th"
+        ]
+      },
+      "regime_evidence": [
+        "ions in this case upon which the charge under section 353 , Indian Penal Code is based are the same as those constituting the charge unde",
+        "e same as those constituting the charge under section 186 , Indian Penal Code but it cannot be ignored that sections 186 and 353 , Indian",
+        "l Code but it cannot be ignored that sections 186 and 353 , Indian Penal Code relate to two distinct offences and while the offence under",
+        "dients of the two offences are also distinct. Section 186 , Indian Penal Code is applicable to a case where the accused voluntarily obstr",
+        ". Praveen @ Kaira Etc. Page No. 64 of 76 -65- section 353 , Indian Penal Code the ingredient of assault or use of criminal force while th",
+        "ences is also different. Section 186 occurs in Ch. X of the Indian Penal Code dealing with Contempts of the lawful authority of public se",
+        "is guilty of two distinct offences, one under section 211 , Indian Penal Code, which is an offence against public justice, and the other",
+        "ppellants for the distinct offence under section 353 of the Indian Penal Code, though it is practically based on the same facts as for th"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:138227421",
+      "provider": "indian_kanoon",
+      "source_document_id": "138227421",
+      "source_url": "https://indiankanoon.org/doc/138227421/",
+      "case_title": "Satinder Kumar vs State Of Himachal Pradesh on 4 August, 2020",
+      "court": {
+        "court_name": "Himachal Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2020-08-04",
+      "decision_year": 2020,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/138227421_Satinder_Kumar_vs_State_Of_Himachal_Pradesh_on_4_August_2020.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "d56c2bd6798dc3371f5384db8c6c87c327105dbd3052a3120eb904c27422441d",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Himachal Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2020,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "said to have tried the petitioner for an offence under the Indian Penal Code , or under the penal provisions of the other Acts mentioned",
+          "for an offence under the <a href=\"/doc/1569253/\" id=\"a_35\">Indian Penal Code</a>, or under the penal provisions of the other Acts m",
+          "019, has come up before this Court under Section 439 of the Code of Criminal Procedure, 1973 ( CrPC ), seeking bail, under Section 20 of Narcotics",
+          "on-bailable. . (1)Notwithstanding anything contained in the Code of Criminal Procedure , 1973 (2 of 1974) (a) every offence punishable under this",
+          "ub-section (1) are in addition to the limitations under the Code of Criminal Procedure , 1973 (2 of 1974) or any other law for the time being in f",
+          "ause stating that notwithstanding anything contained in the Code of Criminal Procedure , 1973 no person accused of an offence prescribed therein s",
+          "der <a href=\"/doc/1290514/\" id=\"a_1\">Section 439</a> of the Code of Criminal Procedure, 1973 (<a href=\"/doc/445276/\" id=\"a_2\">CrPC</a>), seeking b",
+          "anything contained in the <a href=\"/doc/445276/\" id=\"a_48\">Code of Criminal Procedure</a>, 1973 (2 of 1974) </blockquote><blockquote id=\"blockquo"
+        ]
+      },
+      "regime_evidence": [
+        "said to have tried the petitioner for an offence under the Indian Penal Code , or under the penal provisions of the other Acts mentioned",
+        "for an offence under the <a href=\"/doc/1569253/\" id=\"a_35\">Indian Penal Code</a>, or under the penal provisions of the other Acts m",
+        "019, has come up before this Court under Section 439 of the Code of Criminal Procedure, 1973 ( CrPC ), seeking bail, under Section 20 of Narcotics",
+        "on-bailable. . (1)Notwithstanding anything contained in the Code of Criminal Procedure , 1973 (2 of 1974) (a) every offence punishable under this",
+        "ub-section (1) are in addition to the limitations under the Code of Criminal Procedure , 1973 (2 of 1974) or any other law for the time being in f",
+        "ause stating that notwithstanding anything contained in the Code of Criminal Procedure , 1973 no person accused of an offence prescribed therein s",
+        "der <a href=\"/doc/1290514/\" id=\"a_1\">Section 439</a> of the Code of Criminal Procedure, 1973 (<a href=\"/doc/445276/\" id=\"a_2\">CrPC</a>), seeking b",
+        "anything contained in the <a href=\"/doc/445276/\" id=\"a_48\">Code of Criminal Procedure</a>, 1973 (2 of 1974) </blockquote><blockquote id=\"blockquo"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:143670565",
+      "provider": "indian_kanoon",
+      "source_document_id": "143670565",
+      "source_url": "https://indiankanoon.org/doc/143670565/",
+      "case_title": "State vs Rahim @ Lala on 26 November, 2022",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2022-11-26",
+      "decision_year": 2022,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/143670565_State_vs_Rahim_Lala_on_26_November_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "ad36d6cc9fa01daa720ffdfc7b436dfe83f5eed608cfca3d645c4d857b15d14d",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ion of investigation, charge-sheet under section 173 of the Code of Criminal Procedure, 1973 (in short ' CrPC .') was filed for the offence under",
+          "ntained in the Indian Evidence Act, 1872 (1 of 1872) or the Code of Criminal Procedure , 1973 (2 of 1974), every court trying an offence under thi",
+          "der <a href=\"/doc/1412034/\" id=\"a_6\">section 173</a> of the Code of Criminal Procedure, 1973 (in short &#x27;<a href=\"/doc/445276/\" id=\"a_7\">CrPC<",
+          "872</a> (1 of 1872) or the <a href=\"/doc/445276/\" id=\"a_77\">Code of Criminal Procedure</a>, 1973 (2 of 1974), every court trying an off",
+          "quittal. Similarly, even with respect to offences under the IPC , as observed hereinabove, there is no specific bar against",
+          "offences under the <a href=\"/doc/1569253/\" id=\"a_129\">IPC</a>, as observed hereinabove, there is no specific bar agai",
+          "ion 173 of the Code of Criminal Procedure, 1973 (in short ' CrPC .') was filed for the offence under section 21 and 25 of th",
+          "2019 for the offences. The provisions of section 207 of the CrPC was complied with by giving copies of charge-sheet and othe"
+        ]
+      },
+      "regime_evidence": [
+        "ion of investigation, charge-sheet under section 173 of the Code of Criminal Procedure, 1973 (in short ' CrPC .') was filed for the offence under",
+        "ntained in the Indian Evidence Act, 1872 (1 of 1872) or the Code of Criminal Procedure , 1973 (2 of 1974), every court trying an offence under thi",
+        "der <a href=\"/doc/1412034/\" id=\"a_6\">section 173</a> of the Code of Criminal Procedure, 1973 (in short &#x27;<a href=\"/doc/445276/\" id=\"a_7\">CrPC<",
+        "872</a> (1 of 1872) or the <a href=\"/doc/445276/\" id=\"a_77\">Code of Criminal Procedure</a>, 1973 (2 of 1974), every court trying an off",
+        "quittal. Similarly, even with respect to offences under the IPC , as observed hereinabove, there is no specific bar against",
+        "offences under the <a href=\"/doc/1569253/\" id=\"a_129\">IPC</a>, as observed hereinabove, there is no specific bar agai",
+        "ion 173 of the Code of Criminal Procedure, 1973 (in short ' CrPC .') was filed for the offence under section 21 and 25 of th",
+        "2019 for the offences. The provisions of section 207 of the CrPC was complied with by giving copies of charge-sheet and othe"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:14496522",
+      "provider": "indian_kanoon",
+      "source_document_id": "14496522",
+      "source_url": "https://indiankanoon.org/doc/14496522/",
+      "case_title": "Dr. Lakshman vs The State Of Karnataka on 17 October, 2019",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/14496522_Dr._Lakshman_vs_The_State_Of_Karnataka_on_17_October_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "41e69e2890af4a80b0ea0ffecf2f0bcb67d97b8d4a4b46bef8488a280d1871fc",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:148244505",
+      "provider": "indian_kanoon",
+      "source_document_id": "148244505",
+      "source_url": "https://indiankanoon.org/doc/148244505/",
+      "case_title": "Bothilal vs The Intelligence Officer Narcotics ... on 26 April, 2023",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "2023-04-26",
+      "decision_year": 2023,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "unknown",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/148244505_Bothilal_vs_The_Intelligence_Officer_Narcotics_..._on_26_April_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "17ff8ca99b4efa3a92474ef0f79ceb4329014f1002ae75813acc86792e5fa76f",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "unknown",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "needs_review",
+        "regime_evidence": []
+      },
+      "regime_evidence": [],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:15148168",
+      "provider": "indian_kanoon",
+      "source_document_id": "15148168",
+      "source_url": "https://indiankanoon.org/doc/15148168/",
+      "case_title": "Kausalya Bhujangrao Telang vs The State Of Maharashtra And Another on 26 February, 2026",
+      "court": {
+        "court_name": "Bombay High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2026-02-26",
+      "decision_year": 2026,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "bns_bnss",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/15148168_Kausalya_Bhujangrao_Telang_vs_The_State_Of_Maharashtra_And_Another_on_26_February_2026.pdf",
+      "raw_mime_type": "application/download",
+      "sha256": "3e7f643ba61f8cb6c98cd58f126a04e569e9ad946595b7e68d701b2a876cec1f",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "mixed_or_transition",
+        "court": {
+          "court_name": "Bombay High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2026,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ants under Sections 323 and 506 read with Section 34 of the IPC, it is to be noted that the custodial interrogation of the",
+          "with <a href=\"/doc/37788/\" id=\"a_17\">Section 34</a> of the IPC, it is to be noted that the custodial interrogation o"
+        ]
+      },
+      "regime_evidence": [
+        "ants under Sections 323 and 506 read with Section 34 of the IPC, it is to be noted that the custodial interrogation of the",
+        "with <a href=\"/doc/37788/\" id=\"a_17\">Section 34</a> of the IPC, it is to be noted that the custodial interrogation o"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:152313551",
+      "provider": "indian_kanoon",
+      "source_document_id": "152313551",
+      "source_url": "https://indiankanoon.org/doc/152313551/",
+      "case_title": "The State Of Jharkhand vs Mathura Yadav on 29 March, 2019",
+      "court": {
+        "court_name": "Jharkhand High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2019-03-29",
+      "decision_year": 2019,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/152313551_The_State_Of_Jharkhand_vs_Mathura_Yadav_on_29_March_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "ae9f8fbcb7f8389dcd9d0a71d5b82e7aa8a0ec86aecce418fdfe8218801a9d5f",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "sexual_offences",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Jharkhand High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ed for the offences under Sections 302 , 376 and 201 of the Indian Penal Code, whereas, the accused Bhikhari Mahto has been found guilty",
+          "been found guilty for the offence under Section 201 of the Indian Penal Code. Upon hearing on the point of sentence, the appellant Mathu",
+          "ergo R.I. for life for the offence under Section 376 of the Indian Penal Code, and R.I. for two years for the offence under Section 201 o",
+          "R.I. for two years for the offence under Section 201 of the Indian Penal Code, whereas the appellant Bhikhari Mahto has been sentenced to",
+          "fine of Rs.5,000/- for the offence under Section 201 of the Indian Penal Code. As the accused Mathura Yadav is sentenced to death, the re",
+          "ed for the offences under Sections 302 , 376 and 201 of the Indian Penal Code, against both the accused persons and investigation was tak",
+          "ra Mahto for the offences under Sections 376 and 302 of the Indian Penal Code, whereas the charge was framed against both the appellants,",
+          "khari Mahto, for the offence under Sections 201 / 34 of the Indian Penal Code, and upon the accused persons' pleading not guilty and clai"
+        ]
+      },
+      "regime_evidence": [
+        "ed for the offences under Sections 302 , 376 and 201 of the Indian Penal Code, whereas, the accused Bhikhari Mahto has been found guilty",
+        "been found guilty for the offence under Section 201 of the Indian Penal Code. Upon hearing on the point of sentence, the appellant Mathu",
+        "ergo R.I. for life for the offence under Section 376 of the Indian Penal Code, and R.I. for two years for the offence under Section 201 o",
+        "R.I. for two years for the offence under Section 201 of the Indian Penal Code, whereas the appellant Bhikhari Mahto has been sentenced to",
+        "fine of Rs.5,000/- for the offence under Section 201 of the Indian Penal Code. As the accused Mathura Yadav is sentenced to death, the re",
+        "ed for the offences under Sections 302 , 376 and 201 of the Indian Penal Code, against both the accused persons and investigation was tak",
+        "ra Mahto for the offences under Sections 376 and 302 of the Indian Penal Code, whereas the charge was framed against both the appellants,",
+        "khari Mahto, for the offence under Sections 201 / 34 of the Indian Penal Code, and upon the accused persons' pleading not guilty and clai"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:154171944",
+      "provider": "indian_kanoon",
+      "source_document_id": "154171944",
+      "source_url": "https://indiankanoon.org/doc/154171944/",
+      "case_title": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023",
+      "court": {
+        "court_name": "Rajasthan High Court - Jaipur",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "conspiracy_common_intention",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/154171944_Saifurrehman_Ansari_S_O_Abdul_Rehman_..._vs_State_Of_Rajasthan_on_29_March_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "6e6e7f135e673018b59b312b8a6c3577cd797eb6151cbd877abfaa366c95ead2",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Rajasthan High Court - Jaipur",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:154941154",
+      "provider": "indian_kanoon",
+      "source_document_id": "154941154",
+      "source_url": "https://indiankanoon.org/doc/154941154/",
+      "case_title": "Sanjay Gulati vs Harsh Lata on 26 April, 2018",
+      "court": {
+        "court_name": "Punjab-Haryana High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2018-04-26",
+      "decision_year": 2018,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/154941154_Sanjay_Gulati_vs_Harsh_Lata_on_26_April_2018.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "98652804cf6bf4ef95193a3c4da10a9d2f9eaf0ab2d78b7cb57f65e8e17d7956",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Punjab-Haryana High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2018,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "and, in fact, a petition was filed under Section 125 of the Code of Criminal Procedure in which the respondent-wife has been awarded maintenance @",
+          "entitled to claim maintenance both under Section 125 of the Code of Criminal Procedure as well as under the provisions of the Domestic Violence Ac",
+          "once maintenance has been allowed under Section 125 of the Code of Criminal Procedure, enhancement, if any, could be claimed on instituting an ap",
+          "imed on instituting an application under Section 127 of the Code of Criminal Procedure and that too if there is change in circumstances, while als",
+          "cal care. The amount, as assessed, under Section 125 of the Code of Criminal Procedure is wholly inadequate, while also submitting that there is n",
+          "e is already receiving maintenance under Section 125 of the Code of Criminal Procedure or a petition for enhancement has to be instituted under se",
+          "r enhancement has to be instituted under section 127 of the Code of Criminal Procedure? 8. There is no dispute about the fact that the marriage wa",
+          "fe is entitled to seek maintenance under Section 125 of the Code of Criminal Procedure. Similar provision has been made under the provisions of th"
+        ]
+      },
+      "regime_evidence": [
+        "and, in fact, a petition was filed under Section 125 of the Code of Criminal Procedure in which the respondent-wife has been awarded maintenance @",
+        "entitled to claim maintenance both under Section 125 of the Code of Criminal Procedure as well as under the provisions of the Domestic Violence Ac",
+        "once maintenance has been allowed under Section 125 of the Code of Criminal Procedure, enhancement, if any, could be claimed on instituting an ap",
+        "imed on instituting an application under Section 127 of the Code of Criminal Procedure and that too if there is change in circumstances, while als",
+        "cal care. The amount, as assessed, under Section 125 of the Code of Criminal Procedure is wholly inadequate, while also submitting that there is n",
+        "e is already receiving maintenance under Section 125 of the Code of Criminal Procedure or a petition for enhancement has to be instituted under se",
+        "r enhancement has to be instituted under section 127 of the Code of Criminal Procedure? 8. There is no dispute about the fact that the marriage wa",
+        "fe is entitled to seek maintenance under Section 125 of the Code of Criminal Procedure. Similar provision has been made under the provisions of th"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:156271048",
+      "provider": "indian_kanoon",
+      "source_document_id": "156271048",
+      "source_url": "https://indiankanoon.org/doc/156271048/",
+      "case_title": "Md. Fakar Uddin Barbhuiya And Anr vs The State Of Assam on 18 January, 2019",
+      "court": {
+        "court_name": "Gauhati High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/156271048_Md._Fakar_Uddin_Barbhuiya_And_Anr_vs_The_State_Of_Assam_on_18_January_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "6c8e109d3749b87e23ab504864ad72aeea52627cf9e558403f605dc9b8576103",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Gauhati High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:15834217",
+      "provider": "indian_kanoon",
+      "source_document_id": "15834217",
+      "source_url": "https://indiankanoon.org/doc/15834217/",
+      "case_title": "Mukesh Khandelwal @ Devendra Kumar S/O ... vs State Of Rajasthan Through Pp on 29 January, 2019",
+      "court": {
+        "court_name": "Rajasthan High Court - Jaipur",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/15834217_Mukesh_Khandelwal_Devendra_Kumar_S_O_..._vs_State_Of_Rajasthan_Through_Pp_on_29_January_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "f061fd3bef5aa1eb2264e75087c8eb937225033d80c8c16a20c478a14e84e7fe",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Rajasthan High Court - Jaipur",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:161457906",
+      "provider": "indian_kanoon",
+      "source_document_id": "161457906",
+      "source_url": "https://indiankanoon.org/doc/161457906/",
+      "case_title": "A.Kuppaiah, Chittoor District vs The State Of A.P.,Rep.By P.P.,High ... on 30 November, 2023",
+      "court": {
+        "court_name": "Andhra Pradesh High Court - Amravati",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-11-30",
+      "decision_year": 2023,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/161457906_A.Kuppaiah_Chittoor_District_vs_The_State_Of_A.P._Rep.By_P.P._High_..._on_30_November_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "7b93056b1e1555f8060725173d010612bcca3ed61150d30172bf982a623798d6",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Andhra Pradesh High Court - Amravati",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ccessful accused, who faced charge under Section 302 of the Indian Penal Code (\" I.P.C .\" for short), but was convicted and sentenced for",
+          "er <a href=\"/doc/1560742/\" id=\"a_1\">Section 302</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_2\">I.P.C</a>.&quot; fo",
+          "ance of the accused and on compliance of Section 207 of the Code of Criminal Procedure (\" Cr.P.C .\" for short) by exercising powers under Section",
+          "of <a href=\"/doc/1613898/\" id=\"a_10\">Section 207</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_11\">Cr.P.C</a>.&quot;"
+        ]
+      },
+      "regime_evidence": [
+        "ccessful accused, who faced charge under Section 302 of the Indian Penal Code (\" I.P.C .\" for short), but was convicted and sentenced for",
+        "er <a href=\"/doc/1560742/\" id=\"a_1\">Section 302</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_2\">I.P.C</a>.&quot; fo",
+        "ance of the accused and on compliance of Section 207 of the Code of Criminal Procedure (\" Cr.P.C .\" for short) by exercising powers under Section",
+        "of <a href=\"/doc/1613898/\" id=\"a_10\">Section 207</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_11\">Cr.P.C</a>.&quot;"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:163450772",
+      "provider": "indian_kanoon",
+      "source_document_id": "163450772",
+      "source_url": "https://indiankanoon.org/doc/163450772/",
+      "case_title": "Shri Gopalkrishna S/O Narayanappa ... vs The State Of Karnataka on 30 January, 2026",
+      "court": {
+        "court_name": "Karnataka High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2026-01-30",
+      "decision_year": 2026,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "bns_bnss",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/163450772_Shri_Gopalkrishna_S_O_Narayanappa_..._vs_The_State_Of_Karnataka_on_30_January_2026.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "eecead7f79f18707618b99e8db0cc96ae39fb68cc43603d09cbc7e0ecbb66398",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "bns_bnss",
+        "court": {
+          "court_name": "Karnataka High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2026,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "PUNISHABLE UNDER SECTION 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+          "OFFENCES PUNISHABLE U/S 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+          "punishable under Section 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with section 3(1)(r), 3(1)(s), 3(2)(va) of the SC and",
+          "offences punishable u/s 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with Section 3(1)(r), 3(1)(s), 3(2)(va) of the SC and",
+          "ON 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+          "hable under Section 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with section 3(1)(r), 3(1)(s), 3(2)(va) of the SC",
+          "es punishable u/s 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with Section 3(1)(r), 3(1)(s), 3(2)(va) of the"
+        ]
+      },
+      "regime_evidence": [
+        "PUNISHABLE UNDER SECTION 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+        "OFFENCES PUNISHABLE U/S 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+        "punishable under Section 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with section 3(1)(r), 3(1)(s), 3(2)(va) of the SC and",
+        "offences punishable u/s 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with Section 3(1)(r), 3(1)(s), 3(2)(va) of the SC and",
+        "ON 115(2), 118(1), 351(2), 352 OF THE BHARATIYA NYAYA SANHITA, 2023 READ WITH SECTION 3(1)(R), 3(1)(S), 3(2)(VA) OF THE SC AND",
+        "hable under Section 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with section 3(1)(r), 3(1)(s), 3(2)(va) of the SC",
+        "es punishable u/s 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with Section 3(1)(r), 3(1)(s), 3(2)(va) of the"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:169784101",
+      "provider": "indian_kanoon",
+      "source_document_id": "169784101",
+      "source_url": "https://indiankanoon.org/doc/169784101/",
+      "case_title": "Bharat Chaudhary vs Union Of India on 13 December, 2021",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "2021-12-13",
+      "decision_year": 2021,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/169784101_Bharat_Chaudhary_vs_Union_Of_India_on_13_December_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "aaebcc6d801e07a2a62514129787128029fc6802a2dcfaf5c8fe0c84924893f6",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "unknown",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "needs_review",
+        "regime_evidence": []
+      },
+      "regime_evidence": [],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:1726075",
+      "provider": "indian_kanoon",
+      "source_document_id": "1726075",
+      "source_url": "https://indiankanoon.org/doc/1726075/",
+      "case_title": "Rajendra Prasad vs State Of Bihar on 25 February, 1977",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "1977-02-25",
+      "decision_year": 1977,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "landmark_historical",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/1726075_Rajendra_Prasad_vs_State_Of_Bihar_on_25_February_1977.html",
+      "raw_mime_type": "text/html",
+      "sha256": "c39ac8e2f43712f0f07debf58aed17246b54233a845d859abbbef53d1803180e",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 1977,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "acquittal 70 and convicted the accused under section 302 , Indian Penal Code, and sentenced him to rigorous imprisonment for life. Hence",
+          "ed under <a href=\"/doc/1560742/\" id=\"a_3\">section 302</a>, Indian Penal Code, and sentenced him to rigorous imprisonment for life. He",
+          "used (Abhiyukta) in connection with S. No. 5(4)66, Sec. 302 IPC. On search nothing was found on his person except clothes h",
+          "life is in jeopardy in a trial for murder under section 302 IPC. We have also grave suspicion about the date of correction",
+          ". No. 5(4)66, <a href=\"/doc/1560742/\" id=\"a_5\">Sec. 302</a> IPC. On search nothing was found on his person",
+          "der under <a href=\"/doc/1560742/\" id=\"a_6\">section 302</a> IPC. We have also grave suspicion about the date of correc"
+        ]
+      },
+      "regime_evidence": [
+        "acquittal 70 and convicted the accused under section 302 , Indian Penal Code, and sentenced him to rigorous imprisonment for life. Hence",
+        "ed under <a href=\"/doc/1560742/\" id=\"a_3\">section 302</a>, Indian Penal Code, and sentenced him to rigorous imprisonment for life. He",
+        "used (Abhiyukta) in connection with S. No. 5(4)66, Sec. 302 IPC. On search nothing was found on his person except clothes h",
+        "life is in jeopardy in a trial for murder under section 302 IPC. We have also grave suspicion about the date of correction",
+        ". No. 5(4)66, <a href=\"/doc/1560742/\" id=\"a_5\">Sec. 302</a> IPC. On search nothing was found on his person",
+        "der under <a href=\"/doc/1560742/\" id=\"a_6\">section 302</a> IPC. We have also grave suspicion about the date of correc"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:173395727",
+      "provider": "indian_kanoon",
+      "source_document_id": "173395727",
+      "source_url": "https://indiankanoon.org/doc/173395727/",
+      "case_title": "Santosh Paswan Son Of Ramdin Paswan vs The State Of Jharkhand on 12 February, 2024",
+      "court": {
+        "court_name": "Jharkhand High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2024,
+      "effective_offence_family": "kidnapping",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/173395727_Santosh_Paswan_Son_Of_Ramdin_Paswan_vs_The_State_Of_Jharkhand_on_12_February_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "529009fdb1e772977c2fe5ea5e8fd4b073c45645e7283c40fe1be948dc5c22d1",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "kidnapping",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Jharkhand High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:176391710",
+      "provider": "indian_kanoon",
+      "source_document_id": "176391710",
+      "source_url": "https://indiankanoon.org/doc/176391710/",
+      "case_title": "Venus Goyal And Another vs State Of Punjab And Another on 11 April, 2023",
+      "court": {
+        "court_name": "Punjab-Haryana High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-04-11",
+      "decision_year": 2023,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/176391710_Venus_Goyal_And_Another_vs_State_Of_Punjab_And_Another_on_11_April_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "4ecd2fbb94db4c4c295e0e214cff1a13d605a38b9fb1f741894471156a46bf80",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "criminal_breach_of_trust",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Punjab-Haryana High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "Magistrate for an offence under Sec- tions 415, 418 and 420 Indian Penal Code . This Court also analysed the difference between breach of",
+          "rocess against the accused under Sections 415 , 418 and 420 Indian Penal Code. The said order of the Magistrate was challenged before the",
+          "hat the respondents committed the offence under Section 420 Indian Penal Code and the case of the appellant is that the respondents have",
+          "Court considered the ingredients of Sec- tions 405 and 406 Indian Penal Code - Criminal breach of trust and vicarious liability. In the",
+          "nts of criminal breach of trust as mentioned in Section 405 Indian Penal Code and also pointing out the ingredients of offence under Sect",
+          "o pointing out the ingredients of offence under Section 406 Indian Penal Code, interfered with the order passed by the High Court. 15. In",
+          "r- ectors mentioned therein and applicability of Section 34 Indian Penal Code, this Court in paragraph 35 concluded as under : \"35. It is",
+          "prearranged plan. Therefore, in order to attract Section 34 Indian Penal Code, the complaint must, prima facie, reflect a common prior co"
+        ]
+      },
+      "regime_evidence": [
+        "Magistrate for an offence under Sec- tions 415, 418 and 420 Indian Penal Code . This Court also analysed the difference between breach of",
+        "rocess against the accused under Sections 415 , 418 and 420 Indian Penal Code. The said order of the Magistrate was challenged before the",
+        "hat the respondents committed the offence under Section 420 Indian Penal Code and the case of the appellant is that the respondents have",
+        "Court considered the ingredients of Sec- tions 405 and 406 Indian Penal Code - Criminal breach of trust and vicarious liability. In the",
+        "nts of criminal breach of trust as mentioned in Section 405 Indian Penal Code and also pointing out the ingredients of offence under Sect",
+        "o pointing out the ingredients of offence under Section 406 Indian Penal Code, interfered with the order passed by the High Court. 15. In",
+        "r- ectors mentioned therein and applicability of Section 34 Indian Penal Code, this Court in paragraph 35 concluded as under : \"35. It is",
+        "prearranged plan. Therefore, in order to attract Section 34 Indian Penal Code, the complaint must, prima facie, reflect a common prior co"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:176922161",
+      "provider": "indian_kanoon",
+      "source_document_id": "176922161",
+      "source_url": "https://indiankanoon.org/doc/176922161/",
+      "case_title": "Awatarsingha And Anr. vs The State Of Madhya Pradesh on 28 July, 2022",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2022-07-28",
+      "decision_year": 2022,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/176922161_Awatarsingha_And_Anr._vs_The_State_Of_Madhya_Pradesh_on_28_July_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "8172ab4a342ddca428fda9c53f1337d4ede8ab1ba119edc2559a06aa881cf1ed",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "g these three criminal appeals under Section 374 (2) of the Code of Criminal Procedure, 1973. 2. The facts giving rise to the present appeals are",
+          "<a href=\"/doc/929532/\" id=\"a_31\">Section 374 (2)</a> of the Code of Criminal Procedure, 1973. </blockquote><p data-structure=\"Facts\" id=\"p_3\">",
+          "ingh s/o In Criminal Appeal No.838/2010 Siddhu Singh 450 of IPC 10 years RI Rs.10,000/- 2 years RI 302 of IPC RI for Life R",
+          "Singh 450 of IPC 10 years RI Rs.10,000/- 2 years RI 302 of IPC RI for Life Rs.10,000/- 2 years RI 326 of IPC 5 years RI Rs",
+          "ars RI 302 of IPC RI for Life Rs.10,000/- 2 years RI 326 of IPC 5 years RI Rs.5,000/- 2 years RI 325 of IPC 3 years RI Rs.2",
+          "years RI 326 of IPC 5 years RI Rs.5,000/- 2 years RI 325 of IPC 3 years RI Rs.2,000/- 1 year RI 323 of IPC 1 year RI Rs.1,0",
+          "years RI 325 of IPC 3 years RI Rs.2,000/- 1 year RI 323 of IPC 1 year RI Rs.1,000/- 3 months RI 352 of IPC 3 months RI Rs.",
+          "year RI 323 of IPC 1 year RI Rs.1,000/- 3 months RI 352 of IPC 3 months RI Rs.500/- 15 days RI 148 of IPC 3 years RI Rs.2,"
+        ]
+      },
+      "regime_evidence": [
+        "g these three criminal appeals under Section 374 (2) of the Code of Criminal Procedure, 1973. 2. The facts giving rise to the present appeals are",
+        "<a href=\"/doc/929532/\" id=\"a_31\">Section 374 (2)</a> of the Code of Criminal Procedure, 1973. </blockquote><p data-structure=\"Facts\" id=\"p_3\">",
+        "ingh s/o In Criminal Appeal No.838/2010 Siddhu Singh 450 of IPC 10 years RI Rs.10,000/- 2 years RI 302 of IPC RI for Life R",
+        "Singh 450 of IPC 10 years RI Rs.10,000/- 2 years RI 302 of IPC RI for Life Rs.10,000/- 2 years RI 326 of IPC 5 years RI Rs",
+        "ars RI 302 of IPC RI for Life Rs.10,000/- 2 years RI 326 of IPC 5 years RI Rs.5,000/- 2 years RI 325 of IPC 3 years RI Rs.2",
+        "years RI 326 of IPC 5 years RI Rs.5,000/- 2 years RI 325 of IPC 3 years RI Rs.2,000/- 1 year RI 323 of IPC 1 year RI Rs.1,0",
+        "years RI 325 of IPC 3 years RI Rs.2,000/- 1 year RI 323 of IPC 1 year RI Rs.1,000/- 3 months RI 352 of IPC 3 months RI Rs.",
+        "year RI 323 of IPC 1 year RI Rs.1,000/- 3 months RI 352 of IPC 3 months RI Rs.500/- 15 days RI 148 of IPC 3 years RI Rs.2,"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:177113492",
+      "provider": "indian_kanoon",
+      "source_document_id": "177113492",
+      "source_url": "https://indiankanoon.org/doc/177113492/",
+      "case_title": "Sarvan vs The State on 26 August, 2020",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2020-08-26",
+      "decision_year": 2020,
+      "effective_offence_family": "theft_and_robbery",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/177113492_Sarvan_vs_The_State_on_26_August_2020.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "2dc1ef661f54dd829d8685cdf08af9c6b755efe1f2c548f0e875ce6a40c4e5f0",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "theft_and_robbery",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2020,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "i .......Respondent FIR No. 619/2016 U/s 392/186/353/332/34 IPC r/w Section 27 Arms Act PS NDRS Date of institution : 06.01",
+          "in case vide FIR no.619/2016 u/s 392 / 186 / 353 / 332 / 34 IPC r/w Section 27 Arms Act, PS NDRS. 2. Vide impugned judgment",
+          "y Ld. Trial Court for offences punishable under Section 392 IPC, 332 IPC and Section 27(1) Arms Act. However, vide impugned",
+          "al Court for offences punishable under Section 392 IPC, 332 IPC and Section 27(1) Arms Act. However, vide impugned judgment",
+          "appellant for offences punishable under Section 186 and 353 IPC. 3. Vide impugned order on sentence dated 10.12.2019, appel",
+          "ced as under:- (1) For offence punishable under Section 392 IPC:- RI for a period of 3 years and is further sentenced to pa",
+          "of two months. (2) For offence punishable under Section 332 IPC:RI for a period of three years and is further sentenced to",
+          "ffences punishable under Section 392 / 186 / 353 / 332 / 34 IPC r/w Section 27 Arms Act. 8. Charge for offences punishable"
+        ]
+      },
+      "regime_evidence": [
+        "i .......Respondent FIR No. 619/2016 U/s 392/186/353/332/34 IPC r/w Section 27 Arms Act PS NDRS Date of institution : 06.01",
+        "in case vide FIR no.619/2016 u/s 392 / 186 / 353 / 332 / 34 IPC r/w Section 27 Arms Act, PS NDRS. 2. Vide impugned judgment",
+        "y Ld. Trial Court for offences punishable under Section 392 IPC, 332 IPC and Section 27(1) Arms Act. However, vide impugned",
+        "al Court for offences punishable under Section 392 IPC, 332 IPC and Section 27(1) Arms Act. However, vide impugned judgment",
+        "appellant for offences punishable under Section 186 and 353 IPC. 3. Vide impugned order on sentence dated 10.12.2019, appel",
+        "ced as under:- (1) For offence punishable under Section 392 IPC:- RI for a period of 3 years and is further sentenced to pa",
+        "of two months. (2) For offence punishable under Section 332 IPC:RI for a period of three years and is further sentenced to",
+        "ffences punishable under Section 392 / 186 / 353 / 332 / 34 IPC r/w Section 27 Arms Act. 8. Charge for offences punishable"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:178355286",
+      "provider": "indian_kanoon",
+      "source_document_id": "178355286",
+      "source_url": "https://indiankanoon.org/doc/178355286/",
+      "case_title": "Special Judge (Pc Act) Cbi-13 vs Padmanabhan Nair (Supra) To on 22 April, 2019",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "conspiracy_common_intention",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/178355286_Special_Judge_Pc_Act_Cbi-13_vs_Padmanabhan_Nair_Supra_To_on_22_April_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "d06a1c96088302ced59c3698761735222be0aa835ac2a366117948758232f00e",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:179828917",
+      "provider": "indian_kanoon",
+      "source_document_id": "179828917",
+      "source_url": "https://indiankanoon.org/doc/179828917/",
+      "case_title": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/179828917_Manoj_Pratap_Singh_vs_The_State_Of_Rajasthan_on_24_June_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "0e0d3d4ee71a6e551585ac73ae5cebefa1f66fd278527ba4295916686020cc42",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "sexual_offences",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:180296861",
+      "provider": "indian_kanoon",
+      "source_document_id": "180296861",
+      "source_url": "https://indiankanoon.org/doc/180296861/",
+      "case_title": "The State Of Karnataka By vs B Rajeeva (A-1) on 2 April, 2024",
+      "court": {
+        "court_name": "Karnataka High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2024,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/180296861_The_State_Of_Karnataka_By_vs_B_Rajeeva_A-1_on_2_April_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "949e8897c2472b0f93d8a56660eeb4cb0e8cc6153f0e1deaeadcc1da6d9f3315",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Karnataka High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:183406121",
+      "provider": "indian_kanoon",
+      "source_document_id": "183406121",
+      "source_url": "https://indiankanoon.org/doc/183406121/",
+      "case_title": "Kumar Vikas vs The State Of U.P. Thru. Prin. Secy. Home ... on 10 September, 2025",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2025-09-10",
+      "decision_year": 2025,
+      "effective_offence_family": "other",
+      "effective_legal_regime": "mixed_or_transition",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/183406121_Kumar_Vikas_vs_The_State_Of_U.P._Thru._Prin._Secy._Home_..._on_10_September_2025.html",
+      "raw_mime_type": "text/html",
+      "sha256": "a58efa8e2ece5efe77bc2a3f3fc27bbbfc1d4f2b30220912b8ccb92a46b0989f",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "mixed_or_transition",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2025,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "s that Section 121A of I.P.C. corresponds to Section 148 in Bharatiya Nyaya Sanhita, 2023 (hereinafter referred to as 'the BNS'). He further submits",
+          "6\">Section 121A</a> of I.P.C. corresponds to Section 148 in Bharatiya Nyaya Sanhita, 2023 (hereinafter referred to as &#x27;the BNS&#x27;). He furthe",
+          "No.2/2025 dated 19.3.2025 was registered under Section 148 BNS and Section 3 / 4 / 5 of the Official Secrets Act, 2023 (he",
+          "ratiya Nyaya Sanhita, 2023 (hereinafter referred to as 'the BNS'). He further submits that the order impugned dated 7.7.202",
+          "hat Section 167(2) Cr.P.C. (corresponding to Section 187(3) BNS, 2023) is a statutory provision which confers indefeasible",
+          "No.2/2025 dated 19.3.2025 was registered under Section 148 BNS and <a href=\"/doc/64934656/\" id=\"a_1\">Section 3</a>/<a href",
+          "a Nyaya Sanhita, 2023 (hereinafter referred to as &#x27;the BNS&#x27;). He further submits that the order impugned dated 7.",
+          "Section 167(2)</a> Cr.P.C. (corresponding to Section 187(3) BNS, 2023) is a statutory provision which confers indefeasible"
+        ]
+      },
+      "regime_evidence": [
+        "s that Section 121A of I.P.C. corresponds to Section 148 in Bharatiya Nyaya Sanhita, 2023 (hereinafter referred to as 'the BNS'). He further submits",
+        "6\">Section 121A</a> of I.P.C. corresponds to Section 148 in Bharatiya Nyaya Sanhita, 2023 (hereinafter referred to as &#x27;the BNS&#x27;). He furthe",
+        "No.2/2025 dated 19.3.2025 was registered under Section 148 BNS and Section 3 / 4 / 5 of the Official Secrets Act, 2023 (he",
+        "ratiya Nyaya Sanhita, 2023 (hereinafter referred to as 'the BNS'). He further submits that the order impugned dated 7.7.202",
+        "hat Section 167(2) Cr.P.C. (corresponding to Section 187(3) BNS, 2023) is a statutory provision which confers indefeasible",
+        "No.2/2025 dated 19.3.2025 was registered under Section 148 BNS and <a href=\"/doc/64934656/\" id=\"a_1\">Section 3</a>/<a href",
+        "a Nyaya Sanhita, 2023 (hereinafter referred to as &#x27;the BNS&#x27;). He further submits that the order impugned dated 7.",
+        "Section 167(2)</a> Cr.P.C. (corresponding to Section 187(3) BNS, 2023) is a statutory provision which confers indefeasible"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:184937779",
+      "provider": "indian_kanoon",
+      "source_document_id": "184937779",
+      "source_url": "https://indiankanoon.org/doc/184937779/",
+      "case_title": "Fr.Edwin Pigarez vs State Of Kerala on 7 February, 2024",
+      "court": {
+        "court_name": "Kerala High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2024-02-07",
+      "decision_year": 2024,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/184937779_Fr.Edwin_Pigarez_vs_State_Of_Kerala_on_7_February_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "a58b052b568a3f2d28ae18bb6921b0e8f5b8e7db12001440f8325147702bbe91",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "sexual_offences",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Kerala High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "2)(i) and (n) and 375(b) read with Section 376(2)(i) of the Indian Penal Code ( IPC ). He also stands convicted for the offences punishab",
+          "ref=\"/doc/65250547/\" id=\"a_1\">Section 376(2)(i)</a> of the Indian Penal Code (<a href=\"/doc/1569253/\" id=\"a_2\">IPC</a>). He also stands",
+          "5(b) read with Section 376(2)(i) of the Indian Penal Code ( IPC ). He also stands convicted for the offences punishable und",
+          "6 stands convicted for offence punishable under Section 212 IPC. The appellants were also sentenced for the said offences e",
+          "for offences punishable under Sections 376(2)(i) and (n) of IPC as also Sections 3(a) and (b) read with Section 4 , Section",
+          "offences punishable under Section 212 read with Section 34 IPC and charges were also framed against accused Nos.5 and 6 fo",
+          "offences punishable under Section 212 read with Section 34 IPC and under Section 19(1) read with Section 21 of the POCSO A",
+          "s committed rape on the victim as defined under Section 375 IPC and sexual assaults as also sexual harassments as defined i"
+        ]
+      },
+      "regime_evidence": [
+        "2)(i) and (n) and 375(b) read with Section 376(2)(i) of the Indian Penal Code ( IPC ). He also stands convicted for the offences punishab",
+        "ref=\"/doc/65250547/\" id=\"a_1\">Section 376(2)(i)</a> of the Indian Penal Code (<a href=\"/doc/1569253/\" id=\"a_2\">IPC</a>). He also stands",
+        "5(b) read with Section 376(2)(i) of the Indian Penal Code ( IPC ). He also stands convicted for the offences punishable und",
+        "6 stands convicted for offence punishable under Section 212 IPC. The appellants were also sentenced for the said offences e",
+        "for offences punishable under Sections 376(2)(i) and (n) of IPC as also Sections 3(a) and (b) read with Section 4 , Section",
+        "offences punishable under Section 212 read with Section 34 IPC and charges were also framed against accused Nos.5 and 6 fo",
+        "offences punishable under Section 212 read with Section 34 IPC and under Section 19(1) read with Section 21 of the POCSO A",
+        "s committed rape on the victim as defined under Section 375 IPC and sexual assaults as also sexual harassments as defined i"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:186425747",
+      "provider": "indian_kanoon",
+      "source_document_id": "186425747",
+      "source_url": "https://indiankanoon.org/doc/186425747/",
+      "case_title": "Dr. Uttamrao Dhanaji Mahajan vs Manoj Prabhakar Lohar And Another on 21 April, 2023",
+      "court": {
+        "court_name": "Bombay High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-04-21",
+      "decision_year": 2023,
+      "effective_offence_family": "kidnapping",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/186425747_Dr._Uttamrao_Dhanaji_Mahajan_vs_Manoj_Prabhakar_Lohar_And_Another_on_21_April_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "f95f42ec34e948d4431e2d97d4d4b2f856e840dfef64bd13c46518500aea12ef",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "kidnapping",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Bombay High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "342, 346, 348, 364-A, 385, 506 read with Section 34 of the Indian Penal Code. The appellant Manoj has also been convicted for the offenc",
+          "nvicted for the offence punishable under Section 504 of the Indian Penal Code while the respondent in Criminal Appeal No.468/2022 has bee",
+          "shable under Sections 347 , 385 read with Section 34 of the Indian Penal Code. Later on Section 364-A also came to be invoked. Since the",
+          "348 , 364-A , 385 , 504 and 506 read with Section 34 of the Indian Penal Code. 8. The concerned police officers did investigation of the",
+          "officers for offence punishable under Section 364-A of the Indian Penal Code. A revised sanction for prosecution was thus accorded. Both",
+          "348 , 364-A , 385 , 504 and 506 read with Section 34 of the Indian Penal Code. 9. The prosecution examined 16 witnesses and produced in e",
+          "ngredients of offence punishable under Section 364-A of the Indian Penal Code is missing, the prosecution has to be said to have failed t",
+          "ansom is not at the time of abduction, Section 364-A of the Indian Penal Code has no application. The ::: Uploaded on - 21/04/2023 ::: Do"
+        ]
+      },
+      "regime_evidence": [
+        "342, 346, 348, 364-A, 385, 506 read with Section 34 of the Indian Penal Code. The appellant Manoj has also been convicted for the offenc",
+        "nvicted for the offence punishable under Section 504 of the Indian Penal Code while the respondent in Criminal Appeal No.468/2022 has bee",
+        "shable under Sections 347 , 385 read with Section 34 of the Indian Penal Code. Later on Section 364-A also came to be invoked. Since the",
+        "348 , 364-A , 385 , 504 and 506 read with Section 34 of the Indian Penal Code. 8. The concerned police officers did investigation of the",
+        "officers for offence punishable under Section 364-A of the Indian Penal Code. A revised sanction for prosecution was thus accorded. Both",
+        "348 , 364-A , 385 , 504 and 506 read with Section 34 of the Indian Penal Code. 9. The prosecution examined 16 witnesses and produced in e",
+        "ngredients of offence punishable under Section 364-A of the Indian Penal Code is missing, the prosecution has to be said to have failed t",
+        "ansom is not at the time of abduction, Section 364-A of the Indian Penal Code has no application. The ::: Uploaded on - 21/04/2023 ::: Do"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:188935138",
+      "provider": "indian_kanoon",
+      "source_document_id": "188935138",
+      "source_url": "https://indiankanoon.org/doc/188935138/",
+      "case_title": "Mohd. Hakim vs State on 6 October, 2021",
+      "court": {
+        "court_name": "Delhi High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2021-10-06",
+      "decision_year": 2021,
+      "effective_offence_family": "conspiracy_common_intention",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/188935138_Mohd._Hakim_vs_State_on_6_October_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "799a268f8ff9d3dbbab41b64d1675fc6df56fc543b3079de9ab375f6d454736d",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "tered under sections 120B , 121 , 121A , 122 and 123 of the Indian Penal Code, 1860 („ IPC ‟), sections 4 and 5 of the Explosive Substanc",
+          "eration punishment for offences alleged 1 Union of India vs Indian Penal Code : Sections 5 years Death/Life K.A. Najeeb 143, 147, 148, 12",
+          "losive Substances Act, 1908: Section. 3 2 Iqbal Ahmed Kabir Indian Penal Code : Sections Over 4.5 years Life Ahmed vs 120B & 471 (Aug 201",
+          "Substances Act : Sections 4 , 5 , 6 3 Sagar Tatyaram Gorkhe Indian Penal Code : Sections About 4 years Life vs 387, 465, 467, 468, 471 r/",
+          "ections 15, months State of Maharashtra 16, 17, 18, 20 & 23 Indian Penal Code : Sections (2018) 11 SCC 458 302, 307, 326, 324, 427, 153-",
+          "d for Sections 3 , 4 , 5 , 6 , 9B 10 years (2017) 2 SCC 752 Indian Penal Code : Sections 121, 121A, 122, 123, 124B r/w 34 Arms Act : Sect",
+          "8, 39, 40(2) custody on 2016 SCC Online SC 1910 April 2011, Indian Penal Code : Sections 387, 419, 465, 467, 468, 471 7 State of Kerala v",
+          "ns 387, 419, 465, 467, 468, 471 7 State of Kerala vs Raneef Indian Penal Code : Sections 66 days Life 143, 147, 148, 120 B, 323, Imprison"
+        ]
+      },
+      "regime_evidence": [
+        "tered under sections 120B , 121 , 121A , 122 and 123 of the Indian Penal Code, 1860 („ IPC ‟), sections 4 and 5 of the Explosive Substanc",
+        "eration punishment for offences alleged 1 Union of India vs Indian Penal Code : Sections 5 years Death/Life K.A. Najeeb 143, 147, 148, 12",
+        "losive Substances Act, 1908: Section. 3 2 Iqbal Ahmed Kabir Indian Penal Code : Sections Over 4.5 years Life Ahmed vs 120B & 471 (Aug 201",
+        "Substances Act : Sections 4 , 5 , 6 3 Sagar Tatyaram Gorkhe Indian Penal Code : Sections About 4 years Life vs 387, 465, 467, 468, 471 r/",
+        "ections 15, months State of Maharashtra 16, 17, 18, 20 & 23 Indian Penal Code : Sections (2018) 11 SCC 458 302, 307, 326, 324, 427, 153-",
+        "d for Sections 3 , 4 , 5 , 6 , 9B 10 years (2017) 2 SCC 752 Indian Penal Code : Sections 121, 121A, 122, 123, 124B r/w 34 Arms Act : Sect",
+        "8, 39, 40(2) custody on 2016 SCC Online SC 1910 April 2011, Indian Penal Code : Sections 387, 419, 465, 467, 468, 471 7 State of Kerala v",
+        "ns 387, 419, 465, 467, 468, 471 7 State of Kerala vs Raneef Indian Penal Code : Sections 66 days Life 143, 147, 148, 120 B, 323, Imprison"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:189001274",
+      "provider": "indian_kanoon",
+      "source_document_id": "189001274",
+      "source_url": "https://indiankanoon.org/doc/189001274/",
+      "case_title": "Page No.# 1/77 vs The State Of Assam on 5 August, 2023",
+      "court": {
+        "court_name": "Gauhati High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/189001274_Page_No._1_77_vs_The_State_Of_Assam_on_5_August_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "7cc71d59c5a118a0923e9d68befd9b21c7c3b1a2c4c8f15baae2f494efba0c2b",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Gauhati High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:194128214",
+      "provider": "indian_kanoon",
+      "source_document_id": "194128214",
+      "source_url": "https://indiankanoon.org/doc/194128214/",
+      "case_title": "Indresh Kumar vs The State Of Uttar Pradesh on 12 July, 2022",
+      "court": {
+        "court_name": "Supreme Court - Daily Orders",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/194128214_Indresh_Kumar_vs_The_State_Of_Uttar_Pradesh_on_12_July_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "b928a3bff277ece04502584ad132d4fb7844afc0bebd45e4802b356f61d11f65",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "sexual_offences",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court - Daily Orders",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:194768350",
+      "provider": "indian_kanoon",
+      "source_document_id": "194768350",
+      "source_url": "https://indiankanoon.org/doc/194768350/",
+      "case_title": "M/S. Aditya Multicom Pvt. Ltd., Through ... vs The State Of Bihar, Through Principal ... on 9 February, 2024",
+      "court": {
+        "court_name": "Patna High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2024-02-09",
+      "decision_year": 2024,
+      "effective_offence_family": "theft_and_robbery",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/194768350_M_S._Aditya_Multicom_Pvt._Ltd._Through_..._vs_The_State_Of_Bihar_Through_Principal_..._on_9_February_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "8b8e4879a6d4ccc5288c7fadd6529be16ac2ee579b53b47fc3109ebe48548069",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "theft_and_robbery",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Patna High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "ssion of offences of theft etc. under the provisions of the Indian Penal Code against a licensee in the matter of excavation of sand from",
+          "ing of the FIRs under Section 379 , and other provisions of Indian Penal Code (hereinafter referred to as the ' IPC ') as also for the al",
+          "Now, we would like to refer the relevant provisions of the Indian Penal Code , i.e., Sections 378 , 379 , 410 , 411 , 415, which provide",
+          "thereunder vis a vis the Code of Criminal Procedure and the Indian Penal Code and the law laid down by the Hon'ble Supreme Court as well",
+          "2022 dt.09-02-2024 78/86 under Sections 378 and 379 of the Indian Penal Code. Hence, in such cases, FIR can be lodged for violation of t",
+          "med thereunder as well as under Sections 378 and 379 of the Indian Penal Code. It is open for the police authority to investigate the sam",
+          "mining plan then also FIR under Sections 378 and 379 of the Indian Penal Code can be lodged alongwith the provisions of MMDR Act and the",
+          "given facts, the ingredients of Sections 406 and 420 of the Indian Penal Code are also attracted and, therefore, FIR can be lodged under"
+        ]
+      },
+      "regime_evidence": [
+        "ssion of offences of theft etc. under the provisions of the Indian Penal Code against a licensee in the matter of excavation of sand from",
+        "ing of the FIRs under Section 379 , and other provisions of Indian Penal Code (hereinafter referred to as the ' IPC ') as also for the al",
+        "Now, we would like to refer the relevant provisions of the Indian Penal Code , i.e., Sections 378 , 379 , 410 , 411 , 415, which provide",
+        "thereunder vis a vis the Code of Criminal Procedure and the Indian Penal Code and the law laid down by the Hon'ble Supreme Court as well",
+        "2022 dt.09-02-2024 78/86 under Sections 378 and 379 of the Indian Penal Code. Hence, in such cases, FIR can be lodged for violation of t",
+        "med thereunder as well as under Sections 378 and 379 of the Indian Penal Code. It is open for the police authority to investigate the sam",
+        "mining plan then also FIR under Sections 378 and 379 of the Indian Penal Code can be lodged alongwith the provisions of MMDR Act and the",
+        "given facts, the ingredients of Sections 406 and 420 of the Indian Penal Code are also attracted and, therefore, FIR can be lodged under"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:199689273",
+      "provider": "indian_kanoon",
+      "source_document_id": "199689273",
+      "source_url": "https://indiankanoon.org/doc/199689273/",
+      "case_title": "Mithilesh vs The State Of M.P. on 25 May, 2018",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2018-05-25",
+      "decision_year": 2018,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/199689273_Mithilesh_vs_The_State_Of_M.P._on_25_May_2018.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "624164487314711904af1a1908444b986e7c9721ba5702581793a8ba99b0ecfa",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2018,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "05 2. The present appeals filed under Section 374(2) of the Code of Criminal Procedure assail the judgment of conviction and sentence dated 06/04/",
+          "r <a href=\"/doc/929532/\" id=\"a_1\">Section 374(2)</a> of the Code of Criminal Procedure assail the judgment of conviction and sentence dated 06/04/",
+          "he appellants have been convicted under Section 302 / 34 of IPC and sentenced to suffer Life Imprisonment with fine of Rs.",
+          "nment with fine of Rs. 5000/- each and under Section 457 of IPC to undergo R.I for three years with fine of Rs. 250/- each.",
+          "es against her family members in a case under section 307 , IPC. Test Identification Parade of the 5 Criminal Appeal Nos. 2",
+          "llant. As such his conviction with aid of section 34 of the IPC is bad in law and liable to be set aside. 9. Per contra lea",
+          "convicting the appellants with the aid of section 34 of the IPC. With the aforesaid submissons, it is submitted that the ap",
+          "fence, hence their conviction with the aid of section 34 of IPC is bad in law and is liable to be set aside. In this regard"
+        ]
+      },
+      "regime_evidence": [
+        "05 2. The present appeals filed under Section 374(2) of the Code of Criminal Procedure assail the judgment of conviction and sentence dated 06/04/",
+        "r <a href=\"/doc/929532/\" id=\"a_1\">Section 374(2)</a> of the Code of Criminal Procedure assail the judgment of conviction and sentence dated 06/04/",
+        "he appellants have been convicted under Section 302 / 34 of IPC and sentenced to suffer Life Imprisonment with fine of Rs.",
+        "nment with fine of Rs. 5000/- each and under Section 457 of IPC to undergo R.I for three years with fine of Rs. 250/- each.",
+        "es against her family members in a case under section 307 , IPC. Test Identification Parade of the 5 Criminal Appeal Nos. 2",
+        "llant. As such his conviction with aid of section 34 of the IPC is bad in law and liable to be set aside. 9. Per contra lea",
+        "convicting the appellants with the aid of section 34 of the IPC. With the aforesaid submissons, it is submitted that the ap",
+        "fence, hence their conviction with the aid of section 34 of IPC is bad in law and is liable to be set aside. In this regard"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:199957261",
+      "provider": "indian_kanoon",
+      "source_document_id": "199957261",
+      "source_url": "https://indiankanoon.org/doc/199957261/",
+      "case_title": "Manik vs The State Of Maharashtra on 25 September, 2024",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2024,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/199957261_Manik_vs_The_State_Of_Maharashtra_on_25_September_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "55a5c1bcbbc0d88cdfbad049f5f82a2a0f9c08b1a054afc6c9e8c8e8b86e5195",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:22498132",
+      "provider": "indian_kanoon",
+      "source_document_id": "22498132",
+      "source_url": "https://indiankanoon.org/doc/22498132/",
+      "case_title": "The State - Through Police Sub Inspector vs James Vinod on 9 January, 2023",
+      "court": {
+        "court_name": "Karnataka High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/22498132_The_State_-_Through_Police_Sub_Inspector_vs_James_Vinod_on_9_January_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "fae656239c99d618d50d1cfb49723d0bdc83ef69d6a61daf9d35e864ed58842f",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Karnataka High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:24600150",
+      "provider": "indian_kanoon",
+      "source_document_id": "24600150",
+      "source_url": "https://indiankanoon.org/doc/24600150/",
+      "case_title": "Gurnam Singh And Ors vs State Of Punjab on 31 August, 2018",
+      "court": {
+        "court_name": "Punjab-Haryana High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2018-08-31",
+      "decision_year": 2018,
+      "effective_offence_family": "conspiracy_common_intention",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/24600150_Gurnam_Singh_And_Ors_vs_State_Of_Punjab_on_31_August_2018.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "9779a514194ebbf69a8e7f0494a3996012eb302839b270c2d11c88ac2a68bc5c",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Punjab-Haryana High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2018,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "ined Section 149 and held as under: \"14. Section 149 of the Indian Penal Code provides that if an offence is committed by any member of a",
+          "4. <a href=\"/doc/999134/\" id=\"a_213\">Section 149</a> of the Indian Penal Code provides that if an offence is commi",
+          "and Amritpal Singh and thereafter Sections 326 , 325 , 324 IPC etc. were added. On 10.8.2007 accused Lakha Singh and Avtar",
+          "nces under Sections 302 , 307 , 326 , 325 , 324 , 323 , 148 IPC read with Sections 27 and 29 of the Arms Act, 1959. During",
+          "ne 1 Malook 148 R.I. Three 1000/- S.I. one 2 years, 5 Singh IPC years month months and 04 302/149 Life 10,000/- S.I. one da",
+          "onth months and 04 302/149 Life 10,000/- S.I. one days vide IPC Imprisonment year Custody Certificate 307/149 R.I. Five yea",
+          "Certificate 307/149 R.I. Five years 3000/- S.I. three dated IPC months 27.9.2013. 326/149 R.I. Four years 3000/- S.I. three",
+          "months 27.9.2013. 326/149 R.I. Four years 3000/- S.I. three IPC years 325/149 R.I. two years 1000/- S.I. one IPC month 6 of"
+        ]
+      },
+      "regime_evidence": [
+        "ined Section 149 and held as under: \"14. Section 149 of the Indian Penal Code provides that if an offence is committed by any member of a",
+        "4. <a href=\"/doc/999134/\" id=\"a_213\">Section 149</a> of the Indian Penal Code provides that if an offence is commi",
+        "and Amritpal Singh and thereafter Sections 326 , 325 , 324 IPC etc. were added. On 10.8.2007 accused Lakha Singh and Avtar",
+        "nces under Sections 302 , 307 , 326 , 325 , 324 , 323 , 148 IPC read with Sections 27 and 29 of the Arms Act, 1959. During",
+        "ne 1 Malook 148 R.I. Three 1000/- S.I. one 2 years, 5 Singh IPC years month months and 04 302/149 Life 10,000/- S.I. one da",
+        "onth months and 04 302/149 Life 10,000/- S.I. one days vide IPC Imprisonment year Custody Certificate 307/149 R.I. Five yea",
+        "Certificate 307/149 R.I. Five years 3000/- S.I. three dated IPC months 27.9.2013. 326/149 R.I. Four years 3000/- S.I. three",
+        "months 27.9.2013. 326/149 R.I. Four years 3000/- S.I. three IPC years 325/149 R.I. two years 1000/- S.I. one IPC month 6 of"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:26223875",
+      "provider": "indian_kanoon",
+      "source_document_id": "26223875",
+      "source_url": "https://indiankanoon.org/doc/26223875/",
+      "case_title": "Devender Singh vs The State Of Uttarakhand on 21 April, 2022",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/26223875_Devender_Singh_vs_The_State_Of_Uttarakhand_on_21_April_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "583cdf2e0108335a6113a856fbb3beac3bceabdd518dba069daf06b4d8866bbc",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:30754679",
+      "provider": "indian_kanoon",
+      "source_document_id": "30754679",
+      "source_url": "https://indiankanoon.org/doc/30754679/",
+      "case_title": "Kummara Mallela Venkataramana, vs The State Of A.P., Rep By Pp., on 20 April, 2023",
+      "court": {
+        "court_name": "Andhra Pradesh High Court - Amravati",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-04-20",
+      "decision_year": 2023,
+      "effective_offence_family": "homicide",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/30754679_Kummara_Mallela_Venkataramana_vs_The_State_Of_A.P._Rep_By_Pp._on_20_April_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "0704fd5c3c787e431dce65b93feffc4e0f7149df0e8aef27083f4cbae8b55bfc",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Andhra Pradesh High Court - Amravati",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "e, Hindupur, as against the charge under Section 302 of the Indian Penal Code (\" I.P.C .\" for short) framed against the present appellant",
+          "er <a href=\"/doc/1560742/\" id=\"a_1\">Section 302</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_2\">I.P.C</a>.&quot; fo",
+          "II of I.P.C . and convicted him under Section 235(2) of the Code of Criminal Procedure (\" Cr.P.C .\" for short) and after questioning him about the",
+          "r <a href=\"/doc/729076/\" id=\"a_5\">Section 235(2)</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_6\">Cr.P.C</a>.&quot; f",
+          "ries, section of law was altered into Section 302 r/w 34 of IPC from Section 324 r/w 34 of I.P.C . Under the circumstances,",
+          "Section 302</a> r/w 34 of <a href=\"/doc/1569253/\" id=\"a_30\">IPC</a> from <a href=\"/doc/724142/\" id=\"a_31\">Section 324</a>"
+        ]
+      },
+      "regime_evidence": [
+        "e, Hindupur, as against the charge under Section 302 of the Indian Penal Code (\" I.P.C .\" for short) framed against the present appellant",
+        "er <a href=\"/doc/1560742/\" id=\"a_1\">Section 302</a> of the Indian Penal Code (&quot;<a href=\"/doc/1569253/\" id=\"a_2\">I.P.C</a>.&quot; fo",
+        "II of I.P.C . and convicted him under Section 235(2) of the Code of Criminal Procedure (\" Cr.P.C .\" for short) and after questioning him about the",
+        "r <a href=\"/doc/729076/\" id=\"a_5\">Section 235(2)</a> of the Code of Criminal Procedure (&quot;<a href=\"/doc/445276/\" id=\"a_6\">Cr.P.C</a>.&quot; f",
+        "ries, section of law was altered into Section 302 r/w 34 of IPC from Section 324 r/w 34 of I.P.C . Under the circumstances,",
+        "Section 302</a> r/w 34 of <a href=\"/doc/1569253/\" id=\"a_30\">IPC</a> from <a href=\"/doc/724142/\" id=\"a_31\">Section 324</a>"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:31029978",
+      "provider": "indian_kanoon",
+      "source_document_id": "31029978",
+      "source_url": "https://indiankanoon.org/doc/31029978/",
+      "case_title": "Veerendra vs State Of Madhya Pradesh on 13 May, 2022",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/31029978_Veerendra_vs_State_Of_Madhya_Pradesh_on_13_May_2022.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "df8f906c1c81dc4955759082bfb3129bb75c7a35b6f7c5905d989af787984ea0",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "sexual_offences",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:31369863",
+      "provider": "indian_kanoon",
+      "source_document_id": "31369863",
+      "source_url": "https://indiankanoon.org/doc/31369863/",
+      "case_title": "K.V. Brahmaji Rao vs Union Of India & Ors on 4 September, 2023",
+      "court": {
+        "court_name": "Delhi High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/31369863_K.V._Brahmaji_Rao_vs_Union_Of_India_Ors_on_4_September_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "6520b76f00af2a3670e6f0d6ff9057b48914aa5f26047fda09e7d4d191f6de27",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:3493537",
+      "provider": "indian_kanoon",
+      "source_document_id": "3493537",
+      "source_url": "https://indiankanoon.org/doc/3493537/",
+      "case_title": "Balwinder Singh @ Binda vs The Narcotics Control Bureau on 22 September, 2023",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "2023-09-22",
+      "decision_year": 2023,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "unknown",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/3493537_Balwinder_Singh_Binda_vs_The_Narcotics_Control_Bureau_on_22_September_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "748bed4f1f471293c585cae3c8ab727c7407eceae21a54326708be41b03259cd",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "unknown",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "needs_review",
+        "regime_evidence": []
+      },
+      "regime_evidence": [],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:36195540",
+      "provider": "indian_kanoon",
+      "source_document_id": "36195540",
+      "source_url": "https://indiankanoon.org/doc/36195540/",
+      "case_title": "Bassu @ Shiv Pd. vs The State Of M.P. on 17 March, 2023",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2023-03-17",
+      "decision_year": 2023,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/36195540_Bassu_Shiv_Pd._vs_The_State_Of_M.P._on_17_March_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "e3908d2192130174ed3c4bf638c9c548b353c75551ed51a2cc1b8efd4cb8acf7",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "llant for the offence punishable under Section 304-B of the Indian Penal Code (hereinafter referred to as ' IPC ') and sentenced him to u",
+          "th\" shall have the same meaning as in section 304B , of the Indian Penal Code, (45 of1860)\" 11. Further, by passing various decisions, th",
+          "er <a href=\"/doc/653797/\" id=\"a_2\">Section 304-B</a> of the Indian Penal Code (hereinafter referred to as &#x27;<a href=\"/doc/1569253/\" i",
+          "n <a href=\"/doc/653797/\" id=\"a_11\">section 304B</a>, of the Indian Penal Code, (45 of1860)&quot; </blockquote> <p data-structure=\"Precede",
+          "JUDGMENT This Criminal Appeal under Section 374 (2) of the Code of Criminal Procedure, has been preferred by the appellant being aggrieved by the",
+          "<a href=\"/doc/929532/\" id=\"a_1\">Section 374 (2)</a> of the Code of Criminal Procedure, has been preferred by the appellant being aggrieved by the",
+          "04-B of the Indian Penal Code (hereinafter referred to as ' IPC ') and sentenced him to undergo R.I. for seven years. 2. Ac",
+          "is present to constitute the offence under Section 304-B of IPC. 5. On the other hand, learned counsel for the respondent-S"
+        ]
+      },
+      "regime_evidence": [
+        "llant for the offence punishable under Section 304-B of the Indian Penal Code (hereinafter referred to as ' IPC ') and sentenced him to u",
+        "th\" shall have the same meaning as in section 304B , of the Indian Penal Code, (45 of1860)\" 11. Further, by passing various decisions, th",
+        "er <a href=\"/doc/653797/\" id=\"a_2\">Section 304-B</a> of the Indian Penal Code (hereinafter referred to as &#x27;<a href=\"/doc/1569253/\" i",
+        "n <a href=\"/doc/653797/\" id=\"a_11\">section 304B</a>, of the Indian Penal Code, (45 of1860)&quot; </blockquote> <p data-structure=\"Precede",
+        "JUDGMENT This Criminal Appeal under Section 374 (2) of the Code of Criminal Procedure, has been preferred by the appellant being aggrieved by the",
+        "<a href=\"/doc/929532/\" id=\"a_1\">Section 374 (2)</a> of the Code of Criminal Procedure, has been preferred by the appellant being aggrieved by the",
+        "04-B of the Indian Penal Code (hereinafter referred to as ' IPC ') and sentenced him to undergo R.I. for seven years. 2. Ac",
+        "is present to constitute the offence under Section 304-B of IPC. 5. On the other hand, learned counsel for the respondent-S"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:40368737",
+      "provider": "indian_kanoon",
+      "source_document_id": "40368737",
+      "source_url": "https://indiankanoon.org/doc/40368737/",
+      "case_title": "State vs . Noorjahan & Anr. Page No. 23 Of 33 on 13 December, 2021",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2021-12-13",
+      "decision_year": 2021,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/40368737_State_vs_._Noorjahan_Anr._Page_No._23_Of_33_on_13_December_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "45dd907a4e13e67761d0eef6c2e0f45295771488ea544b8ded9a94ef0abaf962",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "NO. 212/11 PS Sultan Puri U/ S. 498A / 304B / 34IPC & 174A IPC STATE Vs. Noorjahan @ Noora & Anr. CNR NO. DLNW-01-00180-20",
+          "P1/423424, Sultan Puri, Delhi d. Offence U/s. 498A/304B /34 IPC & 174A IPC e. Plea of accused Pleaded not guilty f. Final o",
+          "Sultan Puri, Delhi d. Offence U/s. 498A/304B /34 IPC & 174A IPC e. Plea of accused Pleaded not guilty f. Final order Acquit",
+          "ns are facing trial for the offence U/s. 498A/304B/174-A/34 IPC . It is pertinent to mention herein that the remaining accu",
+          "ly, FIR in question was registered for the offence U/s 498A IPC . Investigation was entrusted to SI Badami Lal who got the",
+          "mortem examination of dead body of Afsara. Offence U/s 304B IPC was also added and investigation was entrusted to Inspector",
+          "charge, charge for the offences punishable U/s 498A/304B/34 IPC was framed against both accused persons to which they plead",
+          "ed not guilty and claimed trial. Additional charge U/s 174A IPC was State Vs. Noorjahan & Anr. Page no. 23 of 33 23 framed"
+        ]
+      },
+      "regime_evidence": [
+        "NO. 212/11 PS Sultan Puri U/ S. 498A / 304B / 34IPC & 174A IPC STATE Vs. Noorjahan @ Noora & Anr. CNR NO. DLNW-01-00180-20",
+        "P1/423424, Sultan Puri, Delhi d. Offence U/s. 498A/304B /34 IPC & 174A IPC e. Plea of accused Pleaded not guilty f. Final o",
+        "Sultan Puri, Delhi d. Offence U/s. 498A/304B /34 IPC & 174A IPC e. Plea of accused Pleaded not guilty f. Final order Acquit",
+        "ns are facing trial for the offence U/s. 498A/304B/174-A/34 IPC . It is pertinent to mention herein that the remaining accu",
+        "ly, FIR in question was registered for the offence U/s 498A IPC . Investigation was entrusted to SI Badami Lal who got the",
+        "mortem examination of dead body of Afsara. Offence U/s 304B IPC was also added and investigation was entrusted to Inspector",
+        "charge, charge for the offences punishable U/s 498A/304B/34 IPC was framed against both accused persons to which they plead",
+        "ed not guilty and claimed trial. Additional charge U/s 174A IPC was State Vs. Noorjahan & Anr. Page no. 23 of 33 23 framed"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:44731735",
+      "provider": "indian_kanoon",
+      "source_document_id": "44731735",
+      "source_url": "https://indiankanoon.org/doc/44731735/",
+      "case_title": "Sahadev Prasad Agarwal & Anr vs The State Of West Bengal & Anr on 30 July, 2021",
+      "court": {
+        "court_name": "Calcutta High Court (Appellete Side)",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2021,
+      "effective_offence_family": "criminal_breach_of_trust",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/44731735_Sahadev_Prasad_Agarwal_Anr_vs_The_State_Of_West_Bengal_Anr_on_30_July_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "be4d8804b685e697018ed9c967004bb58a63be18d87291095d399b2ac78f8493",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "criminal_breach_of_trust",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Calcutta High Court (Appellete Side)",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:47759402",
+      "provider": "indian_kanoon",
+      "source_document_id": "47759402",
+      "source_url": "https://indiankanoon.org/doc/47759402/",
+      "case_title": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024",
+      "court": {
+        "court_name": "Karnataka High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2024-09-30",
+      "decision_year": 2024,
+      "effective_offence_family": "sexual_offences",
+      "effective_legal_regime": "mixed_or_transition",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/47759402_Arunkumar_vs_The_State_Of_Karnataka_And_Anr_on_30_September_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "841f2ce83f06cbff3796b0ce4bb16292e54ef79b7483f0d6b8b12b72d1977fa2",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "mixed_or_transition",
+        "court": {
+          "court_name": "Karnataka High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "nces were committed prior to commencement of the new law of BNS by repealing the IPC . The offences were alleged to have be",
+          "gistered for the offences committed under IPC and not under BNS. But, the FIR is required to be registered on the complaint",
+          "the offences punishable under only in IPC . But, not under BNS. For the convenience, as per Section 358 of BNS wherein the",
+          ", not under BNS. For the convenience, as per Section 358 of BNS wherein the repeal and savings has defined as under:- \"358",
+          "uired or obligation, suffered, prior to commencement of the BNS, the IPC will apply. Hence, if any offences committed prior",
+          "ment of - 12 - NC: 2024:KHC-K:7531 CRL.P No. 200913 of 2024 BNS prior to 01.07.2024, the police required to register FIR fo",
+          "register FIR for the offences under the IPC but, not under BNS. Therefore, the police have rightly registered FIR for the",
+          "ences cannot be registered against the petitioner under the BNS, which was come into force only on 01.07.2024. Therefore, t"
+        ]
+      },
+      "regime_evidence": [
+        "nces were committed prior to commencement of the new law of BNS by repealing the IPC . The offences were alleged to have be",
+        "gistered for the offences committed under IPC and not under BNS. But, the FIR is required to be registered on the complaint",
+        "the offences punishable under only in IPC . But, not under BNS. For the convenience, as per Section 358 of BNS wherein the",
+        ", not under BNS. For the convenience, as per Section 358 of BNS wherein the repeal and savings has defined as under:- \"358",
+        "uired or obligation, suffered, prior to commencement of the BNS, the IPC will apply. Hence, if any offences committed prior",
+        "ment of - 12 - NC: 2024:KHC-K:7531 CRL.P No. 200913 of 2024 BNS prior to 01.07.2024, the police required to register FIR fo",
+        "register FIR for the offences under the IPC but, not under BNS. Therefore, the police have rightly registered FIR for the",
+        "ences cannot be registered against the petitioner under the BNS, which was come into force only on 01.07.2024. Therefore, t"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:6939849",
+      "provider": "indian_kanoon",
+      "source_document_id": "6939849",
+      "source_url": "https://indiankanoon.org/doc/6939849/",
+      "case_title": "Deepak Nandwanshi vs The State Of Madhya Pradesh on 3 December, 2019",
+      "court": {
+        "court_name": "Madhya Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2019,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/6939849_Deepak_Nandwanshi_vs_The_State_Of_Madhya_Pradesh_on_3_December_2019.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "5def97e9e48901ed8a0c9b44bb1d9d289df336d618204f7d03dadb559ae698b5",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madhya Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:70774666",
+      "provider": "indian_kanoon",
+      "source_document_id": "70774666",
+      "source_url": "https://indiankanoon.org/doc/70774666/",
+      "case_title": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2022,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/70774666_Smt._Alka_vs_State_Of_U.P._And_Another_on_13_May_2022.html",
+      "raw_mime_type": "text/html",
+      "sha256": "4bc0994daf4834943bd6a4349da73cf5d683bf264419d34fe1f7cc4f11a60179",
+      "text_source_type": "local_text",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2022,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:73295342",
+      "provider": "indian_kanoon",
+      "source_document_id": "73295342",
+      "source_url": "https://indiankanoon.org/doc/73295342/",
+      "case_title": "Cbi vs Narain Diwakar (Anchal Cghs) on 12 September, 2023",
+      "court": {
+        "court_name": "Delhi District Court",
+        "court_level": "district_or_sessions"
+      },
+      "decision_date": "2023-09-12",
+      "decision_year": 2023,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/73295342_Cbi_vs_Narain_Diwakar_Anchal_Cghs_on_12_September_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "04fd0c8d364047705ad1ea3fe8fa3792a71fa996a533e0d8a62387c89acdd0be",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Delhi District Court",
+          "court_level": "district_or_sessions"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "rement for prosecuting the accused under the offences under Indian Penal Code . It was argued that it is a well settled law that the sanc",
+          "ommission of an offence punishable under Section 420 of the Indian Penal Code by falsely stating as a fact, in his reports that the appel",
+          "rdingly committed an offence under Section 420 / 109 of the Indian Penal Code. It appears to us to be clear that some offences cannot by",
+          "of a bribe, an offence punishable under Section 161 of the Indian Penal Code, is one of them and offence of cheating or abetment thereof",
+          "offences covered by Sections 120B,406, 409, 420, etc. under Indian Penal Code and the official status of the public servant can, at best,",
+          "under the offences under <a href=\"/doc/1569253/\" id=\"a_144\">Indian Penal Code</a>. It was argued that it is a well settled law that",
+          "r <a href=\"/doc/1436241/\" id=\"a_397\">Section 420</a> of the Indian Penal Code by falsely stating as a fa",
+          "id=\"a_400\">109</a> of the Indian Penal Code. It appears to us to be clear that some offences"
+        ]
+      },
+      "regime_evidence": [
+        "rement for prosecuting the accused under the offences under Indian Penal Code . It was argued that it is a well settled law that the sanc",
+        "ommission of an offence punishable under Section 420 of the Indian Penal Code by falsely stating as a fact, in his reports that the appel",
+        "rdingly committed an offence under Section 420 / 109 of the Indian Penal Code. It appears to us to be clear that some offences cannot by",
+        "of a bribe, an offence punishable under Section 161 of the Indian Penal Code, is one of them and offence of cheating or abetment thereof",
+        "offences covered by Sections 120B,406, 409, 420, etc. under Indian Penal Code and the official status of the public servant can, at best,",
+        "under the offences under <a href=\"/doc/1569253/\" id=\"a_144\">Indian Penal Code</a>. It was argued that it is a well settled law that",
+        "r <a href=\"/doc/1436241/\" id=\"a_397\">Section 420</a> of the Indian Penal Code by falsely stating as a fa",
+        "id=\"a_400\">109</a> of the Indian Penal Code. It appears to us to be clear that some offences"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:76377526",
+      "provider": "indian_kanoon",
+      "source_document_id": "76377526",
+      "source_url": "https://indiankanoon.org/doc/76377526/",
+      "case_title": "Nanhak And Ors vs State on 17 May, 2024",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2024-05-17",
+      "decision_year": 2024,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/76377526_Nanhak_And_Ors_vs_State_on_17_May_2024.html",
+      "raw_mime_type": "text/html",
+      "sha256": "0d0e3cd20b9ec413df5987c8cfffbb81257550b6c24dc9529b29abc51cef633c",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "homicide",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "lants have been convicted for the offence under Section 147 IPC and awarded the sentence of one year rigorous imprisonment,",
+          "of one year rigorous imprisonment, under Section 325 / 149 IPC and awarded the sentence of five years rigorous imprisonmen",
+          "prisonment with a fine of Rs.500/-, under Section 323 / 149 IPC and awarded the sentence of six months imprisonment with a",
+          "sonment with a fine of Rs.500/- and under Section 426 / 149 IPC and awarded the fine of Rs.50/- with default stipulations.",
+          "acquittal of the accused-appellants under Section 302 / 149 IPC and convict them for the said offence. 4. During the penden",
+          "No. 109 of 1979, under Sections 147 , 149 , 307 , 325 , 426 IPC, Police Station Kotwali Dehat, District Mirzapur registered",
+          "e said death memo, the case was converted under Section 302 IPC. Thereafter, on the basis of the said death memo, the polic",
+          ".D. and thereafter, the case was converted from Section 307 IPC to Section 302 IPC. The inquest on the person of the deceas"
+        ]
+      },
+      "regime_evidence": [
+        "lants have been convicted for the offence under Section 147 IPC and awarded the sentence of one year rigorous imprisonment,",
+        "of one year rigorous imprisonment, under Section 325 / 149 IPC and awarded the sentence of five years rigorous imprisonmen",
+        "prisonment with a fine of Rs.500/-, under Section 323 / 149 IPC and awarded the sentence of six months imprisonment with a",
+        "sonment with a fine of Rs.500/- and under Section 426 / 149 IPC and awarded the fine of Rs.50/- with default stipulations.",
+        "acquittal of the accused-appellants under Section 302 / 149 IPC and convict them for the said offence. 4. During the penden",
+        "No. 109 of 1979, under Sections 147 , 149 , 307 , 325 , 426 IPC, Police Station Kotwali Dehat, District Mirzapur registered",
+        "e said death memo, the case was converted under Section 302 IPC. Thereafter, on the basis of the said death memo, the polic",
+        ".D. and thereafter, the case was converted from Section 307 IPC to Section 302 IPC. The inquest on the person of the deceas"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:77330685",
+      "provider": "indian_kanoon",
+      "source_document_id": "77330685",
+      "source_url": "https://indiankanoon.org/doc/77330685/",
+      "case_title": "Crl.A./213/2020 on 12 June, 2024",
+      "court": {
+        "court_name": "Gauhati High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2024,
+      "effective_offence_family": "kidnapping",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/77330685_Crl.A._213_2020_on_12_June_2024.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "8e1d2f30c04b21d1c1c78aa9e8dfdf6c5b094a34088bd4794bb99a669c89fbac",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "kidnapping",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Gauhati High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2024,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:8095700",
+      "provider": "indian_kanoon",
+      "source_document_id": "8095700",
+      "source_url": "https://indiankanoon.org/doc/8095700/",
+      "case_title": "Amit Kumar Alias Sushil vs State Of H.P on 4 February, 2021",
+      "court": {
+        "court_name": "Himachal Pradesh High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2021,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/8095700_Amit_Kumar_Alias_Sushil_vs_State_Of_H.P_on_4_February_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "5284905e499c896db32a20584a4beeec69842acf4e7c0eb628a2438ccdf082f3",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Himachal Pradesh High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "needs_review"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:82858547",
+      "provider": "indian_kanoon",
+      "source_document_id": "82858547",
+      "source_url": "https://indiankanoon.org/doc/82858547/",
+      "case_title": "Ajit And Others vs State Of U.P. on 30 October, 2019",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2019-10-30",
+      "decision_year": 2019,
+      "effective_offence_family": "hurt_and_assault",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/82858547_Ajit_And_Others_vs_State_Of_U.P._on_30_October_2019.html",
+      "raw_mime_type": "text/html",
+      "sha256": "8cf2919cf6fe175c5ec7a2131d94ccb57253dfd2894504084065496ba022c55b",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "hurt_and_assault",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "imprisonment with fine of Rs. 1000/- each under Section 452 IPC; six months rigorous imprisonment with fine of Rs. 500/- ea",
+          "isonment with fine of Rs. 500/- each under Section 323 / 34 IPC; one year rigorous imprisonment with fine of Rs. 700/- each",
+          "sonment with fine of Rs. 5000/- each under Section 326 / 34 IPC. Thereagainst, revisionists preferred Criminal Appeal No. 7",
+          "f tooth construed a grievous hurt as defined in Section 320 IPC. Revisionists attacked the victim with Ballam and Lathi and",
+          "therefore, it cannot be said that offence under Section 326 IPC is not made out. I, therefore, find no force in the submiss",
+          "<b>grievous</b> <b>hurt</b> as defined in Section 320 <b>IPC</b>. Revisionists attacked the victim with Ballam and Lathi",
+          "each under <a href=\"/doc/838469/\" id=\"a_3\">Section 452</a> IPC; six months rigorous imprisonment with fine of Rs. 500/- ea",
+          "\"a_4\">Section 323</a>/<a href=\"/doc/37788/\" id=\"a_5\">34</a> IPC; one year rigorous imprisonment with fine of Rs. 700/- each"
+        ]
+      },
+      "regime_evidence": [
+        "imprisonment with fine of Rs. 1000/- each under Section 452 IPC; six months rigorous imprisonment with fine of Rs. 500/- ea",
+        "isonment with fine of Rs. 500/- each under Section 323 / 34 IPC; one year rigorous imprisonment with fine of Rs. 700/- each",
+        "sonment with fine of Rs. 5000/- each under Section 326 / 34 IPC. Thereagainst, revisionists preferred Criminal Appeal No. 7",
+        "f tooth construed a grievous hurt as defined in Section 320 IPC. Revisionists attacked the victim with Ballam and Lathi and",
+        "therefore, it cannot be said that offence under Section 326 IPC is not made out. I, therefore, find no force in the submiss",
+        "<b>grievous</b> <b>hurt</b> as defined in Section 320 <b>IPC</b>. Revisionists attacked the victim with Ballam and Lathi",
+        "each under <a href=\"/doc/838469/\" id=\"a_3\">Section 452</a> IPC; six months rigorous imprisonment with fine of Rs. 500/- ea",
+        "\"a_4\">Section 323</a>/<a href=\"/doc/37788/\" id=\"a_5\">34</a> IPC; one year rigorous imprisonment with fine of Rs. 700/- each"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:83401027",
+      "provider": "indian_kanoon",
+      "source_document_id": "83401027",
+      "source_url": "https://indiankanoon.org/doc/83401027/",
+      "case_title": "Charan Singh @ Charanjit Singh vs The State Of Uttarakhand Home ... on 20 April, 2023",
+      "court": {
+        "court_name": "Supreme Court of India",
+        "court_level": "supreme_court"
+      },
+      "decision_date": null,
+      "decision_year": 2023,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/83401027_Charan_Singh_Charanjit_Singh_vs_The_State_Of_Uttarakhand_Home_..._on_20_April_2023.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "0fd5d9c8bf2a118a8faf59cf6bbd90b3686ef11c0d2849926ef30c4a21b8dc9c",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Supreme Court of India",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2023,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:87669225",
+      "provider": "indian_kanoon",
+      "source_document_id": "87669225",
+      "source_url": "https://indiankanoon.org/doc/87669225/",
+      "case_title": "Arun Bhandari vs State Of U.P. And Another on 11 December, 2019",
+      "court": {
+        "court_name": "Allahabad High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2019-12-11",
+      "decision_year": 2019,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/87669225_Arun_Bhandari_vs_State_Of_U.P._And_Another_on_11_December_2019.html",
+      "raw_mime_type": "text/html",
+      "sha256": "6bb9c1dc1697dea5795cb54a6f4e3fbdb9e9faf27caa220e5f772016beeff593",
+      "text_source_type": "local_text",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "conspiracy_common_intention",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Allahabad High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2019,
+        "decision": "accept_candidate",
+        "regime_evidence": [
+          "1 in Case Crime No. 563 of 2009, under Sections 420 and 406 IPC, Police Station Kasna, District Gautam Budh Nagar. 3. It is",
+          "44, accused was convicted under Section 302 read with 120-B IPC for hatching criminal conspiracy in killing of deceased Ind",
+          "ng in which two cases were under Section 302 read with 120B IPC . Having said so, Court observed that since accused was in",
+          "148 , 149 , 302 , 307 , 394 , 411 , 454 , 506 , 120B and 34 IPC on the ground of parity as another accused Ashok was alread",
+          "that he was a history-sheeter and mostly under Section 302 IPC, order of bail was set aside. Court observed that there has",
+          "f offences under Sections 376 , 342 , 493 , 506 , 354(C) of IPC. Accused got anticipatory bail from Sessions Judge on 13.01",
+          "t in the case registered under Sections 498-A , 302 , 120-B IPC was challenged in appeal before Supreme Court. Court notice",
+          "f U.P. And Another on 11 December, 2019 read with 120-B <b>IPC</b> for hatching <b>criminal</b> <b>conspiracy</b> in kill"
+        ]
+      },
+      "regime_evidence": [
+        "1 in Case Crime No. 563 of 2009, under Sections 420 and 406 IPC, Police Station Kasna, District Gautam Budh Nagar. 3. It is",
+        "44, accused was convicted under Section 302 read with 120-B IPC for hatching criminal conspiracy in killing of deceased Ind",
+        "ng in which two cases were under Section 302 read with 120B IPC . Having said so, Court observed that since accused was in",
+        "148 , 149 , 302 , 307 , 394 , 411 , 454 , 506 , 120B and 34 IPC on the ground of parity as another accused Ashok was alread",
+        "that he was a history-sheeter and mostly under Section 302 IPC, order of bail was set aside. Court observed that there has",
+        "f offences under Sections 376 , 342 , 493 , 506 , 354(C) of IPC. Accused got anticipatory bail from Sessions Judge on 13.01",
+        "t in the case registered under Sections 498-A , 302 , 120-B IPC was challenged in appeal before Supreme Court. Court notice",
+        "f U.P. And Another on 11 December, 2019 read with 120-B <b>IPC</b> for hatching <b>criminal</b> <b>conspiracy</b> in kill"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:87917455",
+      "provider": "indian_kanoon",
+      "source_document_id": "87917455",
+      "source_url": "https://indiankanoon.org/doc/87917455/",
+      "case_title": "Roshan Kumar Sahu vs The State Of Chhattisgarh on 11 February, 2026",
+      "court": {
+        "court_name": "Supreme Court - Daily Orders",
+        "court_level": "supreme_court"
+      },
+      "decision_date": "2026-02-11",
+      "decision_year": 2026,
+      "effective_offence_family": "cheating_and_fraud",
+      "effective_legal_regime": "bns_bnss",
+      "temporal_track": "current_transition",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/87917455_Roshan_Kumar_Sahu_vs_The_State_Of_Chhattisgarh_on_11_February_2026.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "63a3fc48d0283018a0279a040b37095ee0381c24bbd8e9e22c1270aa2f3f8c37",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "other",
+        "legal_regime": "bns_bnss",
+        "court": {
+          "court_name": "Supreme Court - Daily Orders",
+          "court_level": "supreme_court"
+        },
+        "decision_date": null,
+        "decision_year": 2026,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "registered under Sections 61, 317(5), 318(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cyber Police Station, Range Bilaspur, Dis",
+          "318(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cybe",
+          "18(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cyb"
+        ]
+      },
+      "regime_evidence": [
+        "registered under Sections 61, 317(5), 318(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cyber Police Station, Range Bilaspur, Dis",
+        "318(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cybe",
+        "18(4) and 323 of the Bharatiya Nyaya Sanhita, 2023 at Police Station Cyb"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:8854101",
+      "provider": "indian_kanoon",
+      "source_document_id": "8854101",
+      "source_url": "https://indiankanoon.org/doc/8854101/",
+      "case_title": "Eshan Joshi vs Suman on 23 January, 2018",
+      "court": {
+        "court_name": "Punjab-Haryana High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": "2018-01-23",
+      "decision_year": 2018,
+      "effective_offence_family": "dowry_and_domestic_cruelty",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/processed/acquisition_runs/bulk_20260904_000000_stagea/raw/8854101_Eshan_Joshi_vs_Suman_on_23_January_2018.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "f1d263b7009ca306bc1f253311c935e6cc918b84e75387fa266f400eaf5bb9ad",
+      "text_source_type": "pdf_native",
+      "human_review_source": "bulk_quality_audit",
+      "human_review_status": "reviewed",
+      "automated": {
+        "offence_family": "dowry_and_domestic_cruelty",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Punjab-Haryana High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2018,
+        "decision": "needs_review",
+        "regime_evidence": [
+          "FIR No.1022 registered under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act at police Stati",
+          "pondent under Sections 420 , 384 , 385 , 386 , 389 , 506 of Indian Penal Code before the Addl. Chief Metropolitan Magistrate, Bangalore.",
+          "respondent at Bangalore under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act stood cancelled",
+          "of the remedy available under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act as well as unde",
+          "oceedings initiated under the DV Act ? 16. Section 498-A of Indian Penal Code was incorporated in the 10 of 18 ::: Downloaded on - 26-01-",
+          "d on - 26-01-2018 04:11:54 ::: Crl. Misc. M-32351-2016 -11- Indian Penal Code in the year 1983 when there arose a need to protect women a",
+          "re reliefs, which are not available under Sections 498-A of Indian Penal Code. In the instant case, an FIR had been instituted under Sect",
+          "FIR had been instituted under Sections 498-A , 506 , 504 of Indian Penal Code, which provisions would not have provided respondent with t"
+        ]
+      },
+      "regime_evidence": [
+        "FIR No.1022 registered under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act at police Stati",
+        "pondent under Sections 420 , 384 , 385 , 386 , 389 , 506 of Indian Penal Code before the Addl. Chief Metropolitan Magistrate, Bangalore.",
+        "respondent at Bangalore under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act stood cancelled",
+        "of the remedy available under Sections 498-A , 506 , 504 of Indian Penal Code and Sections 3 / 4 of Dowry Prohibition Act as well as unde",
+        "oceedings initiated under the DV Act ? 16. Section 498-A of Indian Penal Code was incorporated in the 10 of 18 ::: Downloaded on - 26-01-",
+        "d on - 26-01-2018 04:11:54 ::: Crl. Misc. M-32351-2016 -11- Indian Penal Code in the year 1983 when there arose a need to protect women a",
+        "re reliefs, which are not available under Sections 498-A of Indian Penal Code. In the instant case, an FIR had been instituted under Sect",
+        "FIR had been instituted under Sections 498-A , 506 , 504 of Indian Penal Code, which provisions would not have provided respondent with t"
+      ],
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    },
+    {
+      "document_id": "indian_kanoon:90446963",
+      "provider": "indian_kanoon",
+      "source_document_id": "90446963",
+      "source_url": "https://indiankanoon.org/doc/90446963/",
+      "case_title": "Babu vs State Rep. By on 29 September, 2021",
+      "court": {
+        "court_name": "Madras High Court",
+        "court_level": "high_court"
+      },
+      "decision_date": null,
+      "decision_year": 2021,
+      "effective_offence_family": "narcotics_related",
+      "effective_legal_regime": "ipc_crpc",
+      "temporal_track": "recent_ipc",
+      "raw_path": "data/raw/judgments/indiankanoon/balanced/90446963_Babu_vs_State_Rep._By_on_29_September_2021.pdf",
+      "raw_mime_type": "application/pdf",
+      "sha256": "775889d57504688615f942124abbe14546aa646e8fc33ba33b415d7494dfba6c",
+      "text_source_type": "pdf_native",
+      "human_review_source": "balanced_development_review",
+      "human_review_status": "accepted",
+      "automated": {
+        "offence_family": "narcotics_related",
+        "legal_regime": "ipc_crpc",
+        "court": {
+          "court_name": "Madras High Court",
+          "court_level": "high_court"
+        },
+        "decision_date": null,
+        "decision_year": 2021,
+        "decision": "accept_candidate"
+      },
+      "attribution_text": "Judgment data sourced from Indian Kanoon API."
+    }
+  ]
+}
