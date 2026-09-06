@@ -24,11 +24,15 @@ criminal_relevance, document_type, offence_family_review, legal_regime_review, c
 - document-type precision: judgment / determinate audited records
 - offence-family accuracy: confirmed / determinate audited records
 - legal-regime accuracy: confirmed / determinate audited records
-- court/date metadata accuracy: correct / determinate audited records
+- court metadata accuracy: correct / determinate audited records
+- exact decision-date accuracy/completeness: automated exact decision date correct / determinate audited records
+- year accuracy: automated year matches human corrected exact-date year / records with both values
 - text usability rate: usable / reviewed records
-- duplicate/noise rate: no duplicate or noise / reviewed records
+- duplicate/noise problem rate: duplicate, irrelevant_noise, provider_wrapper_only, or other problem / reviewed records
+- clean record rate: no duplicate or noise / reviewed records
 - RAG suitability rate: accept / reviewed records
-- human correction rate and uncertainty rate
+- any, offence-family, legal-regime, court, date, and label correction rates
+- uncertainty rate
 
 The remaining 199 bulk records are unaudited/pending. These metrics describe only the reviewed stratified sample unless explicitly labeled as sample-based estimates.
 
@@ -49,11 +53,18 @@ The remaining 199 bulk records are unaudited/pending. These metrics describe onl
 | offence-family accuracy | 33 | 42 | 78.57 |
 | legal-regime accuracy | 48 | 50 | 96.0 |
 | court metadata accuracy | 47 | 47 | 100.0 |
-| date metadata accuracy | 0 | 50 | 0.0 |
+| exact decision-date accuracy/completeness | 0 | 50 | 0.0 |
+| year accuracy | 49 | 50 | 98.0 |
 | text usability | 50 | 50 | 100.0 |
-| duplicate/noise clean rate | 43 | 50 | 86.0 |
+| duplicate/noise problem rate | 7 | 50 | 14.0 |
+| clean record rate | 43 | 50 | 86.0 |
 | RAG suitability rate | 42 | 50 | 84.0 |
-| human correction rate | 50 | 50 | 100.0 |
+| any human correction rate | 50 | 50 | 100.0 |
+| offence-family correction rate | 9 | 50 | 18.0 |
+| legal-regime correction rate | 2 | 50 | 4.0 |
+| court metadata correction rate | 0 | 50 | 0.0 |
+| date correction rate | 50 | 50 | 100.0 |
+| label correction rate | 11 | 50 | 22.0 |
 | uncertainty rate | 11 | 450 | 2.44 |
 
 ## Correction Matrices
@@ -105,6 +116,13 @@ The remaining 199 bulk records are unaudited/pending. These metrics describe onl
 
 - Explicit corrected dates were recorded separately from provider date metadata.
 - 120980289 has a provider title/date mismatch; human corrected decision date is 2024-03-06.
+
+## Metric Exclusions
+
+- Offence-family accuracy denominator: 42 included; 7 RAG-rejected non-criminal/noise records and 1 uncertain non-rejected records excluded.
+- Legal-regime accuracy denominator includes rejected records where regime remained determinately reviewable; uncertain regime reviews would be excluded.
+- Uncertain values are excluded from correctness denominators and counted in the uncertainty-rate numerator.
+- Rejected/non-criminal records are included for criminal relevance, document type, legal regime, exact-date, text, duplicate/noise, and RAG suitability metrics, but excluded from offence-family accuracy because offence family is not meaningful for non-criminal/noise records.
 
 ## Sample Distribution
 

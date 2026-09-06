@@ -495,37 +495,95 @@ def compute_metrics(samples: list[dict[str, Any]]) -> dict[str, Any]:
             "offence_family_accuracy": None,
             "legal_regime_accuracy": None,
             "court_metadata_accuracy": None,
-            "date_metadata_accuracy": None,
+            "exact_decision_date_accuracy_completeness": None,
+            "year_accuracy": None,
             "text_usability_rate": None,
-            "duplicate_noise_rate": None,
+            "duplicate_or_noise_problem_rate": None,
+            "clean_record_rate": None,
             "rag_suitability_rate": None,
-            "human_correction_rate": None,
+            "any_human_correction_rate": None,
+            "offence_family_correction_rate": None,
+            "legal_regime_correction_rate": None,
+            "court_metadata_correction_rate": None,
+            "date_metadata_correction_rate": None,
+            "label_correction_rate": None,
             "uncertainty_rate": None,
+            "denominator_accounting": {},
             "stratified": {},
         }
     uncertain = 0
-    correction_count = 0
+    family_determinate = [
+        record
+        for record in reviewed
+        if record.get("offence_family_review") != "uncertain" and record.get("rag_suitability") != "reject"
+    ]
+    family_excluded_rejected = sum(1 for record in reviewed if record.get("rag_suitability") == "reject")
+    family_excluded_uncertain_nonrejected = sum(
+        1 for record in reviewed if record.get("rag_suitability") != "reject" and record.get("offence_family_review") == "uncertain"
+    )
+    regime_determinate = [record for record in reviewed if record.get("legal_regime_review") != "uncertain"]
+    court_determinate = [record for record in reviewed if record.get("court_metadata_review") != "uncertain"]
+    exact_date_determinate = [record for record in reviewed if record.get("date_metadata_review") != "uncertain"]
+    year_determinate = [record for record in reviewed if record.get("corrected_year") is not None and record.get("judgment_year") is not None]
+    offence_corrections = sum(1 for record in reviewed if record.get("offence_family_review") == "corrected")
+    regime_corrections = sum(1 for record in reviewed if record.get("legal_regime_review") == "corrected")
+    court_corrections = sum(1 for record in reviewed if record.get("court_metadata_review") == "corrected")
+    date_corrections = sum(1 for record in reviewed if record.get("date_metadata_review") == "corrected")
+    any_corrections = sum(
+        1
+        for record in reviewed
+        if record.get("offence_family_review") == "corrected"
+        or record.get("legal_regime_review") == "corrected"
+        or record.get("court_metadata_review") == "corrected"
+        or record.get("date_metadata_review") == "corrected"
+    )
+    duplicate_problem_values = {"duplicate", "irrelevant_noise", "provider_wrapper_only", "other"}
     metrics = {
         "reviewed_count": len(reviewed),
         "metrics_available": True,
         "criminal_relevance_precision": ratio(sum(1 for r in reviewed if r.get("criminal_relevance") == "correct"), sum(1 for r in reviewed if r.get("criminal_relevance") != "uncertain")),
         "document_type_precision": ratio(sum(1 for r in reviewed if r.get("document_type") == "judgment"), sum(1 for r in reviewed if r.get("document_type") != "uncertain")),
-        "offence_family_accuracy": ratio(sum(1 for r in reviewed if r.get("offence_family_review") == "confirmed"), sum(1 for r in reviewed if r.get("offence_family_review") != "uncertain")),
-        "legal_regime_accuracy": ratio(sum(1 for r in reviewed if r.get("legal_regime_review") == "confirmed"), sum(1 for r in reviewed if r.get("legal_regime_review") != "uncertain")),
-        "court_metadata_accuracy": ratio(sum(1 for r in reviewed if r.get("court_metadata_review") == "correct"), sum(1 for r in reviewed if r.get("court_metadata_review") != "uncertain")),
-        "date_metadata_accuracy": ratio(sum(1 for r in reviewed if r.get("date_metadata_review") == "correct"), sum(1 for r in reviewed if r.get("date_metadata_review") != "uncertain")),
+        "offence_family_accuracy": ratio(sum(1 for r in family_determinate if r.get("offence_family_review") == "confirmed"), len(family_determinate)),
+        "legal_regime_accuracy": ratio(sum(1 for r in regime_determinate if r.get("legal_regime_review") == "confirmed"), len(regime_determinate)),
+        "court_metadata_accuracy": ratio(sum(1 for r in court_determinate if r.get("court_metadata_review") == "correct"), len(court_determinate)),
+        "exact_decision_date_accuracy_completeness": ratio(sum(1 for r in exact_date_determinate if r.get("date_metadata_review") == "correct"), len(exact_date_determinate)),
+        "year_accuracy": ratio(sum(1 for r in year_determinate if int(r.get("corrected_year")) == int(r.get("judgment_year"))), len(year_determinate)),
         "text_usability_rate": ratio(sum(1 for r in reviewed if r.get("text_quality") == "usable"), len(reviewed)),
-        "duplicate_noise_rate": ratio(sum(1 for r in reviewed if r.get("duplicate_or_noise") == "no"), len(reviewed)),
+        "duplicate_or_noise_problem_rate": ratio(sum(1 for r in reviewed if r.get("duplicate_or_noise") in duplicate_problem_values), len(reviewed)),
+        "clean_record_rate": ratio(sum(1 for r in reviewed if r.get("duplicate_or_noise") == "no"), len(reviewed)),
         "rag_suitability_rate": ratio(sum(1 for r in reviewed if r.get("rag_suitability") == "accept"), len(reviewed)),
     }
     for record in reviewed:
         for field_name, value in record.items():
             if field_name in REVIEW_ENUMS and value == "uncertain":
                 uncertain += 1
-        if record.get("offence_family_review") == "corrected" or record.get("legal_regime_review") == "corrected" or record.get("court_metadata_review") == "corrected" or record.get("date_metadata_review") == "corrected":
-            correction_count += 1
-    metrics["human_correction_rate"] = ratio(correction_count, len(reviewed))
+    metrics["any_human_correction_rate"] = ratio(any_corrections, len(reviewed))
+    metrics["offence_family_correction_rate"] = ratio(offence_corrections, len(reviewed))
+    metrics["legal_regime_correction_rate"] = ratio(regime_corrections, len(reviewed))
+    metrics["court_metadata_correction_rate"] = ratio(court_corrections, len(reviewed))
+    metrics["date_metadata_correction_rate"] = ratio(date_corrections, len(reviewed))
+    metrics["label_correction_rate"] = ratio(offence_corrections + regime_corrections, len(reviewed))
     metrics["uncertainty_rate"] = ratio(uncertain, len(reviewed) * len(REVIEW_ENUMS))
+    metrics["denominator_accounting"] = {
+        "offence_family_accuracy": {
+            "reviewed": len(reviewed),
+            "included_determinate_criminal_or_rag_reviewable": len(family_determinate),
+            "excluded_rag_rejected_noncriminal_or_noise": family_excluded_rejected,
+            "excluded_uncertain_nonrejected": family_excluded_uncertain_nonrejected,
+            "policy": "Exclude RAG-rejected non-criminal/noise records and uncertain family reviews; offence family is not meaningful for rejected non-criminal noise.",
+        },
+        "legal_regime_accuracy": {
+            "reviewed": len(reviewed),
+            "included_determinate": len(regime_determinate),
+            "excluded_uncertain": len(reviewed) - len(regime_determinate),
+            "policy": "Include rejected records when regime was still determinately reviewable from the legal/source text; exclude only uncertain reviews.",
+        },
+        "court_metadata_accuracy": {
+            "reviewed": len(reviewed),
+            "included_determinate": len(court_determinate),
+            "excluded_uncertain": len(reviewed) - len(court_determinate),
+        },
+    }
     metrics["stratified"] = stratified_metrics(reviewed)
     return metrics
 
@@ -585,8 +643,14 @@ def rag_decision_record(sample: dict[str, Any]) -> dict[str, Any]:
     return {
         "source_document_id": sample.get("source_document_id"),
         "human_rag_suitability": sample.get("rag_suitability"),
+        "automated_offence_family": sample.get("offence_family_automated"),
         "effective_offence_family": effective_family,
+        "automated_legal_regime": sample.get("legal_regime_automated"),
         "effective_legal_regime": effective_regime,
+        "automated_court": sample.get("court_automated"),
+        "automated_date": sample.get("judgment_date"),
+        "automated_year": sample.get("judgment_year"),
+        "automated_decision": sample.get("automated_decision"),
         "corrected_date": sample.get("corrected_date"),
         "duplicate_of": sample.get("duplicate_of"),
         "human_review_status": sample.get("human_audit_status"),
@@ -723,11 +787,15 @@ def generate_summary_doc(summary_path: Path = SUMMARY_MANIFEST, output_path: Pat
         "- document-type precision: judgment / determinate audited records",
         "- offence-family accuracy: confirmed / determinate audited records",
         "- legal-regime accuracy: confirmed / determinate audited records",
-        "- court/date metadata accuracy: correct / determinate audited records",
+        "- court metadata accuracy: correct / determinate audited records",
+        "- exact decision-date accuracy/completeness: automated exact decision date correct / determinate audited records",
+        "- year accuracy: automated year matches human corrected exact-date year / records with both values",
         "- text usability rate: usable / reviewed records",
-        "- duplicate/noise rate: no duplicate or noise / reviewed records",
+        "- duplicate/noise problem rate: duplicate, irrelevant_noise, provider_wrapper_only, or other problem / reviewed records",
+        "- clean record rate: no duplicate or noise / reviewed records",
         "- RAG suitability rate: accept / reviewed records",
-        "- human correction rate and uncertainty rate",
+        "- any, offence-family, legal-regime, court, date, and label correction rates",
+        "- uncertainty rate",
         "",
         "The remaining 199 bulk records are unaudited/pending. These metrics describe only the reviewed stratified sample unless explicitly labeled as sample-based estimates.",
         "",
@@ -766,6 +834,13 @@ def generate_summary_doc(summary_path: Path = SUMMARY_MANIFEST, output_path: Pat
         "",
         "- Explicit corrected dates were recorded separately from provider date metadata.",
         "- 120980289 has a provider title/date mismatch; human corrected decision date is 2024-03-06.",
+        "",
+        "## Metric Exclusions",
+        "",
+        f"- Offence-family accuracy denominator: {summary['metrics']['denominator_accounting']['offence_family_accuracy']['included_determinate_criminal_or_rag_reviewable']} included; {summary['metrics']['denominator_accounting']['offence_family_accuracy']['excluded_rag_rejected_noncriminal_or_noise']} RAG-rejected non-criminal/noise records and {summary['metrics']['denominator_accounting']['offence_family_accuracy']['excluded_uncertain_nonrejected']} uncertain non-rejected records excluded.",
+        "- Legal-regime accuracy denominator includes rejected records where regime remained determinately reviewable; uncertain regime reviews would be excluded.",
+        "- Uncertain values are excluded from correctness denominators and counted in the uncertainty-rate numerator.",
+        "- Rejected/non-criminal records are included for criminal relevance, document type, legal regime, exact-date, text, duplicate/noise, and RAG suitability metrics, but excluded from offence-family accuracy because offence family is not meaningful for non-criminal/noise records.",
         "",
         "## Sample Distribution",
         "",
@@ -806,11 +881,18 @@ def metric_rows(metrics: dict[str, Any]) -> list[str]:
         ("offence_family_accuracy", "offence-family accuracy"),
         ("legal_regime_accuracy", "legal-regime accuracy"),
         ("court_metadata_accuracy", "court metadata accuracy"),
-        ("date_metadata_accuracy", "date metadata accuracy"),
+        ("exact_decision_date_accuracy_completeness", "exact decision-date accuracy/completeness"),
+        ("year_accuracy", "year accuracy"),
         ("text_usability_rate", "text usability"),
-        ("duplicate_noise_rate", "duplicate/noise clean rate"),
+        ("duplicate_or_noise_problem_rate", "duplicate/noise problem rate"),
+        ("clean_record_rate", "clean record rate"),
         ("rag_suitability_rate", "RAG suitability rate"),
-        ("human_correction_rate", "human correction rate"),
+        ("any_human_correction_rate", "any human correction rate"),
+        ("offence_family_correction_rate", "offence-family correction rate"),
+        ("legal_regime_correction_rate", "legal-regime correction rate"),
+        ("court_metadata_correction_rate", "court metadata correction rate"),
+        ("date_metadata_correction_rate", "date correction rate"),
+        ("label_correction_rate", "label correction rate"),
         ("uncertainty_rate", "uncertainty rate"),
     ]
     for key, label in labels:

@@ -264,6 +264,63 @@ class BulkQualityAuditTest(unittest.TestCase):
         self.assertEqual(summary["correction_matrices"]["legal_regime"]["unknown"]["ipc_crpc"], 1)
         self.assertEqual(summary["rag_decision_manifest"]["records"], 50)
 
+    def test_frozen_automated_values_for_known_corrections(self) -> None:
+        if not audit.SAMPLE_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit sample is not present")
+        by_id = {record["source_document_id"]: record for record in audit.load_manifest(audit.SAMPLE_MANIFEST)}
+        expected_families = {
+            "47759402": "other",
+            "199689273": "conspiracy_common_intention",
+            "176391710": "criminal_breach_of_trust",
+            "87669225": "conspiracy_common_intention",
+            "1726075": "other",
+        }
+
+        for source_id, automated_family in expected_families.items():
+            self.assertEqual(by_id[source_id]["offence_family_automated"], automated_family)
+            self.assertNotEqual(
+                by_id[source_id]["offence_family_automated"],
+                by_id[source_id]["corrected_offence_family"],
+            )
+
+    def test_reconciled_metric_semantics(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        metrics = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))["metrics"]
+
+        self.assertEqual(metrics["duplicate_or_noise_problem_rate"], {"numerator": 7, "denominator": 50, "percent": 14.0})
+        self.assertEqual(metrics["clean_record_rate"], {"numerator": 43, "denominator": 50, "percent": 86.0})
+        self.assertEqual(metrics["any_human_correction_rate"], {"numerator": 50, "denominator": 50, "percent": 100.0})
+        self.assertEqual(metrics["offence_family_correction_rate"], {"numerator": 9, "denominator": 50, "percent": 18.0})
+        self.assertEqual(metrics["legal_regime_correction_rate"], {"numerator": 2, "denominator": 50, "percent": 4.0})
+        self.assertEqual(metrics["date_metadata_correction_rate"], {"numerator": 50, "denominator": 50, "percent": 100.0})
+        self.assertEqual(metrics["label_correction_rate"], {"numerator": 11, "denominator": 50, "percent": 22.0})
+        self.assertEqual(metrics["exact_decision_date_accuracy_completeness"], {"numerator": 0, "denominator": 50, "percent": 0.0})
+        self.assertEqual(metrics["year_accuracy"], {"numerator": 49, "denominator": 50, "percent": 98.0})
+
+    def test_offence_family_denominator_accounting(self) -> None:
+        if not audit.SUMMARY_MANIFEST.exists():
+            self.skipTest("generated bulk quality audit summary is not present")
+        accounting = json.loads(audit.SUMMARY_MANIFEST.read_text(encoding="utf-8"))["metrics"]["denominator_accounting"]
+
+        self.assertEqual(accounting["offence_family_accuracy"]["reviewed"], 50)
+        self.assertEqual(accounting["offence_family_accuracy"]["included_determinate_criminal_or_rag_reviewable"], 42)
+        self.assertEqual(accounting["offence_family_accuracy"]["excluded_rag_rejected_noncriminal_or_noise"], 7)
+        self.assertEqual(accounting["offence_family_accuracy"]["excluded_uncertain_nonrejected"], 1)
+        self.assertEqual(accounting["legal_regime_accuracy"]["included_determinate"], 50)
+
+    def test_rag_decision_manifest_includes_frozen_and_effective_values(self) -> None:
+        if not audit.RAG_DECISIONS_MANIFEST.exists():
+            self.skipTest("generated RAG decisions manifest is not present")
+        decisions = {record["source_document_id"]: record for record in audit.load_manifest(audit.RAG_DECISIONS_MANIFEST)}
+
+        self.assertEqual(decisions["47759402"]["automated_offence_family"], "other")
+        self.assertEqual(decisions["47759402"]["effective_offence_family"], "sexual_offences")
+        self.assertEqual(decisions["169784101"]["automated_legal_regime"], "unknown")
+        self.assertEqual(decisions["169784101"]["effective_legal_regime"], "ipc_crpc")
+        self.assertEqual(decisions["120980289"]["automated_date"], None)
+        self.assertEqual(decisions["120980289"]["corrected_date"], "2024-03-06")
+
 
 if __name__ == "__main__":
     unittest.main()

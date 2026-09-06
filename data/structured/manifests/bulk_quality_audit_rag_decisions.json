@@ -2,8 +2,17 @@
   {
     "source_document_id": "100481688",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "bns_bnss",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Central Information Commission",
+      "court_level": "unknown"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "needs_review",
     "corrected_date": "2026-07-24",
     "duplicate_of": "27724816",
     "human_review_status": "reviewed"
@@ -11,8 +20,17 @@
   {
     "source_document_id": "100558061",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "mixed_or_transition",
     "effective_legal_regime": "mixed_or_transition",
+    "automated_court": {
+      "court_name": "Andhra Pradesh High Court - Amravati",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2025,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2025-01-06",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -20,8 +38,17 @@
   {
     "source_document_id": "102778545",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Madhya Pradesh High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2022,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2022-07-14",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -29,8 +56,17 @@
   {
     "source_document_id": "103812991",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "mixed_or_transition",
     "effective_legal_regime": "mixed_or_transition",
+    "automated_court": {
+      "court_name": "Karnataka High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2025,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2025-04-28",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -38,8 +74,17 @@
   {
     "source_document_id": "105760653",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "kidnapping",
     "effective_offence_family": "kidnapping",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Bombay High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-04-21",
     "duplicate_of": "186425747",
     "human_review_status": "reviewed"
@@ -47,8 +92,17 @@
   {
     "source_document_id": "120980289",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Madras High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "needs_review",
     "corrected_date": "2024-03-06",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -56,8 +110,17 @@
   {
     "source_document_id": "123692674",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2024-02-07",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -65,8 +128,17 @@
   {
     "source_document_id": "125041151",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "kidnapping",
     "effective_offence_family": "sexual_offences",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-04-24",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -74,8 +146,17 @@
   {
     "source_document_id": "125812430",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2016,
+    "automated_decision": "needs_review",
     "corrected_date": "2016-01-15",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -83,8 +164,17 @@
   {
     "source_document_id": "1291057",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Supreme Court of India",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 1978,
+    "automated_decision": "needs_review",
     "corrected_date": "1978-10-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -92,8 +182,17 @@
   {
     "source_document_id": "131331418",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "criminal_breach_of_trust",
     "effective_offence_family": "criminal_breach_of_trust",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Tripura High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2022,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2022-05-02",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -101,8 +200,17 @@
   {
     "source_document_id": "131426670",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "bns_bnss",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Central Information Commission",
+      "court_level": "unknown"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "needs_review",
     "corrected_date": "2026-07-24",
     "duplicate_of": "27724816",
     "human_review_status": "reviewed"
@@ -110,8 +218,17 @@
   {
     "source_document_id": "134051117",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Bombay High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2019,
+    "automated_decision": "needs_review",
     "corrected_date": "2019-07-05",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -119,8 +236,17 @@
   {
     "source_document_id": "13518275",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "criminal_breach_of_trust",
     "effective_offence_family": "criminal_breach_of_trust",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2019,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2019-07-02",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -128,8 +254,17 @@
   {
     "source_document_id": "135745358",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "cheating_and_fraud",
     "effective_offence_family": "other",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Gujarat High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2021,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2021-10-21",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -137,8 +272,17 @@
   {
     "source_document_id": "136781165",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "hurt_and_assault",
     "effective_offence_family": "hurt_and_assault",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-09-21",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -146,8 +290,17 @@
   {
     "source_document_id": "138227421",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Himachal Pradesh High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2020,
+    "automated_decision": "needs_review",
     "corrected_date": "2020-08-04",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -155,8 +308,17 @@
   {
     "source_document_id": "143670565",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2022,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2022-11-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -164,8 +326,17 @@
   {
     "source_document_id": "148244505",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "unknown",
     "effective_legal_regime": "unknown",
+    "automated_court": {
+      "court_name": "Supreme Court of India",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "needs_review",
     "corrected_date": "2023-04-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -173,8 +344,17 @@
   {
     "source_document_id": "15148168",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "mixed_or_transition",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Bombay High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2026-02-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -182,8 +362,17 @@
   {
     "source_document_id": "152313551",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "sexual_offences",
     "effective_offence_family": "sexual_offences",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Jharkhand High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2019,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2019-03-29",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -191,8 +380,17 @@
   {
     "source_document_id": "154941154",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Punjab-Haryana High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2018-04-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -200,8 +398,17 @@
   {
     "source_document_id": "161457906",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Andhra Pradesh High Court - Amravati",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-11-30",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -209,8 +416,17 @@
   {
     "source_document_id": "163450772",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "bns_bnss",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Karnataka High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "needs_review",
     "corrected_date": "2026-01-30",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -218,8 +434,17 @@
   {
     "source_document_id": "169784101",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "unknown",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Supreme Court of India",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 2021,
+    "automated_decision": "needs_review",
     "corrected_date": "2021-12-13",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -227,8 +452,17 @@
   {
     "source_document_id": "1726075",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Supreme Court of India",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 1977,
+    "automated_decision": "accept_candidate",
     "corrected_date": "1977-02-25",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -236,8 +470,17 @@
   {
     "source_document_id": "176391710",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "criminal_breach_of_trust",
     "effective_offence_family": "cheating_and_fraud",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Punjab-Haryana High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-04-11",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -245,8 +488,17 @@
   {
     "source_document_id": "176922161",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Madhya Pradesh High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2022,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2022-07-28",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -254,8 +506,17 @@
   {
     "source_document_id": "177113492",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "theft_and_robbery",
     "effective_offence_family": "theft_and_robbery",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2020,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2020-08-26",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -263,8 +524,17 @@
   {
     "source_document_id": "183406121",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "mixed_or_transition",
     "effective_legal_regime": "mixed_or_transition",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2025,
+    "automated_decision": "needs_review",
     "corrected_date": "2025-09-10",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -272,8 +542,17 @@
   {
     "source_document_id": "184937779",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "sexual_offences",
     "effective_offence_family": "sexual_offences",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Kerala High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2024-02-07",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -281,8 +560,17 @@
   {
     "source_document_id": "186425747",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "kidnapping",
     "effective_offence_family": "kidnapping",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Bombay High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-04-21",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -290,8 +578,17 @@
   {
     "source_document_id": "188935138",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "conspiracy_common_intention",
     "effective_offence_family": "conspiracy_common_intention",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2021,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2021-10-06",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -299,8 +596,17 @@
   {
     "source_document_id": "194768350",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "theft_and_robbery",
     "effective_offence_family": "theft_and_robbery",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Patna High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "needs_review",
     "corrected_date": "2024-02-09",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -308,8 +614,17 @@
   {
     "source_document_id": "199689273",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "conspiracy_common_intention",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Madhya Pradesh High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2018-05-25",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -317,8 +632,17 @@
   {
     "source_document_id": "24600150",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "conspiracy_common_intention",
     "effective_offence_family": "conspiracy_common_intention",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Punjab-Haryana High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2018-08-31",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -326,8 +650,17 @@
   {
     "source_document_id": "27724816",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "other",
     "effective_offence_family": "other",
+    "automated_legal_regime": "bns_bnss",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Central Information Commission",
+      "court_level": "unknown"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "needs_review",
     "corrected_date": "2026-07-24",
     "duplicate_of": "100481688",
     "human_review_status": "reviewed"
@@ -335,8 +668,17 @@
   {
     "source_document_id": "30754679",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "homicide",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Andhra Pradesh High Court - Amravati",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-04-20",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -344,8 +686,17 @@
   {
     "source_document_id": "3493537",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "unknown",
     "effective_legal_regime": "unknown",
+    "automated_court": {
+      "court_name": "Supreme Court of India",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "needs_review",
     "corrected_date": "2023-09-22",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -353,8 +704,17 @@
   {
     "source_document_id": "36195540",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Madhya Pradesh High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2023-03-17",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -362,8 +722,17 @@
   {
     "source_document_id": "40368737",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2021,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2021-12-13",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -371,8 +740,17 @@
   {
     "source_document_id": "47759402",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "sexual_offences",
+    "automated_legal_regime": "mixed_or_transition",
     "effective_legal_regime": "mixed_or_transition",
+    "automated_court": {
+      "court_name": "Karnataka High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2024-09-30",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -380,8 +758,17 @@
   {
     "source_document_id": "70072092",
     "human_rag_suitability": "reject",
+    "automated_offence_family": "theft_and_robbery",
     "effective_offence_family": "theft_and_robbery",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Patna High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "needs_review",
     "corrected_date": "2024-02-09",
     "duplicate_of": "194768350",
     "human_review_status": "reviewed"
@@ -389,8 +776,17 @@
   {
     "source_document_id": "73295342",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "cheating_and_fraud",
     "effective_offence_family": "cheating_and_fraud",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Delhi District Court",
+      "court_level": "district_or_sessions"
+    },
+    "automated_date": null,
+    "automated_year": 2023,
+    "automated_decision": "needs_review",
     "corrected_date": "2023-09-12",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -398,8 +794,17 @@
   {
     "source_document_id": "76377526",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "homicide",
     "effective_offence_family": "hurt_and_assault",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2024,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2024-05-17",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -407,8 +812,17 @@
   {
     "source_document_id": "82858547",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "hurt_and_assault",
     "effective_offence_family": "hurt_and_assault",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2019,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2019-10-30",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -416,8 +830,17 @@
   {
     "source_document_id": "87669225",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "conspiracy_common_intention",
     "effective_offence_family": "cheating_and_fraud",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Allahabad High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2019,
+    "automated_decision": "accept_candidate",
     "corrected_date": "2019-12-11",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -425,8 +848,17 @@
   {
     "source_document_id": "87917455",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "other",
     "effective_offence_family": "cheating_and_fraud",
+    "automated_legal_regime": "bns_bnss",
     "effective_legal_regime": "bns_bnss",
+    "automated_court": {
+      "court_name": "Supreme Court - Daily Orders",
+      "court_level": "supreme_court"
+    },
+    "automated_date": null,
+    "automated_year": 2026,
+    "automated_decision": "needs_review",
     "corrected_date": "2026-02-11",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -434,8 +866,17 @@
   {
     "source_document_id": "88370417",
     "human_rag_suitability": "needs_review",
+    "automated_offence_family": "narcotics_related",
     "effective_offence_family": "narcotics_related",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Punjab-Haryana High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "needs_review",
     "corrected_date": "2018-08-09",
     "duplicate_of": null,
     "human_review_status": "reviewed"
@@ -443,8 +884,17 @@
   {
     "source_document_id": "8854101",
     "human_rag_suitability": "accept",
+    "automated_offence_family": "dowry_and_domestic_cruelty",
     "effective_offence_family": "dowry_and_domestic_cruelty",
+    "automated_legal_regime": "ipc_crpc",
     "effective_legal_regime": "ipc_crpc",
+    "automated_court": {
+      "court_name": "Punjab-Haryana High Court",
+      "court_level": "high_court"
+    },
+    "automated_date": null,
+    "automated_year": 2018,
+    "automated_decision": "needs_review",
     "corrected_date": "2018-01-23",
     "duplicate_of": null,
     "human_review_status": "reviewed"

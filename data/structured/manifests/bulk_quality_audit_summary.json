@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T18:45:48.439950+00:00",
+  "generated_at": "2026-09-06T18:54:43.689830+00:00",
   "run_id": "bulk_20260904_000000_stagea",
   "corpus_size": 249,
   "sample_size": 50,
@@ -159,17 +159,27 @@
       "denominator": 47,
       "percent": 100.0
     },
-    "date_metadata_accuracy": {
+    "exact_decision_date_accuracy_completeness": {
       "numerator": 0,
       "denominator": 50,
       "percent": 0.0
+    },
+    "year_accuracy": {
+      "numerator": 49,
+      "denominator": 50,
+      "percent": 98.0
     },
     "text_usability_rate": {
       "numerator": 50,
       "denominator": 50,
       "percent": 100.0
     },
-    "duplicate_noise_rate": {
+    "duplicate_or_noise_problem_rate": {
+      "numerator": 7,
+      "denominator": 50,
+      "percent": 14.0
+    },
+    "clean_record_rate": {
       "numerator": 43,
       "denominator": 50,
       "percent": 86.0
@@ -179,15 +189,60 @@
       "denominator": 50,
       "percent": 84.0
     },
-    "human_correction_rate": {
+    "any_human_correction_rate": {
       "numerator": 50,
       "denominator": 50,
       "percent": 100.0
+    },
+    "offence_family_correction_rate": {
+      "numerator": 9,
+      "denominator": 50,
+      "percent": 18.0
+    },
+    "legal_regime_correction_rate": {
+      "numerator": 2,
+      "denominator": 50,
+      "percent": 4.0
+    },
+    "court_metadata_correction_rate": {
+      "numerator": 0,
+      "denominator": 50,
+      "percent": 0.0
+    },
+    "date_metadata_correction_rate": {
+      "numerator": 50,
+      "denominator": 50,
+      "percent": 100.0
+    },
+    "label_correction_rate": {
+      "numerator": 11,
+      "denominator": 50,
+      "percent": 22.0
     },
     "uncertainty_rate": {
       "numerator": 11,
       "denominator": 450,
       "percent": 2.44
+    },
+    "denominator_accounting": {
+      "offence_family_accuracy": {
+        "reviewed": 50,
+        "included_determinate_criminal_or_rag_reviewable": 42,
+        "excluded_rag_rejected_noncriminal_or_noise": 7,
+        "excluded_uncertain_nonrejected": 1,
+        "policy": "Exclude RAG-rejected non-criminal/noise records and uncertain family reviews; offence family is not meaningful for rejected non-criminal noise."
+      },
+      "legal_regime_accuracy": {
+        "reviewed": 50,
+        "included_determinate": 50,
+        "excluded_uncertain": 0,
+        "policy": "Include rejected records when regime was still determinately reviewable from the legal/source text; exclude only uncertain reviews."
+      },
+      "court_metadata_accuracy": {
+        "reviewed": 50,
+        "included_determinate": 47,
+        "excluded_uncertain": 3
+      }
     },
     "stratified": {
       "offence_family": {
