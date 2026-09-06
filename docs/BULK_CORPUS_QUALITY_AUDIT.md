@@ -2,7 +2,7 @@
 
 Run ID: `bulk_20260904_000000_stagea`
 
-Status: pending human audit.
+Status: completed human audit for the 50-record stratified sample.
 
 Corpus size: 249
 Sample target: 50
@@ -30,7 +30,81 @@ criminal_relevance, document_type, offence_family_review, legal_regime_review, c
 - RAG suitability rate: accept / reviewed records
 - human correction rate and uncertainty rate
 
-Initial metrics are pending/not_available until explicit human decisions are applied.
+The remaining 199 bulk records are unaudited/pending. These metrics describe only the reviewed stratified sample unless explicitly labeled as sample-based estimates.
+
+## Human Decision Totals
+
+- reviewed: 50 / 50
+- pending sample records: 0
+- RAG accept: 42
+- RAG reject: 7
+- RAG needs_review: 1
+
+## Measured Metrics
+
+| Metric | Numerator | Denominator | Percentage |
+| --- | ---: | ---: | ---: |
+| criminal relevance precision | 43 | 50 | 86.0 |
+| document type precision | 47 | 50 | 94.0 |
+| offence-family accuracy | 33 | 42 | 78.57 |
+| legal-regime accuracy | 48 | 50 | 96.0 |
+| court metadata accuracy | 47 | 47 | 100.0 |
+| date metadata accuracy | 0 | 50 | 0.0 |
+| text usability | 50 | 50 | 100.0 |
+| duplicate/noise clean rate | 43 | 50 | 86.0 |
+| RAG suitability rate | 42 | 50 | 84.0 |
+| human correction rate | 50 | 50 | 100.0 |
+| uncertainty rate | 11 | 450 | 2.44 |
+
+## Correction Matrices
+
+### Offence Family
+
+| Automated | Human | Count |
+| --- | --- | ---: |
+| cheating_and_fraud | cheating_and_fraud | 1 |
+| cheating_and_fraud | other | 1 |
+| conspiracy_common_intention | cheating_and_fraud | 1 |
+| conspiracy_common_intention | conspiracy_common_intention | 2 |
+| conspiracy_common_intention | homicide | 1 |
+| criminal_breach_of_trust | cheating_and_fraud | 1 |
+| criminal_breach_of_trust | criminal_breach_of_trust | 2 |
+| dowry_and_domestic_cruelty | dowry_and_domestic_cruelty | 5 |
+| homicide | homicide | 5 |
+| homicide | hurt_and_assault | 1 |
+| hurt_and_assault | hurt_and_assault | 2 |
+| kidnapping | kidnapping | 1 |
+| kidnapping | sexual_offences | 1 |
+| narcotics_related | narcotics_related | 5 |
+| other | cheating_and_fraud | 1 |
+| other | homicide | 1 |
+| other | other | 6 |
+| other | sexual_offences | 1 |
+| sexual_offences | sexual_offences | 2 |
+| theft_and_robbery | theft_and_robbery | 2 |
+
+### Legal Regime
+
+| Automated | Human | Count |
+| --- | --- | ---: |
+| bns_bnss | bns_bnss | 5 |
+| ipc_crpc | ipc_crpc | 37 |
+| mixed_or_transition | bns_bnss | 1 |
+| mixed_or_transition | mixed_or_transition | 4 |
+| unknown | ipc_crpc | 1 |
+| unknown | unknown | 2 |
+
+## Duplicate And Noise Findings
+
+- CIC RTI/noise cluster rejected: 27724816, 100481688, 131426670
+- Patna duplicate pair: retained 194768350, rejected duplicate 70072092
+- Bombay duplicate pair: retained 186425747, rejected duplicate 105760653
+- Other non-criminal/noise rejections: 125812430, 120980289
+
+## Date Metadata Findings
+
+- Explicit corrected dates were recorded separately from provider date metadata.
+- 120980289 has a provider title/date mismatch; human corrected decision date is 2024-03-06.
 
 ## Sample Distribution
 
