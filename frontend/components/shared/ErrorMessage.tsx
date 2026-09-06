@@ -1,7 +1,5 @@
 'use client';
 
-import type { KeyboardEvent } from 'react';
-
 import { ErrorIcon, RetryIcon } from './shared-icons';
 
 export interface ErrorMessageProps {
@@ -17,15 +15,6 @@ const variantClasses = {
   banner: 'p-4 sm:flex sm:items-start sm:gap-3',
   fullpage: 'mx-auto flex min-h-64 max-w-2xl flex-col justify-center p-6 sm:p-8',
 } as const;
-
-function activateTechnicalDetails(event: KeyboardEvent<HTMLElement>) {
-  if (event.key !== 'Enter' && event.key !== ' ' && event.code !== 'Space') {
-    return;
-  }
-
-  event.preventDefault();
-  event.currentTarget.click();
-}
 
 export function ErrorMessage({
   title,
@@ -50,10 +39,7 @@ export function ErrorMessage({
 
           {technicalDetail ? (
             <details className="mt-3 text-sm">
-              <summary
-                className="w-fit cursor-pointer font-medium text-[var(--color-error-foreground)]"
-                onKeyDown={activateTechnicalDetails}
-              >
+              <summary className="w-fit cursor-pointer font-medium text-[var(--color-error-foreground)]">
                 Technical details
               </summary>
               <p className="mt-2 rounded-[var(--radius-compact)] bg-[var(--color-surface-raised)] p-3 text-[var(--color-body)]">

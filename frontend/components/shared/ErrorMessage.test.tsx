@@ -7,7 +7,7 @@ import { ErrorMessage } from './ErrorMessage';
 describe('ErrorMessage', () => {
   afterEach(cleanup);
 
-  it('opens technical detail and calls Retry from the keyboard', async () => {
+  it('reveals native technical detail on click and calls Retry from the keyboard', async () => {
     const retry = vi.fn();
     const user = userEvent.setup();
 
@@ -27,11 +27,12 @@ describe('ErrorMessage', () => {
     const retryButton = screen.getByRole('button', { name: 'Retry' });
 
     expect(technicalDetail).not.toBeVisible();
+    expect(details).toBeInstanceOf(HTMLDetailsElement);
+    expect(disclosure.tagName).toBe('SUMMARY');
+    expect(details).toContainElement(disclosure);
     expect(details).not.toHaveAttribute('open');
 
-    await user.tab();
-    expect(disclosure).toHaveFocus();
-    await user.keyboard('[Space]');
+    await user.click(disclosure);
 
     expect(details).toHaveAttribute('open');
     expect(technicalDetail).toBeVisible();
