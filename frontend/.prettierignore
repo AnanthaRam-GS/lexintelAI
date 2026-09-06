@@ -1,0 +1,6 @@
+.next
+coverage
+node_modules
+app/dev/PHASE1_IMPLEMENTATION_PLAN.md
+next-env.d.ts
+package-lock.json

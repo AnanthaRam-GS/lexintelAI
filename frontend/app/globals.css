@@ -1,0 +1,141 @@
+/*
+ * LegalAI design tokens
+ * Palette tokens own light-theme colors. Typography tokens own the display and
+ * UI font families plus semantic size/line-height pairs. Geometry, elevation,
+ * and motion tokens keep components visually consistent and leave markup ready
+ * for a future dark theme.
+ */
+@config "../tailwind.config.ts";
+@import 'tailwindcss';
+
+:root {
+  /* Palette: paper surfaces, editorial ink, and restrained brass actions. */
+  --color-canvas: #f7f3eb;
+  --color-surface: #fffdf8;
+  --color-surface-raised: #ffffff;
+  --color-surface-subtle: #efe9dc;
+  --color-ink: #0b294d;
+  --color-body: #1d2b3c;
+  --color-muted: #606c7c;
+  --color-inverse: #ffffff;
+  --color-border: #d7d0c2;
+  --color-brass: #a06824;
+  --color-brass-hover: #8b591f;
+  --color-brass-active: #704617;
+  --color-focus: #1f67b1;
+
+  /* Feedback: each status owns foreground, surface, and border roles. */
+  --color-success: #237b53;
+  --color-success-foreground: #155437;
+  --color-success-surface: #e8f4ec;
+  --color-success-border: #9acdad;
+  --color-warning: #a56416;
+  --color-warning-foreground: #75440d;
+  --color-warning-surface: #fbf0dc;
+  --color-warning-border: #e7bd75;
+  --color-error: #ad4339;
+  --color-error-foreground: #7c2e28;
+  --color-error-surface: #fae9e7;
+  --color-error-border: #e6aaa5;
+  --color-info: #1f67b1;
+  --color-info-foreground: #174d85;
+  --color-info-surface: #e8f1fa;
+  --color-info-border: #9fc0e1;
+
+  /* Typography: next/font owns families; these pairs own the complete type scale. */
+  --font-size-heading-sm: 1.125rem;
+  --line-height-heading-sm: 1.75rem;
+  --font-size-heading-md: 1.25rem;
+  --line-height-heading-md: 1.75rem;
+  --font-size-heading-lg: 1.5rem;
+  --line-height-heading-lg: 2rem;
+  --font-size-heading-xl: 1.875rem;
+  --line-height-heading-xl: 2.25rem;
+  --font-size-heading-2xl: 2.25rem;
+  --line-height-heading-2xl: 2.5rem;
+  --font-size-body: 1rem;
+  --line-height-body: 1.5rem;
+  --line-height-body-relaxed: 1.75rem;
+  --font-size-body-sm: 0.875rem;
+  --line-height-body-sm: 1.25rem;
+  --line-height-body-sm-relaxed: 1.5rem;
+  --font-size-body-lg: 1.125rem;
+  --line-height-body-lg: 2rem;
+  --font-size-label: 0.875rem;
+  --line-height-label: 1.25rem;
+  --font-size-caption: 0.75rem;
+  --line-height-caption: 1rem;
+  --font-size-control: 1rem;
+  --line-height-control: 1.5rem;
+  --font-size-control-compact: 0.875rem;
+  --line-height-control-compact: 1.25rem;
+
+  /* Geometry and elevation: compact internal corners and shared elevation. */
+  --radius-compact: 0.375rem;
+  --radius-standard: 0.625rem;
+  --border-hairline: 1px;
+  --size-ingestion-status: 5.25rem;
+  --shadow-component: 0 0.5rem 1.5rem rgb(11 41 77 / 0.08);
+  --shadow-overlay: 0 1rem 3rem rgb(11 41 77 / 0.16);
+
+  /* Motion: short, restrained transitions with an accessible override below. */
+  --motion-fast: 150ms;
+  --motion-standard: 220ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-canvas);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-body);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  text-rendering: optimizeLegibility;
+}
+
+@layer base {
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-ui);
+    font-size: var(--font-size-control);
+    line-height: var(--line-height-control);
+  }
+}
+
+button,
+[role='button'] {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-inverse);
+}
+
+:focus-visible {
+  outline: 0.1875rem solid var(--color-focus);
+  outline-offset: 0.1875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
