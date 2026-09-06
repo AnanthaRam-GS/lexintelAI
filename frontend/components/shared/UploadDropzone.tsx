@@ -118,7 +118,7 @@ export function UploadDropzone({
           PDF files up to {maxSizeMB} MB{multiple ? ' each' : ''}.
         </p>
         <button
-          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 text-sm font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 text-sm font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
           disabled={disabled}
           onClick={() => inputRef.current?.click()}
           type="button"
@@ -162,7 +162,7 @@ export function UploadDropzone({
               </div>
               <button
                 aria-label={`Remove ${file.name}`}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--radius-compact)] text-[var(--color-body)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--radius-compact)] text-[var(--color-body)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={disabled}
                 onClick={() => removeFile(file)}
                 type="button"

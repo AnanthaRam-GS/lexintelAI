@@ -56,6 +56,26 @@ describe('UploadDropzone', () => {
     expect(screen.getByText('second.pdf')).toBeVisible();
   });
 
+  it('gives browse and remove controls a tokenized visible-focus treatment', async () => {
+    const user = userEvent.setup();
+    const pdf = new File(['judgment'], 'judgment.pdf', { type: 'application/pdf' });
+
+    render(<UploadDropzone onFilesSelected={() => undefined} />);
+
+    await user.upload(screen.getByLabelText('Choose PDF files'), pdf);
+
+    [
+      screen.getByRole('button', { name: 'Browse files' }),
+      screen.getByRole('button', { name: 'Remove judgment.pdf' }),
+    ].forEach((control) => {
+      expect(control).toHaveClass(
+        'focus-visible:outline-[0.1875rem]',
+        'focus-visible:outline-[var(--color-focus)]',
+        'focus-visible:outline-offset-[0.1875rem]',
+      );
+    });
+  });
+
   it('uses drag depth to keep the drop state visible until the final leave', () => {
     render(<UploadDropzone onFilesSelected={vi.fn()} />);
 
