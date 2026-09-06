@@ -62,3 +62,41 @@ cd frontend && npm run build
 ## Concerns
 
 - `next build` emits existing environment/configuration warnings about a package lock outside the Git root and an untyped Tailwind config package. The build still exited successfully; these warnings are outside the ResponseCard scope.
+
+## Fix Round 1
+
+### RED
+
+Command:
+
+```bash
+cd frontend && npm run test:run -- ResponseCard.test.tsx
+```
+
+Result: 1 of 6 tests failed as expected. Rendering two professional and two public cards produced only 6 unique `aria-labelledby` IDs for 12 labelled regions (`expected 6 to be 12`), proving the static IDs collided across instances. The strengthened citation test covered no metadata, court-only metadata, and year-only metadata and checks the whole citation for separator characters.
+
+### GREEN and final verification
+
+```bash
+cd frontend && npm run test:run -- ResponseCard.test.tsx
+# 1 file passed, 6 tests passed
+
+cd frontend && npm run test:run
+# 6 files passed, 29 tests passed
+
+cd frontend && npm run lint
+# exit 0, no warnings
+
+cd frontend && npm run format:check
+# all matched files use Prettier code style
+
+cd frontend && npm run build
+# optimized production build compiled successfully
+```
+
+### Fix Round 1 self-review
+
+- `ResponseCard` calls React `useId()` once per instance and threads its stable value to every internal labelled region in both mode branches.
+- The multi-card regression verifies all twelve heading IDs are unique and every `aria-labelledby` resolves to a heading contained by its own card.
+- Citation punctuation checks no longer rely on the final text node: absent, court-only, and year-only metadata are each checked across their complete citation list item.
+- The deferred NaN-confidence concern was not changed in this round.

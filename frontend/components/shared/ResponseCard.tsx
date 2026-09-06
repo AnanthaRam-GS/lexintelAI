@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import type { Citation, ResponseCardProps } from './response-types';
 
 export type { AnswerContent, Citation, LegalSection, ResponseCardProps } from './response-types';
@@ -20,7 +22,12 @@ function CitationMetadata({ citation }: { citation: Citation }) {
   ) : null;
 }
 
-function ProfessionalResponse({ content, citations, sections }: Omit<ResponseCardProps, 'mode'>) {
+function ProfessionalResponse({
+  content,
+  citations,
+  sections,
+  headingId,
+}: Omit<ResponseCardProps, 'mode'> & { headingId: string }) {
   return (
     <article
       aria-label="Professional legal research response"
@@ -44,10 +51,10 @@ function ProfessionalResponse({ content, citations, sections }: Omit<ResponseCar
           ))}
 
           {content.keyPoints?.length ? (
-            <section aria-labelledby="professional-key-points" className="pt-1">
+            <section aria-labelledby={`${headingId}-key-points`} className="pt-1">
               <h3
                 className="font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--color-ink)]"
-                id="professional-key-points"
+                id={`${headingId}-key-points`}
               >
                 Key points
               </h3>
@@ -62,10 +69,10 @@ function ProfessionalResponse({ content, citations, sections }: Omit<ResponseCar
 
         <aside aria-label="Legal provisions and sources" className="space-y-5">
           {sections.length > 0 ? (
-            <section aria-labelledby="professional-provisions">
+            <section aria-labelledby={`${headingId}-provisions`}>
               <h3
                 className="font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--color-ink)]"
-                id="professional-provisions"
+                id={`${headingId}-provisions`}
               >
                 Legal provisions
               </h3>
@@ -106,10 +113,10 @@ function ProfessionalResponse({ content, citations, sections }: Omit<ResponseCar
           ) : null}
 
           {citations.length > 0 ? (
-            <section aria-labelledby="professional-citations">
+            <section aria-labelledby={`${headingId}-citations`}>
               <h3
                 className="font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--color-ink)]"
-                id="professional-citations"
+                id={`${headingId}-citations`}
               >
                 Authorities cited
               </h3>
@@ -147,7 +154,12 @@ function ProfessionalResponse({ content, citations, sections }: Omit<ResponseCar
   );
 }
 
-function PublicResponse({ content, citations, sections }: Omit<ResponseCardProps, 'mode'>) {
+function PublicResponse({
+  content,
+  citations,
+  sections,
+  headingId,
+}: Omit<ResponseCardProps, 'mode'> & { headingId: string }) {
   return (
     <article
       aria-label="Plain-language legal information"
@@ -169,12 +181,12 @@ function PublicResponse({ content, citations, sections }: Omit<ResponseCardProps
 
         {content.keyPoints?.length ? (
           <section
-            aria-labelledby="public-key-points"
+            aria-labelledby={`${headingId}-key-points`}
             className="rounded-[var(--radius-compact)] bg-[var(--color-surface-subtle)] p-4 sm:p-5"
           >
             <h3
               className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-ink)]"
-              id="public-key-points"
+              id={`${headingId}-key-points`}
             >
               What you can do
             </h3>
@@ -194,10 +206,10 @@ function PublicResponse({ content, citations, sections }: Omit<ResponseCardProps
       </section>
 
       {sections.length > 0 ? (
-        <section aria-labelledby="public-provisions" className="mt-8">
+        <section aria-labelledby={`${headingId}-provisions`} className="mt-8">
           <h3
             className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-ink)]"
-            id="public-provisions"
+            id={`${headingId}-provisions`}
           >
             Related law
           </h3>
@@ -228,10 +240,10 @@ function PublicResponse({ content, citations, sections }: Omit<ResponseCardProps
       ) : null}
 
       {citations.length > 0 ? (
-        <section aria-labelledby="public-sources" className="mt-8">
+        <section aria-labelledby={`${headingId}-sources`} className="mt-8">
           <h3
             className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-ink)]"
-            id="public-sources"
+            id={`${headingId}-sources`}
           >
             Sources
           </h3>
@@ -265,9 +277,12 @@ function ResponseFooter() {
 }
 
 export function ResponseCard(props: ResponseCardProps) {
-  return props.mode === 'professional' ? (
-    <ProfessionalResponse {...props} />
+  const headingId = useId();
+  const { mode, ...responseProps } = props;
+
+  return mode === 'professional' ? (
+    <ProfessionalResponse {...responseProps} headingId={headingId} />
   ) : (
-    <PublicResponse {...props} />
+    <PublicResponse {...responseProps} headingId={headingId} />
   );
 }

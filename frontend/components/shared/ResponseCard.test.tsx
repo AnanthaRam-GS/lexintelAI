@@ -90,13 +90,23 @@ describe('ResponseCard', () => {
     });
   });
 
-  it('omits absent citation metadata without punctuation artifacts', () => {
+  it('keeps absent and partial citation metadata free from separator artifacts', () => {
     render(
       <ResponseCard
         citations={[
           {
-            title: 'A plain citation',
+            title: 'Plain citation',
             sourceUrl: 'https://example.com/plain-citation',
+          },
+          {
+            title: 'Court only citation',
+            court: 'High Court of Delhi',
+            sourceUrl: 'https://example.com/court-only-citation',
+          },
+          {
+            title: 'Year only citation',
+            year: 2024,
+            sourceUrl: 'https://example.com/year-only-citation',
           },
         ]}
         content={content}
@@ -105,10 +115,54 @@ describe('ResponseCard', () => {
       />,
     );
 
-    const citation = screen.getByText('A plain citation').closest('li');
+    const plainCitation = screen.getByText('Plain citation').closest('li');
+    const courtOnlyCitation = screen.getByText('Court only citation').closest('li');
+    const yearOnlyCitation = screen.getByText('Year only citation').closest('li');
 
-    expect(citation).toHaveTextContent('A plain citation');
-    expect(citation).not.toHaveTextContent(/[,|·–—]$/);
+    expect(plainCitation).toHaveTextContent('Plain citation');
+    expect(plainCitation).not.toHaveTextContent(/[·,|–—]/);
+    expect(courtOnlyCitation).toHaveTextContent('High Court of Delhi');
+    expect(courtOnlyCitation).not.toHaveTextContent(/[·,|–—]/);
+    expect(yearOnlyCitation).toHaveTextContent('2024');
+    expect(yearOnlyCitation).not.toHaveTextContent(/[·,|–—]/);
+  });
+
+  it('keeps every labelled region tied to a unique heading in its own card', () => {
+    render(
+      <>
+        <ResponseCard
+          citations={citations}
+          content={content}
+          mode="professional"
+          sections={sections}
+        />
+        <ResponseCard
+          citations={citations}
+          content={content}
+          mode="professional"
+          sections={sections}
+        />
+        <ResponseCard citations={citations} content={content} mode="public" sections={sections} />
+        <ResponseCard citations={citations} content={content} mode="public" sections={sections} />
+      </>,
+    );
+
+    const cards = [
+      ...screen.getAllByLabelText('Professional legal research response'),
+      ...screen.getAllByLabelText('Plain-language legal information'),
+    ];
+    const labelledRegions = cards.flatMap((card) =>
+      Array.from(card.querySelectorAll<HTMLElement>('[aria-labelledby]')),
+    );
+    const headingIds = labelledRegions.map((region) => region.getAttribute('aria-labelledby'));
+
+    expect(new Set(headingIds).size).toBe(headingIds.length);
+    labelledRegions.forEach((region) => {
+      const heading = document.getElementById(region.getAttribute('aria-labelledby') ?? '');
+
+      expect(heading).not.toBeNull();
+      expect(region.closest('article')).toContainElement(heading);
+    });
   });
 
   it('renders response paragraphs as text instead of raw HTML', () => {
