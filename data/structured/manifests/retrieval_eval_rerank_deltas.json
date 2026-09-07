@@ -1,0 +1,2769 @@
+{
+  "per_query": {
+    "eval-q001": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:156271048:chunk:0010",
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:189001274:chunk:0010"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:15834217:chunk:0003",
+        "indian_kanoon:199957261:chunk:0009",
+        "indian_kanoon:30754679:chunk:0002"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:179828917:chunk:0048"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:15834217:chunk:0003",
+        "indian_kanoon:199957261:chunk:0009"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.087806,
+      "strict_precision_at_5_delta": -0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:123692674:chunk:0009",
+          "hybrid_rank": 8,
+          "rerank_rank": 7,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:123692674:chunk:0011",
+          "hybrid_rank": 14,
+          "rerank_rank": 13,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0009",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:15834217:chunk:0003",
+          "hybrid_rank": 5,
+          "rerank_rank": 8,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:176922161:chunk:0011",
+          "hybrid_rank": 9,
+          "rerank_rank": 10,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0048",
+          "hybrid_rank": 11,
+          "rerank_rank": 3,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0010",
+          "hybrid_rank": 6,
+          "rerank_rank": 5,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:199957261:chunk:0007",
+          "hybrid_rank": 7,
+          "rerank_rank": 14,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:199957261:chunk:0009",
+          "hybrid_rank": 4,
+          "rerank_rank": 15,
+          "delta": -11
+        },
+        {
+          "chunk_id": "indian_kanoon:30754679:chunk:0002",
+          "hybrid_rank": 3,
+          "rerank_rank": 6,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:31029978:chunk:0024",
+          "hybrid_rank": 2,
+          "rerank_rank": 4,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:76377526:chunk:0014",
+          "hybrid_rank": 13,
+          "rerank_rank": 9,
+          "delta": 4
+        }
+      ]
+    },
+    "eval-q002": {
+      "status": "reranker_neutral",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:36195540:chunk:0003"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:83401027:chunk:0001"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:36195540:chunk:0003"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:83401027:chunk:0001"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.0,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0003",
+          "hybrid_rank": 9,
+          "rerank_rank": 1,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0004",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0002",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0003",
+          "hybrid_rank": 7,
+          "rerank_rank": 4,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0004",
+          "hybrid_rank": 5,
+          "rerank_rank": 5,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0007",
+          "hybrid_rank": 13,
+          "rerank_rank": 9,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0008",
+          "hybrid_rank": 12,
+          "rerank_rank": 15,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0005",
+          "hybrid_rank": 3,
+          "rerank_rank": 10,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0006",
+          "hybrid_rank": 11,
+          "rerank_rank": 8,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0001",
+          "hybrid_rank": 2,
+          "rerank_rank": 12,
+          "delta": -10
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0002",
+          "hybrid_rank": 8,
+          "rerank_rank": 7,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0003",
+          "hybrid_rank": 6,
+          "rerank_rank": 6,
+          "delta": 0
+        }
+      ]
+    },
+    "eval-q003": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.062587,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0005",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0007",
+          "hybrid_rank": 7,
+          "rerank_rank": 9,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0012",
+          "hybrid_rank": 12,
+          "rerank_rank": 8,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0005",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0006",
+          "hybrid_rank": 5,
+          "rerank_rank": 5,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0007",
+          "hybrid_rank": 10,
+          "rerank_rank": 10,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0008",
+          "hybrid_rank": 11,
+          "rerank_rank": 15,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0010",
+          "hybrid_rank": 3,
+          "rerank_rank": 3,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:31369863:chunk:0007",
+          "hybrid_rank": 13,
+          "rerank_rank": 13,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0002",
+          "hybrid_rank": 6,
+          "rerank_rank": 6,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0003",
+          "hybrid_rank": 4,
+          "rerank_rank": 4,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0004",
+          "hybrid_rank": 9,
+          "rerank_rank": 7,
+          "delta": 2
+        }
+      ]
+    },
+    "eval-q004": {
+      "status": "reranker_neutral",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:177113492:chunk:0000"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:177113492:chunk:0003"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:177113492:chunk:0000"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:177113492:chunk:0003"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.0,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:136492342:chunk:0001",
+          "hybrid_rank": 8,
+          "rerank_rank": 13,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0001",
+          "hybrid_rank": 14,
+          "rerank_rank": 10,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0022",
+          "hybrid_rank": 6,
+          "rerank_rank": 7,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0034",
+          "hybrid_rank": 15,
+          "rerank_rank": 15,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0046",
+          "hybrid_rank": 12,
+          "rerank_rank": 14,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0047",
+          "hybrid_rank": 10,
+          "rerank_rank": 12,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0000",
+          "hybrid_rank": 9,
+          "rerank_rank": 5,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0001",
+          "hybrid_rank": 11,
+          "rerank_rank": 8,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0002",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0003",
+          "hybrid_rank": 4,
+          "rerank_rank": 6,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0004",
+          "hybrid_rank": 5,
+          "rerank_rank": 3,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0005",
+          "hybrid_rank": 3,
+          "rerank_rank": 2,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0006",
+          "hybrid_rank": 2,
+          "rerank_rank": 4,
+          "delta": -2
+        }
+      ]
+    },
+    "eval-q005": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:125041151:chunk:0001",
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:179828917:chunk:0067",
+        "indian_kanoon:47759402:chunk:0001"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:179828917:chunk:0033",
+        "indian_kanoon:184937779:chunk:0010",
+        "indian_kanoon:31029978:chunk:0001",
+        "indian_kanoon:31029978:chunk:0009"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:125041151:chunk:0001",
+        "indian_kanoon:179828917:chunk:0048"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:179828917:chunk:0033",
+        "indian_kanoon:31029978:chunk:0001",
+        "indian_kanoon:31029978:chunk:0009"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.106993,
+      "strict_precision_at_5_delta": -0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0001",
+          "hybrid_rank": 8,
+          "rerank_rank": 4,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0010",
+          "hybrid_rank": 6,
+          "rerank_rank": 6,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0003",
+          "hybrid_rank": 10,
+          "rerank_rank": 14,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0047",
+          "hybrid_rank": 14,
+          "rerank_rank": 15,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0033",
+          "hybrid_rank": 2,
+          "rerank_rank": 9,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0067",
+          "hybrid_rank": 15,
+          "rerank_rank": 3,
+          "delta": 12
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0010",
+          "hybrid_rank": 3,
+          "rerank_rank": 7,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:31029978:chunk:0001",
+          "hybrid_rank": 4,
+          "rerank_rank": 10,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:31029978:chunk:0009",
+          "hybrid_rank": 5,
+          "rerank_rank": 12,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:31029978:chunk:0024",
+          "hybrid_rank": 1,
+          "rerank_rank": 5,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0001",
+          "hybrid_rank": 11,
+          "rerank_rank": 2,
+          "delta": 9
+        },
+        {
+          "chunk_id": "indian_kanoon:77330685:chunk:0004",
+          "hybrid_rank": 12,
+          "rerank_rank": 11,
+          "delta": 1
+        }
+      ]
+    },
+    "eval-q006": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:189001274:chunk:0031"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:173395727:chunk:0049",
+        "indian_kanoon:199689273:chunk:0006"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:189001274:chunk:0031"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:173395727:chunk:0049",
+        "indian_kanoon:199689273:chunk:0006"
+      ],
+      "broad_precision_at_5_delta": -0.2,
+      "graded_ndcg_at_5_delta": -0.131205,
+      "strict_precision_at_5_delta": -0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0007",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0008",
+          "hybrid_rank": 10,
+          "rerank_rank": 14,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0047",
+          "hybrid_rank": 12,
+          "rerank_rank": 5,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0048",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0049",
+          "hybrid_rank": 5,
+          "rerank_rank": 8,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0053",
+          "hybrid_rank": 3,
+          "rerank_rank": 2,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0010",
+          "hybrid_rank": 13,
+          "rerank_rank": 6,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0031",
+          "hybrid_rank": 6,
+          "rerank_rank": 4,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0032",
+          "hybrid_rank": 9,
+          "rerank_rank": 7,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0033",
+          "hybrid_rank": 8,
+          "rerank_rank": 15,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0004",
+          "hybrid_rank": 11,
+          "rerank_rank": 9,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0005",
+          "hybrid_rank": 7,
+          "rerank_rank": 12,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0006",
+          "hybrid_rank": 2,
+          "rerank_rank": 11,
+          "delta": -9
+        }
+      ]
+    },
+    "eval-q007": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:77330685:chunk:0028"
+      ],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": -0.2,
+      "graded_ndcg_at_5_delta": -0.106993,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0001",
+          "hybrid_rank": 14,
+          "rerank_rank": 12,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0003",
+          "hybrid_rank": 8,
+          "rerank_rank": 2,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0004",
+          "hybrid_rank": 7,
+          "rerank_rank": 13,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0010",
+          "hybrid_rank": 6,
+          "rerank_rank": 6,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0003",
+          "hybrid_rank": 3,
+          "rerank_rank": 3,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0030",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0031",
+          "hybrid_rank": 5,
+          "rerank_rank": 5,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0033",
+          "hybrid_rank": 10,
+          "rerank_rank": 9,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0046",
+          "hybrid_rank": 11,
+          "rerank_rank": 10,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:77330685:chunk:0004",
+          "hybrid_rank": 9,
+          "rerank_rank": 11,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:77330685:chunk:0020",
+          "hybrid_rank": 4,
+          "rerank_rank": 4,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:77330685:chunk:0028",
+          "hybrid_rank": 2,
+          "rerank_rank": 7,
+          "delta": -5
+        }
+      ]
+    },
+    "eval-q008": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:73295342:chunk:0074",
+        "indian_kanoon:8095700:chunk:0000"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:131331418:chunk:0005",
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:8095700:chunk:0000"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.041391,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0005",
+          "hybrid_rank": 5,
+          "rerank_rank": 14,
+          "delta": -9
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0006",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0007",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0012",
+          "hybrid_rank": 7,
+          "rerank_rank": 12,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0007",
+          "hybrid_rank": 13,
+          "rerank_rank": 7,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0008",
+          "hybrid_rank": 6,
+          "rerank_rank": 8,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0002",
+          "hybrid_rank": 9,
+          "rerank_rank": 10,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0003",
+          "hybrid_rank": 3,
+          "rerank_rank": 6,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0004",
+          "hybrid_rank": 10,
+          "rerank_rank": 9,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0005",
+          "hybrid_rank": 2,
+          "rerank_rank": 4,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0006",
+          "hybrid_rank": 8,
+          "rerank_rank": 15,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:73295342:chunk:0074",
+          "hybrid_rank": 14,
+          "rerank_rank": 2,
+          "delta": 12
+        },
+        {
+          "chunk_id": "indian_kanoon:8095700:chunk:0000",
+          "hybrid_rank": 12,
+          "rerank_rank": 5,
+          "delta": 7
+        }
+      ]
+    },
+    "eval-q009": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:177113492:chunk:0003",
+        "indian_kanoon:177113492:chunk:0004"
+      ],
+      "relevant_dropped_from_top5": [],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.4,
+      "graded_ndcg_at_5_delta": 0.430612,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0010",
+          "hybrid_rank": 2,
+          "rerank_rank": 10,
+          "delta": -8
+        },
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0023",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0029",
+          "hybrid_rank": 5,
+          "rerank_rank": 4,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:156271048:chunk:0010",
+          "hybrid_rank": 14,
+          "rerank_rank": 9,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:15834217:chunk:0001",
+          "hybrid_rank": 6,
+          "rerank_rank": 6,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0003",
+          "hybrid_rank": 12,
+          "rerank_rank": 5,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0004",
+          "hybrid_rank": 11,
+          "rerank_rank": 3,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0005",
+          "hybrid_rank": 15,
+          "rerank_rank": 11,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:24600150:chunk:0022",
+          "hybrid_rank": 13,
+          "rerank_rank": 12,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:24600150:chunk:0023",
+          "hybrid_rank": 4,
+          "rerank_rank": 1,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:6939849:chunk:0001",
+          "hybrid_rank": 8,
+          "rerank_rank": 8,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:76377526:chunk:0016",
+          "hybrid_rank": 3,
+          "rerank_rank": 15,
+          "delta": -12
+        }
+      ]
+    },
+    "eval-q010": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:154171944:chunk:0066"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:178355286:chunk:0035"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:154171944:chunk:0066"
+      ],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.043399,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:154171944:chunk:0065",
+          "hybrid_rank": 4,
+          "rerank_rank": 4,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:154171944:chunk:0066",
+          "hybrid_rank": 8,
+          "rerank_rank": 5,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:154171944:chunk:0067",
+          "hybrid_rank": 1,
+          "rerank_rank": 3,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:15834217:chunk:0003",
+          "hybrid_rank": 14,
+          "rerank_rank": 12,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0001",
+          "hybrid_rank": 12,
+          "rerank_rank": 15,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0034",
+          "hybrid_rank": 3,
+          "rerank_rank": 2,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0035",
+          "hybrid_rank": 5,
+          "rerank_rank": 8,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:188935138:chunk:0002",
+          "hybrid_rank": 10,
+          "rerank_rank": 6,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:73295342:chunk:0077",
+          "hybrid_rank": 7,
+          "rerank_rank": 7,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:73295342:chunk:0079",
+          "hybrid_rank": 6,
+          "rerank_rank": 10,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:73295342:chunk:0081",
+          "hybrid_rank": 11,
+          "rerank_rank": 9,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:73295342:chunk:0084",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        }
+      ]
+    },
+    "eval-q011": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:138227421:chunk:0015"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:138227421:chunk:0009"
+      ],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:138227421:chunk:0009"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.053847,
+      "strict_precision_at_5_delta": -0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0000",
+          "hybrid_rank": 7,
+          "rerank_rank": 13,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0001",
+          "hybrid_rank": 3,
+          "rerank_rank": 5,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0006",
+          "hybrid_rank": 11,
+          "rerank_rank": 8,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0007",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 2,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0009",
+          "hybrid_rank": 5,
+          "rerank_rank": 6,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0010",
+          "hybrid_rank": 15,
+          "rerank_rank": 10,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0013",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0015",
+          "hybrid_rank": 6,
+          "rerank_rank": 4,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:169784101:chunk:0002",
+          "hybrid_rank": 12,
+          "rerank_rank": 12,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:3493537:chunk:0004",
+          "hybrid_rank": 10,
+          "rerank_rank": 11,
+          "delta": -1
+        }
+      ]
+    },
+    "eval-q012": {
+      "status": "reranker_neutral",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:83401027:chunk:0004"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:40368737:chunk:0004",
+        "indian_kanoon:83401027:chunk:0002"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:83401027:chunk:0004"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:40368737:chunk:0004",
+        "indian_kanoon:83401027:chunk:0002"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.0,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0003",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0004",
+          "hybrid_rank": 8,
+          "rerank_rank": 2,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0005",
+          "hybrid_rank": 13,
+          "rerank_rank": 14,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0002",
+          "hybrid_rank": 4,
+          "rerank_rank": 4,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0003",
+          "hybrid_rank": 10,
+          "rerank_rank": 6,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0004",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:36195540:chunk:0007",
+          "hybrid_rank": 12,
+          "rerank_rank": 11,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0004",
+          "hybrid_rank": 3,
+          "rerank_rank": 13,
+          "delta": -10
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0005",
+          "hybrid_rank": 9,
+          "rerank_rank": 3,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0006",
+          "hybrid_rank": 11,
+          "rerank_rank": 7,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0002",
+          "hybrid_rank": 2,
+          "rerank_rank": 12,
+          "delta": -10
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0003",
+          "hybrid_rank": 6,
+          "rerank_rank": 8,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:83401027:chunk:0004",
+          "hybrid_rank": 7,
+          "rerank_rank": 5,
+          "delta": 2
+        }
+      ]
+    },
+    "eval-q013": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:176391710:chunk:0002",
+        "indian_kanoon:31369863:chunk:0009"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:176391710:chunk:0008",
+        "indian_kanoon:44731735:chunk:0005"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:176391710:chunk:0002",
+        "indian_kanoon:31369863:chunk:0009"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:176391710:chunk:0008",
+        "indian_kanoon:44731735:chunk:0005"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.044406,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0008",
+          "hybrid_rank": 15,
+          "rerank_rank": 10,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0001",
+          "hybrid_rank": 3,
+          "rerank_rank": 2,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0000",
+          "hybrid_rank": 11,
+          "rerank_rank": 14,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0001",
+          "hybrid_rank": 4,
+          "rerank_rank": 5,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0002",
+          "hybrid_rank": 12,
+          "rerank_rank": 1,
+          "delta": 11
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 8,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:186425747:chunk:0004",
+          "hybrid_rank": 14,
+          "rerank_rank": 15,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:31369863:chunk:0005",
+          "hybrid_rank": 7,
+          "rerank_rank": 6,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:31369863:chunk:0009",
+          "hybrid_rank": 6,
+          "rerank_rank": 4,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:31369863:chunk:0012",
+          "hybrid_rank": 8,
+          "rerank_rank": 11,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0003",
+          "hybrid_rank": 1,
+          "rerank_rank": 3,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0005",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        }
+      ]
+    },
+    "eval-q014": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:24600150:chunk:0019",
+        "indian_kanoon:76377526:chunk:0007"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:123692674:chunk:0010",
+        "indian_kanoon:199689273:chunk:0005",
+        "indian_kanoon:22498132:chunk:0010"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:76377526:chunk:0007"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:199689273:chunk:0005"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.08479,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:123692674:chunk:0010",
+          "hybrid_rank": 5,
+          "rerank_rank": 12,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0007",
+          "hybrid_rank": 13,
+          "rerank_rank": 3,
+          "delta": 10
+        },
+        {
+          "chunk_id": "indian_kanoon:123721856:chunk:0008",
+          "hybrid_rank": 8,
+          "rerank_rank": 11,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:156271048:chunk:0010",
+          "hybrid_rank": 14,
+          "rerank_rank": 7,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0053",
+          "hybrid_rank": 4,
+          "rerank_rank": 5,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0030",
+          "hybrid_rank": 9,
+          "rerank_rank": 14,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0031",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0004",
+          "hybrid_rank": 11,
+          "rerank_rank": 15,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0005",
+          "hybrid_rank": 2,
+          "rerank_rank": 6,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0006",
+          "hybrid_rank": 10,
+          "rerank_rank": 10,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:24600150:chunk:0019",
+          "hybrid_rank": 7,
+          "rerank_rank": 4,
+          "delta": 3
+        }
+      ]
+    },
+    "eval-q015": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:77330685:chunk:0020"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:179828917:chunk:0010"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:77330685:chunk:0020"
+      ],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.106993,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0003",
+          "hybrid_rank": 10,
+          "rerank_rank": 8,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0005",
+          "hybrid_rank": 4,
+          "rerank_rank": 6,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0010",
+          "hybrid_rank": 15,
+          "rerank_rank": 4,
+          "delta": 11
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0001",
+          "hybrid_rank": 13,
+          "rerank_rank": 14,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0030",
+          "hybrid_rank": 3,
+          "rerank_rank": 2,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0003",
+          "hybrid_rank": 12,
+          "rerank_rank": 10,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0009",
+          "hybrid_rank": 1,
+          "rerank_rank": 5,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0010",
+          "hybrid_rank": 5,
+          "rerank_rank": 11,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0027",
+          "hybrid_rank": 9,
+          "rerank_rank": 7,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0071",
+          "hybrid_rank": 14,
+          "rerank_rank": 9,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:77330685:chunk:0020",
+          "hybrid_rank": 7,
+          "rerank_rank": 3,
+          "delta": 4
+        }
+      ]
+    },
+    "eval-q016": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": -0.07232,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0003",
+          "hybrid_rank": 3,
+          "rerank_rank": 4,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0012",
+          "hybrid_rank": 9,
+          "rerank_rank": 15,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0014",
+          "hybrid_rank": 4,
+          "rerank_rank": 8,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0021",
+          "hybrid_rank": 12,
+          "rerank_rank": 5,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0040",
+          "hybrid_rank": 13,
+          "rerank_rank": 7,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0004",
+          "hybrid_rank": 2,
+          "rerank_rank": 3,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0004",
+          "hybrid_rank": 1,
+          "rerank_rank": 6,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:186425747:chunk:0014",
+          "hybrid_rank": 5,
+          "rerank_rank": 10,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:194768350:chunk:0026",
+          "hybrid_rank": 10,
+          "rerank_rank": 11,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:40368737:chunk:0008",
+          "hybrid_rank": 14,
+          "rerank_rank": 1,
+          "delta": 13
+        }
+      ]
+    },
+    "eval-q017": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:184937779:chunk:0003"
+      ],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:184937779:chunk:0003"
+      ],
+      "broad_precision_at_5_delta": -0.2,
+      "graded_ndcg_at_5_delta": -0.288038,
+      "strict_precision_at_5_delta": -0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0005",
+          "hybrid_rank": 10,
+          "rerank_rank": 10,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0008",
+          "hybrid_rank": 14,
+          "rerank_rank": 8,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0018",
+          "hybrid_rank": 9,
+          "rerank_rank": 9,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0023",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0025",
+          "hybrid_rank": 12,
+          "rerank_rank": 15,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0032",
+          "hybrid_rank": 15,
+          "rerank_rank": 14,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0001",
+          "hybrid_rank": 13,
+          "rerank_rank": 11,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0003",
+          "hybrid_rank": 5,
+          "rerank_rank": 13,
+          "delta": -8
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 4,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0011",
+          "hybrid_rank": 7,
+          "rerank_rank": 7,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0012",
+          "hybrid_rank": 3,
+          "rerank_rank": 5,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:184937779:chunk:0013",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:70774666:chunk:0025",
+          "hybrid_rank": 6,
+          "rerank_rank": 1,
+          "delta": 5
+        }
+      ]
+    },
+    "eval-q018": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:13518275:chunk:0007"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.065603,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:111592349:chunk:0002",
+          "hybrid_rank": 15,
+          "rerank_rank": 14,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0006",
+          "hybrid_rank": 3,
+          "rerank_rank": 4,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0007",
+          "hybrid_rank": 4,
+          "rerank_rank": 1,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0008",
+          "hybrid_rank": 8,
+          "rerank_rank": 11,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0006",
+          "hybrid_rank": 14,
+          "rerank_rank": 13,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0007",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0009",
+          "hybrid_rank": 2,
+          "rerank_rank": 3,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0027",
+          "hybrid_rank": 7,
+          "rerank_rank": 8,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0048",
+          "hybrid_rank": 6,
+          "rerank_rank": 12,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:199689273:chunk:0006",
+          "hybrid_rank": 12,
+          "rerank_rank": 15,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0003",
+          "hybrid_rank": 11,
+          "rerank_rank": 5,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0005",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        }
+      ]
+    },
+    "eval-q019": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0001"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:100558061:chunk:0009"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0001"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:100558061:chunk:0009"
+      ],
+      "broad_precision_at_5_delta": 0.2,
+      "graded_ndcg_at_5_delta": 0.131205,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0000",
+          "hybrid_rank": 14,
+          "rerank_rank": 1,
+          "delta": 13
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0001",
+          "hybrid_rank": 7,
+          "rerank_rank": 5,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0002",
+          "hybrid_rank": 3,
+          "rerank_rank": 3,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0003",
+          "hybrid_rank": 2,
+          "rerank_rank": 2,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0004",
+          "hybrid_rank": 1,
+          "rerank_rank": 4,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0007",
+          "hybrid_rank": 12,
+          "rerank_rank": 11,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0009",
+          "hybrid_rank": 4,
+          "rerank_rank": 8,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0003",
+          "hybrid_rank": 10,
+          "rerank_rank": 13,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0004",
+          "hybrid_rank": 6,
+          "rerank_rank": 14,
+          "delta": -8
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0005",
+          "hybrid_rank": 9,
+          "rerank_rank": 12,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0006",
+          "hybrid_rank": 8,
+          "rerank_rank": 6,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0008",
+          "hybrid_rank": 13,
+          "rerank_rank": 7,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:183406121:chunk:0002",
+          "hybrid_rank": 5,
+          "rerank_rank": 15,
+          "delta": -10
+        }
+      ]
+    },
+    "eval-q020": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:176391710:chunk:0000",
+        "indian_kanoon:176391710:chunk:0004",
+        "indian_kanoon:47759402:chunk:0000"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:47759402:chunk:0001",
+        "indian_kanoon:47759402:chunk:0002",
+        "indian_kanoon:47759402:chunk:0005"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:176391710:chunk:0000",
+        "indian_kanoon:176391710:chunk:0004"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:47759402:chunk:0002"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.095237,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:14496522:chunk:0002",
+          "hybrid_rank": 11,
+          "rerank_rank": 8,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0000",
+          "hybrid_rank": 7,
+          "rerank_rank": 1,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0003",
+          "hybrid_rank": 5,
+          "rerank_rank": 5,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0004",
+          "hybrid_rank": 6,
+          "rerank_rank": 4,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:188935138:chunk:0014",
+          "hybrid_rank": 15,
+          "rerank_rank": 7,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0004",
+          "hybrid_rank": 10,
+          "rerank_rank": 14,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0000",
+          "hybrid_rank": 13,
+          "rerank_rank": 3,
+          "delta": 10
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0001",
+          "hybrid_rank": 4,
+          "rerank_rank": 10,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0002",
+          "hybrid_rank": 3,
+          "rerank_rank": 12,
+          "delta": -9
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0005",
+          "hybrid_rank": 2,
+          "rerank_rank": 9,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0007",
+          "hybrid_rank": 1,
+          "rerank_rank": 2,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:8854101:chunk:0003",
+          "hybrid_rank": 9,
+          "rerank_rank": 13,
+          "delta": -4
+        }
+      ]
+    },
+    "eval-q021": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:102778545:chunk:0000",
+        "indian_kanoon:136492342:chunk:0000",
+        "indian_kanoon:152313551:chunk:0018"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:156271048:chunk:0011"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:102778545:chunk:0000",
+        "indian_kanoon:136492342:chunk:0000"
+      ],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.4,
+      "graded_ndcg_at_5_delta": 0.697153,
+      "strict_precision_at_5_delta": 0.4,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:102778545:chunk:0000",
+          "hybrid_rank": 8,
+          "rerank_rank": 2,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:136492342:chunk:0000",
+          "hybrid_rank": 6,
+          "rerank_rank": 1,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0000",
+          "hybrid_rank": 14,
+          "rerank_rank": 15,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0018",
+          "hybrid_rank": 9,
+          "rerank_rank": 4,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:156271048:chunk:0011",
+          "hybrid_rank": 3,
+          "rerank_rank": 14,
+          "delta": -11
+        },
+        {
+          "chunk_id": "indian_kanoon:176922161:chunk:0011",
+          "hybrid_rank": 11,
+          "rerank_rank": 11,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:22498132:chunk:0015",
+          "hybrid_rank": 4,
+          "rerank_rank": 5,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:26223875:chunk:0009",
+          "hybrid_rank": 7,
+          "rerank_rank": 13,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:3493537:chunk:0000",
+          "hybrid_rank": 2,
+          "rerank_rank": 8,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:3493537:chunk:0013",
+          "hybrid_rank": 1,
+          "rerank_rank": 9,
+          "delta": -8
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0007",
+          "hybrid_rank": 10,
+          "rerank_rank": 3,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:90446963:chunk:0000",
+          "hybrid_rank": 15,
+          "rerank_rank": 12,
+          "delta": 3
+        }
+      ]
+    },
+    "eval-q022": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:138227421:chunk:0009",
+        "indian_kanoon:138227421:chunk:0015",
+        "indian_kanoon:169784101:chunk:0004"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:138227421:chunk:0001",
+        "indian_kanoon:138227421:chunk:0003",
+        "indian_kanoon:138227421:chunk:0016"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:138227421:chunk:0009",
+        "indian_kanoon:138227421:chunk:0015",
+        "indian_kanoon:169784101:chunk:0004"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:138227421:chunk:0016"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.157824,
+      "strict_precision_at_5_delta": 0.4,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0009",
+          "hybrid_rank": 11,
+          "rerank_rank": 12,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0001",
+          "hybrid_rank": 3,
+          "rerank_rank": 15,
+          "delta": -12
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0003",
+          "hybrid_rank": 4,
+          "rerank_rank": 11,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0008",
+          "hybrid_rank": 12,
+          "rerank_rank": 7,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0009",
+          "hybrid_rank": 6,
+          "rerank_rank": 4,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0013",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0014",
+          "hybrid_rank": 8,
+          "rerank_rank": 6,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0015",
+          "hybrid_rank": 9,
+          "rerank_rank": 5,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:138227421:chunk:0016",
+          "hybrid_rank": 1,
+          "rerank_rank": 8,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:169784101:chunk:0001",
+          "hybrid_rank": 5,
+          "rerank_rank": 3,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:169784101:chunk:0004",
+          "hybrid_rank": 10,
+          "rerank_rank": 2,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:90446963:chunk:0004",
+          "hybrid_rank": 14,
+          "rerank_rank": 13,
+          "delta": 1
+        }
+      ]
+    },
+    "eval-q023": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:156271048:chunk:0005",
+        "indian_kanoon:176922161:chunk:0011"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:179828917:chunk:0001",
+        "indian_kanoon:199957261:chunk:0009",
+        "indian_kanoon:31029978:chunk:0024"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:156271048:chunk:0005",
+        "indian_kanoon:176922161:chunk:0011"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:179828917:chunk:0001",
+        "indian_kanoon:31029978:chunk:0024"
+      ],
+      "broad_precision_at_5_delta": -0.2,
+      "graded_ndcg_at_5_delta": -0.062587,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0000",
+          "hybrid_rank": 13,
+          "rerank_rank": 6,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0015",
+          "hybrid_rank": 15,
+          "rerank_rank": 9,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:152313551:chunk:0018",
+          "hybrid_rank": 9,
+          "rerank_rank": 10,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:15834217:chunk:0000",
+          "hybrid_rank": 14,
+          "rerank_rank": 14,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:176922161:chunk:0011",
+          "hybrid_rank": 8,
+          "rerank_rank": 4,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0000",
+          "hybrid_rank": 4,
+          "rerank_rank": 5,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0001",
+          "hybrid_rank": 3,
+          "rerank_rank": 8,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0080",
+          "hybrid_rank": 6,
+          "rerank_rank": 7,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:199957261:chunk:0009",
+          "hybrid_rank": 2,
+          "rerank_rank": 13,
+          "delta": -11
+        },
+        {
+          "chunk_id": "indian_kanoon:30754679:chunk:0002",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:31029978:chunk:0024",
+          "hybrid_rank": 5,
+          "rerank_rank": 11,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:3493537:chunk:0000",
+          "hybrid_rank": 12,
+          "rerank_rank": 3,
+          "delta": 9
+        }
+      ]
+    },
+    "eval-q024": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:15148168:chunk:0000",
+        "indian_kanoon:188935138:chunk:0021"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:100558061:chunk:0004",
+        "indian_kanoon:15148168:chunk:0008"
+      ],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.029543,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0002",
+          "hybrid_rank": 6,
+          "rerank_rank": 15,
+          "delta": -9
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0003",
+          "hybrid_rank": 8,
+          "rerank_rank": 14,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0004",
+          "hybrid_rank": 4,
+          "rerank_rank": 13,
+          "delta": -9
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0007",
+          "hybrid_rank": 1,
+          "rerank_rank": 5,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:143670565:chunk:0001",
+          "hybrid_rank": 14,
+          "rerank_rank": 10,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:143670565:chunk:0012",
+          "hybrid_rank": 7,
+          "rerank_rank": 4,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:143670565:chunk:0051",
+          "hybrid_rank": 5,
+          "rerank_rank": 6,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0000",
+          "hybrid_rank": 15,
+          "rerank_rank": 1,
+          "delta": 14
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0006",
+          "hybrid_rank": 10,
+          "rerank_rank": 9,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0008",
+          "hybrid_rank": 3,
+          "rerank_rank": 12,
+          "delta": -9
+        },
+        {
+          "chunk_id": "indian_kanoon:154171944:chunk:0076",
+          "hybrid_rank": 11,
+          "rerank_rank": 7,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:3493537:chunk:0001",
+          "hybrid_rank": 13,
+          "rerank_rank": 11,
+          "delta": 2
+        }
+      ]
+    },
+    "eval-q025": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:47759402:chunk:0001",
+        "indian_kanoon:47759402:chunk:0006"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:47759402:chunk:0002",
+        "indian_kanoon:47759402:chunk:0004"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:47759402:chunk:0001"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:47759402:chunk:0002"
+      ],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.077358,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0002",
+          "hybrid_rank": 13,
+          "rerank_rank": 13,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0003",
+          "hybrid_rank": 15,
+          "rerank_rank": 12,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:103812991:chunk:0003",
+          "hybrid_rank": 10,
+          "rerank_rank": 11,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0006",
+          "hybrid_rank": 12,
+          "rerank_rank": 14,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0001",
+          "hybrid_rank": 9,
+          "rerank_rank": 5,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0002",
+          "hybrid_rank": 3,
+          "rerank_rank": 6,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0003",
+          "hybrid_rank": 1,
+          "rerank_rank": 4,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0004",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0005",
+          "hybrid_rank": 4,
+          "rerank_rank": 2,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0006",
+          "hybrid_rank": 6,
+          "rerank_rank": 3,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0007",
+          "hybrid_rank": 7,
+          "rerank_rank": 7,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        }
+      ]
+    },
+    "eval-q026": {
+      "status": "reranker_neutral",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.0,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0000",
+          "hybrid_rank": 5,
+          "rerank_rank": 1,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0001",
+          "hybrid_rank": 4,
+          "rerank_rank": 4,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0002",
+          "hybrid_rank": 1,
+          "rerank_rank": 3,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0003",
+          "hybrid_rank": 2,
+          "rerank_rank": 2,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:100558061:chunk:0004",
+          "hybrid_rank": 3,
+          "rerank_rank": 5,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:136492342:chunk:0001",
+          "hybrid_rank": 13,
+          "rerank_rank": 12,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0003",
+          "hybrid_rank": 8,
+          "rerank_rank": 14,
+          "delta": -6
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0004",
+          "hybrid_rank": 12,
+          "rerank_rank": 15,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0006",
+          "hybrid_rank": 6,
+          "rerank_rank": 8,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:15148168:chunk:0008",
+          "hybrid_rank": 11,
+          "rerank_rank": 6,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:183406121:chunk:0002",
+          "hybrid_rank": 14,
+          "rerank_rank": 10,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0005",
+          "hybrid_rank": 9,
+          "rerank_rank": 9,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:87669225:chunk:0003",
+          "hybrid_rank": 7,
+          "rerank_rank": 11,
+          "delta": -4
+        }
+      ]
+    },
+    "eval-q027": {
+      "status": "reranker_neutral",
+      "relevant_promoted_into_top5": [],
+      "relevant_dropped_from_top5": [],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.0,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:136492342:chunk:0001",
+          "hybrid_rank": 3,
+          "rerank_rank": 8,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:136781165:chunk:0022",
+          "hybrid_rank": 11,
+          "rerank_rank": 15,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:15834217:chunk:0003",
+          "hybrid_rank": 4,
+          "rerank_rank": 7,
+          "delta": -3
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0053",
+          "hybrid_rank": 9,
+          "rerank_rank": 5,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:176922161:chunk:0011",
+          "hybrid_rank": 12,
+          "rerank_rank": 4,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0034",
+          "hybrid_rank": 10,
+          "rerank_rank": 2,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0035",
+          "hybrid_rank": 6,
+          "rerank_rank": 3,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:178355286:chunk:0048",
+          "hybrid_rank": 7,
+          "rerank_rank": 11,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:199957261:chunk:0000",
+          "hybrid_rank": 13,
+          "rerank_rank": 13,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0005",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:70774666:chunk:0029",
+          "hybrid_rank": 15,
+          "rerank_rank": 9,
+          "delta": 6
+        }
+      ]
+    },
+    "eval-q028": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:127989801:chunk:0036",
+        "indian_kanoon:127989801:chunk:0037",
+        "indian_kanoon:154171944:chunk:0034"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:127989801:chunk:0035",
+        "indian_kanoon:177113492:chunk:0002",
+        "indian_kanoon:189001274:chunk:0022"
+      ],
+      "grade2_promoted_into_top5": [],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.023512,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:123692674:chunk:0002",
+          "hybrid_rank": 15,
+          "rerank_rank": 8,
+          "delta": 7
+        },
+        {
+          "chunk_id": "indian_kanoon:127989801:chunk:0026",
+          "hybrid_rank": 4,
+          "rerank_rank": 3,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:127989801:chunk:0035",
+          "hybrid_rank": 2,
+          "rerank_rank": 7,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:127989801:chunk:0037",
+          "hybrid_rank": 9,
+          "rerank_rank": 1,
+          "delta": 8
+        },
+        {
+          "chunk_id": "indian_kanoon:127989801:chunk:0042",
+          "hybrid_rank": 3,
+          "rerank_rank": 10,
+          "delta": -7
+        },
+        {
+          "chunk_id": "indian_kanoon:154171944:chunk:0034",
+          "hybrid_rank": 12,
+          "rerank_rank": 2,
+          "delta": 10
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0002",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:177113492:chunk:0003",
+          "hybrid_rank": 7,
+          "rerank_rank": 12,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0028",
+          "hybrid_rank": 13,
+          "rerank_rank": 14,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:189001274:chunk:0022",
+          "hybrid_rank": 1,
+          "rerank_rank": 6,
+          "delta": -5
+        },
+        {
+          "chunk_id": "indian_kanoon:199957261:chunk:0009",
+          "hybrid_rank": 14,
+          "rerank_rank": 15,
+          "delta": -1
+        }
+      ]
+    },
+    "eval-q029": {
+      "status": "reranker_helpful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:179828917:chunk:0027"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:77330685:chunk:0020"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:179828917:chunk:0027"
+      ],
+      "grade2_demoted_from_top5": [],
+      "broad_precision_at_5_delta": 0.0,
+      "graded_ndcg_at_5_delta": 0.014771,
+      "strict_precision_at_5_delta": 0.2,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0004",
+          "hybrid_rank": 2,
+          "rerank_rank": 1,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0005",
+          "hybrid_rank": 3,
+          "rerank_rank": 4,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0008",
+          "hybrid_rank": 1,
+          "rerank_rank": 3,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0009",
+          "hybrid_rank": 12,
+          "rerank_rank": 6,
+          "delta": 6
+        },
+        {
+          "chunk_id": "indian_kanoon:125041151:chunk:0010",
+          "hybrid_rank": 4,
+          "rerank_rank": 2,
+          "delta": 2
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0040",
+          "hybrid_rank": 10,
+          "rerank_rank": 11,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:173395727:chunk:0046",
+          "hybrid_rank": 8,
+          "rerank_rank": 12,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0001",
+          "hybrid_rank": 13,
+          "rerank_rank": 9,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0025",
+          "hybrid_rank": 6,
+          "rerank_rank": 7,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:179828917:chunk:0038",
+          "hybrid_rank": 15,
+          "rerank_rank": 14,
+          "delta": 1
+        },
+        {
+          "chunk_id": "indian_kanoon:47759402:chunk:0001",
+          "hybrid_rank": 9,
+          "rerank_rank": 15,
+          "delta": -6
+        }
+      ]
+    },
+    "eval-q030": {
+      "status": "reranker_harmful",
+      "relevant_promoted_into_top5": [
+        "indian_kanoon:14496522:chunk:0003",
+        "indian_kanoon:44731735:chunk:0002"
+      ],
+      "relevant_dropped_from_top5": [
+        "indian_kanoon:131331418:chunk:0005",
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005"
+      ],
+      "grade2_promoted_into_top5": [
+        "indian_kanoon:14496522:chunk:0003",
+        "indian_kanoon:44731735:chunk:0002"
+      ],
+      "grade2_demoted_from_top5": [
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005"
+      ],
+      "broad_precision_at_5_delta": -0.2,
+      "graded_ndcg_at_5_delta": -0.065603,
+      "strict_precision_at_5_delta": 0.0,
+      "shared_candidate_rank_movements": [
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0005",
+          "hybrid_rank": 5,
+          "rerank_rank": 9,
+          "delta": -4
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0007",
+          "hybrid_rank": 4,
+          "rerank_rank": 6,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:131331418:chunk:0012",
+          "hybrid_rank": 10,
+          "rerank_rank": 7,
+          "delta": 3
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0005",
+          "hybrid_rank": 7,
+          "rerank_rank": 8,
+          "delta": -1
+        },
+        {
+          "chunk_id": "indian_kanoon:13518275:chunk:0006",
+          "hybrid_rank": 12,
+          "rerank_rank": 12,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:14496522:chunk:0003",
+          "hybrid_rank": 6,
+          "rerank_rank": 2,
+          "delta": 4
+        },
+        {
+          "chunk_id": "indian_kanoon:176391710:chunk:0008",
+          "hybrid_rank": 2,
+          "rerank_rank": 4,
+          "delta": -2
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0002",
+          "hybrid_rank": 8,
+          "rerank_rank": 3,
+          "delta": 5
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0003",
+          "hybrid_rank": 1,
+          "rerank_rank": 1,
+          "delta": 0
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0005",
+          "hybrid_rank": 3,
+          "rerank_rank": 14,
+          "delta": -11
+        },
+        {
+          "chunk_id": "indian_kanoon:44731735:chunk:0006",
+          "hybrid_rank": 9,
+          "rerank_rank": 13,
+          "delta": -4
+        }
+      ]
+    }
+  },
+  "summary": {
+    "reranker_harmful": 11,
+    "reranker_neutral": 5,
+    "reranker_helpful": 14
+  }
+}

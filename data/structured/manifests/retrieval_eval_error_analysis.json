@@ -1,0 +1,824 @@
+{
+  "status": "complete",
+  "taxonomy": [
+    "benchmark_pool_limitation",
+    "candidate_generation_both",
+    "candidate_generation_dense",
+    "candidate_generation_lexical",
+    "chunk_quality",
+    "fusion_ordering",
+    "legal_regime_resolution",
+    "mixed",
+    "no_material_failure",
+    "query_ambiguity",
+    "reranker_ordering"
+  ],
+  "overall_diagnosis": "Most baseline weakness is localized rather than systemic: hybrid retrieval is broadly strong, reranking improves graded ordering, and remaining failures cluster around sparse transition-law/regime resolution, ambiguous composite queries, and chunk/document granularity.",
+  "failure_class_counts": {
+    "reranker_ordering": 6,
+    "benchmark_pool_limitation": 8,
+    "chunk_quality": 2,
+    "mixed": 8,
+    "fusion_ordering": 2,
+    "legal_regime_resolution": 4
+  },
+  "query_diagnostics": {
+    "eval-q001": {
+      "query_text": "murder conviction section 302 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "homicide",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 25,
+      "strict_relevant_count": 14,
+      "bm25_relevant_coverage_top20": 15,
+      "dense_relevant_coverage_top20": 15,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q001: broad relevant 25, strict relevant 14; BM25/Dense top20 broad relevant 15/15; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta -0.087806; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q002": {
+      "query_text": "dowry death section 304B IPC",
+      "query_type": "statute_explicit",
+      "target_family": "dowry_and_domestic_cruelty",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 16,
+      "bm25_relevant_coverage_top20": 15,
+      "dense_relevant_coverage_top20": 14,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q002: broad relevant 18, strict relevant 16; BM25/Dense top20 broad relevant 15/14; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.0; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q003": {
+      "query_text": "criminal breach of trust section 406 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "criminal_breach_of_trust",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 16,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 14,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "chunk_quality",
+      "secondary_failures": [
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q003: broad relevant 16, strict relevant 9; BM25/Dense top20 broad relevant 13/14; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.062587; right-document/wrong-chunk 1.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q004": {
+      "query_text": "robbery section 392 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "theft_and_robbery",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 10,
+      "strict_relevant_count": 7,
+      "bm25_relevant_coverage_top20": 8,
+      "dense_relevant_coverage_top20": 7,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q004: broad relevant 10, strict relevant 7; BM25/Dense top20 broad relevant 8/7; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.0; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q005": {
+      "query_text": "rape section 376 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "sexual_offences",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 8,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_dense",
+        "reranker_ordering",
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q005: broad relevant 18, strict relevant 9; BM25/Dense top20 broad relevant 13/8; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta -0.106993; right-document/wrong-chunk 1.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q006": {
+      "query_text": "common intention section 34 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "conspiracy_common_intention",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 14,
+      "strict_relevant_count": 10,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 12,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q006: broad relevant 14, strict relevant 10; BM25/Dense top20 broad relevant 13/12; Hybrid/Rerank P@5 1.0/0.8; rerank nDCG delta -0.131205; right-document/wrong-chunk 3.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q007": {
+      "query_text": "kidnapping section 363 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "kidnapping",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 16,
+      "strict_relevant_count": 6,
+      "bm25_relevant_coverage_top20": 10,
+      "dense_relevant_coverage_top20": 14,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "reranker_ordering",
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q007: broad relevant 16, strict relevant 6; BM25/Dense top20 broad relevant 10/14; Hybrid/Rerank P@5 1.0/0.8; rerank nDCG delta -0.106993; right-document/wrong-chunk 5.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q008": {
+      "query_text": "cheating section 420 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "cheating_and_fraud",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 17,
+      "strict_relevant_count": 11,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 11,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q008: broad relevant 17, strict relevant 11; BM25/Dense top20 broad relevant 13/11; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta -0.041391; right-document/wrong-chunk 2.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q009": {
+      "query_text": "voluntarily causing hurt section 323 IPC",
+      "query_type": "statute_explicit",
+      "target_family": "hurt_and_assault",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 9,
+      "strict_relevant_count": 1,
+      "bm25_relevant_coverage_top20": 7,
+      "dense_relevant_coverage_top20": 6,
+      "hybrid_top5_quality": 0.6,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q009: broad relevant 9, strict relevant 1; BM25/Dense top20 broad relevant 7/6; Hybrid/Rerank P@5 0.6/1.0; rerank nDCG delta 0.430612; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q010": {
+      "query_text": "criminal conspiracy section 120B IPC",
+      "query_type": "statute_explicit",
+      "target_family": "conspiracy_common_intention",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 15,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 10,
+      "dense_relevant_coverage_top20": 12,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q010: broad relevant 15, strict relevant 9; BM25/Dense top20 broad relevant 10/12; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.043399; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q011": {
+      "query_text": "bail in commercial quantity narcotics case",
+      "query_type": "plain_language",
+      "target_family": "narcotics_related",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 15,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 11,
+      "dense_relevant_coverage_top20": 10,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q011: broad relevant 15, strict relevant 9; BM25/Dense top20 broad relevant 11/10; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta -0.053847; right-document/wrong-chunk 1.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q012": {
+      "query_text": "husband accused of dowry death",
+      "query_type": "plain_language",
+      "target_family": "dowry_and_domestic_cruelty",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 19,
+      "strict_relevant_count": 17,
+      "bm25_relevant_coverage_top20": 15,
+      "dense_relevant_coverage_top20": 15,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q012: broad relevant 19, strict relevant 17; BM25/Dense top20 broad relevant 15/15; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.0; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q013": {
+      "query_text": "cheating involving bank loan",
+      "query_type": "plain_language",
+      "target_family": "cheating_and_fraud",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 13,
+      "bm25_relevant_coverage_top20": 11,
+      "dense_relevant_coverage_top20": 12,
+      "hybrid_top5_quality": 0.8,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "fusion_ordering",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q013: broad relevant 18, strict relevant 13; BM25/Dense top20 broad relevant 11/12; Hybrid/Rerank P@5 0.8/0.8; rerank nDCG delta -0.044406; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q014": {
+      "query_text": "group assault with shared intention",
+      "query_type": "plain_language",
+      "target_family": "hurt_and_assault",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 20,
+      "strict_relevant_count": 11,
+      "bm25_relevant_coverage_top20": 11,
+      "dense_relevant_coverage_top20": 15,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "chunk_quality",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q014: broad relevant 20, strict relevant 11; BM25/Dense top20 broad relevant 11/15; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.08479; right-document/wrong-chunk 1.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q015": {
+      "query_text": "child taken away without consent",
+      "query_type": "plain_language",
+      "target_family": "kidnapping",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 14,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 4,
+      "dense_relevant_coverage_top20": 13,
+      "hybrid_top5_quality": 0.8,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "fusion_ordering",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q015: broad relevant 14, strict relevant 9; BM25/Dense top20 broad relevant 4/13; Hybrid/Rerank P@5 0.8/0.8; rerank nDCG delta 0.106993; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q016": {
+      "query_text": "cash and jewellery stolen from victim",
+      "query_type": "plain_language",
+      "target_family": "theft_and_robbery",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 5,
+      "strict_relevant_count": 2,
+      "bm25_relevant_coverage_top20": 5,
+      "dense_relevant_coverage_top20": 2,
+      "hybrid_top5_quality": 0.4,
+      "reranked_top5_quality": 0.4,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_dense",
+        "fusion_ordering",
+        "reranker_ordering",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q016: broad relevant 5, strict relevant 2; BM25/Dense top20 broad relevant 5/2; Hybrid/Rerank P@5 0.4/0.4; rerank nDCG delta -0.07232; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q017": {
+      "query_text": "sexual assault testimony of prosecutrix",
+      "query_type": "plain_language",
+      "target_family": "sexual_offences",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 14,
+      "strict_relevant_count": 4,
+      "bm25_relevant_coverage_top20": 6,
+      "dense_relevant_coverage_top20": 9,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "reranker_ordering",
+        "chunk_quality",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q017: broad relevant 14, strict relevant 4; BM25/Dense top20 broad relevant 6/9; Hybrid/Rerank P@5 1.0/0.8; rerank nDCG delta -0.288038; right-document/wrong-chunk 7.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q018": {
+      "query_text": "fraudulent inducement and dishonest intention",
+      "query_type": "plain_language",
+      "target_family": "cheating_and_fraud",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 9,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 10,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [
+        "candidate_generation_dense"
+      ],
+      "evidence": "eval-q018: broad relevant 18, strict relevant 9; BM25/Dense top20 broad relevant 13/10; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.065603; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q019": {
+      "query_text": "anticipatory bail under BNSS",
+      "query_type": "procedural_relief",
+      "target_family": "other",
+      "target_regime": "bns_bnss",
+      "broad_relevant_count": 14,
+      "strict_relevant_count": 11,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 11,
+      "hybrid_top5_quality": 0.8,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "legal_regime_resolution",
+      "secondary_failures": [
+        "fusion_ordering",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q019: broad relevant 14, strict relevant 11; BM25/Dense top20 broad relevant 13/11; Hybrid/Rerank P@5 0.8/1.0; rerank nDCG delta 0.131205; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q020": {
+      "query_text": "quashing FIR under section 482 CrPC",
+      "query_type": "procedural_relief",
+      "target_family": "other",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 21,
+      "strict_relevant_count": 14,
+      "bm25_relevant_coverage_top20": 12,
+      "dense_relevant_coverage_top20": 13,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [],
+      "evidence": "eval-q020: broad relevant 21, strict relevant 14; BM25/Dense top20 broad relevant 12/13; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.095237; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q021": {
+      "query_text": "suspension of sentence in criminal appeal",
+      "query_type": "procedural_relief",
+      "target_family": "other",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 14,
+      "strict_relevant_count": 2,
+      "bm25_relevant_coverage_top20": 5,
+      "dense_relevant_coverage_top20": 9,
+      "hybrid_top5_quality": 0.2,
+      "reranked_top5_quality": 0.6,
+      "judged_coverage_caveat": true,
+      "primary_failure": "fusion_ordering",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q021: broad relevant 14, strict relevant 2; BM25/Dense top20 broad relevant 5/9; Hybrid/Rerank P@5 0.2/0.6; rerank nDCG delta 0.697153; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q022": {
+      "query_text": "regular bail under NDPS Act",
+      "query_type": "procedural_relief",
+      "target_family": "narcotics_related",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 17,
+      "strict_relevant_count": 11,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 9,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "benchmark_pool_limitation",
+      "secondary_failures": [
+        "candidate_generation_dense"
+      ],
+      "evidence": "eval-q022: broad relevant 17, strict relevant 11; BM25/Dense top20 broad relevant 13/9; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.157824; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": false
+    },
+    "eval-q023": {
+      "query_text": "appeal against conviction for murder",
+      "query_type": "procedural_relief",
+      "target_family": "homicide",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 23,
+      "strict_relevant_count": 12,
+      "bm25_relevant_coverage_top20": 11,
+      "dense_relevant_coverage_top20": 13,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "reranker_ordering",
+      "secondary_failures": [
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q023: broad relevant 23, strict relevant 12; BM25/Dense top20 broad relevant 11/13; Hybrid/Rerank P@5 1.0/0.8; rerank nDCG delta -0.062587; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q024": {
+      "query_text": "bail where accused served section 41A notice",
+      "query_type": "procedural_relief",
+      "target_family": "other",
+      "target_regime": "mixed_or_transition",
+      "broad_relevant_count": 13,
+      "strict_relevant_count": 0,
+      "bm25_relevant_coverage_top20": 4,
+      "dense_relevant_coverage_top20": 10,
+      "hybrid_top5_quality": 0.6,
+      "reranked_top5_quality": 0.6,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "fusion_ordering",
+        "legal_regime_resolution",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q024: broad relevant 13, strict relevant 0; BM25/Dense top20 broad relevant 4/10; Hybrid/Rerank P@5 0.6/0.6; rerank nDCG delta 0.029543; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q025": {
+      "query_text": "offence under BNS after July 2024",
+      "query_type": "transition_regime",
+      "target_family": "other",
+      "target_regime": "bns_bnss",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 6,
+      "bm25_relevant_coverage_top20": 12,
+      "dense_relevant_coverage_top20": 15,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "legal_regime_resolution",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q025: broad relevant 18, strict relevant 6; BM25/Dense top20 broad relevant 12/15; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.077358; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q026": {
+      "query_text": "BNSS anticipatory bail with old IPC offence",
+      "query_type": "transition_regime",
+      "target_family": "other",
+      "target_regime": "mixed_or_transition",
+      "broad_relevant_count": 16,
+      "strict_relevant_count": 5,
+      "bm25_relevant_coverage_top20": 14,
+      "dense_relevant_coverage_top20": 10,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "legal_regime_resolution",
+      "secondary_failures": [
+        "candidate_generation_dense",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q026: broad relevant 16, strict relevant 5; BM25/Dense top20 broad relevant 14/10; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.0; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q027": {
+      "query_text": "IPC offence tried after new criminal laws commenced",
+      "query_type": "transition_regime",
+      "target_family": "other",
+      "target_regime": "mixed_or_transition",
+      "broad_relevant_count": 4,
+      "strict_relevant_count": 3,
+      "bm25_relevant_coverage_top20": 3,
+      "dense_relevant_coverage_top20": 2,
+      "hybrid_top5_quality": 0.2,
+      "reranked_top5_quality": 0.2,
+      "judged_coverage_caveat": true,
+      "primary_failure": "legal_regime_resolution",
+      "secondary_failures": [
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q027: broad relevant 4, strict relevant 3; BM25/Dense top20 broad relevant 3/2; Hybrid/Rerank P@5 0.2/0.2; rerank nDCG delta 0.0; right-document/wrong-chunk 0.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q028": {
+      "query_text": "murder with robbery and recovery evidence",
+      "query_type": "hard_ambiguous",
+      "target_family": "homicide",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 16,
+      "strict_relevant_count": 0,
+      "bm25_relevant_coverage_top20": 10,
+      "dense_relevant_coverage_top20": 8,
+      "hybrid_top5_quality": 0.8,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "fusion_ordering",
+        "chunk_quality",
+        "query_ambiguity",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q028: broad relevant 16, strict relevant 0; BM25/Dense top20 broad relevant 10/8; Hybrid/Rerank P@5 0.8/0.8; rerank nDCG delta 0.023512; right-document/wrong-chunk 6.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q029": {
+      "query_text": "kidnapping followed by sexual assault",
+      "query_type": "hard_ambiguous",
+      "target_family": "sexual_offences",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 8,
+      "bm25_relevant_coverage_top20": 9,
+      "dense_relevant_coverage_top20": 14,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 1.0,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "candidate_generation_lexical",
+        "chunk_quality",
+        "query_ambiguity",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q029: broad relevant 18, strict relevant 8; BM25/Dense top20 broad relevant 9/14; Hybrid/Rerank P@5 1.0/1.0; rerank nDCG delta 0.014771; right-document/wrong-chunk 4.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    },
+    "eval-q030": {
+      "query_text": "cheating and criminal breach of trust in business dispute",
+      "query_type": "hard_ambiguous",
+      "target_family": "criminal_breach_of_trust",
+      "target_regime": "ipc_crpc",
+      "broad_relevant_count": 18,
+      "strict_relevant_count": 13,
+      "bm25_relevant_coverage_top20": 13,
+      "dense_relevant_coverage_top20": 14,
+      "hybrid_top5_quality": 1.0,
+      "reranked_top5_quality": 0.8,
+      "judged_coverage_caveat": true,
+      "primary_failure": "mixed",
+      "secondary_failures": [
+        "reranker_ordering",
+        "chunk_quality",
+        "query_ambiguity",
+        "benchmark_pool_limitation"
+      ],
+      "evidence": "eval-q030: broad relevant 18, strict relevant 13; BM25/Dense top20 broad relevant 13/14; Hybrid/Rerank P@5 1.0/0.8; rerank nDCG delta -0.065603; right-document/wrong-chunk 1.",
+      "confidence": "medium",
+      "tuning_could_plausibly_help": true
+    }
+  },
+  "chunk_quality": {
+    "overall": {
+      "right_document_wrong_chunk": 32,
+      "wrong_document_useful_chunk": 36
+    },
+    "per_query": {
+      "eval-q001": {},
+      "eval-q002": {},
+      "eval-q003": {
+        "right_document_wrong_chunk": 1
+      },
+      "eval-q004": {
+        "wrong_document_useful_chunk": 3
+      },
+      "eval-q005": {
+        "right_document_wrong_chunk": 1
+      },
+      "eval-q006": {
+        "right_document_wrong_chunk": 3,
+        "wrong_document_useful_chunk": 1
+      },
+      "eval-q007": {
+        "right_document_wrong_chunk": 5
+      },
+      "eval-q008": {
+        "right_document_wrong_chunk": 2
+      },
+      "eval-q009": {
+        "wrong_document_useful_chunk": 6
+      },
+      "eval-q010": {},
+      "eval-q011": {
+        "right_document_wrong_chunk": 1,
+        "wrong_document_useful_chunk": 2
+      },
+      "eval-q012": {},
+      "eval-q013": {
+        "wrong_document_useful_chunk": 4
+      },
+      "eval-q014": {
+        "right_document_wrong_chunk": 1
+      },
+      "eval-q015": {},
+      "eval-q016": {
+        "wrong_document_useful_chunk": 1
+      },
+      "eval-q017": {
+        "right_document_wrong_chunk": 7
+      },
+      "eval-q018": {},
+      "eval-q019": {},
+      "eval-q020": {},
+      "eval-q021": {},
+      "eval-q022": {
+        "wrong_document_useful_chunk": 1
+      },
+      "eval-q023": {},
+      "eval-q024": {},
+      "eval-q025": {},
+      "eval-q026": {
+        "wrong_document_useful_chunk": 6
+      },
+      "eval-q027": {},
+      "eval-q028": {
+        "wrong_document_useful_chunk": 4,
+        "right_document_wrong_chunk": 6
+      },
+      "eval-q029": {
+        "right_document_wrong_chunk": 4,
+        "wrong_document_useful_chunk": 7
+      },
+      "eval-q030": {
+        "right_document_wrong_chunk": 1,
+        "wrong_document_useful_chunk": 1
+      }
+    },
+    "top5_by_system": {
+      "bm25": {
+        "right_document_wrong_chunk": 5,
+        "wrong_document_useful_chunk": 8
+      },
+      "dense": {
+        "wrong_document_useful_chunk": 5,
+        "right_document_wrong_chunk": 2
+      },
+      "hybrid": {
+        "wrong_document_useful_chunk": 4,
+        "right_document_wrong_chunk": 1
+      },
+      "hybrid_rerank": {
+        "right_document_wrong_chunk": 3,
+        "wrong_document_useful_chunk": 5
+      }
+    }
+  },
+  "tuning_decision": "TARGETED RETRIEVAL TUNING JUSTIFIED",
+  "tuning_candidates": [
+    {
+      "potential_change": "BM25 k1/b tuning",
+      "evidence_for": "BM25 trails hybrid modestly on broad P@5 and nDCG.",
+      "evidence_against": "BM25 already has strong statute-explicit performance; no parameter sweep evidence.",
+      "risk": "Overfit 30-query benchmark.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "legal tokenizer changes",
+      "evidence_for": "Some lexical gaps remain in transition and procedural queries.",
+      "evidence_against": "Tokenizer already preserves section/statute tokens and BM25 P@5 is high.",
+      "risk": "Could regress exact statute matching.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "query expansion",
+      "evidence_for": "Candidate-generation gaps and ambiguous/composite queries appear.",
+      "evidence_against": "Expansion can add noise; current benchmark is now inspected.",
+      "risk": "High overfitting risk.",
+      "recommendation": "TARGETED TUNING JUSTIFIED"
+    },
+    {
+      "potential_change": "explicit statute/section weighting",
+      "evidence_for": "Statute-explicit hybrid P@5 is best, suggesting section signals matter.",
+      "evidence_against": "Weakest cases are not only statute misses.",
+      "risk": "May over-prioritize bare provisions over facts.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "legal regime filtering/boosting",
+      "evidence_for": "4 primary legal-regime failures plus small transition subset.",
+      "evidence_against": "Only 3 transition-regime queries; evidence is sparse.",
+      "risk": "Could hide useful old/new law cross references.",
+      "recommendation": "TARGETED TUNING JUSTIFIED"
+    },
+    {
+      "potential_change": "RRF K tuning",
+      "evidence_for": "Hybrid improves pooled recall@20 over BM25 and Dense.",
+      "evidence_against": "Hybrid P@5/nDCG gains are modest and stable; no clear RRF-specific failure dominates.",
+      "risk": "Directly tuning on this benchmark would bias results.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "dense-only changes",
+      "evidence_for": "Dense has strong document hit@5 and good nDCG.",
+      "evidence_against": "Hybrid and rerank already use dense evidence; dense model change is high blast radius.",
+      "risk": "Model churn and cache/index rebuild cost.",
+      "recommendation": "NO TUNING NEEDED"
+    },
+    {
+      "potential_change": "reranker max_length",
+      "evidence_for": "Reranker improves graded nDCG@5.",
+      "evidence_against": "Broad P@5 is unchanged and harmful cases exist.",
+      "risk": "Longer inputs increase latency and may overfit.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "reranker candidate depth",
+      "evidence_for": "Rerank improves pooled recall@20 and strict metrics.",
+      "evidence_against": "Top20 is censored; depth effects cannot be isolated from frozen traces.",
+      "risk": "More review workload and latency.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "chunk-size changes",
+      "evidence_for": "Right-document/wrong-chunk count is 32.",
+      "evidence_against": "Changing chunks invalidates the frozen benchmark and index.",
+      "risk": "Large rebuild and comparability loss.",
+      "recommendation": "MORE EVALUATION DATA NEEDED"
+    },
+    {
+      "potential_change": "metadata-aware reranking",
+      "evidence_for": "Document/chunk mismatch and regime evidence suggest metadata could help ordering.",
+      "evidence_against": "Needs separate dev set and careful ablation.",
+      "risk": "Can encode brittle shortcuts.",
+      "recommendation": "TARGETED TUNING JUSTIFIED"
+    }
+  ]
+}
