@@ -9,9 +9,9 @@ export function toPublicResponseCardProps(response: PublicQueryResponse): Respon
       paragraphs: [response.explanation],
       keyPoints: [response.nextStepGuidance],
     },
-    sections: response.sections.map((item) => ({
+    sections: response.sections.map((item, index) => ({
       code: '',
-      section: '',
+      section: String(index),
       title: item.title,
       explanation: item.explanation,
       sourceUrl: item.link,

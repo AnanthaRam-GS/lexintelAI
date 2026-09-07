@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { UploadDropzone } from '../../components/shared';
@@ -29,6 +29,15 @@ export function PublicLanding() {
 
     setPendingInput({ kind: 'text', content });
     router.push('/public/ask');
+  };
+
+  const submitQuestionOnEnter = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.form?.requestSubmit();
   };
 
   const selectFile = (files: File[]) => {
@@ -77,6 +86,7 @@ export function PublicLanding() {
             className="text-type-body min-h-28 w-full resize-y border-0 bg-transparent text-[var(--color-body)] outline-none placeholder:text-[var(--color-muted)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
             id="public-question"
             onChange={(event) => setQuestion(event.target.value)}
+            onKeyDown={submitQuestionOnEnter}
             placeholder="What would you like help understanding?"
             value={question}
           />

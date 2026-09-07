@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -78,13 +78,59 @@ describe('PublicLanding', () => {
     expect(router.push).toHaveBeenCalledWith('/public/ask');
   });
 
-  it('does not hand off an empty or whitespace-only question', async () => {
+  it('submits a trimmed question once on plain Enter without inserting a newline', async () => {
     const user = userEvent.setup();
     renderLanding();
 
-    await user.type(screen.getByLabelText('Your question'), '   ');
-    await user.click(screen.getByRole('button', { name: 'Ask your question' }));
+    const question = screen.getByLabelText('Your question');
+    await user.type(question, '  Can my employer keep my pay?  {Enter}');
 
+    expect(question).toHaveValue('  Can my employer keep my pay?  ');
+    expect(screen.getByText('text:Can my employer keep my pay?')).toBeInTheDocument();
+    expect(router.push).toHaveBeenCalledTimes(1);
+    expect(router.push).toHaveBeenCalledWith('/public/ask');
+
+    const destination = new URL(router.push.mock.calls[0][0], 'https://legalai.test');
+    expect(destination.pathname).toBe('/public/ask');
+    expect(destination.search).toBe('');
+    expect(destination.hash).toBe('');
+  });
+
+  it('keeps Shift+Enter as a multiline gesture without handing off', async () => {
+    const user = userEvent.setup();
+    renderLanding();
+
+    const question = screen.getByLabelText('Your question');
+    await user.type(question, 'First line{Shift>}{Enter}{/Shift}Second line');
+
+    expect(question).toHaveValue('First line\nSecond line');
+    expect(screen.getByText('none')).toBeInTheDocument();
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('does not hand off a whitespace-only question on plain Enter', async () => {
+    const user = userEvent.setup();
+    renderLanding();
+
+    const question = screen.getByLabelText('Your question');
+    await user.type(question, '   {Enter}');
+
+    expect(question).toHaveValue('   ');
+    expect(screen.getByText('none')).toBeInTheDocument();
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('does not hand off Enter while an IME composition is active', async () => {
+    const user = userEvent.setup();
+    renderLanding();
+
+    const question = screen.getByLabelText('Your question');
+    await user.type(question, 'Composed question');
+    fireEvent.compositionStart(question);
+    fireEvent.keyDown(question, { key: 'Enter', isComposing: true });
+    fireEvent.compositionEnd(question);
+
+    expect(question).toHaveValue('Composed question');
     expect(screen.getByText('none')).toBeInTheDocument();
     expect(router.push).not.toHaveBeenCalled();
   });
