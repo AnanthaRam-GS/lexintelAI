@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchPublicQuery } from './query-client';
+import { fetchPublicQuery, type PublicQueryInput } from './query-client';
 
 const delayEnvironmentKey = 'NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_DELAY_MS';
 const failureEnvironmentKey = 'NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_FAILURE';
@@ -9,6 +9,7 @@ const originalFailure = process.env[failureEnvironmentKey];
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
 
   if (originalDelay === undefined) {
     delete process.env[delayEnvironmentKey];
@@ -65,6 +66,45 @@ describe('fetchPublicQuery', () => {
     await expect(request).resolves.toEqual(
       expect.objectContaining({ explanation: expect.stringContaining('PDF') }),
     );
+  });
+
+  it('rejects an invalid discriminant before waiting for configured latency', async () => {
+    vi.useFakeTimers();
+    process.env[delayEnvironmentKey] = '800';
+
+    const request = fetchPublicQuery({ kind: 'unsupported' } as unknown as PublicQueryInput);
+
+    await expect(request).rejects.toThrow('Public query input must have a text or file kind.');
+  }, 100);
+
+  it('keeps default mock latency within the 800–1500ms public range', async () => {
+    vi.useFakeTimers();
+    delete process.env[delayEnvironmentKey];
+    const random = vi.spyOn(Math, 'random');
+
+    random.mockReturnValue(0);
+    const shortestRequest = fetchPublicQuery({ kind: 'text', content: 'Help me' });
+    let shortestRequestSettled = false;
+    void shortestRequest.then(() => {
+      shortestRequestSettled = true;
+    });
+
+    await vi.advanceTimersByTimeAsync(799);
+    expect(shortestRequestSettled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(shortestRequest).resolves.toEqual(expect.any(Object));
+
+    random.mockReturnValue(0.999999);
+    const longestRequest = fetchPublicQuery({ kind: 'text', content: 'Help me' });
+    let longestRequestSettled = false;
+    void longestRequest.then(() => {
+      longestRequestSettled = true;
+    });
+
+    await vi.advanceTimersByTimeAsync(1499);
+    expect(longestRequestSettled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(longestRequest).resolves.toEqual(expect.any(Object));
   });
 
   it('rejects through the configured public mock failure input', async () => {
