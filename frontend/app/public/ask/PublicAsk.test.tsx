@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PublicSessionProvider, usePublicSession } from '../PublicSessionProvider';
 import type { PublicQueryInput } from '../query-client';
 
-import { PublicAsk } from './PublicAsk';
+import { PublicAsk, type PublicAskProps } from './PublicAsk';
 import type { ChatEntry } from './chat-model';
 
 const examples = [
@@ -15,7 +15,7 @@ const examples = [
   'What should I do after receiving a court notice?',
 ];
 
-function SessionSeed({ input }: { input: { kind: 'text'; content: string } }) {
+function SessionSeed({ input }: { input: PublicQueryInput }) {
   const { setPendingInput } = usePublicSession();
 
   useEffect(() => {
@@ -25,19 +25,29 @@ function SessionSeed({ input }: { input: { kind: 'text'; content: string } }) {
   return null;
 }
 
+function PublicAskWithSession(props: PublicAskProps) {
+  return (
+    <PublicSessionProvider>
+      <PublicAsk {...props} />
+    </PublicSessionProvider>
+  );
+}
+
 function renderAsk({
   isRequestPending = false,
   onInputSubmitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>(),
-}: {
-  isRequestPending?: boolean;
-  onInputSubmitted?: (input: PublicQueryInput, entry: ChatEntry) => void;
-} = {}) {
+  onNewConversation,
+  onRetry,
+}: PublicAskProps = {}) {
   return {
     onInputSubmitted,
     ...render(
-      <PublicSessionProvider>
-        <PublicAsk isRequestPending={isRequestPending} onInputSubmitted={onInputSubmitted} />
-      </PublicSessionProvider>,
+      <PublicAskWithSession
+        isRequestPending={isRequestPending}
+        onInputSubmitted={onInputSubmitted}
+        onNewConversation={onNewConversation}
+        onRetry={onRetry}
+      />,
     ),
   };
 }
@@ -131,6 +141,21 @@ describe('PublicAsk', () => {
     expect(screen.getByLabelText('Your question')).toHaveValue('');
   });
 
+  it('prevents bare Enter from changing an armed PDF mode', async () => {
+    const user = userEvent.setup();
+    const { onInputSubmitted } = renderAsk();
+    await selectPdf(user);
+
+    const question = screen.getByLabelText('Your question');
+    await user.click(question);
+    await user.keyboard('{Enter}');
+
+    expect(question).toHaveValue('');
+    expect(screen.getByText('Active input: Temporary PDF')).toBeVisible();
+    expect(screen.getByText('notice.pdf')).toBeVisible();
+    expect(onInputSubmitted).not.toHaveBeenCalled();
+  });
+
   it('keeps a newline in an armed text question when Shift+Enter is pressed', async () => {
     const user = userEvent.setup();
     const { onInputSubmitted } = renderAsk();
@@ -144,6 +169,19 @@ describe('PublicAsk', () => {
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
+  it('prevents bare Enter when no input mode is armed', async () => {
+    const user = userEvent.setup();
+    const { onInputSubmitted } = renderAsk();
+    const question = screen.getByLabelText('Your question');
+
+    await user.click(question);
+    await user.keyboard('{Enter}');
+
+    expect(question).toHaveValue('');
+    expect(screen.getByText('Choose text or one PDF')).toBeVisible();
+    expect(onInputSubmitted).not.toHaveBeenCalled();
+  });
+
   it('does not submit whitespace-only text', async () => {
     const user = userEvent.setup();
     const { onInputSubmitted } = renderAsk();
@@ -154,12 +192,45 @@ describe('PublicAsk', () => {
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
+  it('submits a selected PDF with its original File object', async () => {
+    const user = userEvent.setup();
+    const submitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>();
+    renderAsk({ onInputSubmitted: submitted });
+
+    const { file } = await selectPdf(user);
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(screen.getByRole('article', { name: 'Temporary PDF: notice.pdf' })).toBeVisible();
+    expect(submitted).toHaveBeenCalledTimes(1);
+
+    const submittedInput = submitted.mock.calls[0]?.[0];
+    expect(submittedInput?.kind).toBe('file');
+    if (submittedInput?.kind === 'file') {
+      expect(submittedInput.file).toBe(file);
+    }
+  });
+
   it('disables both composer modes while a request is pending', () => {
     renderAsk({ isRequestPending: true });
 
     expect(screen.getByLabelText('Your question')).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Add one PDF' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
+  });
+
+  it('disables an already-open PDF mode when a request becomes pending', async () => {
+    const user = userEvent.setup();
+    const submitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>();
+    const { rerender } = renderAsk({ onInputSubmitted: submitted });
+
+    await selectPdf(user);
+    rerender(<PublicAskWithSession isRequestPending onInputSubmitted={submitted} />);
+
+    expect(screen.getByLabelText('Your question')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add one PDF' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Browse files' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Remove notice.pdf' })).toBeDisabled();
   });
 
   it('consumes a landing handoff once and adds its user turn to the thread', async () => {
@@ -176,15 +247,74 @@ describe('PublicAsk', () => {
     expect(submitted).toHaveBeenCalledTimes(1);
   });
 
+  it('consumes a file landing handoff once with the original File object', async () => {
+    const file = new File(['pdf'], 'notice.pdf', { type: 'application/pdf' });
+    const submitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>();
+
+    render(
+      <PublicSessionProvider>
+        <SessionSeed input={{ kind: 'file', file }} />
+        <PublicAsk onInputSubmitted={submitted} />
+      </PublicSessionProvider>,
+    );
+
+    expect(await screen.findByRole('article', { name: 'Temporary PDF: notice.pdf' })).toBeVisible();
+    expect(submitted).toHaveBeenCalledTimes(1);
+
+    const submittedInput = submitted.mock.calls[0]?.[0];
+    expect(submittedInput?.kind).toBe('file');
+    if (submittedInput?.kind === 'file') {
+      expect(submittedInput.file).toBe(file);
+    }
+  });
+
+  it('clears immediately from zero messages without opening confirmation', async () => {
+    const user = userEvent.setup();
+    renderAsk();
+
+    await user.click(screen.getByRole('button', { name: examples[0] }));
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+
+    expect(
+      screen.queryByRole('region', { name: 'Confirm new conversation' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Your question')).toHaveValue('');
+    expect(screen.getByLabelText('Your question')).toHaveFocus();
+  });
+
+  it('clears immediately from one message without opening confirmation', async () => {
+    const user = userEvent.setup();
+    renderAsk();
+
+    await user.type(screen.getByLabelText('Your question'), 'First question{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+
+    expect(
+      screen.queryByRole('region', { name: 'Confirm new conversation' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('First question')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Your question')).toHaveFocus();
+  });
+
   it('asks for confirmation before clearing a conversation with multiple messages', async () => {
     const user = userEvent.setup();
     renderAsk();
 
     await user.type(screen.getByLabelText('Your question'), 'First question{Enter}');
     await user.type(screen.getByLabelText('Your question'), 'Second question{Enter}');
-    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    const newConversation = screen.getByRole('button', { name: 'Start New Conversation' });
+    expect(newConversation).toHaveAttribute('aria-expanded', 'false');
+    expect(newConversation).toHaveAttribute(
+      'aria-controls',
+      'public-ask-new-conversation-confirmation',
+    );
 
-    expect(screen.getByRole('region', { name: 'Confirm new conversation' })).toBeVisible();
+    await user.click(newConversation);
+
+    const confirmation = screen.getByRole('region', { name: 'Confirm new conversation' });
+    expect(newConversation).toHaveAttribute('aria-expanded', 'true');
+    expect(confirmation).toHaveAttribute('id', 'public-ask-new-conversation-confirmation');
+    expect(newConversation).toHaveFocus();
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(screen.getByText('First question')).toBeVisible();

@@ -208,8 +208,13 @@ export function PublicAsk({
   };
 
   const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey && !isRequestPending && activeMode === 'text') {
-      event.preventDefault();
+    if (event.key !== 'Enter' || event.shiftKey) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (!isRequestPending && activeMode === 'text') {
       submitCurrentInput();
     }
   };
@@ -270,6 +275,8 @@ export function PublicAsk({
           </p>
         </div>
         <button
+          aria-controls="public-ask-new-conversation-confirmation"
+          aria-expanded={isConfirmingNewConversation}
           className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-brass)] bg-[var(--color-surface-raised)] px-4 font-semibold text-[var(--color-brass-active)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
           onClick={requestNewConversation}
           ref={newConversationButtonRef}
@@ -283,6 +290,7 @@ export function PublicAsk({
         <section
           aria-label="Confirm new conversation"
           className="mx-auto mt-5 max-w-4xl rounded-[var(--radius-standard)] border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] p-4"
+          id="public-ask-new-conversation-confirmation"
         >
           <h2 className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]">
             Start a new conversation?
