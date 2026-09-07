@@ -1,0 +1,882 @@
+{
+  "bm25": {
+    "judged_coverage_at_5": 1.0,
+    "judged_coverage_at_20": 0.726667,
+    "top5_judged_entries": 150,
+    "top5_expected_entries": 150,
+    "top20_judged_entries": 436,
+    "top20_expected_entries": 600,
+    "per_query": {
+      "eval-q001": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q002": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q003": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q004": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q005": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q006": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q007": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q008": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q009": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q010": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q011": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q012": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q013": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q014": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q015": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q016": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q017": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q018": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q019": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q020": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q021": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q022": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q023": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 12,
+        "top20_judged_entries": 12,
+        "top20_unjudged_unknown": 8
+      },
+      "eval-q024": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q025": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q026": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q027": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q028": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q029": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q030": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      }
+    }
+  },
+  "dense": {
+    "judged_coverage_at_5": 1.0,
+    "judged_coverage_at_20": 0.725,
+    "top5_judged_entries": 150,
+    "top5_expected_entries": 150,
+    "top20_judged_entries": 435,
+    "top20_expected_entries": 600,
+    "per_query": {
+      "eval-q001": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q002": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q003": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q004": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q005": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q006": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q007": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q008": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q009": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q010": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q011": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q012": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q013": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q014": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q015": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q016": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q017": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q018": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q019": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q020": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q021": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q022": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q023": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 14,
+        "top20_judged_entries": 14,
+        "top20_unjudged_unknown": 6
+      },
+      "eval-q024": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 12,
+        "top20_judged_entries": 12,
+        "top20_unjudged_unknown": 8
+      },
+      "eval-q025": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q026": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q027": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q028": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 13,
+        "top20_judged_entries": 13,
+        "top20_unjudged_unknown": 7
+      },
+      "eval-q029": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q030": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      }
+    }
+  },
+  "hybrid": {
+    "judged_coverage_at_5": 1.0,
+    "judged_coverage_at_20": 0.75,
+    "top5_judged_entries": 150,
+    "top5_expected_entries": 150,
+    "top20_judged_entries": 450,
+    "top20_expected_entries": 600,
+    "per_query": {
+      "eval-q001": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q002": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q003": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q004": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q005": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q006": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q007": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q008": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q009": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q010": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q011": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q012": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q013": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q014": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q015": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q016": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q017": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q018": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q019": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q020": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q021": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q022": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q023": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q024": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q025": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q026": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q027": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q028": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q029": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q030": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      }
+    }
+  },
+  "hybrid_rerank": {
+    "judged_coverage_at_5": 1.0,
+    "judged_coverage_at_20": 0.75,
+    "top5_judged_entries": 150,
+    "top5_expected_entries": 150,
+    "top20_judged_entries": 450,
+    "top20_expected_entries": 600,
+    "per_query": {
+      "eval-q001": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q002": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q003": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q004": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q005": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q006": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q007": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q008": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q009": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q010": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q011": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q012": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q013": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q014": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q015": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q016": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q017": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q018": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q019": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q020": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q021": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q022": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q023": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q024": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q025": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q026": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q027": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q028": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q029": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      },
+      "eval-q030": {
+        "top5_trace_entries": 5,
+        "top5_judged_entries": 5,
+        "top20_trace_entries": 15,
+        "top20_judged_entries": 15,
+        "top20_unjudged_unknown": 5
+      }
+    }
+  }
+}
