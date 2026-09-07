@@ -71,9 +71,7 @@ small screens so it cannot cover messages or mobile browser controls.
 only one pending landing input:
 
 ```ts
-type PublicQueryInput =
-  | { kind: 'text'; content: string }
-  | { kind: 'file'; file: File };
+type PublicQueryInput = { kind: 'text'; content: string } | { kind: 'file'; file: File };
 ```
 
 The provider exists only to carry the pending input through client navigation.

@@ -46,6 +46,7 @@
 ### Task 1: Public query contract, mock, and ResponseCard adapter
 
 **Files:**
+
 - Create: `frontend/lib/mocks/publicQuery.ts`
 - Create: `frontend/app/public/query-client.ts`
 - Create: `frontend/app/public/response-adapter.ts`
@@ -53,6 +54,7 @@
 - Test: `frontend/app/public/query-client.test.ts`
 
 **Interfaces:**
+
 - Produces: `PublicQueryInput`, `PublicQueryResponse`, `configurePublicQueryMockForTests`, `resetPublicQueryMockForTests`, `fetchPublicQueryMock(input): Promise<PublicQueryResponse>`, `fetchPublicQuery`, and `toPublicResponseCardProps(response): ResponseCardProps`.
 - Consumes: `ResponseCardProps` from `frontend/components/shared` without modifying it.
 
@@ -90,9 +92,7 @@ Expected: FAIL because the mock contract, boundary, and adapter do not exist.
 - [ ] **Step 3: Implement the unique mock contract**
 
 ```ts
-export type PublicQueryInput =
-  | { kind: 'text'; content: string }
-  | { kind: 'file'; file: File };
+export type PublicQueryInput = { kind: 'text'; content: string } | { kind: 'file'; file: File };
 
 export interface PublicQueryResponse {
   explanation: string;
@@ -104,9 +104,7 @@ export interface PublicQueryResponse {
 // TODO(contract): confirm against backend/app/models/ and delete this mock once
 // POST /query/public is exposed through frontend/lib/api.ts. Consumers must then
 // change only the query-client import, not their state shape or rendering logic.
-export async function fetchPublicQueryMock(
-  input: PublicQueryInput,
-): Promise<PublicQueryResponse> {
+export async function fetchPublicQueryMock(input: PublicQueryInput): Promise<PublicQueryResponse> {
   // Validate the discriminant, wait 800–1500 ms by default, optionally reject,
   // and return a public-only fixture derived from the input kind.
 }
@@ -126,9 +124,7 @@ export {
 ```
 
 ```ts
-export function toPublicResponseCardProps(
-  response: PublicQueryResponse,
-): ResponseCardProps {
+export function toPublicResponseCardProps(response: PublicQueryResponse): ResponseCardProps {
   return {
     mode: 'public',
     content: {
@@ -172,6 +168,7 @@ git commit -m "feat(public): add mock query contract boundary"
 ### Task 2: In-memory landing handoff and Guided Editorial landing page
 
 **Files:**
+
 - Create: `frontend/app/public/PublicSessionProvider.tsx`
 - Create: `frontend/app/public/PublicSessionProvider.test.tsx`
 - Create: `frontend/app/public/PublicLanding.tsx`
@@ -180,6 +177,7 @@ git commit -m "feat(public): add mock query contract boundary"
 - Create: `frontend/app/public/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `PublicQueryInput` from `query-client.ts`; Phase 1 `UploadDropzone`.
 - Produces: `usePublicSession()` with `pendingInput`, `setPendingInput`, and `takePendingInput`.
 
@@ -198,7 +196,10 @@ it('submits plain text to the ask route without placing it in the URL', async ()
   render(<PublicLanding />, { wrapper: TestPublicSessionProvider });
   await user.type(screen.getByLabelText('Your question'), 'Can my employer keep my pay?');
   await user.click(screen.getByRole('button', { name: 'Ask your question' }));
-  expect(setPendingInput).toHaveBeenCalledWith({ kind: 'text', content: 'Can my employer keep my pay?' });
+  expect(setPendingInput).toHaveBeenCalledWith({
+    kind: 'text',
+    content: 'Can my employer keep my pay?',
+  });
   expect(push).toHaveBeenCalledWith('/public/ask');
 });
 ```
@@ -234,7 +235,13 @@ export function PublicSessionProvider({ children }: PropsWithChildren) {
     setPendingInput(null);
     return input;
   }, []);
-  return <PublicSessionContext.Provider value={{ pendingInput, setPendingInput: storePendingInput, takePendingInput }}>{children}</PublicSessionContext.Provider>;
+  return (
+    <PublicSessionContext.Provider
+      value={{ pendingInput, setPendingInput: storePendingInput, takePendingInput }}
+    >
+      {children}
+    </PublicSessionContext.Provider>
+  );
 }
 ```
 
@@ -269,6 +276,7 @@ git commit -m "feat(public): add guided public landing page"
 ### Task 3: Conversation model and alternative-input composer
 
 **Files:**
+
 - Create: `frontend/app/public/ask/chat-model.ts`
 - Create: `frontend/app/public/ask/chat-model.test.ts`
 - Create: `frontend/app/public/ask/PublicAsk.tsx`
@@ -276,6 +284,7 @@ git commit -m "feat(public): add guided public landing page"
 - Create: `frontend/app/public/ask/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `usePublicSession`, `PublicQueryInput`, Phase 1 `UploadDropzone`.
 - Produces: exact `ChatMessage`, `ChatEntry`, `ChatState`, `chatReducer`, and the interactive ask route.
 
@@ -323,7 +332,10 @@ export type ChatMessage =
   | { role: 'assistant'; response: PublicQueryResponse }
   | { role: 'assistant'; kind: 'error'; error: string };
 
-export interface ChatEntry { id: string; message: ChatMessage }
+export interface ChatEntry {
+  id: string;
+  message: ChatMessage;
+}
 ```
 
 Reducer actions append user/assistant entries, remove an error before retry, and
@@ -359,10 +371,12 @@ git commit -m "feat(public): add session-only conversation composer"
 ### Task 4: Request lifecycle, response rendering, safe error, and exact Retry
 
 **Files:**
+
 - Modify: `frontend/app/public/ask/PublicAsk.tsx`
 - Modify: `frontend/app/public/ask/PublicAsk.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `fetchPublicQuery`, `toPublicResponseCardProps`, `LoadingSpinner`, `ErrorMessage`, `ResponseCard`.
 - Produces: serialized request lifecycle with retained exact-turn retry input.
 
@@ -448,10 +462,12 @@ git commit -m "feat(public): wire mock answers and exact-turn retry"
 ### Task 5: New-conversation threshold, focus, and scroll behavior
 
 **Files:**
+
 - Modify: `frontend/app/public/ask/PublicAsk.tsx`
 - Modify: `frontend/app/public/ask/PublicAsk.test.tsx`
 
 **Interfaces:**
+
 - Consumes: reducer clear action and request-generation guard.
 - Produces: locked 0–1 immediate clear, 2+ confirmation, cancellation, focus restoration, and latest-entry scrolling.
 
@@ -461,7 +477,9 @@ git commit -m "feat(public): wire mock answers and exact-turn retry"
 it.each([0, 1])('clears %i messages immediately without confirmation', async (count) => {
   renderAskWithMessages(count);
   await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
-  expect(screen.queryByRole('region', { name: 'Confirm new conversation' })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('region', { name: 'Confirm new conversation' }),
+  ).not.toBeInTheDocument();
   expect(screen.getByLabelText('Your question')).toHaveFocus();
 });
 
@@ -527,6 +545,7 @@ git commit -m "test(public): lock conversation reset and focus flows"
 ### Task 6: Full verification, screenshots, scope audit, push, and PR
 
 **Files:**
+
 - Create: `frontend/app/public/screenshots/public-landing-desktop.png`
 - Create: `frontend/app/public/screenshots/public-landing-mobile.png`
 - Create: `frontend/app/public/screenshots/public-chat-active.png`
@@ -535,6 +554,7 @@ git commit -m "test(public): lock conversation reset and focus flows"
 - Modify only evidence-driven files under `frontend/app/public/**` when a verified defect requires repair.
 
 **Interfaces:**
+
 - Consumes: completed Public Mode routes and local `docs/POST_PHASE_VERIFICATION_GATE.md`.
 - Produces: verified branch, committed screenshots, pushed remote branch, open unmerged PR, independent gate report.
 
