@@ -521,10 +521,7 @@ export function PublicAsk({
         </ol>
       ) : null}
 
-      <section
-        aria-label="Ask another question"
-        className="mx-auto mt-8 max-w-4xl lg:sticky lg:bottom-4"
-      >
+      <section aria-label="Ask another question" className="mx-auto mt-8 max-w-4xl">
         <form
           className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 shadow-[var(--shadow-component)] sm:p-5"
           onSubmit={handleComposerSubmit}
