@@ -1,0 +1,2237 @@
+[
+  {
+    "query_id": "eval-q001",
+    "query_text": "murder conviction section 302 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2,
+        "broad_pooled_recall_at_20": 0.6,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8613632863224759,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.21428571428571427,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7227265726449519,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2,
+        "broad_pooled_recall_at_20": 0.6,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.35714285714285715,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2,
+        "broad_pooled_recall_at_20": 0.6,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.915209948681596,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.2857142857142857,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2,
+        "broad_pooled_recall_at_20": 0.6,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8274043288765652,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.21428571428571427,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6548086577531307,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q002",
+    "query_text": "dowry death section 304B IPC",
+    "query_type": "statute_explicit",
+    "target_family": "dowry_and_domestic_cruelty",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.8333333333333334,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.3125,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.3125,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.3125,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.8333333333333334,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.3125,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q003",
+    "query_text": "criminal breach of trust section 406 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "criminal_breach_of_trust",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.8125,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7573857224418388,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5147714448836774,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.875,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.819972692711383,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.639945385422766,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.875,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7573857224418388,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5147714448836774,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.875,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.819972692711383,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.639945385422766,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q004",
+    "query_text": "robbery section 392 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "theft_and_robbery",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.5,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.7142857142857143,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.5,
+        "broad_pooled_recall_at_20": 0.7,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.934397461243829,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.5714285714285714,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.5,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.7142857142857143,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.5,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.7142857142857143,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q005",
+    "query_text": "rape section 376 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "sexual_offences",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7222222222222222,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.849607409925425,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6992148198508501,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.05555555555555555,
+        "broad_pooled_recall_at_20": 0.4444444444444444,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.16958010263680806,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": 0.0,
+        "strict_mrr_at_5": 0.0,
+        "strict_binary_ndcg_at_5": 0.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.5555555555555556,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.915209948681596,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6111111111111112,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8082168163143322,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6164336326286644,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q006",
+    "query_text": "common intention section 34 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "conspiracy_common_intention",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7883291114011227,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7227265726449519,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.8571428571428571,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.7857142857142857,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8687949224876582,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q007",
+    "query_text": "kidnapping section 363 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "kidnapping",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.625,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6843515475204855,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5147714448836774,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.875,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.915209948681596,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.6666666666666666,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.8125,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8930068676327362,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.6666666666666666,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.8125,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7860137352654724,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.6666666666666666,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q008",
+    "query_text": "cheating section 420 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7647058823529411,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8930068676327362,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.6470588235294118,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.934397461243829,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7647058823529411,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.934397461243829,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7058823529411765,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8930068676327362,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q009",
+    "query_text": "voluntarily causing hurt section 323 IPC",
+    "query_type": "statute_explicit",
+    "target_family": "hurt_and_assault",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4603135832450421,
+        "document_hit_at_5": false,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": 0.0,
+        "strict_mrr_at_5": 0.0,
+        "strict_binary_ndcg_at_5": 0.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.4,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.3779405648605947,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.43067655807339306,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.8888888888888888,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5693881728777753,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.43067655807339306,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.5555555555555556,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q010",
+    "query_text": "criminal conspiracy section 120B IPC",
+    "query_type": "statute_explicit",
+    "target_family": "conspiracy_common_intention",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.764817358607021,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5296347172140421,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.9269658250786468,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8539316501572937,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.849607409925425,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6992148198508501,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8930068676327362,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q011",
+    "query_text": "bail in commercial quantity narcotics case",
+    "query_type": "plain_language",
+    "target_family": "narcotics_related",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.26666666666666666,
+        "broad_pooled_recall_at_20": 0.7333333333333333,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.5878056198050307,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5147714448836774,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.819972692711383,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.639945385422766,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.915209948681596,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3333333333333333,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8613632863224759,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7227265726449519,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q012",
+    "query_text": "husband accused of dowry death",
+    "query_type": "plain_language",
+    "target_family": "dowry_and_domestic_cruelty",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2631578947368421,
+        "broad_pooled_recall_at_20": 0.7894736842105263,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.29411764705882354,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2631578947368421,
+        "broad_pooled_recall_at_20": 0.7894736842105263,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.29411764705882354,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2631578947368421,
+        "broad_pooled_recall_at_20": 0.7894736842105263,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.29411764705882354,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2631578947368421,
+        "broad_pooled_recall_at_20": 0.7894736842105263,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.29411764705882354,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q013",
+    "query_text": "cheating involving bank loan",
+    "query_type": "plain_language",
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.6111111111111112,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7860137352654724,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.3076923076923077,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.38461538461538464,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.830419897363192,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.3076923076923077,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7860137352654724,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.3076923076923077,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q014",
+    "query_text": "group assault with shared intention",
+    "query_type": "plain_language",
+    "target_family": "hurt_and_assault",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2,
+        "broad_pooled_recall_at_20": 0.55,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6473770215879483,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.18181818181818182,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5087403079104241,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.75,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.45454545454545453,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.65,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7765732350040719,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.18181818181818182,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5531464700081437,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.65,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8613632863224759,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.2727272727272727,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7227265726449519,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q015",
+    "query_text": "child taken away without consent",
+    "query_type": "plain_language",
+    "target_family": "kidnapping",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.21428571428571427,
+        "broad_pooled_recall_at_20": 0.2857142857142857,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.35262297841205165,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.1111111111111111,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.21398626473452756,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8613632863224759,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7227265726449519,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.7142857142857143,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5117558763970509,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.1111111111111111,
+        "strict_mrr_at_5": 0.3333333333333333,
+        "strict_binary_ndcg_at_5": 0.16958010263680806,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.7857142857142857,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6187490087643146,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.2222222222222222,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.38356636737133565,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q016",
+    "query_text": "cash and jewellery stolen from victim",
+    "query_type": "plain_language",
+    "target_family": "theft_and_robbery",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.6,
+        "broad_pooled_recall_at_20": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.57541711438138,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.5012658353418871,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.4,
+        "broad_pooled_recall_at_5": 0.4,
+        "broad_pooled_recall_at_20": 0.4,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.43673949858938643,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.3333333333333333,
+        "strict_binary_ndcg_at_5": 0.3065735963827292,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.4,
+        "broad_pooled_recall_at_5": 0.4,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.3847368188672701,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.38685280723454163,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.4,
+        "broad_pooled_recall_at_5": 0.4,
+        "broad_pooled_recall_at_20": 0.8,
+        "broad_mrr_at_5": 0.3333333333333333,
+        "graded_ndcg_at_5": 0.3124164813082815,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.3333333333333333,
+        "strict_binary_ndcg_at_5": 0.3065735963827292,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q017",
+    "query_text": "sexual assault testimony of prosecutrix",
+    "query_type": "plain_language",
+    "target_family": "sexual_offences",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.42857142857142855,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.44436116952724447,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.25,
+        "strict_mrr_at_5": 0.3333333333333333,
+        "strict_binary_ndcg_at_5": 0.19519002499605084,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.6428571428571429,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.78679862894141,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5413996682199069,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.8571428571428571,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7198175284296092,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.3973220069685352,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.7142857142857143,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.43177993200825343,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.25,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.16812753627111746,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q018",
+    "query_text": "fraudulent inducement and dishonest intention",
+    "query_type": "plain_language",
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7222222222222222,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.934397461243829,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.5555555555555556,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.5952372559702129,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5296347172140421,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6111111111111112,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.934397461243829,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.4444444444444444,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6111111111111112,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.5555555555555556,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q019",
+    "query_text": "anticipatory bail under BNSS",
+    "query_type": "procedural_relief",
+    "target_family": "other",
+    "target_regime": "bns_bnss",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.45454545454545453,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.7857142857142857,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8687949224876582,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2857142857142857,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8687949224876582,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.36363636363636365,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8687949224876582,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.35714285714285715,
+        "broad_pooled_recall_at_20": 0.9285714285714286,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.45454545454545453,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q020",
+    "query_text": "quashing FIR under section 482 CrPC",
+    "query_type": "procedural_relief",
+    "target_family": "other",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.23809523809523808,
+        "broad_pooled_recall_at_20": 0.5714285714285714,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.14285714285714285,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5087403079104241,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.23809523809523808,
+        "broad_pooled_recall_at_20": 0.6190476190476191,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.9269658250786468,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.2857142857142857,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.8539316501572937,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.23809523809523808,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.819972692711383,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.21428571428571427,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.639945385422766,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.23809523809523808,
+        "broad_pooled_recall_at_20": 0.6190476190476191,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.915209948681596,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.2857142857142857,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q021",
+    "query_text": "suspension of sentence in criminal appeal",
+    "query_type": "procedural_relief",
+    "target_family": "other",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.4,
+        "broad_pooled_recall_at_5": 0.14285714285714285,
+        "broad_pooled_recall_at_20": 0.35714285714285715,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.71229144280931,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.21428571428571427,
+        "broad_pooled_recall_at_20": 0.6428571428571429,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4501924534182432,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": 0.0,
+        "strict_mrr_at_5": 0.0,
+        "strict_binary_ndcg_at_5": 0.0,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.07142857142857142,
+        "broad_pooled_recall_at_20": 0.42857142857142855,
+        "broad_mrr_at_5": 0.3333333333333333,
+        "graded_ndcg_at_5": 0.10918487464734661,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": 0.0,
+        "strict_mrr_at_5": 0.0,
+        "strict_binary_ndcg_at_5": 0.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.21428571428571427,
+        "broad_pooled_recall_at_20": 0.6428571428571429,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8063381748228982,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q022",
+    "query_text": "regular bail under NDPS Act",
+    "query_type": "procedural_relief",
+    "target_family": "narcotics_related",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7647058823529411,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8274043288765652,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.2727272727272727,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6548086577531307,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.5294117647058824,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.45454545454545453,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7058823529411765,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8421757737602428,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.2727272727272727,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6843515475204855,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.29411764705882354,
+        "broad_pooled_recall_at_20": 0.7647058823529411,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 0.45454545454545453,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q023",
+    "query_text": "appeal against conviction for murder",
+    "query_type": "procedural_relief",
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.21739130434782608,
+        "broad_pooled_recall_at_20": 0.4782608695652174,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.16666666666666666,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5087403079104241,
+        "judged_top20": 12,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.17391304347826086,
+        "broad_pooled_recall_at_20": 0.5652173913043478,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6039775638806372,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.08333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.3391602052736161,
+        "judged_top20": 14,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.21739130434782608,
+        "broad_pooled_recall_at_20": 0.6086956521739131,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8930068676327362,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.7860137352654724,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.17391304347826086,
+        "broad_pooled_recall_at_20": 0.6086956521739131,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.830419897363192,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.830419897363192,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q024",
+    "query_text": "bail where accused served section 41A notice",
+    "query_type": "procedural_relief",
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "strict_status": "not_applicable_no_strict_relevant_qrel",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.0,
+        "broad_pooled_recall_at_5": 0.0,
+        "broad_pooled_recall_at_20": 0.3076923076923077,
+        "broad_mrr_at_5": 0.0,
+        "graded_ndcg_at_5": 0.0,
+        "document_hit_at_5": false,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 14,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20",
+          "zero_relevant_top5"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.38461538461538464,
+        "broad_pooled_recall_at_20": 0.7692307692307693,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 12,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.23076923076923078,
+        "broad_pooled_recall_at_20": 0.6153846153846154,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6548086577531307,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 15,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.23076923076923078,
+        "broad_pooled_recall_at_20": 0.6923076923076923,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6843515475204855,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 15,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q025",
+    "query_text": "offence under BNS after July 2024",
+    "query_type": "transition_regime",
+    "target_family": "other",
+    "target_regime": "bns_bnss",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6666666666666666,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6917831836856678,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.38356636737133565,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.8333333333333334,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8421757737602428,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6843515475204855,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.764817358607021,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5296347172140421,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.8333333333333334,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8421757737602428,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.5,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6843515475204855,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q026",
+    "query_text": "BNSS anticipatory bail with old IPC offence",
+    "query_type": "transition_regime",
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.875,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.625,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.830419897363192,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.8,
+        "strict_pooled_recall_at_5": 0.8,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.6608397947263839,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.75,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.8125,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 1.0,
+        "strict_pooled_recall_at_5": 1.0,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 1.0,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q027",
+    "query_text": "IPC offence tried after new criminal laws commenced",
+    "query_type": "transition_regime",
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.75,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.42620876477116804,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.46927872602275644,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.5,
+        "broad_mrr_at_5": 0.25,
+        "graded_ndcg_at_5": 0.18355812383235906,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.20210734650054757,
+        "judged_top20": 13,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.25,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.42620876477116804,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.46927872602275644,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.2,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.25,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.42620876477116804,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.3333333333333333,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.46927872602275644,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20",
+          "document_hit_but_poor_chunk_score"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q028",
+    "query_text": "murder with robbery and recovery evidence",
+    "query_type": "hard_ambiguous",
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "strict_status": "not_applicable_no_strict_relevant_qrel",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.3125,
+        "broad_pooled_recall_at_20": 0.625,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 1.0,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 15,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.5,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7860137352654724,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 13,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.625,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.830419897363192,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 15,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.25,
+        "broad_pooled_recall_at_20": 0.5625,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.8539316501572937,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.0,
+        "strict_pooled_recall_at_5": null,
+        "strict_mrr_at_5": null,
+        "strict_binary_ndcg_at_5": null,
+        "judged_top20": 15,
+        "flags": [
+          "no_strict_qrels",
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q029",
+    "query_text": "kidnapping followed by sexual assault",
+    "query_type": "hard_ambiguous",
+    "target_family": "sexual_offences",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.5,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.46604104255408946,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.125,
+        "strict_mrr_at_5": 0.25,
+        "strict_binary_ndcg_at_5": 0.14606834984270645,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7765732350040719,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.25,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.5531464700081437,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.6111111111111112,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7426142775581612,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.4,
+        "strict_pooled_recall_at_5": 0.25,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.48522855511632257,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7222222222222222,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7573857224418388,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.375,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5147714448836774,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  },
+  {
+    "query_id": "eval-q030",
+    "query_text": "cheating and criminal breach of trust in business dispute",
+    "query_type": "hard_ambiguous",
+    "target_family": "criminal_breach_of_trust",
+    "target_regime": "ipc_crpc",
+    "strict_status": "eligible",
+    "systems": {
+      "bm25": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7222222222222222,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.819972692711383,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.23076923076923078,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.639945385422766,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "dense": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7234267649959281,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.23076923076923078,
+        "strict_mrr_at_5": 1.0,
+        "strict_binary_ndcg_at_5": 0.6164336326286644,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid": {
+        "broad_precision_at_5": 1.0,
+        "broad_pooled_recall_at_5": 0.2777777777777778,
+        "broad_pooled_recall_at_20": 0.7777777777777778,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.764817358607021,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.23076923076923078,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5296347172140421,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      },
+      "hybrid_rerank": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.2222222222222222,
+        "broad_pooled_recall_at_20": 0.7222222222222222,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.6992148198508501,
+        "document_hit_at_5": true,
+        "strict_precision_at_5": 0.6,
+        "strict_pooled_recall_at_5": 0.23076923076923078,
+        "strict_mrr_at_5": 0.5,
+        "strict_binary_ndcg_at_5": 0.5296347172140421,
+        "judged_top20": 15,
+        "flags": [
+          "low_judged_coverage_at_20"
+        ]
+      }
+    }
+  }
+]
