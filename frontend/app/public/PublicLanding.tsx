@@ -52,7 +52,7 @@ export function PublicLanding() {
       </header>
 
       <section className="mx-auto mt-16 max-w-3xl" aria-labelledby="public-landing-title">
-        <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+        <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-active)]">
           PLAIN-LANGUAGE LEGAL INFORMATION
         </p>
         <h1
@@ -113,7 +113,7 @@ export function PublicLanding() {
 
       <section className="mx-auto mt-12 max-w-3xl" aria-labelledby="example-questions-title">
         <p
-          className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]"
+          className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-active)]"
           id="example-questions-title"
         >
           QUESTIONS PEOPLE OFTEN ASK
