@@ -30,6 +30,66 @@ class RetrievalResult:
     effective_offence_family: str | None
     effective_legal_regime: str | None
     text_source_type: str | None
+    retrieval_mode: str = "dense"
+    dense_rank: int | None = None
+    dense_score: float | None = None
+    lexical_rank: int | None = None
+    lexical_score: float | None = None
+    hybrid_score: float | None = None
+    rerank_score: float | None = None
+    rerank_rank: int | None = None
+    pre_rerank_rank: int | None = None
+    pre_rerank_score: float | None = None
+
+
+def result_matches_filters(result: RetrievalResult, filters: dict[str, Any] | None) -> bool:
+    if not filters:
+        return True
+    if filters.get("effective_legal_regime") and result.effective_legal_regime != filters["effective_legal_regime"]:
+        return False
+    if filters.get("effective_offence_family") and result.effective_offence_family != filters["effective_offence_family"]:
+        return False
+    court = filters.get("court")
+    if court:
+        result_court = result.court or {}
+        court_value = str(court).casefold()
+        if court_value not in str(result_court.get("court_name", "")).casefold() and court_value != str(result_court.get("court_level", "")).casefold():
+            return False
+    return True
+
+
+def metadata_matches_filters(metadata: dict[str, Any], filters: dict[str, Any] | None) -> bool:
+    if not filters:
+        return True
+    if filters.get("effective_legal_regime") and metadata.get("effective_legal_regime") != filters["effective_legal_regime"]:
+        return False
+    if filters.get("effective_offence_family") and metadata.get("effective_offence_family") != filters["effective_offence_family"]:
+        return False
+    court = filters.get("court")
+    if court:
+        try:
+            metadata_court = json.loads(metadata.get("court") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            metadata_court = {}
+        court_value = str(court).casefold()
+        if court_value not in str(metadata_court.get("court_name", "")).casefold() and court_value != str(metadata_court.get("court_level", "")).casefold():
+            return False
+    return True
+
+
+def filters_to_chroma_where(filters: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not filters:
+        return None
+    clauses: list[dict[str, Any]] = []
+    if filters.get("effective_legal_regime"):
+        clauses.append({"effective_legal_regime": filters["effective_legal_regime"]})
+    if filters.get("effective_offence_family"):
+        clauses.append({"effective_offence_family": filters["effective_offence_family"]})
+    if not clauses:
+        return None
+    if len(clauses) == 1:
+        return clauses[0]
+    return {"$and": clauses}
 
 
 def cosine_similarity(left: list[float], right: list[float]) -> float:
@@ -138,9 +198,13 @@ class JsonVectorStore:
         self.persist()
         return len(ids)
 
-    def query_dense(self, vector: list[float], top_k: int = 5) -> list[RetrievalResult]:
+    def query_dense(self, vector: list[float], top_k: int = 5, filters: dict[str, Any] | None = None) -> list[RetrievalResult]:
         scored = sorted(
-            ((cosine_similarity(vector, record["embedding"]), record) for record in self.records.values()),
+            (
+                (cosine_similarity(vector, record["embedding"]), record)
+                for record in self.records.values()
+                if metadata_matches_filters(record["metadata"], filters)
+            ),
             key=lambda item: item[0],
             reverse=True,
         )[:top_k]
@@ -235,12 +299,16 @@ class ChromaVectorStore:
             self._collection.delete(ids=ids)
         return len(ids)
 
-    def query_dense(self, vector: list[float], top_k: int = 5) -> list[RetrievalResult]:
-        queried = self._collection.query(
-            query_embeddings=[vector],
-            n_results=top_k,
-            include=["documents", "metadatas", "distances"],
-        )
+    def query_dense(self, vector: list[float], top_k: int = 5, filters: dict[str, Any] | None = None) -> list[RetrievalResult]:
+        query_kwargs: dict[str, Any] = {
+            "query_embeddings": [vector],
+            "n_results": top_k,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        where = filters_to_chroma_where(filters)
+        if where:
+            query_kwargs["where"] = where
+        queried = self._collection.query(**query_kwargs)
         ids = queried.get("ids", [[]])[0]
         documents = queried.get("documents", [[]])[0]
         metadatas = queried.get("metadatas", [[]])[0]
