@@ -1,0 +1,66 @@
+{
+  "evaluation_version": "legalai-retrieval-eval-v1",
+  "pooling_version": "legalai-retrieval-pool-v1",
+  "query_count": 30,
+  "chunk_count": 1356,
+  "document_count": 70,
+  "query_type_distribution": {
+    "hard_ambiguous": 3,
+    "plain_language": 8,
+    "procedural_relief": 6,
+    "statute_explicit": 10,
+    "transition_regime": 3
+  },
+  "family_distribution": {
+    "cheating_and_fraud": 3,
+    "conspiracy_common_intention": 2,
+    "criminal_breach_of_trust": 2,
+    "dowry_and_domestic_cruelty": 2,
+    "homicide": 3,
+    "hurt_and_assault": 2,
+    "kidnapping": 2,
+    "narcotics_related": 2,
+    "other": 7,
+    "sexual_offences": 3,
+    "theft_and_robbery": 2
+  },
+  "regime_distribution": {
+    "bns_bnss": 2,
+    "ipc_crpc": 25,
+    "mixed_or_transition": 3
+  },
+  "workload": {
+    "query_count": 30,
+    "total_pooled_judgments": 695,
+    "total_pooled_documents": 65,
+    "total_pooled_chunks": 695,
+    "mean_candidates_per_query": 23.17,
+    "median_candidates_per_query": 24.5,
+    "min_candidates_per_query": 19,
+    "max_candidates_per_query": 25
+  },
+  "human_labels_assigned": 0,
+  "trace_count": 695,
+  "pooling_policy": {
+    "candidate_depth": 20,
+    "primary_depth": 15,
+    "always_retain_top": 5,
+    "max_pool_size": 25
+  },
+  "retrieval_versions": {
+    "dense_index_version": "legalai-chroma-index-v1",
+    "lexical_index_version": "legalai-bm25-index-v1",
+    "tokenizer_version": "legalai-legal-tokenizer-v1",
+    "evaluation_trace_version": "legalai-retrieval-trace-v1"
+  },
+  "frozen_retrieval_config": {
+    "dense_model": "BAAI/bge-m3",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "rrf_k": 60,
+    "reranker_model": "BAAI/bge-reranker-v2-m3",
+    "candidate_depth": 20,
+    "top_k": 20
+  },
+  "metric_status": "not_available_until_human_labels_exist"
+}
