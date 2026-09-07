@@ -190,6 +190,22 @@ describe('PublicAsk', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Your conversation' })).toBeVisible();
   });
 
+  it('separates the persistent header, scrollable conversation workspace, and composer', () => {
+    renderAsk();
+
+    const main = screen.getByRole('main');
+    const header = main.querySelector(':scope > header');
+    const workspace = screen.getByRole('region', { name: 'Conversation workspace' });
+    const composer = screen.getByRole('region', { name: 'Ask another question' });
+
+    expect(header).not.toBeNull();
+    expect(Array.from(main.children)).toEqual([header, workspace, composer]);
+    expect(workspace).toHaveAttribute('tabindex', '0');
+    expect(workspace).toContainElement(
+      screen.getByRole('region', { name: 'Ask a legal question in your own words.' }),
+    );
+  });
+
   it('keeps a completed exchange visible while the next answer loads and removes the spinner after settlement', async () => {
     const user = userEvent.setup();
     const nextResponse = createDeferred<PublicQueryResponse>();
@@ -693,6 +709,23 @@ describe('PublicAsk', () => {
     expect(newConversation).toHaveFocus();
     expect(screen.getByRole('button', { name: 'Keep conversation' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Start fresh' })).toBeVisible();
+  });
+
+  it('scrolls the new-conversation confirmation into the conversation workspace', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockResolvedValueOnce(responseFixture);
+    renderAsk();
+
+    await submitText(user, 'First question');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+
+    const confirmation = screen.getByRole('region', { name: 'Confirm new conversation' });
+    expect(scrolledElements.at(-1)).toBe(confirmation);
+    expect(scrollIntoView).toHaveBeenLastCalledWith({
+      block: 'nearest',
+      behavior: 'smooth',
+    });
   });
 
   it('keeps the full thread after cancellation and restores focus to the trigger', async () => {

@@ -132,6 +132,7 @@ export function PublicAsk({
   const [isConfirmingNewConversation, setIsConfirmingNewConversation] = useState(false);
   const [requestStatus, setRequestStatus] = useState<RequestStatus>('idle');
   const entrySequence = useRef(0);
+  const confirmationRef = useRef<HTMLElement>(null);
   const failedErrorEntryRef = useRef<string | null>(null);
   const isMountedRef = useRef(true);
   const isRequestInFlightRef = useRef(false);
@@ -168,6 +169,23 @@ export function PublicAsk({
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
     });
   }, [state.entries.length, requestStatus]);
+
+  useEffect(() => {
+    const confirmation = confirmationRef.current;
+
+    if (!isConfirmingNewConversation || !confirmation) {
+      return;
+    }
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    confirmation.scrollIntoView({
+      block: 'nearest',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+  }, [isConfirmingNewConversation]);
 
   const appendInput = useCallback(
     (input: PublicQueryInput) => {
@@ -409,8 +427,8 @@ export function PublicAsk({
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
-      <header className="mx-auto flex max-w-4xl flex-col gap-4 border-b border-[var(--color-border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
+    <main className="mx-auto min-h-screen max-w-5xl px-5 py-6 sm:px-8 sm:py-10 lg:grid lg:h-dvh lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)_auto] lg:overflow-hidden">
+      <header className="mx-auto flex w-full max-w-4xl flex-col gap-4 border-b border-[var(--color-border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-type-heading-md font-bold text-[var(--color-ink)]">
             Your conversation
@@ -431,97 +449,107 @@ export function PublicAsk({
         </button>
       </header>
 
-      {isConfirmingNewConversation ? (
-        <section
-          aria-label="Confirm new conversation"
-          className="mx-auto mt-5 max-w-4xl rounded-[var(--radius-standard)] border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] p-4"
-          id="public-ask-new-conversation-confirmation"
-        >
-          <h2 className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]">
-            Start a new conversation?
-          </h2>
-          <p className="text-type-body-sm-relaxed mt-2 text-[var(--color-warning-foreground)]">
-            This clears the questions in this visit so you can begin again.
-          </p>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <button
-              className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] ${controlFocusClass}`}
-              onClick={clearConversation}
-              type="button"
-            >
-              Start fresh
-            </button>
-            <button
-              className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 font-semibold text-[var(--color-body)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
-              onClick={cancelNewConversation}
-              type="button"
-            >
-              Keep conversation
-            </button>
-          </div>
-        </section>
-      ) : null}
-
-      {state.entries.length === 0 ? (
-        <section
-          aria-labelledby="public-ask-empty-title"
-          className="mx-auto mt-10 max-w-3xl rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-component)] sm:p-8"
-        >
-          <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
-            Start here
-          </p>
-          <h2
-            className="font-display text-type-heading-xl mt-2 font-semibold text-[var(--color-ink)]"
-            id="public-ask-empty-title"
+      <section
+        aria-label="Conversation workspace"
+        className={`lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:scroll-py-6 ${controlFocusClass}`}
+        tabIndex={0}
+      >
+        {isConfirmingNewConversation ? (
+          <section
+            aria-label="Confirm new conversation"
+            className="mx-auto mt-5 max-w-4xl rounded-[var(--radius-standard)] border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] p-4"
+            id="public-ask-new-conversation-confirmation"
+            ref={confirmationRef}
           >
-            Ask a legal question in your own words.
-          </h2>
-          <p className="text-type-body-relaxed mt-3 text-[var(--color-muted)]">
-            You can also share one PDF for a temporary, plain-language explanation.
-          </p>
-          <ul className="mt-6 grid gap-3">
-            {emptyStateExamples.map((example) => (
-              <li key={example}>
-                <button
-                  className={`text-type-body min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-3 text-left font-medium text-[var(--color-ink)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
-                  disabled={isAnyRequestPending}
-                  onClick={() => armTextInput(example)}
-                  type="button"
-                >
-                  {example}
-                </button>
-              </li>
+            <h2 className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]">
+              Start a new conversation?
+            </h2>
+            <p className="text-type-body-sm-relaxed mt-2 text-[var(--color-warning-foreground)]">
+              This clears the questions in this visit so you can begin again.
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] ${controlFocusClass}`}
+                onClick={clearConversation}
+                type="button"
+              >
+                Start fresh
+              </button>
+              <button
+                className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 font-semibold text-[var(--color-body)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
+                onClick={cancelNewConversation}
+                type="button"
+              >
+                Keep conversation
+              </button>
+            </div>
+          </section>
+        ) : null}
+
+        {state.entries.length === 0 ? (
+          <section
+            aria-labelledby="public-ask-empty-title"
+            className="mx-auto mt-10 max-w-3xl rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-component)] sm:p-8"
+          >
+            <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+              Start here
+            </p>
+            <h2
+              className="font-display text-type-heading-xl mt-2 font-semibold text-[var(--color-ink)]"
+              id="public-ask-empty-title"
+            >
+              Ask a legal question in your own words.
+            </h2>
+            <p className="text-type-body-relaxed mt-3 text-[var(--color-muted)]">
+              You can also share one PDF for a temporary, plain-language explanation.
+            </p>
+            <ul className="mt-6 grid gap-3">
+              {emptyStateExamples.map((example) => (
+                <li key={example}>
+                  <button
+                    className={`text-type-body min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-3 text-left font-medium text-[var(--color-ink)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
+                    disabled={isAnyRequestPending}
+                    onClick={() => armTextInput(example)}
+                    type="button"
+                  >
+                    {example}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {state.entries.length > 0 || requestStatus === 'loading' ? (
+          <ol aria-label="Conversation" className="mx-auto mt-8 grid max-w-4xl gap-5">
+            {state.entries.map((entry, index) => (
+              <ChatThreadEntry
+                entry={entry}
+                entryRef={
+                  requestStatus !== 'loading' && index === state.entries.length - 1
+                    ? latestEntryRef
+                    : undefined
+                }
+                key={entry.id}
+                onRetry={retryEntry}
+              />
             ))}
-          </ul>
-        </section>
-      ) : null}
+            {requestStatus === 'loading' ? (
+              <li ref={latestEntryRef}>
+                <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
+                  <LoadingSpinner label="Finding a clear answer" size="sm" />
+                  <span className="text-type-body-sm">Finding a clear answer…</span>
+                </div>
+              </li>
+            ) : null}
+          </ol>
+        ) : null}
+      </section>
 
-      {state.entries.length > 0 || requestStatus === 'loading' ? (
-        <ol aria-label="Conversation" className="mx-auto mt-8 grid max-w-4xl gap-5">
-          {state.entries.map((entry, index) => (
-            <ChatThreadEntry
-              entry={entry}
-              entryRef={
-                requestStatus !== 'loading' && index === state.entries.length - 1
-                  ? latestEntryRef
-                  : undefined
-              }
-              key={entry.id}
-              onRetry={retryEntry}
-            />
-          ))}
-          {requestStatus === 'loading' ? (
-            <li ref={latestEntryRef}>
-              <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
-                <LoadingSpinner label="Finding a clear answer" size="sm" />
-                <span className="text-type-body-sm">Finding a clear answer…</span>
-              </div>
-            </li>
-          ) : null}
-        </ol>
-      ) : null}
-
-      <section aria-label="Ask another question" className="mx-auto mt-8 max-w-4xl">
+      <section
+        aria-label="Ask another question"
+        className="mx-auto mt-8 max-w-4xl lg:mt-4 lg:w-full"
+      >
         <form
           className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 shadow-[var(--shadow-component)] sm:p-5"
           onSubmit={handleComposerSubmit}
