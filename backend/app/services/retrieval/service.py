@@ -9,6 +9,7 @@ import time
 from typing import Any
 
 from backend.app.services.embeddings.base import EmbeddingProvider
+from backend.app.services.reranking.base import Reranker
 from backend.app.services.retrieval.bm25 import Bm25LexicalIndex
 from backend.app.services.vector_store import ChromaVectorStore, RetrievalResult, result_matches_filters
 
@@ -30,11 +31,13 @@ class RetrievalTrace:
     dense_query_latency_ms: float
     lexical_latency_ms: float
     fusion_latency_ms: float
+    rerank_latency_ms: float
     total_latency_ms: float
     dense_candidate_count: int
     lexical_candidate_count: int
     fused_candidate_count: int
     filters: dict[str, Any] | None
+    rerank: bool = False
 
 
 @dataclass(frozen=True)
@@ -56,11 +59,13 @@ class RetrievalService:
         vector_store: ChromaVectorStore | None = None,
         lexical_index: Bm25LexicalIndex | None = None,
         hybrid_config: HybridConfig | None = None,
+        reranker: Reranker | None = None,
     ) -> None:
         self.dense_provider = dense_provider
         self.vector_store = vector_store
         self.lexical_index = lexical_index
         self.hybrid_config = hybrid_config or HybridConfig()
+        self.reranker = reranker
 
     def retrieve(
         self,
@@ -69,27 +74,38 @@ class RetrievalService:
         top_k: int = 5,
         candidate_k: int | None = None,
         filters: dict[str, Any] | None = None,
+        rerank: bool = False,
     ) -> RetrievalResponse:
         started = time.monotonic()
         retrieval_mode = RetrievalMode(mode)
         depth = candidate_k or self.hybrid_config.candidate_k
         dense_results: list[RetrievalResult] = []
         lexical_results: list[RetrievalResult] = []
-        dense_embedding_ms = dense_query_ms = lexical_ms = fusion_ms = 0.0
+        dense_embedding_ms = dense_query_ms = lexical_ms = fusion_ms = rerank_ms = 0.0
+        retrieval_depth = depth if retrieval_mode == RetrievalMode.HYBRID or rerank else top_k
         if retrieval_mode in {RetrievalMode.DENSE, RetrievalMode.HYBRID}:
-            dense_results, dense_embedding_ms, dense_query_ms = self._dense(query, depth if retrieval_mode == RetrievalMode.HYBRID else top_k, filters)
+            dense_results, dense_embedding_ms, dense_query_ms = self._dense(query, retrieval_depth, filters)
         if retrieval_mode in {RetrievalMode.LEXICAL, RetrievalMode.HYBRID}:
             lexical_started = time.monotonic()
-            lexical_results = self._lexical(query, depth if retrieval_mode == RetrievalMode.HYBRID else top_k, filters)
+            lexical_results = self._lexical(query, retrieval_depth, filters)
             lexical_ms = elapsed_ms(lexical_started)
         if retrieval_mode == RetrievalMode.DENSE:
-            results = mark_dense(dense_results)[:top_k]
+            results = mark_dense(dense_results)
         elif retrieval_mode == RetrievalMode.LEXICAL:
-            results = lexical_results[:top_k]
+            results = lexical_results
         else:
             fusion_started = time.monotonic()
-            results = reciprocal_rank_fusion(dense_results, lexical_results, self.hybrid_config.rrf_k)[:top_k]
+            results = reciprocal_rank_fusion(dense_results, lexical_results, self.hybrid_config.rrf_k)[:retrieval_depth]
             fusion_ms = elapsed_ms(fusion_started)
+        results = [set_rank(result, rank) for rank, result in enumerate(results, start=1)]
+        if rerank:
+            if self.reranker is None:
+                raise RuntimeError("reranker is required when rerank=True")
+            rerank_started = time.monotonic()
+            results = self.reranker.rerank(query, results, top_k=top_k)
+            rerank_ms = elapsed_ms(rerank_started)
+        else:
+            results = results[:top_k]
         results = [set_rank(result, rank) for rank, result in enumerate(results, start=1)]
         total_ms = elapsed_ms(started)
         trace = RetrievalTrace(
@@ -102,11 +118,13 @@ class RetrievalService:
             dense_query_latency_ms=dense_query_ms,
             lexical_latency_ms=lexical_ms,
             fusion_latency_ms=fusion_ms,
+            rerank_latency_ms=rerank_ms,
             total_latency_ms=total_ms,
             dense_candidate_count=len(dense_results),
             lexical_candidate_count=len(lexical_results),
             fused_candidate_count=len(results),
             filters=filters,
+            rerank=rerank,
         )
         return RetrievalResponse(results=results, trace=trace)
 

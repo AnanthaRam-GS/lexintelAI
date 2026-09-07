@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     bge_reranker_model: str = "BAAI/bge-reranker-v2-m3"
     retrieval_top_k: int = 20
     rerank_top_k: int = 5
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_device: str = "cpu"
+    reranker_batch_size: int = 8
+    reranker_max_length: int = 512
+    reranker_top_k: int = 5
 
     max_upload_size_mb: int = 10
     max_query_length: int = 5000

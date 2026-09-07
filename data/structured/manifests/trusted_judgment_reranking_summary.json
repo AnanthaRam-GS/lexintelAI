@@ -1,0 +1,24 @@
+{
+  "reranking_version": "legalai-reranking-foundation-v1",
+  "model": "BAAI/bge-reranker-v2-m3",
+  "library": "FlagEmbedding",
+  "device": "cpu",
+  "candidate_k": 20,
+  "top_k": 5,
+  "max_length": 512,
+  "batch_size": 8,
+  "truncation_policy": "FlagEmbedding pair tokenizer truncates deterministically to max_length, preserving the query and passage prefix per model tokenizer behavior.",
+  "query_count": 8,
+  "success_count": 8,
+  "failure_count": 0,
+  "timing": {
+    "median_rerank_ms": 7463.754,
+    "p95_rerank_ms": 7510.709,
+    "median_total_ms": 7553.011,
+    "p95_total_ms": 7602.843
+  },
+  "diagnostic_movement": {
+    "rank_1_changed_count": 5,
+    "top_5_membership_changed_count": 7
+  }
+}

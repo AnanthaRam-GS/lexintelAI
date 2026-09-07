@@ -36,6 +36,10 @@ class RetrievalResult:
     lexical_rank: int | None = None
     lexical_score: float | None = None
     hybrid_score: float | None = None
+    rerank_score: float | None = None
+    rerank_rank: int | None = None
+    pre_rerank_rank: int | None = None
+    pre_rerank_score: float | None = None
 
 
 def result_matches_filters(result: RetrievalResult, filters: dict[str, Any] | None) -> bool:

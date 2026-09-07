@@ -14,6 +14,8 @@ if __package__ in {None, ""}:
 
 from backend.app.services.embeddings.base import EmbeddingConfig
 from backend.app.services.embeddings.bge_m3 import BgeM3EmbeddingProvider
+from backend.app.services.reranking.base import RerankerConfig
+from backend.app.services.reranking.bge import BgeReranker
 from backend.app.services.retrieval.bm25 import Bm25Config, Bm25LexicalIndex, DEFAULT_INDEX_NAME
 from backend.app.services.retrieval.service import HybridConfig, RetrievalMode, RetrievalResponse, RetrievalService
 from backend.app.services.vector_store import ChromaVectorStore
@@ -22,8 +24,11 @@ from backend.scripts.build_vector_index import DEFAULT_COLLECTION, DEFAULT_PERSI
 
 
 SUMMARY_PATH = REPO_ROOT / "data/structured/manifests/trusted_judgment_retrieval_summary.json"
+RERANKING_SUMMARY_PATH = REPO_ROOT / "data/structured/manifests/trusted_judgment_reranking_summary.json"
 QA_PATH = REPO_ROOT / "docs/HYBRID_RETRIEVAL_QA.md"
+RERANKING_QA_PATH = REPO_ROOT / "docs/RERANKING_QA.md"
 DOC_PATH = REPO_ROOT / "docs/LEXICAL_AND_HYBRID_RETRIEVAL.md"
+RERANKING_DOC_PATH = REPO_ROOT / "docs/RERANKING_FOUNDATION.md"
 QUERIES = [
     "dowry death section 304B IPC",
     "murder conviction section 302 IPC",
@@ -40,15 +45,27 @@ def make_service(args: argparse.Namespace) -> RetrievalService:
     lexical_index = Bm25LexicalIndex(args.bm25_persist_dir, args.index_name, Bm25Config(k1=args.k1, b=args.b))
     dense_provider = None
     vector_store = None
-    if args.mode in {"dense", "hybrid"} or args.qa:
+    if args.mode in {"dense", "hybrid"} or args.qa or args.rerank_qa or args.smoke_reranker:
         config = EmbeddingConfig(model_name=args.embedding_model, device=args.device, batch_size=args.batch_size, normalize_embeddings=True)
         dense_provider = BgeM3EmbeddingProvider(config)
         vector_store = ChromaVectorStore(args.chroma_persist_dir, args.collection, collection_metadata(config, "real_bge_m3"))
+    reranker = None
+    if args.rerank or args.rerank_qa or args.smoke_reranker:
+        reranker = BgeReranker(
+            RerankerConfig(
+                model_name=args.reranker_model,
+                device=args.reranker_device,
+                batch_size=args.reranker_batch_size,
+                max_length=args.reranker_max_length,
+                top_k=args.reranker_top_k,
+            )
+        )
     return RetrievalService(
         dense_provider=dense_provider,
         vector_store=vector_store,
         lexical_index=lexical_index,
         hybrid_config=HybridConfig(rrf_k=args.rrf_k, candidate_k=args.candidate_k),
+        reranker=reranker,
     )
 
 
@@ -67,6 +84,10 @@ def compact_result(result: Any) -> dict[str, Any]:
         "lexical_rank": result.lexical_rank,
         "lexical_score": round(result.lexical_score, 6) if result.lexical_score is not None else None,
         "hybrid_score": round(result.hybrid_score, 6) if result.hybrid_score is not None else None,
+        "rerank_rank": result.rerank_rank,
+        "rerank_score": round(result.rerank_score, 6) if result.rerank_score is not None else None,
+        "pre_rerank_rank": result.pre_rerank_rank,
+        "pre_rerank_score": round(result.pre_rerank_score, 6) if result.pre_rerank_score is not None else None,
     }
 
 
@@ -84,7 +105,7 @@ def overlap(left: list[Any], right: list[Any]) -> int:
 
 
 def run_single(service: RetrievalService, args: argparse.Namespace) -> RetrievalResponse:
-    return service.retrieve(args.query, RetrievalMode(args.mode), top_k=args.top_k, candidate_k=args.candidate_k, filters=filters_from_args(args))
+    return service.retrieve(args.query, RetrievalMode(args.mode), top_k=args.top_k, candidate_k=args.candidate_k, filters=filters_from_args(args), rerank=args.rerank)
 
 
 def run_qa(service: RetrievalService, args: argparse.Namespace) -> dict[str, Any]:
@@ -114,6 +135,80 @@ def run_qa(service: RetrievalService, args: argparse.Namespace) -> dict[str, Any
     SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     write_qa(args, rows, summary)
     write_docs(args, summary)
+    return summary
+
+
+def run_reranker_smoke(service: RetrievalService, args: argparse.Namespace) -> dict[str, Any]:
+    response = service.retrieve("murder conviction section 302 IPC", "hybrid", top_k=3, candidate_k=5, rerank=True)
+    scores = [result.rerank_score for result in response.results]
+    return {
+        "model": args.reranker_model,
+        "device": args.reranker_device,
+        "batch_size": args.reranker_batch_size,
+        "max_length": args.reranker_max_length,
+        "candidate_count": 5,
+        "result_count": len(response.results),
+        "scores_finite": all(score is not None for score in scores),
+        "higher_is_better": True,
+        "results": [compact_result(result) for result in response.results],
+    }
+
+
+def run_rerank_qa(service: RetrievalService, args: argparse.Namespace) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    rerank_times: list[float] = []
+    total_times: list[float] = []
+    rank1_changed = 0
+    top5_changed = 0
+    failures = 0
+    for query in QUERIES:
+        try:
+            hybrid = service.retrieve(query, "hybrid", top_k=args.top_k, candidate_k=args.candidate_k)
+            reranked = service.retrieve(query, "hybrid", top_k=args.top_k, candidate_k=args.candidate_k, rerank=True)
+            rerank_times.append(reranked.trace.rerank_latency_ms)
+            total_times.append(reranked.trace.total_latency_ms)
+            if hybrid.results and reranked.results and hybrid.results[0].chunk_id != reranked.results[0].chunk_id:
+                rank1_changed += 1
+            if {result.chunk_id for result in hybrid.results} != {result.chunk_id for result in reranked.results}:
+                top5_changed += 1
+            rows.append(
+                {
+                    "query": query,
+                    "hybrid": [compact_result(result) for result in hybrid.results],
+                    "reranked": [compact_result(result) for result in reranked.results],
+                }
+            )
+        except Exception as exc:
+            failures += 1
+            rows.append({"query": query, "failure": f"{type(exc).__name__}: {exc}", "hybrid": [], "reranked": []})
+    reranker_config = RerankerConfig(max_length=args.reranker_max_length)
+    summary = {
+        "reranking_version": "legalai-reranking-foundation-v1",
+        "model": args.reranker_model,
+        "library": "FlagEmbedding",
+        "device": args.reranker_device,
+        "candidate_k": args.candidate_k,
+        "top_k": args.top_k,
+        "max_length": args.reranker_max_length,
+        "batch_size": args.reranker_batch_size,
+        "truncation_policy": reranker_config.truncation_policy,
+        "query_count": len(QUERIES),
+        "success_count": len(QUERIES) - failures,
+        "failure_count": failures,
+        "timing": {
+            "median_rerank_ms": timing_summary(rerank_times)["median_ms"] if rerank_times else 0,
+            "p95_rerank_ms": timing_summary(rerank_times)["p95_ms"] if rerank_times else 0,
+            "median_total_ms": timing_summary(total_times)["median_ms"] if total_times else 0,
+            "p95_total_ms": timing_summary(total_times)["p95_ms"] if total_times else 0,
+        },
+        "diagnostic_movement": {
+            "rank_1_changed_count": rank1_changed,
+            "top_5_membership_changed_count": top5_changed,
+        },
+    }
+    RERANKING_SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_reranking_qa(args, rows, summary)
+    write_reranking_docs(summary)
     return summary
 
 
@@ -245,6 +340,94 @@ def write_docs(args: argparse.Namespace, summary: dict[str, Any]) -> None:
     DOC_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_reranking_qa(args: argparse.Namespace, rows: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+    lines = [
+        "# Reranking QA",
+        "",
+        "This is diagnostic sanity QA for a BGE reranker over retrieved candidates, not a formal retrieval benchmark.",
+        "",
+        "## Configuration",
+        "",
+        f"- model: `{args.reranker_model}`",
+        "- library: `FlagEmbedding`",
+        f"- device: `{args.reranker_device}`",
+        f"- candidate_k: {args.candidate_k}",
+        f"- top_k: {args.top_k}",
+        f"- max_length: {args.reranker_max_length}",
+        f"- batch_size: {args.reranker_batch_size}",
+        f"- truncation policy: {summary['truncation_policy']}",
+        "",
+        "## Rank 1 Movement",
+        "",
+        "| Query | Hybrid Rank 1 | Reranked Rank 1 | Changed |",
+        "| --- | --- | --- | --- |",
+    ]
+    for row in rows:
+        hybrid_top = top_label(row.get("hybrid", []))
+        reranked_top = top_label(row.get("reranked", []))
+        lines.append(f"| {row['query']} | {hybrid_top} | {reranked_top} | {hybrid_top != reranked_top} |")
+    lines.extend(["", "## Details", ""])
+    for row in rows:
+        lines.extend([f"### {row['query']}", ""])
+        if row.get("failure"):
+            lines.extend([f"Failure: {row['failure']}", ""])
+            continue
+        lines.append("**pre-rerank hybrid**")
+        for result in row["hybrid"]:
+            lines.append(f"- {result['rank']}. `{result['chunk_id']}` {result['family']}/{result['regime']} page {result['page']} score {result['score']}")
+        lines.append("")
+        lines.append("**post-rerank**")
+        for result in row["reranked"]:
+            lines.append(f"- {result['rank']}. `{result['chunk_id']}` {result['family']}/{result['regime']} page {result['page']} pre-rank {result['pre_rerank_rank']} rerank {result['rerank_score']}")
+        lines.append("")
+    RERANKING_QA_PATH.write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_reranking_docs(summary: dict[str, Any]) -> None:
+    lines = [
+        "# Reranking Foundation",
+        "",
+        "This phase adds a BGE reranking layer over existing dense, lexical, or hybrid retrieval candidates. It does not generate answers or perform formal retrieval evaluation.",
+        "",
+        "## Reranker Choice",
+        "",
+        f"- model: `{summary['model']}`",
+        "- library: `FlagEmbedding`",
+        f"- device: `{summary['device']}`",
+        f"- batch size: {summary['batch_size']}",
+        f"- max length: {summary['max_length']}",
+        "",
+        "## Candidate Flow",
+        "",
+        f"Default diagnostic flow retrieves hybrid candidates with candidate_k={summary['candidate_k']} and reranks to top_k={summary['top_k']}. Dense-only and lexical-only reranking are also supported by the same service.",
+        "",
+        "## Score Semantics",
+        "",
+        "The BGE reranker returns model scores for query-passage pairs. They are recorded as `rerank_score`; higher values are treated as better. They are not probabilities or cosine similarities.",
+        "",
+        "## Preservation",
+        "",
+        "Reranking preserves original dense, lexical, and hybrid ranks/scores and all chunk provenance. Final `rank` is the post-rerank position.",
+        "",
+        "## Truncation And Batching",
+        "",
+        summary["truncation_policy"],
+        "",
+        "Candidate pairs are scored in configurable batches to avoid one model invocation per candidate.",
+        "",
+        "## CLI",
+        "",
+        "```bash",
+        "HF_HUB_OFFLINE=1 python3 backend/scripts/query_retrieval.py --query \"murder conviction section 302 IPC\" --mode hybrid --candidate-k 20 --top-k 5 --rerank",
+        "HF_HUB_OFFLINE=1 python3 backend/scripts/query_retrieval.py --smoke-reranker",
+        "HF_HUB_OFFLINE=1 python3 backend/scripts/query_retrieval.py --rerank-qa",
+        "```",
+        "",
+        "No Gemini, Ollama, answer generation, RAG orchestration, query NLP/NER enrichment, InLegalBERT, or formal metrics are implemented here.",
+    ]
+    RERANKING_DOC_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--query", default="")
@@ -265,12 +448,26 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--k1", type=float, default=1.5)
     parser.add_argument("--b", type=float, default=0.75)
     parser.add_argument("--qa", action="store_true")
+    parser.add_argument("--rerank", action="store_true")
+    parser.add_argument("--rerank-qa", action="store_true")
+    parser.add_argument("--smoke-reranker", action="store_true")
+    parser.add_argument("--reranker-model", default="BAAI/bge-reranker-v2-m3")
+    parser.add_argument("--reranker-device", default="cpu")
+    parser.add_argument("--reranker-batch-size", type=int, default=8)
+    parser.add_argument("--reranker-max-length", type=int, default=512)
+    parser.add_argument("--reranker-top-k", type=int, default=5)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     service = make_service(args)
+    if args.smoke_reranker:
+        print(json.dumps(run_reranker_smoke(service, args), indent=2, ensure_ascii=False))
+        return 0
+    if args.rerank_qa:
+        print(json.dumps(run_rerank_qa(service, args), indent=2, ensure_ascii=False))
+        return 0
     if args.qa:
         print(json.dumps(run_qa(service, args), indent=2, ensure_ascii=False))
         return 0
