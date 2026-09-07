@@ -6,9 +6,9 @@ This phase validates dense embedding/index infrastructure over trusted 0.5A chun
 
 - documents: 70
 - chunks: 1356
-- build mode: `mock_validation_only`
-- model: `deterministic-mock`
-- BGE-M3 locally available: False
+- build mode: `real_bge_m3`
+- model: `BAAI/bge-m3`
+- BGE-M3 locally available: True
 
 ## Configuration
 
@@ -25,12 +25,12 @@ Chunks are indexed with deterministic chunk IDs and fingerprints based on chunk 
 
 Chroma metadata nulls are represented reversibly: page/date absence uses sentinel metadata values plus flags such as `has_page_provenance`; source text remains the stored document content.
 
-Score semantics: the offline JSON validation store uses cosine similarity where larger is better. Chroma distance semantics must be documented when real Chroma is enabled.
+Score semantics: Chroma cosine distance is converted to similarity_score = 1 - distance; larger is better.
 
 ## CLI
 
 ```bash
 python3 backend/scripts/build_vector_index.py --dry-run
-python3 backend/scripts/build_vector_index.py --rebuild
+python3 backend/scripts/build_vector_index.py --real --rebuild
 python3 backend/scripts/build_vector_index.py --stats
 ```

@@ -102,6 +102,25 @@ class VectorIndexingTest(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 ChromaVectorStore(Path(tmp), "collection", {"index_version": INDEX_VERSION})
 
+    def test_chroma_vector_store_upsert_query_delete_and_idempotency(self) -> None:
+        if importlib.util.find_spec("chromadb") is None:
+            self.skipTest("chromadb is not installed in this environment")
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ChromaVectorStore(Path(tmp), "collection", {"index_version": INDEX_VERSION, "hnsw:space": "cosine"})
+            provider = DeterministicMockEmbeddingProvider(EmbeddingConfig(model_name="mock", dimension=8, normalize_embeddings=True))
+            chunk = self.chunk()
+            vector = provider.embed_query(chunk["chunk_text"])
+            metadata = metadata_for_chroma(chunk, "fp")
+            counts = store.upsert_chunks([chunk["chunk_id"]], [vector], [chunk["chunk_text"]], [metadata])
+            self.assertEqual(counts["inserted"], 1)
+            self.assertEqual(store.existing_fingerprints([chunk["chunk_id"]]), {chunk["chunk_id"]: "fp"})
+            self.assertIsNotNone(store.get_chunk(chunk["chunk_id"]))
+            results = store.query_dense(provider.embed_query("murder section 302"), top_k=1)
+            self.assertEqual(results[0].chunk_id, chunk["chunk_id"])
+            self.assertTrue(math.isfinite(results[0].score))
+            self.assertEqual(store.delete_document("doc:1"), 1)
+            self.assertEqual(store.count(), 0)
+
     def test_fingerprint_changes_with_text_or_model(self) -> None:
         config = EmbeddingConfig(model_name="mock", dimension=8)
         chunk = self.chunk()
@@ -119,6 +138,7 @@ class VectorIndexingTest(unittest.TestCase):
             second = builder.build_index(chunks, provider, Path(tmp), "collection", rebuild=False, batch_size=1)
             self.assertEqual(first["inserted"], 2)
             self.assertEqual(second["skipped_unchanged"], 2)
+            self.assertEqual(second["embedded"], 0)
             self.assertEqual(second["final_collection_count"], 2)
 
     def test_failure_isolation(self) -> None:

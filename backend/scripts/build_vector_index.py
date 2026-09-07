@@ -6,6 +6,7 @@ import argparse
 from collections import Counter
 import hashlib
 import importlib.util
+import importlib.metadata as importlib_metadata
 import json
 import os
 import sys
@@ -19,7 +20,7 @@ if __package__ in {None, ""}:
 from backend.app.services.embeddings.base import EmbeddingConfig, EmbeddingProvider, validate_vectors  # noqa: E402
 from backend.app.services.embeddings.bge_m3 import BgeM3EmbeddingProvider  # noqa: E402
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider  # noqa: E402
-from backend.app.services.vector_store import INDEX_VERSION, JsonVectorStore, metadata_for_chroma  # noqa: E402
+from backend.app.services.vector_store import INDEX_VERSION, ChromaVectorStore, JsonVectorStore, metadata_for_chroma  # noqa: E402
 from backend.scripts.env_utils import load_project_env  # noqa: E402
 
 
@@ -31,6 +32,15 @@ VECTOR_QA = REPO_ROOT / "docs/VECTOR_INDEX_QA.md"
 DOC_PATH = REPO_ROOT / "docs/EMBEDDING_AND_VECTOR_INDEX.md"
 DEFAULT_COLLECTION = "legalai_trusted_judgments_v1"
 DEFAULT_PERSIST_DIR = REPO_ROOT / "chroma_store"
+SEMANTIC_QUERIES = [
+    "dowry death section 304B IPC",
+    "murder conviction section 302 IPC",
+    "criminal breach of trust section 406 IPC",
+    "NDPS bail commercial quantity",
+    "anticipatory bail under BNSS",
+    "sexual offence rape section 376 IPC",
+    "robbery section 392 IPC",
+]
 
 
 def bge_m3_available() -> bool:
@@ -95,6 +105,7 @@ def collection_metadata(config: EmbeddingConfig, build_mode: str) -> dict[str, A
         "embedding_normalized": config.normalize_embeddings,
         "processing_version": chunk_processing_version(),
         "build_mode": build_mode,
+        "hnsw:space": "cosine",
     }
 
 
@@ -112,25 +123,35 @@ def build_index(
     rebuild: bool = False,
     batch_size: int | None = None,
     build_mode: str = "mock_validation_only",
+    store_kind: str = "json",
 ) -> dict[str, Any]:
     metadata = collection_metadata(provider.config, build_mode)
-    store = JsonVectorStore(persist_dir, collection, metadata)
+    store = ChromaVectorStore(persist_dir, collection, metadata) if store_kind == "chroma" else JsonVectorStore(persist_dir, collection, metadata)
     if rebuild:
         store.reset_collection()
     batch = batch_size or provider.config.batch_size
-    inserted = updated = skipped = failed = 0
+    inserted = updated = skipped = failed = embedded = 0
     failures: list[dict[str, Any]] = []
     for start in range(0, len(chunks), batch):
         current = chunks[start : start + batch]
         try:
-            vectors = provider.embed_documents([chunk["chunk_text"] for chunk in current])
-            dimension = validate_vectors(vectors, provider.embedding_dimension)
+            ids = [chunk["chunk_id"] for chunk in current]
             metadatas = [metadata_for_chroma(chunk, index_fingerprint(chunk, provider.config)) for chunk in current]
+            existing = store.existing_fingerprints(ids)
+            pending = [(chunk, chunk_metadata) for chunk, chunk_metadata in zip(current, metadatas) if existing.get(chunk["chunk_id"]) != chunk_metadata["index_fingerprint"]]
+            skipped += len(current) - len(pending)
+            if not pending:
+                continue
+            pending_chunks = [chunk for chunk, _metadata in pending]
+            pending_metadatas = [chunk_metadata for _chunk, chunk_metadata in pending]
+            vectors = provider.embed_documents([chunk["chunk_text"] for chunk in pending_chunks])
+            embedded += len(vectors)
+            dimension = validate_vectors(vectors, provider.embedding_dimension)
             counts = store.upsert_chunks(
-                [chunk["chunk_id"] for chunk in current],
+                [chunk["chunk_id"] for chunk in pending_chunks],
                 vectors,
-                [chunk["chunk_text"] for chunk in current],
-                metadatas,
+                [chunk["chunk_text"] for chunk in pending_chunks],
+                pending_metadatas,
             )
             inserted += counts["inserted"]
             updated += counts["updated"]
@@ -143,6 +164,7 @@ def build_index(
         "inserted": inserted,
         "updated": updated,
         "skipped_unchanged": skipped,
+        "embedded": embedded,
         "failed": failed,
         "failures": failures,
         "final_collection_count": store.count(),
@@ -171,10 +193,26 @@ def summarize(chunks: list[dict[str, Any]], build: dict[str, Any], collection: s
         "updated": build.get("updated", 0),
         "skipped_unchanged": build.get("skipped_unchanged", 0),
         "collection_count": build.get("final_collection_count", 0),
+        "embedded": build.get("embedded", 0),
+        "store_kind": "chroma" if build_mode == "real_bge_m3" else "json",
         "failures": build.get("failures", []),
         "model_available_locally": bge_m3_available(),
+        "embedding_library_versions": installed_versions(["FlagEmbedding", "chromadb", "torch", "transformers", "huggingface-hub"]),
+        "embedding_device": config.device,
+        "embedding_batch_size": config.batch_size,
+        "score_semantics": "Chroma cosine distance is converted to similarity_score = 1 - distance; larger is better." if build_mode == "real_bge_m3" else "JSON validation store uses cosine similarity; larger is better.",
         "semantic_validation": "completed" if build_mode == "real_bge_m3" else "deferred_until_real_bge_m3_available",
     }
+
+
+def installed_versions(names: list[str]) -> dict[str, str]:
+    versions: dict[str, str] = {}
+    for name in names:
+        try:
+            versions[name] = importlib_metadata.version(name)
+        except importlib_metadata.PackageNotFoundError:
+            versions[name] = "not_installed"
+    return versions
 
 
 def relative_or_placeholder(path: Path) -> str:
@@ -213,13 +251,13 @@ def write_docs(summary: dict[str, Any], semantic_rows: list[dict[str, Any]] | No
         "",
         "Chroma metadata nulls are represented reversibly: page/date absence uses sentinel metadata values plus flags such as `has_page_provenance`; source text remains the stored document content.",
         "",
-        "Score semantics: the offline JSON validation store uses cosine similarity where larger is better. Chroma distance semantics must be documented when real Chroma is enabled.",
+        f"Score semantics: {summary['score_semantics']}",
         "",
         "## CLI",
         "",
         "```bash",
         "python3 backend/scripts/build_vector_index.py --dry-run",
-        "python3 backend/scripts/build_vector_index.py --rebuild",
+        "python3 backend/scripts/build_vector_index.py --real --rebuild",
         "python3 backend/scripts/build_vector_index.py --stats",
         "```",
         "",
@@ -233,10 +271,50 @@ def write_docs(summary: dict[str, Any], semantic_rows: list[dict[str, Any]] | No
             "Semantic validation is deferred. Mock embeddings validate IDs, metadata, persistence, fingerprinting, and query plumbing only.",
         ])
     else:
-        qa.extend(["| Query | Top Result | Family | Regime | Page | Score |", "| --- | --- | --- | --- | --- | ---: |"])
+        qa.extend(["Chroma cosine distance is converted to `similarity_score = 1 - distance`; larger is better.", "", "| Query | Top Result | Family | Regime | Page | Similarity Score |", "| --- | --- | --- | --- | --- | ---: |"])
         for row in semantic_rows or []:
             qa.append(f"| {row['query']} | {row['chunk_id']} | {row['family']} | {row['regime']} | {row['page']} | {row['score']} |")
     VECTOR_QA.write_text("\n".join(qa) + "\n", encoding="utf-8")
+
+
+def run_semantic_qa(provider: EmbeddingProvider, persist_dir: Path, collection: str, build_mode: str) -> list[dict[str, Any]]:
+    if build_mode != "real_bge_m3":
+        return []
+    store = ChromaVectorStore(persist_dir, collection, collection_metadata(provider.config, build_mode))
+    rows: list[dict[str, Any]] = []
+    for query in SEMANTIC_QUERIES:
+        results = store.query_dense(provider.embed_query(query), top_k=5)
+        if not results:
+            rows.append({"query": query, "chunk_id": "<no-result>", "family": "", "regime": "", "page": "", "score": ""})
+            continue
+        top = results[0]
+        page = f"{top.page_start}-{top.page_end}" if top.page_start is not None else ""
+        rows.append(
+            {
+                "query": query,
+                "chunk_id": top.chunk_id,
+                "family": top.effective_offence_family or "",
+                "regime": top.effective_legal_regime or "",
+                "page": page,
+                "score": f"{top.score:.6f}",
+            }
+        )
+    return rows
+
+
+def smoke_embedding(config: EmbeddingConfig) -> dict[str, Any]:
+    provider = BgeM3EmbeddingProvider(config)
+    texts = ["murder conviction section 302 IPC", "dowry death section 304B IPC", "anticipatory bail under BNSS"]
+    vectors = provider.embed_documents(texts)
+    return {
+        "model": config.model_name,
+        "device": config.device,
+        "batch_size": config.batch_size,
+        "vector_count": len(vectors),
+        "dimension": validate_vectors(vectors, provider.embedding_dimension),
+        "query_dimension": len(provider.embed_query("criminal breach of trust section 406 IPC")),
+        "versions": installed_versions(["FlagEmbedding", "torch", "transformers", "huggingface-hub"]),
+    }
 
 
 def dry_run_summary(chunks: list[dict[str, Any]], collection: str, persist_dir: Path, config: EmbeddingConfig) -> dict[str, Any]:
@@ -264,6 +342,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--document-id")
     parser.add_argument("--stats", action="store_true")
     parser.add_argument("--real", action="store_true", help="Use real local BGE-M3 if available.")
+    parser.add_argument("--smoke", action="store_true", help="Load real BGE-M3 and embed a tiny validation set.")
+    parser.add_argument("--semantic-qa", action="store_true", help="Run seven semantic sanity queries and write docs/VECTOR_INDEX_QA.md.")
     return parser
 
 
@@ -274,15 +354,20 @@ def main(argv: list[str] | None = None) -> int:
     device = os.getenv("EMBEDDING_DEVICE", "cpu")
     normalize = os.getenv("EMBEDDING_NORMALIZE", "true").lower() in {"1", "true", "yes"}
     config = EmbeddingConfig(model_name=model, device=device, batch_size=args.batch_size, normalize_embeddings=normalize)
+    if args.smoke:
+        print(json.dumps(smoke_embedding(config), indent=2, ensure_ascii=False))
+        return 0
     chunks = load_chunks(limit=args.limit, document_id=args.document_id)
     if args.dry_run:
         print(json.dumps(dry_run_summary(chunks, args.collection, args.persist_dir, config), indent=2))
         return 0
     provider, build_mode, available = provider_from_config(args.real and bge_m3_available(), config)
-    build = build_index(chunks, provider, args.persist_dir, args.collection, rebuild=args.rebuild, batch_size=args.batch_size, build_mode=build_mode)
+    store_kind = "chroma" if build_mode == "real_bge_m3" else "json"
+    build = build_index(chunks, provider, args.persist_dir, args.collection, rebuild=args.rebuild, batch_size=args.batch_size, build_mode=build_mode, store_kind=store_kind)
     summary = summarize(chunks, build, args.collection, args.persist_dir, provider.config, build_mode)
     VECTOR_SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    write_docs(summary)
+    semantic_rows = run_semantic_qa(provider, args.persist_dir, args.collection, build_mode) if args.semantic_qa else None
+    write_docs(summary, semantic_rows)
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     if not available:
         print("REAL BGE-M3 INDEX BUILD DEFERRED — MODEL NOT LOCALLY AVAILABLE")

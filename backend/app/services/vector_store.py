@@ -118,6 +118,13 @@ class JsonVectorStore:
         self.persist()
         return {"inserted": inserted, "updated": updated, "skipped_unchanged": skipped}
 
+    def existing_fingerprints(self, ids: list[str]) -> dict[str, str]:
+        return {
+            item_id: record["metadata"]["index_fingerprint"]
+            for item_id, record in self.records.items()
+            if item_id in ids and record.get("metadata", {}).get("index_fingerprint")
+        }
+
     def count(self) -> int:
         return len(self.records)
 
@@ -197,8 +204,74 @@ class ChromaVectorStore:
             "skipped_unchanged": 0,
         }
 
+    def existing_fingerprints(self, ids: list[str]) -> dict[str, str]:
+        existing = self._collection.get(ids=ids, include=["metadatas"])
+        fingerprints: dict[str, str] = {}
+        for item_id, metadata in zip(existing.get("ids", []), existing.get("metadatas", []) or []):
+            fingerprint = (metadata or {}).get("index_fingerprint")
+            if isinstance(fingerprint, str):
+                fingerprints[item_id] = fingerprint
+        return fingerprints
+
     def count(self) -> int:
         return int(self._collection.count())
+
+    def get_chunk(self, chunk_id: str) -> dict[str, Any] | None:
+        existing = self._collection.get(ids=[chunk_id], include=["embeddings", "documents", "metadatas"])
+        if not existing.get("ids"):
+            return None
+        embeddings = existing.get("embeddings")
+        return {
+            "id": existing["ids"][0],
+            "embedding": embeddings[0] if embeddings is not None and len(embeddings) else None,
+            "document": (existing.get("documents") or [""])[0],
+            "metadata": (existing.get("metadatas") or [{}])[0],
+        }
+
+    def delete_document(self, document_id: str) -> int:
+        existing = self._collection.get(where={"document_id": document_id}, include=[])
+        ids = existing.get("ids", [])
+        if ids:
+            self._collection.delete(ids=ids)
+        return len(ids)
+
+    def query_dense(self, vector: list[float], top_k: int = 5) -> list[RetrievalResult]:
+        queried = self._collection.query(
+            query_embeddings=[vector],
+            n_results=top_k,
+            include=["documents", "metadatas", "distances"],
+        )
+        ids = queried.get("ids", [[]])[0]
+        documents = queried.get("documents", [[]])[0]
+        metadatas = queried.get("metadatas", [[]])[0]
+        distances = queried.get("distances", [[]])[0]
+        results: list[RetrievalResult] = []
+        for rank, (item_id, document, metadata, distance) in enumerate(zip(ids, documents, metadatas, distances), start=1):
+            metadata = metadata or {}
+            court = json.loads(metadata.get("court") or "{}")
+            page_start = metadata.get("page_start") if metadata.get("has_page_provenance") else None
+            page_end = metadata.get("page_end") if metadata.get("has_page_provenance") else None
+            results.append(
+                RetrievalResult(
+                    chunk_id=item_id,
+                    document_id=metadata["document_id"],
+                    text=document,
+                    score=1.0 - float(distance),
+                    rank=rank,
+                    case_title=metadata.get("case_title"),
+                    court=court,
+                    decision_date=metadata.get("decision_date") or None,
+                    source_url=metadata.get("source_url"),
+                    page_start=page_start,
+                    page_end=page_end,
+                    paragraph_start=int(metadata["paragraph_start"]),
+                    paragraph_end=int(metadata["paragraph_end"]),
+                    effective_offence_family=metadata.get("effective_offence_family"),
+                    effective_legal_regime=metadata.get("effective_legal_regime"),
+                    text_source_type=metadata.get("text_source_type"),
+                )
+            )
+        return results
 
     def reset_collection(self) -> None:
         ids = self._collection.get(include=[])["ids"]

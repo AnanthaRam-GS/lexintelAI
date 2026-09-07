@@ -6,7 +6,31 @@ tests can run without downloading or loading any external model.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from backend.app.services.embeddings.base import EmbeddingConfig, validate_vectors
+
+
+def resolve_model_name_or_path(model_name: str) -> str:
+    if model_name != "BAAI/bge-m3":
+        return model_name
+    cache_root = Path.home() / ".cache/huggingface/hub/models--BAAI--bge-m3"
+    refs_main = cache_root / "refs/main"
+    if refs_main.exists():
+        revision = refs_main.read_text(encoding="utf-8").strip()
+        snapshot = cache_root / "snapshots" / revision
+        required = [
+            "config.json",
+            "pytorch_model.bin",
+            "sentencepiece.bpe.model",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "sparse_linear.pt",
+            "colbert_linear.pt",
+        ]
+        if all((snapshot / name).exists() for name in required):
+            return str(snapshot)
+    return model_name
 
 
 class BgeM3EmbeddingProvider:
@@ -16,7 +40,7 @@ class BgeM3EmbeddingProvider:
             from FlagEmbedding import BGEM3FlagModel
         except ImportError as exc:
             raise RuntimeError("FlagEmbedding is required for real BGE-M3 embeddings") from exc
-        self._model = BGEM3FlagModel(config.model_name, use_fp16=False, device=config.device)
+        self._model = BGEM3FlagModel(resolve_model_name_or_path(config.model_name), use_fp16=False, device=config.device)
         self._dimension: int | None = config.dimension
 
     @property
