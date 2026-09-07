@@ -1,0 +1,514 @@
+[
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q001",
+    "query_text": "BNSS bail for an IPC offence registered before July 2024",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime",
+      "query_expansion"
+    ],
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "difficulty": "hard",
+    "rationale": "Targets old offence/new procedure confusion without reusing the benchmark wording.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q002",
+    "query_text": "new criminal law offence with BNSS procedure after commencement",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime"
+    ],
+    "target_family": "other",
+    "target_regime": "bns_bnss",
+    "difficulty": "hard",
+    "rationale": "Tests post-commencement BNS/BNSS routing evidence.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q003",
+    "query_text": "anticipatory bail after new procedural code for old penal offence",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime",
+      "metadata_reranking"
+    ],
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "difficulty": "hard",
+    "rationale": "Targets anticipatory-bail transition without exact benchmark phrasing.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q004",
+    "query_text": "savings clause issue when criminal case spans IPC and BNS",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime"
+    ],
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "difficulty": "hard",
+    "rationale": "Targets transition/savings style regime resolution.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q005",
+    "query_text": "post July 2024 arrest procedure in criminal petition",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime",
+      "metadata_reranking"
+    ],
+    "target_family": "other",
+    "target_regime": "bns_bnss",
+    "difficulty": "medium",
+    "rationale": "Emphasizes date/procedure metadata while requiring text support.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q006",
+    "query_text": "old CrPC notice practice compared with BNSS arrest safeguards",
+    "query_type": "legal_regime_transition",
+    "tuning_focus": [
+      "legal_regime",
+      "hard_negative"
+    ],
+    "target_family": "other",
+    "target_regime": "mixed_or_transition",
+    "difficulty": "hard",
+    "rationale": "Near-neighbor test for CrPC versus BNSS procedure.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:100558061"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:100558061:chunk:0000",
+      "indian_kanoon:100558061:chunk:0001",
+      "indian_kanoon:100558061:chunk:0002",
+      "indian_kanoon:100558061:chunk:0003",
+      "indian_kanoon:100558061:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q007",
+    "query_text": "fatal assault during property robbery with recovery of articles",
+    "query_type": "composite_ambiguous",
+    "tuning_focus": [
+      "composite_reasoning",
+      "metadata_reranking"
+    ],
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Combines homicide, robbery, and recovery without exact benchmark wording.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q008",
+    "query_text": "minor abducted and later subjected to sexual offence",
+    "query_type": "composite_ambiguous",
+    "tuning_focus": [
+      "composite_reasoning"
+    ],
+    "target_family": "sexual_offences",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Composite kidnapping/sexual-offence evidence.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q009",
+    "query_text": "business transaction alleging entrusted money and deception",
+    "query_type": "composite_ambiguous",
+    "tuning_focus": [
+      "composite_reasoning",
+      "hard_negative"
+    ],
+    "target_family": "criminal_breach_of_trust",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Separates cheating, entrustment, and civil-dispute near neighbors.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q010",
+    "query_text": "multiple accused assault where shared intention must be proved",
+    "query_type": "composite_ambiguous",
+    "tuning_focus": [
+      "composite_reasoning",
+      "query_expansion"
+    ],
+    "target_family": "conspiracy_common_intention",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Tests common-intention evidence using plain-language concepts.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q011",
+    "query_text": "drug bail with quantity threshold and statutory bar",
+    "query_type": "composite_ambiguous",
+    "tuning_focus": [
+      "composite_reasoning",
+      "metadata_reranking"
+    ],
+    "target_family": "narcotics_related",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Combines bail, NDPS quantity, and statutory restriction.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q012",
+    "query_text": "property taken by force rather than simple stealing",
+    "query_type": "plain_language_expansion",
+    "tuning_focus": [
+      "query_expansion",
+      "hard_negative"
+    ],
+    "target_family": "theft_and_robbery",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Plain-language theft versus robbery distinction.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q013",
+    "query_text": "woman harassed by husband and in laws for marriage demands",
+    "query_type": "plain_language_expansion",
+    "tuning_focus": [
+      "query_expansion"
+    ],
+    "target_family": "dowry_and_domestic_cruelty",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Tests expansion from factual domestic cruelty wording to legal terms.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q014",
+    "query_text": "guardian complains child was lured away from lawful custody",
+    "query_type": "plain_language_expansion",
+    "tuning_focus": [
+      "query_expansion"
+    ],
+    "target_family": "kidnapping",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Plain-language lawful-guardianship concept.",
+    "prior_benchmark_similarity": "related",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q015",
+    "query_text": "investors induced to part with money by false promise",
+    "query_type": "plain_language_expansion",
+    "tuning_focus": [
+      "query_expansion"
+    ],
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Lexical mismatch around fraudulent inducement without section numbers.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q016",
+    "query_text": "Supreme Court criminal appeal discussing murder conviction evidence",
+    "query_type": "metadata_sensitive",
+    "tuning_focus": [
+      "metadata_reranking"
+    ],
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Court/posture metadata can help, but chunk content still matters.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q017",
+    "query_text": "High Court petition seeking FIR quashing in commercial dispute",
+    "query_type": "metadata_sensitive",
+    "tuning_focus": [
+      "metadata_reranking",
+      "hard_negative"
+    ],
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Requires procedural posture and offence-family distinction.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q018",
+    "query_text": "trial court conviction appeal involving prosecutrix testimony",
+    "query_type": "metadata_sensitive",
+    "tuning_focus": [
+      "metadata_reranking"
+    ],
+    "target_family": "sexual_offences",
+    "target_regime": "ipc_crpc",
+    "difficulty": "medium",
+    "rationale": "Metadata plus testimony content should distinguish candidates.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q019",
+    "query_text": "breach of contract allegation wrongly framed as cheating",
+    "query_type": "hard_negative",
+    "tuning_focus": [
+      "hard_negative",
+      "query_expansion"
+    ],
+    "target_family": "cheating_and_fraud",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Near-neighbor discrimination between civil breach and cheating.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  },
+  {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_id": "dev-q020",
+    "query_text": "culpable homicide discussion where murder conviction may be reduced",
+    "query_type": "hard_negative",
+    "tuning_focus": [
+      "hard_negative",
+      "metadata_reranking"
+    ],
+    "target_family": "homicide",
+    "target_regime": "ipc_crpc",
+    "difficulty": "hard",
+    "rationale": "Near-neighbor discrimination between murder and culpable homicide.",
+    "prior_benchmark_similarity": "none",
+    "supporting_document_ids": [
+      "indian_kanoon:102778545"
+    ],
+    "supporting_chunk_ids": [
+      "indian_kanoon:102778545:chunk:0000",
+      "indian_kanoon:102778545:chunk:0001",
+      "indian_kanoon:102778545:chunk:0002",
+      "indian_kanoon:102778545:chunk:0003",
+      "indian_kanoon:102778545:chunk:0004"
+    ],
+    "human_status": "pending"
+  }
+]
