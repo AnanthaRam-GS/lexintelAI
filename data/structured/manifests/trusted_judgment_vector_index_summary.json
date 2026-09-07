@@ -1,0 +1,57 @@
+{
+  "index_version": "legalai-chroma-index-v1",
+  "collection_name": "legalai_trusted_judgments_v1",
+  "embedding_model": "BAAI/bge-m3",
+  "embedding_dimension": 1024,
+  "normalized": true,
+  "input_chunk_count": 1356,
+  "indexed_chunk_count": 1356,
+  "failed_chunk_count": 0,
+  "document_count": 70,
+  "source_type_counts": {
+    "document_text_fallback": 1,
+    "local_text": 225,
+    "pdf_native": 1130
+  },
+  "regime_counts": {
+    "bns_bnss": 13,
+    "ipc_crpc": 1277,
+    "mixed_or_transition": 31,
+    "unknown": 35
+  },
+  "family_counts": {
+    "cheating_and_fraud": 146,
+    "conspiracy_common_intention": 197,
+    "criminal_breach_of_trust": 37,
+    "dowry_and_domestic_cruelty": 98,
+    "homicide": 288,
+    "hurt_and_assault": 97,
+    "kidnapping": 111,
+    "narcotics_related": 118,
+    "other": 41,
+    "sexual_offences": 168,
+    "theft_and_robbery": 55
+  },
+  "build_timestamp": "2026-09-07T04:14:04.243394+00:00",
+  "build_mode": "real_bge_m3",
+  "persist_dir": "chroma_store",
+  "inserted": 0,
+  "updated": 0,
+  "skipped_unchanged": 1356,
+  "collection_count": 1356,
+  "embedded": 0,
+  "store_kind": "chroma",
+  "failures": [],
+  "model_available_locally": true,
+  "embedding_library_versions": {
+    "FlagEmbedding": "1.4.2",
+    "chromadb": "1.5.9",
+    "torch": "2.14.0",
+    "transformers": "5.16.1",
+    "huggingface-hub": "1.30.0"
+  },
+  "embedding_device": "cpu",
+  "embedding_batch_size": 8,
+  "score_semantics": "Chroma cosine distance is converted to similarity_score = 1 - distance; larger is better.",
+  "semantic_validation": "completed"
+}
