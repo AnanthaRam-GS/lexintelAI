@@ -1,19 +1,63 @@
 import { useEffect } from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PublicSessionProvider, usePublicSession } from '../PublicSessionProvider';
-import type { PublicQueryInput } from '../query-client';
+import type { PublicQueryInput, PublicQueryResponse } from '../query-client';
 
 import { PublicAsk, type PublicAskProps } from './PublicAsk';
 import type { ChatEntry } from './chat-model';
+
+const { fetchPublicQuery } = vi.hoisted(() => ({
+  fetchPublicQuery: vi.fn<(input: PublicQueryInput) => Promise<PublicQueryResponse>>(),
+}));
+
+vi.mock('../query-client', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../query-client')>();
+
+  return { ...original, fetchPublicQuery };
+});
 
 const examples = [
   'My landlord has not returned my deposit. What can I do?',
   'Can my employer withhold my final salary?',
   'What should I do after receiving a court notice?',
 ];
+
+const responseFixture: PublicQueryResponse = {
+  explanation: 'A written notice can help create a clear record of what happened.',
+  sections: [
+    {
+      title: 'Indian Contract Act, 1872',
+      explanation: 'The agreement may explain the steps each side must follow.',
+      link: 'https://www.indiacode.nic.in/',
+    },
+  ],
+  sources: [{ title: 'India Code', link: 'https://www.indiacode.nic.in/' }],
+  nextStepGuidance: 'Keep copies of the notice and agreement before you respond.',
+};
+
+interface Deferred<T> {
+  promise: Promise<T>;
+  reject: (reason?: unknown) => void;
+  resolve: (value: T) => void;
+}
+
+function createDeferred<T>(): Deferred<T> {
+  let reject!: Deferred<T>['reject'];
+  let resolve!: Deferred<T>['resolve'];
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, reject, resolve };
+}
+
+function neverSettles(): Promise<PublicQueryResponse> {
+  return new Promise(() => undefined);
+}
 
 function SessionSeed({ input }: { input: PublicQueryInput }) {
   const { setPendingInput } = usePublicSession();
@@ -62,13 +106,185 @@ async function selectPdf(user: ReturnType<typeof userEvent.setup>, fileName = 'n
   return { file, input };
 }
 
+async function submitText(user: ReturnType<typeof userEvent.setup>, content: string) {
+  await user.type(screen.getByLabelText('Your question'), `${content}{Enter}`);
+}
+
 describe('PublicAsk', () => {
+  beforeEach(() => {
+    fetchPublicQuery.mockReset();
+    fetchPublicQuery.mockImplementation(neverSettles);
+  });
+
   afterEach(cleanup);
 
   it('keeps the conversation name as the page heading', () => {
     renderAsk();
 
     expect(screen.getByRole('heading', { level: 1, name: 'Your conversation' })).toBeVisible();
+  });
+
+  it('keeps the submitted turn visible while an inline assistant loading row is pending', async () => {
+    const user = userEvent.setup();
+    renderAsk();
+
+    await submitText(user, 'Can my employer keep my final pay?');
+
+    expect(screen.getByText('Can my employer keep my final pay?')).toBeVisible();
+    expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeVisible();
+  });
+
+  it('renders successful text answers only through the public response adapter', async () => {
+    const user = userEvent.setup();
+    const responseWithPrivateFields = {
+      ...responseFixture,
+      confidence: 97,
+      metadata: 'private-retrieval-id',
+    } as PublicQueryResponse;
+    fetchPublicQuery.mockResolvedValueOnce(responseWithPrivateFields);
+    renderAsk();
+
+    await submitText(user, 'What does this notice mean?');
+
+    const response = await screen.findByRole('article', {
+      name: 'Plain-language legal information',
+    });
+    expect(response).toHaveTextContent('What this may mean for you');
+    expect(response).toHaveTextContent(responseFixture.explanation);
+    expect(response).toHaveTextContent('What you can do');
+    expect(response).toHaveTextContent('Indian Contract Act, 1872');
+    expect(response).toHaveTextContent('India Code');
+    expect(response).not.toHaveTextContent('97% confidence');
+    expect(response).not.toHaveTextContent('private-retrieval-id');
+  });
+
+  it('sends the original PDF object and renders its successful public answer', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockResolvedValueOnce({
+      ...responseFixture,
+      explanation: 'The PDF appears to be a notice asking for a written response.',
+    });
+    renderAsk();
+
+    const { file } = await selectPdf(user);
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    const submittedInput = fetchPublicQuery.mock.calls[0]?.[0];
+    expect(submittedInput?.kind).toBe('file');
+    if (submittedInput?.kind === 'file') {
+      expect(submittedInput.file).toBe(file);
+    }
+    expect(
+      await screen.findByRole('article', { name: 'Plain-language legal information' }),
+    ).toHaveTextContent('The PDF appears to be a notice asking for a written response.');
+  });
+
+  it('never renders a caught value, including in accessibility attributes', async () => {
+    const user = userEvent.setup();
+    const privateFailure = '/private/path database timeout';
+    fetchPublicQuery.mockRejectedValueOnce(new Error(privateFailure));
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+
+    const error = await screen.findByRole('alert');
+    expect(error).toHaveTextContent("We couldn't answer that just now.");
+    expect(error).toHaveTextContent('Your question is still here—please try again.');
+    expect(document.body).not.toHaveTextContent(privateFailure);
+    expect(
+      Array.from(document.querySelectorAll('*')).some((element) =>
+        Array.from(element.attributes).some((attribute) =>
+          attribute.value.includes(privateFailure),
+        ),
+      ),
+    ).toBe(false);
+  });
+
+  it('retries the exact failed text turn without duplicating its user message', async () => {
+    const user = userEvent.setup();
+    const retryDeferred = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery
+      .mockRejectedValueOnce(new Error('/private/path database timeout'))
+      .mockReturnValueOnce(retryDeferred.promise);
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+    await screen.findByRole('alert');
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
+
+    expect(fetchPublicQuery).toHaveBeenNthCalledWith(2, {
+      kind: 'text',
+      content: 'What can I do?',
+    });
+    expect(screen.getAllByText('What can I do?')).toHaveLength(1);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeVisible();
+
+    await act(async () => retryDeferred.resolve(responseFixture));
+    expect(
+      await screen.findByRole('article', { name: 'Plain-language legal information' }),
+    ).toBeVisible();
+  });
+
+  it('retains the same in-memory File object for an exact PDF retry', async () => {
+    const user = userEvent.setup();
+    const retryDeferred = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery
+      .mockRejectedValueOnce(new Error('provider failed'))
+      .mockReturnValueOnce(retryDeferred.promise);
+    renderAsk();
+
+    const { file } = await selectPdf(user);
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await screen.findByRole('alert');
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
+
+    const retriedInput = fetchPublicQuery.mock.calls[1]?.[0];
+    expect(retriedInput?.kind).toBe('file');
+    if (retriedInput?.kind === 'file') {
+      expect(retriedInput.file).toBe(file);
+    }
+    expect(screen.getAllByRole('article', { name: 'Temporary PDF: notice.pdf' })).toHaveLength(1);
+
+    await act(async () => retryDeferred.resolve(responseFixture));
+  });
+
+  it('allows only one request and one user turn during rapid repeated submission', async () => {
+    const user = userEvent.setup();
+    renderAsk();
+    await user.type(screen.getByLabelText('Your question'), 'Please explain this notice');
+    const send = screen.getByRole('button', { name: 'Send' });
+
+    fireEvent.click(send);
+    fireEvent.click(send);
+
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByText('Please explain this notice')).toHaveLength(1);
+    expect(screen.getByLabelText('Your question')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add one PDF' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
+  });
+
+  it('serializes a re-entrant submission before notifying the composer observer', async () => {
+    const user = userEvent.setup();
+    const submitted = vi.fn(() => {
+      if (submitted.mock.calls.length === 1) {
+        const form = screen.getByRole('button', { name: 'Send' }).closest('form');
+
+        if (!form) {
+          throw new Error('Expected the Send button to belong to the composer form.');
+        }
+        fireEvent.submit(form);
+      }
+    });
+    renderAsk({ onInputSubmitted: submitted });
+
+    await user.type(screen.getByLabelText('Your question'), 'Explain this once');
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByText('Explain this once')).toHaveLength(1);
   });
 
   it('offers three realistic empty-state examples that arm text without submitting it', async () => {
@@ -233,7 +449,7 @@ describe('PublicAsk', () => {
     expect(screen.getByRole('button', { name: 'Remove notice.pdf' })).toBeDisabled();
   });
 
-  it('consumes a landing handoff once and adds its user turn to the thread', async () => {
+  it('consumes a landing handoff once and automatically submits it', async () => {
     const submitted = vi.fn();
 
     render(
@@ -245,6 +461,11 @@ describe('PublicAsk', () => {
 
     expect(await screen.findByText('I received a court notice')).toBeVisible();
     expect(submitted).toHaveBeenCalledTimes(1);
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    expect(fetchPublicQuery).toHaveBeenCalledWith({
+      kind: 'text',
+      content: 'I received a court notice',
+    });
   });
 
   it('consumes a file landing handoff once with the original File object', async () => {
@@ -260,6 +481,7 @@ describe('PublicAsk', () => {
 
     expect(await screen.findByRole('article', { name: 'Temporary PDF: notice.pdf' })).toBeVisible();
     expect(submitted).toHaveBeenCalledTimes(1);
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
 
     const submittedInput = submitted.mock.calls[0]?.[0];
     expect(submittedInput?.kind).toBe('file');
@@ -298,10 +520,11 @@ describe('PublicAsk', () => {
 
   it('asks for confirmation before clearing a conversation with multiple messages', async () => {
     const user = userEvent.setup();
+    fetchPublicQuery.mockResolvedValueOnce(responseFixture);
     renderAsk();
 
     await user.type(screen.getByLabelText('Your question'), 'First question{Enter}');
-    await user.type(screen.getByLabelText('Your question'), 'Second question{Enter}');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
     const newConversation = screen.getByRole('button', { name: 'Start New Conversation' });
     expect(newConversation).toHaveAttribute('aria-expanded', 'false');
     expect(newConversation).toHaveAttribute(
@@ -325,5 +548,47 @@ describe('PublicAsk', () => {
 
     expect(screen.queryByText('First question')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Your question')).toHaveFocus();
+  });
+
+  it('does not let a late success repopulate a newly cleared conversation', async () => {
+    const user = userEvent.setup();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    await submitText(user, 'Question from the old conversation');
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    expect(screen.queryByText('Question from the old conversation')).not.toBeInTheDocument();
+
+    await act(async () => request.resolve(responseFixture));
+
+    expect(
+      screen.queryByRole('article', { name: 'Plain-language legal information' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Finding a clear answer' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not let a late failure repopulate a newly cleared conversation', async () => {
+    const user = userEvent.setup();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    await submitText(user, 'Another question from the old conversation');
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+
+    await act(async () => request.reject(new Error('/private/late failure')));
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+    expect(
+      screen.queryByText('Another question from the old conversation'),
+    ).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent('/private/late failure');
   });
 });

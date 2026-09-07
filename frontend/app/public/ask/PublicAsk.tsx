@@ -12,11 +12,12 @@ import {
 } from 'react';
 
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
+import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ResponseCard } from '../../../components/shared/ResponseCard';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 
 import { usePublicSession } from '../PublicSessionProvider';
-import type { PublicQueryInput } from '../query-client';
+import { fetchPublicQuery, type PublicQueryInput } from '../query-client';
 import { toPublicResponseCardProps } from '../response-adapter';
 
 import { chatReducer, initialChatState, type ChatEntry, type ChatMessage } from './chat-model';
@@ -29,13 +30,16 @@ const emptyStateExamples = [
 
 const controlFocusClass =
   'focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]';
+const safeErrorTitle = "We couldn't answer that just now.";
+const safeErrorMessage = 'Your question is still here—please try again.';
 
 type ActiveInputMode = 'text' | 'file' | 'none';
+type RequestStatus = 'idle' | 'loading' | 'error';
 
 export interface PublicAskProps {
   /**
-   * Task 4 supplies the request lifecycle through this seam. The composer owns
-   * only input selection and user-turn creation in this task.
+   * Optional observers and pending-state control retained from the reviewed
+   * composer seam. PublicAsk owns the production request lifecycle.
    */
   isRequestPending?: boolean;
   onInputSubmitted?: (input: PublicQueryInput, entry: ChatEntry) => void;
@@ -101,9 +105,9 @@ function ChatThreadEntry({
   return (
     <li>
       <ErrorMessage
-        message="Your question is still here—please try again."
+        message={safeErrorMessage}
         onRetry={() => onRetry(entry)}
-        title="We couldn't answer that just now."
+        title={safeErrorTitle}
         variant="inline"
       />
     </li>
@@ -123,11 +127,26 @@ export function PublicAsk({
   const [isUploadVisible, setIsUploadVisible] = useState(false);
   const [uploadKey, setUploadKey] = useState(0);
   const [isConfirmingNewConversation, setIsConfirmingNewConversation] = useState(false);
+  const [requestStatus, setRequestStatus] = useState<RequestStatus>('idle');
   const entrySequence = useRef(0);
+  const failedErrorEntryRef = useRef<string | null>(null);
+  const isMountedRef = useRef(true);
+  const isRequestInFlightRef = useRef(false);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const newConversationButtonRef = useRef<HTMLButtonElement>(null);
+  const requestGenerationRef = useRef(0);
+  const requestRef = useRef<PublicQueryInput | null>(null);
 
   const activeMode: ActiveInputMode = selectedFile ? 'file' : draft.trim() ? 'text' : 'none';
+  const isAnyRequestPending = isRequestPending || requestStatus === 'loading';
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const appendInput = useCallback(
     (input: PublicQueryInput) => {
@@ -143,20 +162,103 @@ export function PublicAsk({
 
       dispatch({ type: 'append-user', entry });
       onInputSubmitted?.(input, entry);
+
+      return entry;
     },
     [onInputSubmitted],
   );
 
+  const submitInput = useCallback(
+    (input: PublicQueryInput, appendUser = true): boolean => {
+      if (isRequestPending || isRequestInFlightRef.current) {
+        return false;
+      }
+
+      if (appendUser) {
+        if (failedErrorEntryRef.current) {
+          dispatch({ type: 'remove-error', id: failedErrorEntryRef.current });
+          failedErrorEntryRef.current = null;
+        }
+      }
+
+      const requestGeneration = requestGenerationRef.current;
+      requestRef.current = input;
+      isRequestInFlightRef.current = true;
+      setRequestStatus('loading');
+
+      if (appendUser) {
+        appendInput(input);
+      }
+
+      void (async () => {
+        try {
+          const response = await fetchPublicQuery(input);
+
+          if (
+            !isMountedRef.current ||
+            requestGeneration !== requestGenerationRef.current ||
+            requestRef.current !== input ||
+            !isRequestInFlightRef.current
+          ) {
+            return;
+          }
+
+          entrySequence.current += 1;
+          const entry: ChatEntry & {
+            message: Extract<ChatMessage, { role: 'assistant' }>;
+          } = {
+            id: `public-turn-${entrySequence.current}-assistant`,
+            message: { role: 'assistant', response },
+          };
+
+          dispatch({ type: 'append-assistant', entry });
+          requestRef.current = null;
+          isRequestInFlightRef.current = false;
+          setRequestStatus('idle');
+        } catch {
+          if (
+            !isMountedRef.current ||
+            requestGeneration !== requestGenerationRef.current ||
+            requestRef.current !== input ||
+            !isRequestInFlightRef.current
+          ) {
+            return;
+          }
+
+          entrySequence.current += 1;
+          const entry: ChatEntry & {
+            message: Extract<ChatMessage, { role: 'assistant' }>;
+          } = {
+            id: `public-turn-${entrySequence.current}-assistant`,
+            message: {
+              role: 'assistant',
+              kind: 'error',
+              error: `${safeErrorTitle} ${safeErrorMessage}`,
+            },
+          };
+
+          dispatch({ type: 'append-assistant', entry });
+          failedErrorEntryRef.current = entry.id;
+          isRequestInFlightRef.current = false;
+          setRequestStatus('error');
+        }
+      })();
+
+      return true;
+    },
+    [appendInput, isRequestPending],
+  );
+
   useEffect(() => {
-    if (!pendingInput || isRequestPending) {
+    if (!pendingInput || isAnyRequestPending) {
       return;
     }
 
     const input = takePendingInput();
     if (input) {
-      appendInput(input);
+      submitInput(input);
     }
-  }, [appendInput, isRequestPending, pendingInput, takePendingInput]);
+  }, [isAnyRequestPending, pendingInput, submitInput, takePendingInput]);
 
   const resetComposer = useCallback(() => {
     setDraft('');
@@ -166,13 +268,14 @@ export function PublicAsk({
   }, []);
 
   const submitCurrentInput = useCallback(() => {
-    if (isRequestPending) {
+    if (isAnyRequestPending) {
       return;
     }
 
     if (selectedFile) {
-      appendInput({ kind: 'file', file: selectedFile });
-      resetComposer();
+      if (submitInput({ kind: 'file', file: selectedFile })) {
+        resetComposer();
+      }
       return;
     }
 
@@ -181,9 +284,10 @@ export function PublicAsk({
       return;
     }
 
-    appendInput({ kind: 'text', content });
-    resetComposer();
-  }, [appendInput, draft, isRequestPending, resetComposer, selectedFile]);
+    if (submitInput({ kind: 'text', content })) {
+      resetComposer();
+    }
+  }, [draft, isAnyRequestPending, resetComposer, selectedFile, submitInput]);
 
   const handleComposerSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -200,7 +304,7 @@ export function PublicAsk({
   };
 
   const handleQuestionChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    if (isRequestPending) {
+    if (isAnyRequestPending) {
       return;
     }
 
@@ -214,13 +318,13 @@ export function PublicAsk({
 
     event.preventDefault();
 
-    if (!isRequestPending && activeMode === 'text') {
+    if (!isAnyRequestPending && activeMode === 'text') {
       submitCurrentInput();
     }
   };
 
   const handleFilesSelected = (files: File[]) => {
-    if (isRequestPending) {
+    if (isAnyRequestPending) {
       return;
     }
 
@@ -232,13 +336,18 @@ export function PublicAsk({
     }
   };
 
-  const clearConversation = () => {
+  const clearConversation = useCallback(() => {
+    requestGenerationRef.current += 1;
+    requestRef.current = null;
+    failedErrorEntryRef.current = null;
+    isRequestInFlightRef.current = false;
+    setRequestStatus('idle');
     dispatch({ type: 'clear' });
     resetComposer();
     setIsConfirmingNewConversation(false);
     onNewConversation?.();
-    textInputRef.current?.focus();
-  };
+    queueMicrotask(() => textInputRef.current?.focus());
+  }, [onNewConversation, resetComposer]);
 
   const requestNewConversation = () => {
     if (state.entries.length >= 2) {
@@ -254,14 +363,29 @@ export function PublicAsk({
     newConversationButtonRef.current?.focus();
   };
 
-  const retryEntry = (entry: ChatEntry) => {
-    if (isRequestPending) {
-      return;
-    }
+  const retryEntry = useCallback(
+    (entry: ChatEntry) => {
+      const retainedInput = requestRef.current;
 
-    dispatch({ type: 'remove-error', id: entry.id });
-    onRetry?.(entry);
-  };
+      if (
+        isAnyRequestPending ||
+        requestStatus !== 'error' ||
+        failedErrorEntryRef.current !== entry.id ||
+        !retainedInput
+      ) {
+        return;
+      }
+
+      if (!submitInput(retainedInput, false)) {
+        return;
+      }
+
+      dispatch({ type: 'remove-error', id: entry.id });
+      failedErrorEntryRef.current = null;
+      onRetry?.(entry);
+    },
+    [isAnyRequestPending, onRetry, requestStatus, submitInput],
+  );
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
@@ -339,7 +463,7 @@ export function PublicAsk({
               <li key={example}>
                 <button
                   className={`text-type-body min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-3 text-left font-medium text-[var(--color-ink)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
-                  disabled={isRequestPending}
+                  disabled={isAnyRequestPending}
                   onClick={() => armTextInput(example)}
                   type="button"
                 >
@@ -351,11 +475,19 @@ export function PublicAsk({
         </section>
       ) : null}
 
-      {state.entries.length > 0 ? (
+      {state.entries.length > 0 || requestStatus === 'loading' ? (
         <ol aria-label="Conversation" className="mx-auto mt-8 grid max-w-4xl gap-5">
           {state.entries.map((entry) => (
             <ChatThreadEntry entry={entry} key={entry.id} onRetry={retryEntry} />
           ))}
+          {requestStatus === 'loading' ? (
+            <li>
+              <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
+                <LoadingSpinner label="Finding a clear answer" size="sm" />
+                <span className="text-type-body-sm">Finding a clear answer…</span>
+              </div>
+            </li>
+          ) : null}
         </ol>
       ) : null}
 
@@ -386,7 +518,7 @@ export function PublicAsk({
           <textarea
             aria-describedby="public-ask-input-mode"
             className={`text-type-body mt-3 min-h-28 w-full resize-y rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-[var(--color-body)] placeholder:text-[var(--color-muted)] disabled:cursor-not-allowed disabled:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
-            disabled={isRequestPending}
+            disabled={isAnyRequestPending}
             id="public-ask-question"
             onChange={handleQuestionChange}
             onKeyDown={handleQuestionKeyDown}
@@ -399,7 +531,7 @@ export function PublicAsk({
               aria-controls="public-ask-pdf-upload"
               aria-expanded={isUploadVisible}
               className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-brass)] bg-[var(--color-surface-raised)] px-4 font-semibold text-[var(--color-brass-active)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] disabled:cursor-not-allowed disabled:opacity-60 ${controlFocusClass}`}
-              disabled={isRequestPending}
+              disabled={isAnyRequestPending}
               onClick={() => setIsUploadVisible(true)}
               type="button"
             >
@@ -407,7 +539,7 @@ export function PublicAsk({
             </button>
             <button
               className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-5 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] disabled:cursor-not-allowed disabled:opacity-60 ${controlFocusClass}`}
-              disabled={isRequestPending || activeMode === 'none'}
+              disabled={isAnyRequestPending || activeMode === 'none'}
               type="submit"
             >
               Send
@@ -419,7 +551,7 @@ export function PublicAsk({
           <div className="mt-4" id="public-ask-pdf-upload">
             <UploadDropzone
               accept="application/pdf"
-              disabled={isRequestPending}
+              disabled={isAnyRequestPending}
               key={uploadKey}
               multiple={false}
               onFilesSelected={handleFilesSelected}
