@@ -69,6 +69,21 @@ function SessionSeed({ input }: { input: PublicQueryInput }) {
   return null;
 }
 
+function PublicAskWithReplayableSession({
+  input,
+  version,
+}: {
+  input: PublicQueryInput | null;
+  version: number;
+}) {
+  return (
+    <PublicSessionProvider>
+      <PublicAsk />
+      {input ? <SessionSeed input={input} key={version} /> : null}
+    </PublicSessionProvider>
+  );
+}
+
 function PublicAskWithSession(props: PublicAskProps) {
   return (
     <PublicSessionProvider>
@@ -110,13 +125,64 @@ async function submitText(user: ReturnType<typeof userEvent.setup>, content: str
   await user.type(screen.getByLabelText('Your question'), `${content}{Enter}`);
 }
 
+const originalMatchMediaDescriptor = Object.getOwnPropertyDescriptor(window, 'matchMedia');
+const originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
+  Element.prototype,
+  'scrollIntoView',
+);
+const scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+const scrolledElements: Element[] = [];
+
+function installMatchMedia(prefersReducedMotion: boolean) {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: vi.fn(
+      (query: string) =>
+        ({
+          matches: prefersReducedMotion && query === '(prefers-reduced-motion: reduce)',
+          media: query,
+          onchange: null,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        }) satisfies MediaQueryList,
+    ),
+  });
+}
+
 describe('PublicAsk', () => {
   beforeEach(() => {
     fetchPublicQuery.mockReset();
     fetchPublicQuery.mockImplementation(neverSettles);
+    scrollIntoView.mockReset();
+    scrolledElements.length = 0;
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value(this: Element, options?: ScrollIntoViewOptions) {
+        scrolledElements.push(this);
+        scrollIntoView(options);
+      },
+    });
+    installMatchMedia(false);
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+
+    if (originalMatchMediaDescriptor) {
+      Object.defineProperty(window, 'matchMedia', originalMatchMediaDescriptor);
+    } else {
+      Reflect.deleteProperty(window, 'matchMedia');
+    }
+
+    if (originalScrollIntoViewDescriptor) {
+      Object.defineProperty(Element.prototype, 'scrollIntoView', originalScrollIntoViewDescriptor);
+    } else {
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+    }
+  });
 
   it('keeps the conversation name as the page heading', () => {
     renderAsk();
@@ -124,14 +190,101 @@ describe('PublicAsk', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Your conversation' })).toBeVisible();
   });
 
-  it('keeps the submitted turn visible while an inline assistant loading row is pending', async () => {
+  it('keeps a completed exchange visible while the next answer loads and removes the spinner after settlement', async () => {
     const user = userEvent.setup();
+    const nextResponse = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery
+      .mockResolvedValueOnce(responseFixture)
+      .mockReturnValueOnce(nextResponse.promise);
     renderAsk();
 
+    await submitText(user, 'What does my first notice mean?');
+    const completedResponse = await screen.findByRole('article', {
+      name: 'Plain-language legal information',
+    });
     await submitText(user, 'Can my employer keep my final pay?');
 
+    expect(screen.getByText('What does my first notice mean?')).toBeVisible();
+    expect(completedResponse).toBeVisible();
     expect(screen.getByText('Can my employer keep my final pay?')).toBeVisible();
     expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeVisible();
+
+    await act(async () => nextResponse.resolve(responseFixture));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('status', { name: 'Finding a clear answer' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('scrolls the loading row and newly appended answer into view smoothly without stealing focus', async () => {
+    const user = userEvent.setup();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    await submitText(user, 'Please explain this notice');
+
+    const loading = screen.getByRole('status', { name: 'Finding a clear answer' });
+    await waitFor(() => {
+      expect(scrolledElements.at(-1)).toBe(loading.closest('li'));
+      expect(scrollIntoView).toHaveBeenLastCalledWith({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    });
+
+    const newConversation = screen.getByRole('button', { name: 'Start New Conversation' });
+    newConversation.focus();
+    await act(async () => request.resolve(responseFixture));
+
+    const answer = await screen.findByRole('article', {
+      name: 'Plain-language legal information',
+    });
+    await waitFor(() => {
+      expect(scrolledElements.at(-1)).toBe(answer.closest('li'));
+    });
+    expect(newConversation).toHaveFocus();
+  });
+
+  it('scrolls a newly appended error into view without stealing focus', async () => {
+    const user = userEvent.setup();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    await submitText(user, 'Please explain this notice');
+    const newConversation = screen.getByRole('button', { name: 'Start New Conversation' });
+    newConversation.focus();
+    await act(async () => request.reject(new Error('provider failed')));
+
+    const error = await screen.findByRole('alert');
+    await waitFor(() => {
+      expect(scrolledElements.at(-1)).toBe(error.closest('li'));
+      expect(scrollIntoView).toHaveBeenLastCalledWith({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    });
+    expect(newConversation).toHaveFocus();
+  });
+
+  it('uses instant latest-row scrolling when reduced motion is preferred', async () => {
+    const user = userEvent.setup();
+    installMatchMedia(true);
+    renderAsk();
+
+    await submitText(user, 'Please explain this notice');
+
+    const loading = screen.getByRole('status', { name: 'Finding a clear answer' });
+    await waitFor(() => {
+      expect(scrolledElements.at(-1)).toBe(loading.closest('li'));
+      expect(scrollIntoView).toHaveBeenLastCalledWith({
+        behavior: 'auto',
+        block: 'nearest',
+      });
+    });
   });
 
   it('renders successful text answers only through the public response adapter', async () => {
@@ -518,7 +671,7 @@ describe('PublicAsk', () => {
     expect(screen.getByLabelText('Your question')).toHaveFocus();
   });
 
-  it('asks for confirmation before clearing a conversation with multiple messages', async () => {
+  it('opens a labelled confirmation at exactly two thread entries', async () => {
     const user = userEvent.setup();
     fetchPublicQuery.mockResolvedValueOnce(responseFixture);
     renderAsk();
@@ -538,27 +691,106 @@ describe('PublicAsk', () => {
     expect(newConversation).toHaveAttribute('aria-expanded', 'true');
     expect(confirmation).toHaveAttribute('id', 'public-ask-new-conversation-confirmation');
     expect(newConversation).toHaveFocus();
-
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(screen.getByText('First question')).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Start New Conversation' })).toHaveFocus();
-
-    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
-    await user.click(screen.getByRole('button', { name: 'Confirm' }));
-
-    expect(screen.queryByText('First question')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Your question')).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Keep conversation' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Start fresh' })).toBeVisible();
   });
 
-  it('does not let a late success repopulate a newly cleared conversation', async () => {
+  it('keeps the full thread after cancellation and restores focus to the trigger', async () => {
     const user = userEvent.setup();
-    const request = createDeferred<PublicQueryResponse>();
-    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    fetchPublicQuery.mockResolvedValueOnce(responseFixture);
     renderAsk();
 
-    await submitText(user, 'Question from the old conversation');
-    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    await submitText(user, 'First question');
+    const response = await screen.findByRole('article', {
+      name: 'Plain-language legal information',
+    });
+    const conversation = screen.getByRole('list', { name: 'Conversation' });
+    expect(conversation.children).toHaveLength(2);
+
+    const newConversation = screen.getByRole('button', { name: 'Start New Conversation' });
+    await user.click(newConversation);
+    await user.click(screen.getByRole('button', { name: 'Keep conversation' }));
+
+    expect(screen.getByText('First question')).toBeVisible();
+    expect(response).toBeVisible();
+    expect(conversation.children).toHaveLength(2);
+    expect(
+      screen.queryByRole('region', { name: 'Confirm new conversation' }),
+    ).not.toBeInTheDocument();
+    expect(newConversation).toHaveFocus();
+  });
+
+  it('clears the full thread, error, armed PDF, and request UI after confirmation', async () => {
+    const user = userEvent.setup();
+    const onNewConversation = vi.fn();
+    fetchPublicQuery.mockRejectedValueOnce(new Error('provider failed'));
+    renderAsk({ onNewConversation });
+
+    await submitText(user, 'First question');
+    expect(await screen.findByRole('alert')).toBeVisible();
+    await selectPdf(user);
+    expect(screen.getByText('Active input: Temporary PDF')).toBeVisible();
+
     await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    await user.click(screen.getByRole('button', { name: 'Start fresh' }));
+
+    expect(screen.queryByRole('list', { name: 'Conversation' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
+    expect(screen.queryByText('notice.pdf')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Choose PDF files')).not.toBeInTheDocument();
+    expect(screen.getByText('Choose text or one PDF')).toBeVisible();
+    expect(screen.getByLabelText('Your question')).toHaveValue('');
+    expect(screen.getByLabelText('Your question')).toHaveFocus();
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a replayed-input request active when an obsolete success settles after confirmed clear', async () => {
+    const user = userEvent.setup();
+    const obsoleteRequest = createDeferred<PublicQueryResponse>();
+    const currentRequest = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery
+      .mockResolvedValueOnce(responseFixture)
+      .mockReturnValueOnce(obsoleteRequest.promise)
+      .mockReturnValueOnce(currentRequest.promise);
+    const view = render(<PublicAskWithReplayableSession input={null} version={0} />);
+
+    await submitText(user, 'Completed question');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
+    await submitText(user, 'Question that will be replayed');
+    const replayedInput = fetchPublicQuery.mock.calls[1]?.[0];
+    expect(replayedInput).toBeDefined();
+
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    await user.click(screen.getByRole('button', { name: 'Start fresh' }));
+    view.rerender(<PublicAskWithReplayableSession input={replayedInput ?? null} version={1} />);
+    await waitFor(() => expect(fetchPublicQuery).toHaveBeenCalledTimes(3));
+
+    await act(async () =>
+      obsoleteRequest.resolve({ ...responseFixture, explanation: 'Obsolete answer' }),
+    );
+
+    expect(screen.queryByText('Obsolete answer')).not.toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeVisible();
+
+    await act(async () =>
+      currentRequest.resolve({ ...responseFixture, explanation: 'Current answer' }),
+    );
+    expect(await screen.findByText('Current answer')).toBeVisible();
+  });
+
+  it('does not let a late success repopulate a confirmed-cleared conversation', async () => {
+    const user = userEvent.setup();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockResolvedValueOnce(responseFixture).mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    await submitText(user, 'Completed question');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
+    await submitText(user, 'Question from the old conversation');
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(2);
+    await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    await user.click(screen.getByRole('button', { name: 'Start fresh' }));
     expect(screen.queryByText('Question from the old conversation')).not.toBeInTheDocument();
 
     await act(async () => request.resolve(responseFixture));
@@ -572,15 +804,18 @@ describe('PublicAsk', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('does not let a late failure repopulate a newly cleared conversation', async () => {
+  it('does not let a late failure repopulate a confirmed-cleared conversation', async () => {
     const user = userEvent.setup();
     const request = createDeferred<PublicQueryResponse>();
-    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    fetchPublicQuery.mockResolvedValueOnce(responseFixture).mockReturnValueOnce(request.promise);
     renderAsk();
 
+    await submitText(user, 'Completed question');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
     await submitText(user, 'Another question from the old conversation');
-    expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    expect(fetchPublicQuery).toHaveBeenCalledTimes(2);
     await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
+    await user.click(screen.getByRole('button', { name: 'Start fresh' }));
 
     await act(async () => request.reject(new Error('/private/late failure')));
     await waitFor(() => {

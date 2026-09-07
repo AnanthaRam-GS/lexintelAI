@@ -9,6 +9,7 @@ import {
   type ChangeEvent,
   type FormEvent,
   type KeyboardEvent,
+  type Ref,
 } from 'react';
 
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
@@ -60,16 +61,18 @@ function activeInputLabel(activeMode: ActiveInputMode): string {
 
 function ChatThreadEntry({
   entry,
+  entryRef,
   onRetry,
 }: {
   entry: ChatEntry;
+  entryRef?: Ref<HTMLLIElement>;
   onRetry: (entry: ChatEntry) => void;
 }) {
   const { message } = entry;
 
   if (message.role === 'user' && message.kind === 'text') {
     return (
-      <li className="justify-self-end">
+      <li className="justify-self-end" ref={entryRef}>
         <article
           aria-label="Your submitted question"
           className="max-w-[78%] rounded-[var(--radius-standard)] rounded-br-[var(--radius-compact)] bg-[var(--color-ink)] px-4 py-3 text-type-body text-[var(--color-inverse)]"
@@ -82,7 +85,7 @@ function ChatThreadEntry({
 
   if (message.role === 'user' && message.kind === 'file') {
     return (
-      <li className="justify-self-end">
+      <li className="justify-self-end" ref={entryRef}>
         <article
           aria-label={`Temporary PDF: ${message.fileName}`}
           className="max-w-[78%] rounded-[var(--radius-standard)] border border-[var(--color-info-border)] bg-[var(--color-info-surface)] px-4 py-3 text-type-body text-[var(--color-info-foreground)]"
@@ -96,14 +99,14 @@ function ChatThreadEntry({
 
   if (message.role === 'assistant' && 'response' in message) {
     return (
-      <li>
+      <li ref={entryRef}>
         <ResponseCard {...toPublicResponseCardProps(message.response)} />
       </li>
     );
   }
 
   return (
-    <li>
+    <li ref={entryRef}>
       <ErrorMessage
         message={safeErrorMessage}
         onRetry={() => onRetry(entry)}
@@ -132,6 +135,7 @@ export function PublicAsk({
   const failedErrorEntryRef = useRef<string | null>(null);
   const isMountedRef = useRef(true);
   const isRequestInFlightRef = useRef(false);
+  const latestEntryRef = useRef<HTMLLIElement>(null);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const newConversationButtonRef = useRef<HTMLButtonElement>(null);
   const requestGenerationRef = useRef(0);
@@ -147,6 +151,23 @@ export function PublicAsk({
       isMountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    const latestEntry = latestEntryRef.current;
+
+    if (!latestEntry) {
+      return;
+    }
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    latestEntry.scrollIntoView({
+      block: 'nearest',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+  }, [state.entries.length, requestStatus]);
 
   const appendInput = useCallback(
     (input: PublicQueryInput) => {
@@ -428,14 +449,14 @@ export function PublicAsk({
               onClick={clearConversation}
               type="button"
             >
-              Confirm
+              Start fresh
             </button>
             <button
               className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 font-semibold text-[var(--color-body)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
               onClick={cancelNewConversation}
               type="button"
             >
-              Cancel
+              Keep conversation
             </button>
           </div>
         </section>
@@ -477,11 +498,20 @@ export function PublicAsk({
 
       {state.entries.length > 0 || requestStatus === 'loading' ? (
         <ol aria-label="Conversation" className="mx-auto mt-8 grid max-w-4xl gap-5">
-          {state.entries.map((entry) => (
-            <ChatThreadEntry entry={entry} key={entry.id} onRetry={retryEntry} />
+          {state.entries.map((entry, index) => (
+            <ChatThreadEntry
+              entry={entry}
+              entryRef={
+                requestStatus !== 'loading' && index === state.entries.length - 1
+                  ? latestEntryRef
+                  : undefined
+              }
+              key={entry.id}
+              onRetry={retryEntry}
+            />
           ))}
           {requestStatus === 'loading' ? (
-            <li>
+            <li ref={latestEntryRef}>
               <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
                 <LoadingSpinner label="Finding a clear answer" size="sm" />
                 <span className="text-type-body-sm">Finding a clear answer…</span>
