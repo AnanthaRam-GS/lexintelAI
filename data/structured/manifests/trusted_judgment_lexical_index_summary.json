@@ -1,0 +1,23 @@
+{
+  "index_version": "legalai-bm25-index-v1",
+  "tokenizer_version": "legalai-legal-tokenizer-v1",
+  "index_name": "legalai_trusted_judgments_bm25_v1",
+  "persist_dir": "bm25_store",
+  "chunk_count": 1356,
+  "document_count": 70,
+  "indexed_chunk_count": 1356,
+  "duplicate_chunk_ids": 0,
+  "empty_tokenized_docs": 0,
+  "chunk_universe_fingerprint": "af2b9ee39ffc4a2a65694111aabcbb523cbe2a267c609cb0c4ffc3a2ea9ae5e5",
+  "k1": 1.5,
+  "b": 0.75,
+  "build_timestamp": "2026-09-07T04:49:23.192012+00:00",
+  "build": {
+    "inserted": 1356,
+    "updated": 0,
+    "skipped_unchanged": 0,
+    "indexed_chunks": 1356,
+    "empty_tokenized_docs": 0,
+    "duplicate_chunk_ids": 0
+  }
+}

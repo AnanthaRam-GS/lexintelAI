@@ -44,6 +44,7 @@ Thumbs.db
 # ChromaDB local persistence
 chroma_store/
 chroma_store_mock/
+bm25_store/
 
 # Local acquired judgment binaries
 data/raw/judgments/indiankanoon/*

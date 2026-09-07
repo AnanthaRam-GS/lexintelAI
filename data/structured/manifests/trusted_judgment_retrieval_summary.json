@@ -1,0 +1,38 @@
+{
+  "retrieval_version": "legalai-retrieval-foundation-v1",
+  "chunk_count": 1356,
+  "dense": {
+    "model": "BAAI/bge-m3",
+    "collection": "legalai_trusted_judgments_v1",
+    "index_version": "legalai-chroma-index-v1",
+    "count": 1356
+  },
+  "lexical": {
+    "index_version": "legalai-bm25-index-v1",
+    "tokenizer_version": "legalai-legal-tokenizer-v1",
+    "k1": 1.5,
+    "b": 0.75,
+    "count": 1356
+  },
+  "hybrid": {
+    "fusion": "reciprocal_rank_fusion",
+    "rrf_k": 60,
+    "candidate_k": 20
+  },
+  "top_k": 5,
+  "sanity_query_count": 8,
+  "timing_summary": {
+    "dense": {
+      "median_ms": 87.997,
+      "p95_ms": 2462.879
+    },
+    "lexical": {
+      "median_ms": 1.311,
+      "p95_ms": 3.797
+    },
+    "hybrid": {
+      "median_ms": 90.987,
+      "p95_ms": 113.165
+    }
+  }
+}
