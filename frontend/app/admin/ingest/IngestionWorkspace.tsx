@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { IngestionProgress, type IngestionJob } from '../../../components/shared';
+import { IngestionProgress, type IngestionJob } from '../../../components/shared/IngestionProgress';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 import {
   pollIngestionStatusMock,
@@ -133,17 +133,13 @@ export function IngestionWorkspace() {
   }, [startPolling]);
 
   const handleFilesSelected = (files: File[]) => {
-    setDrafts((previous) => {
-      const addsOrReplacesAFile = files.some(
-        (file) => !previous.some((draft) => draft.file === file),
-      );
+    const addsOrReplacesAFile = files.some((file) => !drafts.some((draft) => draft.file === file));
 
-      if (addsOrReplacesAFile) {
-        setIsConfirmed(false);
-      }
+    if (addsOrReplacesAFile) {
+      setIsConfirmed(false);
+    }
 
-      return reconcileDrafts(previous, files, createDraftId);
-    });
+    setDrafts((previous) => reconcileDrafts(previous, files, createDraftId));
   };
 
   const updateDraft = (
@@ -192,7 +188,7 @@ export function IngestionWorkspace() {
     <main className="min-h-screen bg-[var(--color-canvas)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <header className="border-b border-[var(--color-border)] pb-6">
-          <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+          <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-hover)]">
             Admin
           </p>
           <h1 className="font-display text-type-heading-xl mt-1 font-semibold tracking-tight text-[var(--color-ink)] sm:text-type-heading-2xl">
@@ -204,161 +200,177 @@ export function IngestionWorkspace() {
           </p>
         </header>
 
-        <section aria-labelledby="batch-heading" className="mt-6 max-w-3xl space-y-6">
-          <div>
-            <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
-              Prepare batch
-            </p>
-            <h2
-              className="font-display text-type-heading-lg mt-1 font-semibold text-[var(--color-ink)]"
-              id="batch-heading"
-            >
-              Select documents and metadata
-            </h2>
-          </div>
+        <div className="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(20rem,2fr)]">
+          <section aria-labelledby="batch-heading" className="min-w-0 space-y-6">
+            <div>
+              <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-hover)]">
+                Prepare batch
+              </p>
+              <h2
+                className="font-display text-type-heading-lg mt-1 font-semibold text-[var(--color-ink)]"
+                id="batch-heading"
+              >
+                Select documents and metadata
+              </h2>
+            </div>
 
-          <UploadDropzone
-            accept="application/pdf"
-            disabled={isSubmitting}
-            key={uploadKey}
-            multiple
-            onFilesSelected={handleFilesSelected}
-          />
+            <UploadDropzone
+              accept="application/pdf"
+              disabled={isSubmitting}
+              key={uploadKey}
+              multiple
+              onFilesSelected={handleFilesSelected}
+            />
 
-          {drafts.length > 0 ? (
-            <section aria-label="Document metadata" className="space-y-3">
-              {drafts.map((draft) => {
-                const typeId = `document-type-${draft.id}`;
-                const noteId = `document-note-${draft.id}`;
-                const errorId = `document-type-error-${draft.id}`;
-                const isIncomplete = draft.documentType === '';
+            {drafts.length > 0 ? (
+              <section aria-label="Document metadata" className="space-y-3">
+                {drafts.map((draft) => {
+                  const typeId = `document-type-${draft.id}`;
+                  const noteId = `document-note-${draft.id}`;
+                  const errorId = `document-type-error-${draft.id}`;
+                  const isIncomplete = draft.documentType === '';
 
-                return (
-                  <article
-                    className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-component)] sm:p-5"
-                    key={draft.id}
-                  >
-                    <h3 className="text-type-body font-semibold text-[var(--color-ink)]">
-                      {draft.file.name}
-                    </h3>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <label
-                          className="text-type-label font-semibold text-[var(--color-body)]"
-                          htmlFor={typeId}
-                        >
-                          Document type for {draft.file.name}
-                        </label>
-                        <select
-                          aria-describedby={isIncomplete ? errorId : undefined}
-                          className="text-type-control mt-2 min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
-                          id={typeId}
-                          disabled={isSubmitting}
-                          onChange={(event) =>
-                            updateDraft(draft.id, {
-                              documentType: event.target.value as DocumentType | '',
-                            })
-                          }
-                          required
-                          value={draft.documentType}
-                        >
-                          <option value="">Select document type</option>
-                          {documentTypeOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                        {isIncomplete ? (
-                          <p
-                            className="text-type-body-sm mt-2 text-[var(--color-error-foreground)]"
-                            id={errorId}
+                  return (
+                    <article
+                      className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-component)] sm:p-5"
+                      key={draft.id}
+                    >
+                      <h3 className="text-type-body font-semibold text-[var(--color-ink)]">
+                        {draft.file.name}
+                      </h3>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <label
+                            className="text-type-label font-semibold text-[var(--color-body)]"
+                            htmlFor={typeId}
                           >
-                            Choose a document type for {draft.file.name}.
-                          </p>
-                        ) : null}
+                            Document type for {draft.file.name}
+                          </label>
+                          <select
+                            aria-describedby={isIncomplete ? errorId : undefined}
+                            className="text-type-control mt-2 min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
+                            id={typeId}
+                            disabled={isSubmitting}
+                            onChange={(event) =>
+                              updateDraft(draft.id, {
+                                documentType: event.target.value as DocumentType | '',
+                              })
+                            }
+                            required
+                            value={draft.documentType}
+                          >
+                            <option value="">Select document type</option>
+                            {documentTypeOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          {isIncomplete ? (
+                            <p
+                              className="text-type-body-sm mt-2 text-[var(--color-error-foreground)]"
+                              id={errorId}
+                            >
+                              Choose a document type for {draft.file.name}.
+                            </p>
+                          ) : null}
+                        </div>
+                        <div>
+                          <label
+                            className="text-type-label font-semibold text-[var(--color-body)]"
+                            htmlFor={noteId}
+                          >
+                            Note for {draft.file.name}
+                          </label>
+                          <textarea
+                            className="text-type-control mt-2 min-h-24 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
+                            id={noteId}
+                            disabled={isSubmitting}
+                            onChange={(event) =>
+                              updateDraft(draft.id, { note: event.target.value })
+                            }
+                            value={draft.note}
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label
-                          className="text-type-label font-semibold text-[var(--color-body)]"
-                          htmlFor={noteId}
-                        >
-                          Note for {draft.file.name}
-                        </label>
-                        <textarea
-                          className="text-type-control mt-2 min-h-24 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
-                          id={noteId}
-                          disabled={isSubmitting}
-                          onChange={(event) => updateDraft(draft.id, { note: event.target.value })}
-                          value={draft.note}
-                        />
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+                    </article>
+                  );
+                })}
+              </section>
+            ) : null}
+
+            {incompleteNames.length > 0 ? (
+              <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
+                Complete document types for: {incompleteNames.join(', ')}
+              </p>
+            ) : null}
+
+            {hasSubmitError ? (
+              <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
+                This ingestion batch could not be started. Review the files and try again.
+              </p>
+            ) : null}
+
+            <section
+              aria-labelledby="confirmation-heading"
+              className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 sm:p-5"
+            >
+              <h2
+                className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]"
+                id="confirmation-heading"
+              >
+                Confirm permanent update
+              </h2>
+              <p className="text-type-body mt-2 text-[var(--color-body)]">
+                {drafts.length} {drafts.length === 1 ? 'file' : 'files'} will be permanently added
+                to the shared corpus.
+              </p>
+              <label className="text-type-body mt-4 flex min-h-11 items-center gap-3 text-[var(--color-ink)]">
+                <input
+                  checked={isConfirmed}
+                  className="size-5 accent-[var(--color-brass)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
+                  onChange={(event) => setIsConfirmed(event.target.checked)}
+                  disabled={isSubmitting}
+                  type="checkbox"
+                />
+                I understand this is a permanent corpus update
+              </label>
+              <button
+                className="text-type-control mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!canSubmit}
+                onClick={() => void submitBatch()}
+                type="button"
+              >
+                Start ingestion
+              </button>
             </section>
-          ) : null}
-
-          {incompleteNames.length > 0 ? (
-            <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
-              Complete document types for: {incompleteNames.join(', ')}
-            </p>
-          ) : null}
-
-          {hasSubmitError ? (
-            <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
-              This ingestion batch could not be started. Review the files and try again.
-            </p>
-          ) : null}
+          </section>
 
           <section
-            aria-labelledby="confirmation-heading"
-            className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 sm:p-5"
+            aria-labelledby="jobs-heading"
+            className="min-w-0 lg:border-l lg:border-[var(--color-border)] lg:pl-8"
           >
-            <h2
-              className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]"
-              id="confirmation-heading"
-            >
-              Confirm permanent update
-            </h2>
-            <p className="text-type-body mt-2 text-[var(--color-body)]">
-              {drafts.length} {drafts.length === 1 ? 'file' : 'files'} will be permanently added to
-              the shared corpus.
+            <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-hover)]">
+              Current session
             </p>
-            <label className="text-type-body mt-4 flex min-h-11 items-center gap-3 text-[var(--color-ink)]">
-              <input
-                checked={isConfirmed}
-                className="size-5 accent-[var(--color-brass)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
-                onChange={(event) => setIsConfirmed(event.target.checked)}
-                disabled={isSubmitting}
-                type="checkbox"
-              />
-              I understand this is a permanent corpus update
-            </label>
-            <button
-              className="text-type-control mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={!canSubmit}
-              onClick={() => void submitBatch()}
-              type="button"
+            <h2
+              className="font-display text-type-heading-lg mt-1 mb-4 font-semibold text-[var(--color-ink)]"
+              id="jobs-heading"
             >
-              Start ingestion
-            </button>
+              Ingestion jobs
+            </h2>
+            <div
+              aria-atomic="false"
+              aria-label="Ingestion job updates"
+              aria-live="polite"
+              aria-relevant="additions text"
+              className="[&>p]:text-[var(--color-body)]"
+              role="log"
+            >
+              <IngestionProgress jobs={orderedJobs} />
+            </div>
           </section>
-        </section>
-
-        <section aria-labelledby="jobs-heading" className="mt-8 max-w-3xl">
-          <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
-            Current session
-          </p>
-          <h2
-            className="font-display text-type-heading-lg mt-1 mb-4 font-semibold text-[var(--color-ink)]"
-            id="jobs-heading"
-          >
-            Ingestion jobs
-          </h2>
-          <IngestionProgress jobs={orderedJobs} />
-        </section>
+        </div>
       </div>
     </main>
   );

@@ -42,7 +42,10 @@ describe('AdminStatus', () => {
     fetchCorpusStatsMock.mockResolvedValue(healthyStats);
     render(<AdminStatus />);
 
-    expect(screen.getByLabelText('Loading system status')).toBeInTheDocument();
+    expect(screen.getByLabelText('Loading system status')).toHaveAttribute(
+      'data-full-screen',
+      'true',
+    );
     expect(await screen.findByRole('heading', { name: 'Corpus' })).toBeInTheDocument();
     expect(screen.getByText('42 documents')).toBeInTheDocument();
     expect(screen.getByText('Judgments: 20')).toBeInTheDocument();

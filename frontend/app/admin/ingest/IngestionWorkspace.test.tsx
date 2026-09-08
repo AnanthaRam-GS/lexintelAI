@@ -62,6 +62,15 @@ describe('IngestionWorkspace', () => {
     expect(input).toHaveAttribute('multiple');
   });
 
+  it('announces changed job rows through a polite non-atomic log', () => {
+    render(<IngestionWorkspace />);
+
+    const updates = screen.getByRole('log', { name: 'Ingestion job updates' });
+    expect(updates).toHaveAttribute('aria-live', 'polite');
+    expect(updates).toHaveAttribute('aria-atomic', 'false');
+    expect(updates).toHaveAttribute('aria-relevant', 'additions text');
+  });
+
   it('renders independent required types and optional notes for every file', async () => {
     const user = userEvent.setup();
     render(<IngestionWorkspace />);

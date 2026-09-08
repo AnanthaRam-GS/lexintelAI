@@ -111,6 +111,18 @@ describe('admin ingestion mock boundary', () => {
     });
   });
 
+  it('resumes a persisted active job after in-memory mock state is lost', async () => {
+    writePersistedIngestionJobs([{ id: 'job-restored', filename: 'lease.pdf', stage: 'CHUNKING' }]);
+    resetAdminIngestionMockForTests();
+
+    await expect(pollIngestionStatusMock('job-restored')).resolves.toEqual({
+      id: 'job-restored',
+      filename: 'lease.pdf',
+      stage: 'EMBEDDING',
+      progress: 60,
+    });
+  });
+
   it('returns fixed safe failure text and never private mock details', async () => {
     await submitIngestionMock([pdf('secret.pdf')], [{ documentType: 'other' }]);
     configureAdminIngestionMockForTests({ failFilenames: ['secret.pdf'] });

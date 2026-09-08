@@ -193,7 +193,17 @@ export async function submitIngestionMock(
 
 export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJob> {
   await wait(config.delayMs);
-  const state = jobs.get(jobId);
+  let state = jobs.get(jobId);
+  if (!state) {
+    const restored = readPersistedIngestionJobs().find((record) => record.id === jobId);
+    if (restored) {
+      state = {
+        filename: restored.filename,
+        pollCount: ACTIVE_STAGES.indexOf(restored.stage) + 1,
+      };
+      jobs.set(jobId, state);
+    }
+  }
   if (!state) {
     return {
       id: jobId,

@@ -79,7 +79,7 @@ function StatusRegions({ stats }: { stats: CorpusStats }) {
         aria-labelledby="corpus-heading"
         className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-component)] sm:p-6 lg:col-span-7"
       >
-        <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+        <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-hover)]">
           Corpus overview
         </p>
         <h2
@@ -183,7 +183,7 @@ export function AdminStatus() {
   }, [loadStatus]);
 
   if (pending && !stats) {
-    return <LoadingSpinner label="Loading system status" />;
+    return <LoadingSpinner fullScreen label="Loading system status" />;
   }
 
   return (
@@ -191,7 +191,7 @@ export function AdminStatus() {
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-5 border-b border-[var(--color-border)] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+            <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass-hover)]">
               Admin
             </p>
             <h1 className="font-display text-type-heading-xl mt-1 font-semibold tracking-tight text-[var(--color-ink)] sm:text-type-heading-2xl">
