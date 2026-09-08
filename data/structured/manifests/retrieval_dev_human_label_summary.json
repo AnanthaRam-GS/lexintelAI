@@ -1,0 +1,408 @@
+{
+  "development_version": "legalai-retrieval-dev-v1",
+  "query_count": 20,
+  "judgment_count": 474,
+  "reviewed": 474,
+  "pending": 0,
+  "human_relevance_counts": {
+    "grade_2": 103,
+    "grade_1": 174,
+    "grade_0": 197,
+    "uncertain": 0
+  },
+  "document_relevance_counts": {
+    "yes": 260,
+    "no": 214,
+    "uncertain": 0
+  },
+  "per_query_counts": {
+    "dev-q001": {
+      "total": 19,
+      "reviewed": 19,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 5,
+        "grade_1": 10,
+        "grade_0": 4,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 15,
+        "no": 4,
+        "uncertain": 0
+      }
+    },
+    "dev-q002": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 2,
+        "grade_1": 8,
+        "grade_0": 15,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 10,
+        "no": 15,
+        "uncertain": 0
+      }
+    },
+    "dev-q003": {
+      "total": 23,
+      "reviewed": 23,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 4,
+        "grade_1": 5,
+        "grade_0": 14,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 9,
+        "no": 14,
+        "uncertain": 0
+      }
+    },
+    "dev-q004": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 4,
+        "grade_1": 3,
+        "grade_0": 18,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 7,
+        "no": 18,
+        "uncertain": 0
+      }
+    },
+    "dev-q005": {
+      "total": 21,
+      "reviewed": 21,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 5,
+        "grade_1": 12,
+        "grade_0": 4,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 17,
+        "no": 4,
+        "uncertain": 0
+      }
+    },
+    "dev-q006": {
+      "total": 24,
+      "reviewed": 24,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 0,
+        "grade_1": 10,
+        "grade_0": 14,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 10,
+        "no": 14,
+        "uncertain": 0
+      }
+    },
+    "dev-q007": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 0,
+        "grade_1": 20,
+        "grade_0": 5,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 10,
+        "no": 15,
+        "uncertain": 0
+      }
+    },
+    "dev-q008": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 6,
+        "grade_1": 16,
+        "grade_0": 3,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 16,
+        "no": 9,
+        "uncertain": 0
+      }
+    },
+    "dev-q009": {
+      "total": 24,
+      "reviewed": 24,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 3,
+        "grade_1": 14,
+        "grade_0": 7,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 18,
+        "no": 6,
+        "uncertain": 0
+      }
+    },
+    "dev-q010": {
+      "total": 24,
+      "reviewed": 24,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 8,
+        "grade_1": 4,
+        "grade_0": 12,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 12,
+        "no": 12,
+        "uncertain": 0
+      }
+    },
+    "dev-q011": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 6,
+        "grade_1": 7,
+        "grade_0": 12,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 13,
+        "no": 12,
+        "uncertain": 0
+      }
+    },
+    "dev-q012": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 3,
+        "grade_1": 2,
+        "grade_0": 20,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 5,
+        "no": 20,
+        "uncertain": 0
+      }
+    },
+    "dev-q013": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 11,
+        "grade_1": 9,
+        "grade_0": 5,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 21,
+        "no": 4,
+        "uncertain": 0
+      }
+    },
+    "dev-q014": {
+      "total": 23,
+      "reviewed": 23,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 9,
+        "grade_1": 10,
+        "grade_0": 4,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 22,
+        "no": 1,
+        "uncertain": 0
+      }
+    },
+    "dev-q015": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 6,
+        "grade_1": 6,
+        "grade_0": 13,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 13,
+        "no": 12,
+        "uncertain": 0
+      }
+    },
+    "dev-q016": {
+      "total": 24,
+      "reviewed": 24,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 7,
+        "grade_1": 11,
+        "grade_0": 6,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 11,
+        "no": 13,
+        "uncertain": 0
+      }
+    },
+    "dev-q017": {
+      "total": 21,
+      "reviewed": 21,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 6,
+        "grade_1": 8,
+        "grade_0": 7,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 14,
+        "no": 7,
+        "uncertain": 0
+      }
+    },
+    "dev-q018": {
+      "total": 25,
+      "reviewed": 25,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 2,
+        "grade_1": 5,
+        "grade_0": 18,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 7,
+        "no": 18,
+        "uncertain": 0
+      }
+    },
+    "dev-q019": {
+      "total": 22,
+      "reviewed": 22,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 8,
+        "grade_1": 8,
+        "grade_0": 6,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 16,
+        "no": 6,
+        "uncertain": 0
+      }
+    },
+    "dev-q020": {
+      "total": 24,
+      "reviewed": 24,
+      "pending": 0,
+      "human_relevance": {
+        "grade_2": 8,
+        "grade_1": 6,
+        "grade_0": 10,
+        "uncertain": 0
+      },
+      "document_relevance": {
+        "yes": 14,
+        "no": 10,
+        "uncertain": 0
+      }
+    }
+  },
+  "per_query_type_counts": {
+    "composite_ambiguous": {
+      "grade_2": 23,
+      "grade_1": 61,
+      "grade_0": 39,
+      "uncertain": 0
+    },
+    "hard_negative": {
+      "grade_2": 16,
+      "grade_1": 14,
+      "grade_0": 16,
+      "uncertain": 0
+    },
+    "legal_regime_transition": {
+      "grade_2": 20,
+      "grade_1": 48,
+      "grade_0": 69,
+      "uncertain": 0
+    },
+    "metadata_sensitive": {
+      "grade_2": 15,
+      "grade_1": 24,
+      "grade_0": 31,
+      "uncertain": 0
+    },
+    "plain_language_expansion": {
+      "grade_2": 29,
+      "grade_1": 27,
+      "grade_0": 42,
+      "uncertain": 0
+    }
+  },
+  "per_tuning_focus_counts": {
+    "composite_reasoning": {
+      "grade_2": 23,
+      "grade_1": 61,
+      "grade_0": 39,
+      "uncertain": 0
+    },
+    "hard_negative": {
+      "grade_2": 28,
+      "grade_1": 48,
+      "grade_0": 64,
+      "uncertain": 0
+    },
+    "legal_regime": {
+      "grade_2": 20,
+      "grade_1": 48,
+      "grade_0": 69,
+      "uncertain": 0
+    },
+    "metadata_reranking": {
+      "grade_2": 38,
+      "grade_1": 74,
+      "grade_0": 76,
+      "uncertain": 0
+    },
+    "query_expansion": {
+      "grade_2": 50,
+      "grade_1": 49,
+      "grade_0": 64,
+      "uncertain": 0
+    }
+  },
+  "reviewer_counts": {
+    "Ananthu": 474
+  },
+  "metric_status": "not_calculated_in_dev_label_materialization_step"
+}
