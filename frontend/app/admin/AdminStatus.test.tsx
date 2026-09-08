@@ -51,8 +51,11 @@ describe('AdminStatus', () => {
     expect(screen.getByText('Judgments: 20')).toBeInTheDocument();
     expect(screen.getByText('Statutes: 12')).toBeInTheDocument();
     expect(screen.getByText('Other: 10')).toBeInTheDocument();
-    expect(screen.getByText('Last ingestion: 2026-09-07T09:00:00.000Z')).toBeInTheDocument();
-    expect(screen.getByText('Last updated: 2026-09-08T09:00:00.000Z')).toBeInTheDocument();
+    const lastIngestion = screen.getByText('7 Sept 2026, 09:00 UTC');
+    expect(lastIngestion).toHaveAttribute('datetime', '2026-09-07T09:00:00.000Z');
+    const lastUpdated = screen.getByText('8 Sept 2026, 09:00 UTC');
+    expect(lastUpdated).toHaveAttribute('datetime', '2026-09-08T09:00:00.000Z');
+    expect(screen.queryByText('2026-09-08T09:00:00.000Z')).not.toBeInTheDocument();
 
     const chroma = screen.getByRole('region', { name: 'ChromaDB status' });
     expect(chroma).toHaveTextContent('Healthy');

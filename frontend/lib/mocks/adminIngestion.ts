@@ -40,6 +40,12 @@ export const STORAGE_KEY = 'legalai-admin-ingestion-jobs';
 
 const SAFE_FAILURE_TEXT = 'This file could not be processed. Review the file and try again.';
 const SAFE_SUBMIT_FAILURE_TEXT = 'Unable to start ingestion.';
+// Keep mock-phase rehydration bounded: 25 active rows are enough for one admin
+// session, while 128-character IDs and 255-character display names cover normal
+// backend identifiers and filesystem names without trusting arbitrary storage.
+const MAX_PERSISTED_JOBS = 25;
+const MAX_PERSISTED_JOB_ID_LENGTH = 128;
+const MAX_PERSISTED_FILENAME_LENGTH = 255;
 const STAGES: readonly IngestionStage[] = [
   'QUEUED',
   'EXTRACTING',
@@ -101,27 +107,39 @@ const isIngestionStage = (value: unknown): value is IngestionStage =>
 
 const isTerminalStage = (stage: IngestionStage) => stage === 'COMPLETED' || stage === 'FAILED';
 
-const isPersistedRecord = (value: unknown): value is PersistedIngestionJob => {
-  if (!value || typeof value !== 'object') return false;
+const toPersistedRecord = (value: unknown): PersistedIngestionJob | null => {
+  if (!value || typeof value !== 'object') return null;
   const record = value as Record<string, unknown>;
-  return (
-    typeof record.id === 'string' &&
-    record.id.trim().length > 0 &&
-    typeof record.filename === 'string' &&
-    record.filename.trim().length > 0 &&
-    isIngestionStage(record.stage)
-  );
+  if (typeof record.id !== 'string' || typeof record.filename !== 'string') return null;
+
+  const id = record.id.trim();
+  const filename = record.filename.trim();
+  if (
+    id.length === 0 ||
+    id.length > MAX_PERSISTED_JOB_ID_LENGTH ||
+    filename.length === 0 ||
+    filename.length > MAX_PERSISTED_FILENAME_LENGTH ||
+    !isIngestionStage(record.stage)
+  ) {
+    return null;
+  }
+
+  return { id, filename, stage: record.stage };
 };
 
 const normalizePersistedRecords = (value: unknown): PersistedIngestionJob[] => {
   if (!Array.isArray(value)) return [];
 
   const seen = new Set<string>();
-  return value.filter(isPersistedRecord).flatMap((record) => {
-    if (seen.has(record.id) || isTerminalStage(record.stage)) return [];
+  const records: PersistedIngestionJob[] = [];
+  for (const valueRecord of value) {
+    if (records.length >= MAX_PERSISTED_JOBS) break;
+    const record = toPersistedRecord(valueRecord);
+    if (!record || seen.has(record.id) || isTerminalStage(record.stage)) continue;
     seen.add(record.id);
-    return [{ id: record.id, filename: record.filename, stage: record.stage }];
-  });
+    records.push(record);
+  }
+  return records;
 };
 
 const getSessionStorage = (): Storage | null => {
@@ -181,10 +199,19 @@ export async function submitIngestionMock(
     throw new Error(SAFE_SUBMIT_FAILURE_TEXT);
   }
 
+  const reservedIds = new Set([
+    ...jobs.keys(),
+    ...readPersistedIngestionJobs().map(({ id }) => id),
+  ]);
+
   return {
     jobIds: files.map((file) => {
-      const id = `job-${nextJobNumber}`;
-      nextJobNumber += 1;
+      let id: string;
+      do {
+        id = `job-${nextJobNumber}`;
+        nextJobNumber += 1;
+      } while (reservedIds.has(id));
+      reservedIds.add(id);
       jobs.set(id, { filename: file.name, pollCount: 0 });
       return id;
     }),

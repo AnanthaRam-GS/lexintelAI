@@ -38,6 +38,19 @@ const healthView: Record<ServiceHealth, { label: string; Icon: LucideIcon; class
   },
 };
 
+const statusTimestampFormatter = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+});
+
+function formatStatusTimestamp(timestamp: string) {
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime())
+    ? 'Unavailable'
+    : `${statusTimestampFormatter.format(date)} UTC`;
+}
+
 function ServiceHealthRegion({
   name,
   service,
@@ -112,8 +125,18 @@ function StatusRegions({ stats }: { stats: CorpusStats }) {
           </div>
         </dl>
         <div className="text-type-body-sm mt-5 space-y-1 border-t border-[var(--color-border)] pt-4 text-[var(--color-muted)]">
-          <p>Last ingestion: {stats.lastIngestionDate}</p>
-          <p>Last updated: {stats.lastUpdatedTimestamp}</p>
+          <p>
+            Last ingestion:{' '}
+            <time dateTime={stats.lastIngestionDate}>
+              {formatStatusTimestamp(stats.lastIngestionDate)}
+            </time>
+          </p>
+          <p>
+            Last updated:{' '}
+            <time dateTime={stats.lastUpdatedTimestamp}>
+              {formatStatusTimestamp(stats.lastUpdatedTimestamp)}
+            </time>
+          </p>
         </div>
       </section>
 

@@ -87,6 +87,23 @@ describe('admin ingestion mock boundary', () => {
     });
   });
 
+  it('does not reuse an ID reserved by a restored job when a new batch is submitted', async () => {
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);
+
+    await expect(
+      submitIngestionMock([pdf('new.pdf')], [{ documentType: 'judgment' }]),
+    ).resolves.toEqual({ jobIds: ['job-2'] });
+
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      id: 'job-1',
+      filename: 'restored.pdf',
+    });
+    await expect(pollIngestionStatusMock('job-2')).resolves.toMatchObject({
+      id: 'job-2',
+      filename: 'new.pdf',
+    });
+  });
+
   it('rejects files and metadata that are not aligned', async () => {
     await expect(
       submitIngestionMock(
@@ -179,6 +196,38 @@ describe('admin ingestion mock boundary', () => {
     expect(sessionStorage.getItem(STORAGE_KEY)).not.toContain('note');
     expect(sessionStorage.getItem(STORAGE_KEY)).not.toContain('documentType');
     expect(sessionStorage.getItem(STORAGE_KEY)).not.toContain('error');
+  });
+
+  it('bounds adversarial storage before persistence or rehydration polling', () => {
+    const expected = Array.from({ length: 25 }, (_, index) => ({
+      id: `job-${index + 1}`,
+      filename: `document-${index + 1}.pdf`,
+      stage: 'QUEUED' as const,
+    }));
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        ...expected,
+        ...Array.from({ length: 15 }, (_, index) => ({
+          id: `job-${index + 26}`,
+          filename: `document-${index + 26}.pdf`,
+          stage: 'QUEUED',
+        })),
+        { id: `job-${'x'.repeat(200)}`, filename: 'oversized-id.pdf', stage: 'QUEUED' },
+        { id: 'job-oversized-name', filename: `${'x'.repeat(300)}.pdf`, stage: 'QUEUED' },
+      ]),
+    );
+
+    const restored = readPersistedIngestionJobs();
+
+    expect(restored).toEqual(expected);
+    const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY)!) as Array<
+      Record<string, unknown>
+    >;
+    expect(persisted).toEqual(expected);
+    expect(persisted.every((record) => Object.keys(record).join(',') === 'id,filename,stage')).toBe(
+      true,
+    );
   });
 
   it('handles malformed JSON safely and writes only non-terminal records', () => {

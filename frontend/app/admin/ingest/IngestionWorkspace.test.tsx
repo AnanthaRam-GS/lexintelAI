@@ -87,6 +87,19 @@ describe('IngestionWorkspace', () => {
     expect(screen.getAllByText('second.pdf')).toHaveLength(2);
   });
 
+  it('keeps a long unbroken metadata filename within the narrow card and exposes its full value', async () => {
+    const user = userEvent.setup();
+    const longFilename = `${'a'.repeat(240)}.pdf`;
+    render(<IngestionWorkspace />);
+
+    await user.upload(screen.getByLabelText('Choose PDF files'), pdfFile(longFilename));
+
+    const heading = screen.getByRole('heading', { name: longFilename });
+    expect(heading).toHaveAttribute('title', longFilename);
+    expect(heading).toHaveClass('truncate');
+    expect(heading.closest('article')).toHaveClass('min-w-0');
+  });
+
   it('identifies the exact incomplete filename and prevents the permanent action', async () => {
     const user = userEvent.setup();
     render(<IngestionWorkspace />);
@@ -265,6 +278,62 @@ describe('IngestionWorkspace', () => {
     expect(screen.queryByTestId('ingestion-jobs')).not.toBeInTheDocument();
   });
 
+  it('rejects a submission response whose job ID collides with a restored job', async () => {
+    const user = userEvent.setup();
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-1'] });
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('new.pdf'));
+
+    await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('could not be started');
+    expect(screen.getByLabelText('Document type for new.pdf')).toBeInTheDocument();
+    const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toHaveTextContent('restored.pdf');
+  });
+
+  it('keeps restored and newly submitted jobs unique, independently polled, and stably ordered', async () => {
+    const user = userEvent.setup();
+    const restoredPoll = deferred<IngestionJob>();
+    const newPoll = deferred<IngestionJob>();
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);
+    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-2'] });
+    vi.mocked(pollIngestionStatusMock).mockImplementation((id) =>
+      id === 'job-1' ? restoredPoll.promise : newPoll.promise,
+    );
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('new.pdf'));
+
+    await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
+
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1');
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-2');
+    const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('new.pdf');
+    expect(rows[1]).toHaveTextContent('restored.pdf');
+
+    restoredPoll.resolve({
+      id: 'job-1',
+      filename: 'restored.pdf',
+      stage: 'EXTRACTING',
+      progress: 20,
+    });
+    newPoll.resolve({
+      id: 'job-2',
+      filename: 'new.pdf',
+      stage: 'EXTRACTING',
+      progress: 20,
+    });
+    await act(async () => Promise.resolve());
+    const updatedRows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
+    expect(updatedRows[0]).toHaveTextContent('new.pdf');
+    expect(updatedRows[1]).toHaveTextContent('restored.pdf');
+  });
+
   it('polls jobs independently every 2.5 seconds and stops each terminal job', async () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([
@@ -301,6 +370,30 @@ describe('IngestionWorkspace', () => {
     await act(async () => vi.advanceTimersByTimeAsync(5_000));
     expect(pollIngestionStatusMock).toHaveBeenCalledTimes(3);
     expect(readPersistedIngestionJobs()).toEqual([]);
+  });
+
+  it('caps adversarial session rehydration before it can fan out polling', async () => {
+    sessionStorage.setItem(
+      'legalai-admin-ingestion-jobs',
+      JSON.stringify([
+        ...Array.from({ length: 40 }, (_, index) => ({
+          id: `job-${index + 1}`,
+          filename: `document-${index + 1}.pdf`,
+          stage: 'QUEUED',
+        })),
+        { id: `job-${'x'.repeat(200)}`, filename: 'oversized-id.pdf', stage: 'QUEUED' },
+        { id: 'job-oversized-name', filename: `${'x'.repeat(300)}.pdf`, stage: 'QUEUED' },
+      ]),
+    );
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+
+    render(<IngestionWorkspace />);
+
+    await waitFor(() => expect(pollIngestionStatusMock).toHaveBeenCalledTimes(25));
+    expect(vi.mocked(pollIngestionStatusMock).mock.calls.map(([id]) => id)).toEqual(
+      Array.from({ length: 25 }, (_, index) => `job-${index + 1}`),
+    );
+    expect(JSON.parse(sessionStorage.getItem('legalai-admin-ingestion-jobs')!)).toHaveLength(25);
   });
 
   it('waits for an in-flight poll to settle before scheduling the next poll', async () => {

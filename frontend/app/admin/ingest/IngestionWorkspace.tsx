@@ -163,7 +163,15 @@ export function IngestionWorkspace() {
         note: note.trim() || undefined,
       }));
       const { jobIds } = await submitIngestionMock(files, metadata);
-      if (jobIds.length !== drafts.length) throw new Error('Unexpected ingestion response');
+      const existingJobIds = new Set(jobs.map(({ id }) => id));
+      const uniqueResponseIds = new Set(jobIds);
+      if (
+        jobIds.length !== drafts.length ||
+        uniqueResponseIds.size !== jobIds.length ||
+        jobIds.some((id) => id.trim().length === 0 || existingJobIds.has(id))
+      ) {
+        throw new Error('Unexpected ingestion response');
+      }
 
       const queued = jobIds.map((id, index): IngestionJob => ({
         id,
@@ -223,7 +231,7 @@ export function IngestionWorkspace() {
             />
 
             {drafts.length > 0 ? (
-              <section aria-label="Document metadata" className="space-y-3">
+              <section aria-label="Document metadata" className="min-w-0 space-y-3">
                 {drafts.map((draft) => {
                   const typeId = `document-type-${draft.id}`;
                   const noteId = `document-note-${draft.id}`;
@@ -232,16 +240,19 @@ export function IngestionWorkspace() {
 
                   return (
                     <article
-                      className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-component)] sm:p-5"
+                      className="min-w-0 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-component)] sm:p-5"
                       key={draft.id}
                     >
-                      <h3 className="text-type-body font-semibold text-[var(--color-ink)]">
+                      <h3
+                        className="text-type-body truncate font-semibold text-[var(--color-ink)]"
+                        title={draft.file.name}
+                      >
                         {draft.file.name}
                       </h3>
                       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                        <div>
+                        <div className="min-w-0">
                           <label
-                            className="text-type-label font-semibold text-[var(--color-body)]"
+                            className="text-type-label break-all font-semibold text-[var(--color-body)]"
                             htmlFor={typeId}
                           >
                             Document type for {draft.file.name}
@@ -268,16 +279,16 @@ export function IngestionWorkspace() {
                           </select>
                           {isIncomplete ? (
                             <p
-                              className="text-type-body-sm mt-2 text-[var(--color-error-foreground)]"
+                              className="text-type-body-sm mt-2 break-all text-[var(--color-error-foreground)]"
                               id={errorId}
                             >
                               Choose a document type for {draft.file.name}.
                             </p>
                           ) : null}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <label
-                            className="text-type-label font-semibold text-[var(--color-body)]"
+                            className="text-type-label break-all font-semibold text-[var(--color-body)]"
                             htmlFor={noteId}
                           >
                             Note for {draft.file.name}
@@ -300,7 +311,10 @@ export function IngestionWorkspace() {
             ) : null}
 
             {incompleteNames.length > 0 ? (
-              <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
+              <p
+                className="text-type-body-sm break-all text-[var(--color-error-foreground)]"
+                role="alert"
+              >
                 Complete document types for: {incompleteNames.join(', ')}
               </p>
             ) : null}
