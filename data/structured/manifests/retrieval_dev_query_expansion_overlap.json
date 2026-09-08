@@ -1,0 +1,2266 @@
+{
+  "Q0": {
+    "candidate_generation": {
+      "aggregate": {
+        "bm25": 186,
+        "dense": 188,
+        "intersection": 99,
+        "bm25_only": 87,
+        "dense_only": 89,
+        "union": 275
+      },
+      "per_query": {
+        "dev-q001": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 12,
+          "intersection": 11,
+          "bm25_only": 3,
+          "dense_only": 1,
+          "union": 15
+        },
+        "dev-q002": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 8,
+          "intersection": 7,
+          "bm25_only": 2,
+          "dense_only": 1,
+          "union": 10
+        },
+        "dev-q003": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 7,
+          "intersection": 3,
+          "bm25_only": 2,
+          "dense_only": 4,
+          "union": 9
+        },
+        "dev-q004": {
+          "bm25_relevant_top20": 4,
+          "dense_relevant_top20": 5,
+          "intersection": 2,
+          "bm25_only": 2,
+          "dense_only": 3,
+          "union": 7
+        },
+        "dev-q005": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 14,
+          "intersection": 9,
+          "bm25_only": 3,
+          "dense_only": 5,
+          "union": 17
+        },
+        "dev-q006": {
+          "bm25_relevant_top20": 8,
+          "dense_relevant_top20": 8,
+          "intersection": 6,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 10
+        },
+        "dev-q007": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 10,
+          "intersection": 2,
+          "bm25_only": 10,
+          "dense_only": 8,
+          "union": 20
+        },
+        "dev-q008": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 14,
+          "intersection": 5,
+          "bm25_only": 7,
+          "dense_only": 9,
+          "union": 21
+        },
+        "dev-q009": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 13,
+          "intersection": 6,
+          "bm25_only": 4,
+          "dense_only": 7,
+          "union": 17
+        },
+        "dev-q010": {
+          "bm25_relevant_top20": 8,
+          "dense_relevant_top20": 9,
+          "intersection": 5,
+          "bm25_only": 3,
+          "dense_only": 4,
+          "union": 12
+        },
+        "dev-q011": {
+          "bm25_relevant_top20": 8,
+          "dense_relevant_top20": 9,
+          "intersection": 4,
+          "bm25_only": 4,
+          "dense_only": 5,
+          "union": 13
+        },
+        "dev-q012": {
+          "bm25_relevant_top20": 1,
+          "dense_relevant_top20": 5,
+          "intersection": 1,
+          "bm25_only": 0,
+          "dense_only": 4,
+          "union": 5
+        },
+        "dev-q013": {
+          "bm25_relevant_top20": 15,
+          "dense_relevant_top20": 11,
+          "intersection": 6,
+          "bm25_only": 9,
+          "dense_only": 5,
+          "union": 20
+        },
+        "dev-q014": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 14,
+          "intersection": 8,
+          "bm25_only": 4,
+          "dense_only": 6,
+          "union": 18
+        },
+        "dev-q015": {
+          "bm25_relevant_top20": 7,
+          "dense_relevant_top20": 9,
+          "intersection": 4,
+          "bm25_only": 3,
+          "dense_only": 5,
+          "union": 12
+        },
+        "dev-q016": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 1,
+          "bm25_only": 8,
+          "dense_only": 9,
+          "union": 18
+        },
+        "dev-q017": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 5,
+          "bm25_only": 4,
+          "dense_only": 5,
+          "union": 14
+        },
+        "dev-q018": {
+          "bm25_relevant_top20": 6,
+          "dense_relevant_top20": 2,
+          "intersection": 1,
+          "bm25_only": 5,
+          "dense_only": 1,
+          "union": 7
+        },
+        "dev-q019": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 11,
+          "intersection": 7,
+          "bm25_only": 5,
+          "dense_only": 4,
+          "union": 16
+        },
+        "dev-q020": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 7,
+          "intersection": 6,
+          "bm25_only": 7,
+          "dense_only": 1,
+          "union": 14
+        }
+      }
+    },
+    "new_lost": {
+      "bm25": {
+        "aggregate": {
+          "new_broad": 0,
+          "lost_broad": 0,
+          "new_grade2": 0,
+          "lost_grade2": 0
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "dense": {
+        "aggregate": {
+          "new_broad": 0,
+          "lost_broad": 0,
+          "new_grade2": 0,
+          "lost_grade2": 0
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "hybrid": {
+        "aggregate": {
+          "new_broad": 0,
+          "lost_broad": 0,
+          "new_grade2": 0,
+          "lost_grade2": 0
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      }
+    }
+  },
+  "Q1": {
+    "candidate_generation": {
+      "aggregate": {
+        "bm25": 190,
+        "dense": 187,
+        "intersection": 125,
+        "bm25_only": 65,
+        "dense_only": 62,
+        "union": 252
+      },
+      "per_query": {
+        "dev-q001": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 12,
+          "intersection": 10,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 14
+        },
+        "dev-q002": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 7,
+          "intersection": 5,
+          "bm25_only": 0,
+          "dense_only": 2,
+          "union": 7
+        },
+        "dev-q003": {
+          "bm25_relevant_top20": 6,
+          "dense_relevant_top20": 7,
+          "intersection": 4,
+          "bm25_only": 2,
+          "dense_only": 3,
+          "union": 9
+        },
+        "dev-q004": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 4,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 0,
+          "union": 5
+        },
+        "dev-q005": {
+          "bm25_relevant_top20": 15,
+          "dense_relevant_top20": 15,
+          "intersection": 13,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 17
+        },
+        "dev-q006": {
+          "bm25_relevant_top20": 4,
+          "dense_relevant_top20": 5,
+          "intersection": 4,
+          "bm25_only": 0,
+          "dense_only": 1,
+          "union": 5
+        },
+        "dev-q007": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 10,
+          "intersection": 2,
+          "bm25_only": 10,
+          "dense_only": 8,
+          "union": 20
+        },
+        "dev-q008": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 15,
+          "intersection": 6,
+          "bm25_only": 7,
+          "dense_only": 9,
+          "union": 22
+        },
+        "dev-q009": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 13,
+          "intersection": 9,
+          "bm25_only": 0,
+          "dense_only": 4,
+          "union": 13
+        },
+        "dev-q010": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 11,
+          "intersection": 9,
+          "bm25_only": 1,
+          "dense_only": 2,
+          "union": 12
+        },
+        "dev-q011": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 6,
+          "bm25_only": 3,
+          "dense_only": 4,
+          "union": 13
+        },
+        "dev-q012": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 4,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 0,
+          "union": 5
+        },
+        "dev-q013": {
+          "bm25_relevant_top20": 17,
+          "dense_relevant_top20": 15,
+          "intersection": 13,
+          "bm25_only": 4,
+          "dense_only": 2,
+          "union": 19
+        },
+        "dev-q014": {
+          "bm25_relevant_top20": 11,
+          "dense_relevant_top20": 9,
+          "intersection": 5,
+          "bm25_only": 6,
+          "dense_only": 4,
+          "union": 15
+        },
+        "dev-q015": {
+          "bm25_relevant_top20": 7,
+          "dense_relevant_top20": 9,
+          "intersection": 6,
+          "bm25_only": 1,
+          "dense_only": 3,
+          "union": 10
+        },
+        "dev-q016": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 1,
+          "bm25_only": 8,
+          "dense_only": 9,
+          "union": 18
+        },
+        "dev-q017": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 9,
+          "intersection": 5,
+          "bm25_only": 5,
+          "dense_only": 4,
+          "union": 14
+        },
+        "dev-q018": {
+          "bm25_relevant_top20": 6,
+          "dense_relevant_top20": 2,
+          "intersection": 1,
+          "bm25_only": 5,
+          "dense_only": 1,
+          "union": 7
+        },
+        "dev-q019": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 12,
+          "intersection": 11,
+          "bm25_only": 1,
+          "dense_only": 1,
+          "union": 13
+        },
+        "dev-q020": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 8,
+          "intersection": 7,
+          "bm25_only": 6,
+          "dense_only": 1,
+          "union": 14
+        }
+      }
+    },
+    "new_lost": {
+      "bm25": {
+        "aggregate": {
+          "new_broad": 27,
+          "lost_broad": 23,
+          "new_grade2": 10,
+          "lost_grade2": 2
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 3,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 5,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 5,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 3,
+            "lost_broad": 4,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 4,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 3,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 3,
+            "lost_broad": 3,
+            "new_grade2": 1,
+            "lost_grade2": 1
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "dense": {
+        "aggregate": {
+          "new_broad": 25,
+          "lost_broad": 26,
+          "new_grade2": 10,
+          "lost_grade2": 6
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 1,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 1
+          },
+          "dev-q005": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 4,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 5,
+            "lost_broad": 1,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 1,
+            "lost_broad": 6,
+            "new_grade2": 1,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 2,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 4,
+            "lost_broad": 3,
+            "new_grade2": 1,
+            "lost_grade2": 1
+          },
+          "dev-q020": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "hybrid": {
+        "aggregate": {
+          "new_broad": 39,
+          "lost_broad": 23,
+          "new_grade2": 17,
+          "lost_grade2": 3
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 3,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 5,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 4,
+            "lost_broad": 3,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 5,
+            "lost_broad": 2,
+            "new_grade2": 4,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 1,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 3,
+            "lost_broad": 3,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 5,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 3,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q018": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          }
+        }
+      }
+    }
+  },
+  "Q2": {
+    "candidate_generation": {
+      "aggregate": {
+        "bm25": 206,
+        "dense": 183,
+        "intersection": 129,
+        "bm25_only": 77,
+        "dense_only": 54,
+        "union": 260
+      },
+      "per_query": {
+        "dev-q001": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 12,
+          "intersection": 12,
+          "bm25_only": 2,
+          "dense_only": 0,
+          "union": 14
+        },
+        "dev-q002": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 6,
+          "intersection": 5,
+          "bm25_only": 4,
+          "dense_only": 1,
+          "union": 10
+        },
+        "dev-q003": {
+          "bm25_relevant_top20": 8,
+          "dense_relevant_top20": 6,
+          "intersection": 6,
+          "bm25_only": 2,
+          "dense_only": 0,
+          "union": 8
+        },
+        "dev-q004": {
+          "bm25_relevant_top20": 4,
+          "dense_relevant_top20": 5,
+          "intersection": 3,
+          "bm25_only": 1,
+          "dense_only": 2,
+          "union": 6
+        },
+        "dev-q005": {
+          "bm25_relevant_top20": 15,
+          "dense_relevant_top20": 15,
+          "intersection": 13,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 17
+        },
+        "dev-q006": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 5,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 1,
+          "union": 6
+        },
+        "dev-q007": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 10,
+          "intersection": 2,
+          "bm25_only": 10,
+          "dense_only": 8,
+          "union": 20
+        },
+        "dev-q008": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 15,
+          "intersection": 6,
+          "bm25_only": 7,
+          "dense_only": 9,
+          "union": 22
+        },
+        "dev-q009": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 13,
+          "intersection": 9,
+          "bm25_only": 1,
+          "dense_only": 4,
+          "union": 14
+        },
+        "dev-q010": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 11,
+          "intersection": 9,
+          "bm25_only": 1,
+          "dense_only": 2,
+          "union": 12
+        },
+        "dev-q011": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 6,
+          "bm25_only": 3,
+          "dense_only": 4,
+          "union": 13
+        },
+        "dev-q012": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 4,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 0,
+          "union": 5
+        },
+        "dev-q013": {
+          "bm25_relevant_top20": 17,
+          "dense_relevant_top20": 15,
+          "intersection": 12,
+          "bm25_only": 5,
+          "dense_only": 3,
+          "union": 20
+        },
+        "dev-q014": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 8,
+          "intersection": 6,
+          "bm25_only": 8,
+          "dense_only": 2,
+          "union": 16
+        },
+        "dev-q015": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 9,
+          "intersection": 7,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 11
+        },
+        "dev-q016": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 1,
+          "bm25_only": 8,
+          "dense_only": 9,
+          "union": 18
+        },
+        "dev-q017": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 9,
+          "intersection": 5,
+          "bm25_only": 5,
+          "dense_only": 4,
+          "union": 14
+        },
+        "dev-q018": {
+          "bm25_relevant_top20": 6,
+          "dense_relevant_top20": 2,
+          "intersection": 1,
+          "bm25_only": 5,
+          "dense_only": 1,
+          "union": 7
+        },
+        "dev-q019": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 10,
+          "intersection": 10,
+          "bm25_only": 4,
+          "dense_only": 0,
+          "union": 14
+        },
+        "dev-q020": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 8,
+          "intersection": 8,
+          "bm25_only": 5,
+          "dense_only": 0,
+          "union": 13
+        }
+      }
+    },
+    "new_lost": {
+      "bm25": {
+        "aggregate": {
+          "new_broad": 28,
+          "lost_broad": 8,
+          "new_grade2": 15,
+          "lost_grade2": 0
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 4,
+            "lost_broad": 1,
+            "new_grade2": 4,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 4,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "dense": {
+        "aggregate": {
+          "new_broad": 25,
+          "lost_broad": 30,
+          "new_grade2": 10,
+          "lost_grade2": 6
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 1
+          },
+          "dev-q005": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 4,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 5,
+            "lost_broad": 1,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 1,
+            "lost_broad": 7,
+            "new_grade2": 1,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 2,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 3,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q020": {
+            "new_broad": 2,
+            "lost_broad": 1,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "hybrid": {
+        "aggregate": {
+          "new_broad": 40,
+          "lost_broad": 22,
+          "new_grade2": 17,
+          "lost_grade2": 4
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 5,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 6,
+            "lost_broad": 1,
+            "new_grade2": 4,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 2,
+            "lost_broad": 5,
+            "new_grade2": 2,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 5,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 2
+          },
+          "dev-q018": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          }
+        }
+      }
+    }
+  },
+  "Q3": {
+    "candidate_generation": {
+      "aggregate": {
+        "bm25": 206,
+        "dense": 183,
+        "intersection": 129,
+        "bm25_only": 77,
+        "dense_only": 54,
+        "union": 260
+      },
+      "per_query": {
+        "dev-q001": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 12,
+          "intersection": 12,
+          "bm25_only": 2,
+          "dense_only": 0,
+          "union": 14
+        },
+        "dev-q002": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 6,
+          "intersection": 5,
+          "bm25_only": 4,
+          "dense_only": 1,
+          "union": 10
+        },
+        "dev-q003": {
+          "bm25_relevant_top20": 8,
+          "dense_relevant_top20": 6,
+          "intersection": 6,
+          "bm25_only": 2,
+          "dense_only": 0,
+          "union": 8
+        },
+        "dev-q004": {
+          "bm25_relevant_top20": 4,
+          "dense_relevant_top20": 5,
+          "intersection": 3,
+          "bm25_only": 1,
+          "dense_only": 2,
+          "union": 6
+        },
+        "dev-q005": {
+          "bm25_relevant_top20": 15,
+          "dense_relevant_top20": 15,
+          "intersection": 13,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 17
+        },
+        "dev-q006": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 5,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 1,
+          "union": 6
+        },
+        "dev-q007": {
+          "bm25_relevant_top20": 12,
+          "dense_relevant_top20": 10,
+          "intersection": 2,
+          "bm25_only": 10,
+          "dense_only": 8,
+          "union": 20
+        },
+        "dev-q008": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 15,
+          "intersection": 6,
+          "bm25_only": 7,
+          "dense_only": 9,
+          "union": 22
+        },
+        "dev-q009": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 13,
+          "intersection": 9,
+          "bm25_only": 1,
+          "dense_only": 4,
+          "union": 14
+        },
+        "dev-q010": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 11,
+          "intersection": 9,
+          "bm25_only": 1,
+          "dense_only": 2,
+          "union": 12
+        },
+        "dev-q011": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 6,
+          "bm25_only": 3,
+          "dense_only": 4,
+          "union": 13
+        },
+        "dev-q012": {
+          "bm25_relevant_top20": 5,
+          "dense_relevant_top20": 4,
+          "intersection": 4,
+          "bm25_only": 1,
+          "dense_only": 0,
+          "union": 5
+        },
+        "dev-q013": {
+          "bm25_relevant_top20": 17,
+          "dense_relevant_top20": 15,
+          "intersection": 12,
+          "bm25_only": 5,
+          "dense_only": 3,
+          "union": 20
+        },
+        "dev-q014": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 8,
+          "intersection": 6,
+          "bm25_only": 8,
+          "dense_only": 2,
+          "union": 16
+        },
+        "dev-q015": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 9,
+          "intersection": 7,
+          "bm25_only": 2,
+          "dense_only": 2,
+          "union": 11
+        },
+        "dev-q016": {
+          "bm25_relevant_top20": 9,
+          "dense_relevant_top20": 10,
+          "intersection": 1,
+          "bm25_only": 8,
+          "dense_only": 9,
+          "union": 18
+        },
+        "dev-q017": {
+          "bm25_relevant_top20": 10,
+          "dense_relevant_top20": 9,
+          "intersection": 5,
+          "bm25_only": 5,
+          "dense_only": 4,
+          "union": 14
+        },
+        "dev-q018": {
+          "bm25_relevant_top20": 6,
+          "dense_relevant_top20": 2,
+          "intersection": 1,
+          "bm25_only": 5,
+          "dense_only": 1,
+          "union": 7
+        },
+        "dev-q019": {
+          "bm25_relevant_top20": 14,
+          "dense_relevant_top20": 10,
+          "intersection": 10,
+          "bm25_only": 4,
+          "dense_only": 0,
+          "union": 14
+        },
+        "dev-q020": {
+          "bm25_relevant_top20": 13,
+          "dense_relevant_top20": 8,
+          "intersection": 8,
+          "bm25_only": 5,
+          "dense_only": 0,
+          "union": 13
+        }
+      }
+    },
+    "new_lost": {
+      "bm25": {
+        "aggregate": {
+          "new_broad": 28,
+          "lost_broad": 8,
+          "new_grade2": 15,
+          "lost_grade2": 0
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 4,
+            "lost_broad": 1,
+            "new_grade2": 4,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 4,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q015": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "dense": {
+        "aggregate": {
+          "new_broad": 25,
+          "lost_broad": 30,
+          "new_grade2": 10,
+          "lost_grade2": 6
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 0,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 1,
+            "lost_broad": 1,
+            "new_grade2": 1,
+            "lost_grade2": 1
+          },
+          "dev-q005": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 1,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 4,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q010": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 5,
+            "lost_broad": 1,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 1,
+            "lost_broad": 7,
+            "new_grade2": 1,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 2,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q018": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 3,
+            "lost_broad": 4,
+            "new_grade2": 0,
+            "lost_grade2": 1
+          },
+          "dev-q020": {
+            "new_broad": 2,
+            "lost_broad": 1,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          }
+        }
+      },
+      "hybrid": {
+        "aggregate": {
+          "new_broad": 40,
+          "lost_broad": 22,
+          "new_grade2": 17,
+          "lost_grade2": 4
+        },
+        "per_query": {
+          "dev-q001": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q002": {
+            "new_broad": 1,
+            "lost_broad": 2,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q003": {
+            "new_broad": 0,
+            "lost_broad": 1,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q004": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q005": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q006": {
+            "new_broad": 0,
+            "lost_broad": 5,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q007": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q008": {
+            "new_broad": 3,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q009": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q010": {
+            "new_broad": 0,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q011": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q012": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 1,
+            "lost_grade2": 0
+          },
+          "dev-q013": {
+            "new_broad": 6,
+            "lost_broad": 1,
+            "new_grade2": 4,
+            "lost_grade2": 0
+          },
+          "dev-q014": {
+            "new_broad": 2,
+            "lost_broad": 5,
+            "new_grade2": 2,
+            "lost_grade2": 2
+          },
+          "dev-q015": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q016": {
+            "new_broad": 5,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          },
+          "dev-q017": {
+            "new_broad": 3,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 2
+          },
+          "dev-q018": {
+            "new_broad": 1,
+            "lost_broad": 0,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q019": {
+            "new_broad": 0,
+            "lost_broad": 2,
+            "new_grade2": 0,
+            "lost_grade2": 0
+          },
+          "dev-q020": {
+            "new_broad": 2,
+            "lost_broad": 0,
+            "new_grade2": 2,
+            "lost_grade2": 0
+          }
+        }
+      }
+    }
+  }
+}

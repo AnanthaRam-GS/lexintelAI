@@ -1,0 +1,761 @@
+[
+  {
+    "query_id": "dev-q001",
+    "original_query": "BNSS bail for an IPC offence registered before July 2024",
+    "expanded_terms": [
+      "Indian Penal Code",
+      "Bharatiya Nyaya Sanhita",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "old criminal law",
+      "commencement",
+      "savings clause"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "statute_alias",
+        "trigger": "ipc",
+        "terms": [
+          "Indian Penal Code"
+        ],
+        "confidence": "high",
+        "evidence": "explicit IPC alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bns",
+        "terms": [
+          "Bharatiya Nyaya Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bnss",
+        "terms": [
+          "Bharatiya Nagarik Suraksha Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNSS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "transition_term",
+        "trigger": "before july 2024",
+        "terms": [
+          "old criminal law",
+          "commencement",
+          "savings clause"
+        ],
+        "confidence": "medium",
+        "evidence": "transition timing",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "explicit IPC alias",
+      "explicit BNS alias",
+      "explicit BNSS alias",
+      "transition timing"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q002",
+    "original_query": "new criminal law offence with BNSS procedure after commencement",
+    "expanded_terms": [
+      "Bharatiya Nyaya Sanhita",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "new criminal law",
+      "commencement"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "statute_alias",
+        "trigger": "bns",
+        "terms": [
+          "Bharatiya Nyaya Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bnss",
+        "terms": [
+          "Bharatiya Nagarik Suraksha Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNSS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "transition_term",
+        "trigger": "after commencement",
+        "terms": [
+          "new criminal law",
+          "commencement"
+        ],
+        "confidence": "medium",
+        "evidence": "transition timing",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "explicit BNS alias",
+      "explicit BNSS alias",
+      "transition timing"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q003",
+    "original_query": "anticipatory bail after new procedural code for old penal offence",
+    "expanded_terms": [
+      "pre-arrest bail",
+      "BNSS",
+      "Bharatiya Nagarik Suraksha Sanhita"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "procedure_equivalent",
+        "trigger": "anticipatory bail",
+        "terms": [
+          "pre-arrest bail"
+        ],
+        "confidence": "high",
+        "evidence": "procedural equivalent",
+        "discriminator": true
+      },
+      {
+        "group_type": "transition_term",
+        "trigger": "new procedural code",
+        "terms": [
+          "BNSS",
+          "Bharatiya Nagarik Suraksha Sanhita"
+        ],
+        "confidence": "medium",
+        "evidence": "generic new procedure reference",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "procedural equivalent",
+      "generic new procedure reference"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q004",
+    "original_query": "savings clause issue when criminal case spans IPC and BNS",
+    "expanded_terms": [
+      "Indian Penal Code",
+      "Bharatiya Nyaya Sanhita"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "statute_alias",
+        "trigger": "ipc",
+        "terms": [
+          "Indian Penal Code"
+        ],
+        "confidence": "high",
+        "evidence": "explicit IPC alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bns",
+        "terms": [
+          "Bharatiya Nyaya Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNS alias",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "explicit IPC alias",
+      "explicit BNS alias"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q005",
+    "original_query": "post July 2024 arrest procedure in criminal petition",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q006",
+    "original_query": "old CrPC notice practice compared with BNSS arrest safeguards",
+    "expanded_terms": [
+      "Code of Criminal Procedure",
+      "Bharatiya Nyaya Sanhita",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "notice of appearance",
+      "arrest procedure"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "statute_alias",
+        "trigger": "crpc",
+        "terms": [
+          "Code of Criminal Procedure"
+        ],
+        "confidence": "high",
+        "evidence": "explicit CrPC alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bns",
+        "terms": [
+          "Bharatiya Nyaya Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "statute_alias",
+        "trigger": "bnss",
+        "terms": [
+          "Bharatiya Nagarik Suraksha Sanhita"
+        ],
+        "confidence": "high",
+        "evidence": "explicit BNSS alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "procedure_equivalent",
+        "trigger": "arrest safeguards",
+        "terms": [
+          "notice of appearance",
+          "arrest procedure"
+        ],
+        "confidence": "high",
+        "evidence": "procedural safeguard terminology",
+        "discriminator": true
+      },
+      {
+        "group_type": "transition_term",
+        "trigger": "old crpc",
+        "terms": [
+          "Code of Criminal Procedure"
+        ],
+        "confidence": "high",
+        "evidence": "explicit old procedure reference",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "explicit CrPC alias",
+      "explicit BNS alias",
+      "explicit BNSS alias",
+      "procedural safeguard terminology",
+      "explicit old procedure reference"
+    ],
+    "warnings": [
+      "expansion_budget_truncated"
+    ]
+  },
+  {
+    "query_id": "dev-q007",
+    "original_query": "fatal assault during property robbery with recovery of articles",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q008",
+    "original_query": "minor abducted and later subjected to sexual offence",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q009",
+    "original_query": "business transaction alleging entrusted money and deception",
+    "expanded_terms": [
+      "criminal breach of trust",
+      "entrustment",
+      "misappropriation"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "entrusted money",
+        "terms": [
+          "criminal breach of trust",
+          "entrustment",
+          "misappropriation"
+        ],
+        "confidence": "high",
+        "evidence": "entrustment terminology",
+        "discriminator": true
+      },
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "entrusted",
+        "terms": [
+          "criminal breach of trust",
+          "entrustment",
+          "misappropriation"
+        ],
+        "confidence": "high",
+        "evidence": "entrustment terminology",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "entrustment terminology",
+      "entrustment terminology"
+    ],
+    "warnings": [
+      "expansion_budget_truncated"
+    ]
+  },
+  {
+    "query_id": "dev-q010",
+    "original_query": "multiple accused assault where shared intention must be proved",
+    "expanded_terms": [
+      "common intention"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "shared intention",
+        "terms": [
+          "common intention"
+        ],
+        "confidence": "high",
+        "evidence": "common-intention terminology",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "common-intention terminology"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q011",
+    "original_query": "drug bail with quantity threshold and statutory bar",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q012",
+    "original_query": "property taken by force rather than simple stealing",
+    "expanded_terms": [
+      "robbery",
+      "theft",
+      "hurt",
+      "fear",
+      "wrongful restraint"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "property taken by force",
+        "terms": [
+          "robbery",
+          "theft",
+          "hurt",
+          "fear",
+          "wrongful restraint"
+        ],
+        "confidence": "high",
+        "evidence": "robbery-force distinction",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "robbery-force distinction"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q013",
+    "original_query": "woman harassed by husband and in laws for marriage demands",
+    "expanded_terms": [
+      "dowry demand",
+      "cruelty by husband or relatives"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "marriage demands",
+        "terms": [
+          "dowry demand",
+          "cruelty by husband or relatives"
+        ],
+        "confidence": "high",
+        "evidence": "dowry cruelty terminology",
+        "discriminator": true
+      },
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "husband and in laws",
+        "terms": [
+          "cruelty by husband or relatives"
+        ],
+        "confidence": "medium",
+        "evidence": "domestic cruelty terminology",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "dowry cruelty terminology",
+      "domestic cruelty terminology"
+    ],
+    "warnings": [
+      "expansion_budget_truncated"
+    ]
+  },
+  {
+    "query_id": "dev-q014",
+    "original_query": "guardian complains child was lured away from lawful custody",
+    "expanded_terms": [
+      "kidnapping",
+      "lawful guardianship",
+      "taking",
+      "enticing"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "lawful custody",
+        "terms": [
+          "kidnapping",
+          "lawful guardianship",
+          "taking",
+          "enticing"
+        ],
+        "confidence": "high",
+        "evidence": "kidnapping guardianship terminology",
+        "discriminator": true
+      },
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "lured away",
+        "terms": [
+          "kidnapping",
+          "lawful guardianship",
+          "taking",
+          "enticing"
+        ],
+        "confidence": "high",
+        "evidence": "kidnapping guardianship terminology",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "kidnapping guardianship terminology",
+      "kidnapping guardianship terminology"
+    ],
+    "warnings": [
+      "expansion_budget_truncated"
+    ]
+  },
+  {
+    "query_id": "dev-q015",
+    "original_query": "investors induced to part with money by false promise",
+    "expanded_terms": [
+      "cheating",
+      "dishonest inducement",
+      "fraudulent intention"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "false promise",
+        "terms": [
+          "cheating",
+          "dishonest inducement",
+          "fraudulent intention"
+        ],
+        "confidence": "high",
+        "evidence": "cheating requires inducement language",
+        "discriminator": true
+      },
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "induced to part with money",
+        "terms": [
+          "cheating",
+          "dishonest inducement",
+          "fraudulent intention"
+        ],
+        "confidence": "high",
+        "evidence": "cheating inducement language",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "cheating requires inducement language",
+      "cheating inducement language"
+    ],
+    "warnings": [
+      "expansion_budget_truncated"
+    ]
+  },
+  {
+    "query_id": "dev-q016",
+    "original_query": "Supreme Court criminal appeal discussing murder conviction evidence",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q017",
+    "original_query": "High Court petition seeking FIR quashing in commercial dispute",
+    "expanded_terms": [
+      "quashing of FIR",
+      "criminal petition"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "procedure_equivalent",
+        "trigger": "fir quashing",
+        "terms": [
+          "quashing of FIR",
+          "criminal petition"
+        ],
+        "confidence": "high",
+        "evidence": "procedural equivalent",
+        "discriminator": false
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "procedural equivalent"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q018",
+    "original_query": "trial court conviction appeal involving prosecutrix testimony",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q019",
+    "original_query": "breach of contract allegation wrongly framed as cheating",
+    "expanded_terms": [
+      "dishonest intention at inception",
+      "contractual breach",
+      "civil dispute"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "hard_negative_disambiguation",
+        "trigger": "wrongly framed as cheating",
+        "terms": [
+          "dishonest intention at inception",
+          "contractual breach",
+          "civil dispute"
+        ],
+        "confidence": "high",
+        "evidence": "cheating/civil dispute discriminator",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "cheating/civil dispute discriminator"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q020",
+    "original_query": "culpable homicide discussion where murder conviction may be reduced",
+    "expanded_terms": [
+      "not amounting to murder"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "offence_equivalent",
+        "trigger": "culpable homicide",
+        "terms": [
+          "not amounting to murder"
+        ],
+        "confidence": "high",
+        "evidence": "homicide distinction",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "homicide distinction"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-001",
+    "original_query": "money was entrusted but he kept it",
+    "expanded_terms": [
+      "criminal breach of trust",
+      "entrustment",
+      "misappropriation"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "entrusted",
+        "terms": [
+          "criminal breach of trust",
+          "entrustment",
+          "misappropriation"
+        ],
+        "confidence": "high",
+        "evidence": "entrustment terminology",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "entrustment terminology"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-002",
+    "original_query": "property taken after threatening victim",
+    "expanded_terms": [
+      "robbery",
+      "theft",
+      "hurt",
+      "fear",
+      "wrongful restraint"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "plain_language_legal_mapping",
+        "trigger": "taken after threatening",
+        "terms": [
+          "robbery",
+          "theft",
+          "hurt",
+          "fear",
+          "wrongful restraint"
+        ],
+        "confidence": "high",
+        "evidence": "robbery threat distinction",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "robbery threat distinction"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-003",
+    "original_query": "breach of contract",
+    "expanded_terms": [],
+    "expansion_groups": [],
+    "confidence": "low",
+    "evidence": [],
+    "warnings": [
+      "breach_of_contract_not_expanded_to_cheating_without_fraud_language"
+    ]
+  },
+  {
+    "query_id": "synthetic-004",
+    "original_query": "breach of contract allegation wrongly framed as cheating",
+    "expanded_terms": [
+      "dishonest intention at inception",
+      "contractual breach",
+      "civil dispute"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "hard_negative_disambiguation",
+        "trigger": "wrongly framed as cheating",
+        "terms": [
+          "dishonest intention at inception",
+          "contractual breach",
+          "civil dispute"
+        ],
+        "confidence": "high",
+        "evidence": "cheating/civil dispute discriminator",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "cheating/civil dispute discriminator"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-005",
+    "original_query": "Section 438 CrPC anticipatory bail",
+    "expanded_terms": [
+      "Code of Criminal Procedure",
+      "pre-arrest bail"
+    ],
+    "expansion_groups": [
+      {
+        "group_type": "statute_alias",
+        "trigger": "crpc",
+        "terms": [
+          "Code of Criminal Procedure"
+        ],
+        "confidence": "high",
+        "evidence": "explicit CrPC alias",
+        "discriminator": false
+      },
+      {
+        "group_type": "procedure_equivalent",
+        "trigger": "anticipatory bail",
+        "terms": [
+          "pre-arrest bail"
+        ],
+        "confidence": "high",
+        "evidence": "procedural equivalent",
+        "discriminator": true
+      }
+    ],
+    "confidence": "high",
+    "evidence": [
+      "explicit CrPC alias",
+      "procedural equivalent"
+    ],
+    "warnings": [
+      "explicit_section_retained_without_cross_statute_mapping"
+    ]
+  }
+]
