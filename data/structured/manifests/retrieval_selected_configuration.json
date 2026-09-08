@@ -1,0 +1,51 @@
+{
+  "version": "legalai-retrieval-selected-configuration-v1",
+  "selection_date": "2026-09-08",
+  "selection_basis": [
+    "frozen 30-query benchmark baseline",
+    "20-query retrieval development baseline",
+    "T1-A legal-regime-aware ranking experiment",
+    "T1-B controlled legal query expansion experiment",
+    "T1-C metadata-aware reranking experiment"
+  ],
+  "selection_status": "selected",
+  "selection_reason": "baseline retained after independent dev experiments",
+  "candidate_depth": 20,
+  "final_top_k": 5,
+  "dense": {
+    "model": "BAAI/bge-m3",
+    "embedding_dimension": 1024,
+    "normalized_embeddings": true,
+    "index": "legalai-chroma-index-v1"
+  },
+  "bm25": {
+    "index": "legalai-bm25-index-v1",
+    "tokenizer": "legalai-legal-tokenizer-v1",
+    "k1": 1.5,
+    "b": 0.75
+  },
+  "fusion": {
+    "method": "Reciprocal Rank Fusion",
+    "rrf_k": 60
+  },
+  "reranker": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "max_length": 512,
+    "batch_size": 8,
+    "input_candidate_depth": 20
+  },
+  "experimental_features": {
+    "regime_ranking_enabled": false,
+    "query_expansion_enabled": false,
+    "metadata_reranking_enabled": false
+  },
+  "references": {
+    "frozen_benchmark_results": "data/structured/manifests/retrieval_eval_results.json",
+    "frozen_benchmark_overlap": "data/structured/manifests/retrieval_eval_candidate_overlap.json",
+    "dev_baseline_results": "data/structured/manifests/retrieval_dev_results.json",
+    "dev_human_labels": "data/structured/manifests/retrieval_dev_human_label_summary.json",
+    "t1a_regime_experiment": "data/structured/manifests/retrieval_dev_regime_experiment.json",
+    "t1b_query_expansion_experiment": "data/structured/manifests/retrieval_dev_query_expansion_experiment.json",
+    "t1c_metadata_experiment": "data/structured/manifests/retrieval_dev_metadata_experiment.json"
+  }
+}
