@@ -246,6 +246,9 @@ export function readPersistedIngestionJobs(): PersistedIngestionJob[] {
   return records;
 }
 
+// TODO(contract): mock-phase sessionStorage rehydration stand-in. Delete this
+// mechanism when the backend job-listing endpoint exists; do not leave it as
+// dead fallback code.
 export function writePersistedIngestionJobs(records: PersistedIngestionJob[]): void {
   writeStorage(normalizePersistedRecords(records));
 }
@@ -257,7 +260,6 @@ export function configureAdminIngestionMockForTests(
     delayMs: 0,
     failCorpusRequests: 0,
     failSubmitRequests: 0,
-    failFilenames: [],
     ...nextConfig,
     failFilenames: nextConfig.failFilenames ? [...nextConfig.failFilenames] : [],
   };
