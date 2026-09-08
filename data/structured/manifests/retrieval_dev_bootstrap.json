@@ -1,0 +1,52 @@
+{
+  "samples": 10000,
+  "seed": 20260907,
+  "comparisons": {
+    "hybrid_minus_dense": {
+      "broad_precision_at_5": {
+        "mean_delta": 0.03,
+        "ci95": [
+          -0.07,
+          0.12
+        ]
+      },
+      "graded_ndcg_at_5": {
+        "mean_delta": 0.011982,
+        "ci95": [
+          -0.065297,
+          0.099705
+        ]
+      },
+      "broad_mrr_at_5": {
+        "mean_delta": 0.116667,
+        "ci95": [
+          0.025,
+          0.208333
+        ]
+      }
+    },
+    "hybrid_rerank_minus_hybrid": {
+      "broad_precision_at_5": {
+        "mean_delta": 0.06,
+        "ci95": [
+          -0.03,
+          0.15
+        ]
+      },
+      "graded_ndcg_at_5": {
+        "mean_delta": 0.048365,
+        "ci95": [
+          -0.014811,
+          0.113617
+        ]
+      },
+      "broad_mrr_at_5": {
+        "mean_delta": -0.041667,
+        "ci95": [
+          -0.108333,
+          0.0
+        ]
+      }
+    }
+  }
+}

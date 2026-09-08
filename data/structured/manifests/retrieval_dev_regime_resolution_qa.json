@@ -1,0 +1,266 @@
+[
+  {
+    "query_id": "dev-q001",
+    "query_text": "BNSS bail for an IPC offence registered before July 2024",
+    "resolved_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": {
+      "explicit_codes": [
+        "IPC",
+        "BNSS"
+      ],
+      "explicit_sections": [],
+      "detected_dates": [
+        "before July 2024"
+      ],
+      "transition_terms": [
+        "before july 2024"
+      ]
+    }
+  },
+  {
+    "query_id": "dev-q002",
+    "query_text": "new criminal law offence with BNSS procedure after commencement",
+    "resolved_regime": "mixed_or_transition",
+    "confidence": "medium",
+    "evidence": {
+      "explicit_codes": [
+        "BNSS"
+      ],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": [
+        "new criminal law",
+        "commencement"
+      ]
+    }
+  },
+  {
+    "query_id": "dev-q003",
+    "query_text": "anticipatory bail after new procedural code for old penal offence",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q004",
+    "query_text": "savings clause issue when criminal case spans IPC and BNS",
+    "resolved_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": {
+      "explicit_codes": [
+        "IPC",
+        "BNS"
+      ],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": [
+        "savings"
+      ]
+    }
+  },
+  {
+    "query_id": "dev-q005",
+    "query_text": "post July 2024 arrest procedure in criminal petition",
+    "resolved_regime": "mixed_or_transition",
+    "confidence": "medium",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [
+        "post July 2024"
+      ],
+      "transition_terms": [
+        "post july 2024"
+      ]
+    }
+  },
+  {
+    "query_id": "dev-q006",
+    "query_text": "old CrPC notice practice compared with BNSS arrest safeguards",
+    "resolved_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": {
+      "explicit_codes": [
+        "CrPC",
+        "BNSS"
+      ],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q007",
+    "query_text": "fatal assault during property robbery with recovery of articles",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q008",
+    "query_text": "minor abducted and later subjected to sexual offence",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q009",
+    "query_text": "business transaction alleging entrusted money and deception",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q010",
+    "query_text": "multiple accused assault where shared intention must be proved",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q011",
+    "query_text": "drug bail with quantity threshold and statutory bar",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q012",
+    "query_text": "property taken by force rather than simple stealing",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q013",
+    "query_text": "woman harassed by husband and in laws for marriage demands",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q014",
+    "query_text": "guardian complains child was lured away from lawful custody",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q015",
+    "query_text": "investors induced to part with money by false promise",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q016",
+    "query_text": "Supreme Court criminal appeal discussing murder conviction evidence",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q017",
+    "query_text": "High Court petition seeking FIR quashing in commercial dispute",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q018",
+    "query_text": "trial court conviction appeal involving prosecutrix testimony",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q019",
+    "query_text": "breach of contract allegation wrongly framed as cheating",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  },
+  {
+    "query_id": "dev-q020",
+    "query_text": "culpable homicide discussion where murder conviction may be reduced",
+    "resolved_regime": "unknown",
+    "confidence": "low",
+    "evidence": {
+      "explicit_codes": [],
+      "explicit_sections": [],
+      "detected_dates": [],
+      "transition_terms": []
+    }
+  }
+]

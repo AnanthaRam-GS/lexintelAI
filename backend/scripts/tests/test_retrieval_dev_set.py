@@ -38,13 +38,14 @@ class RetrievalDevSetTest(unittest.TestCase):
         self.assertTrue(all(query["supporting_chunk_ids"] for query in self.queries))
         self.assertTrue(all(chunk_id in chunk_ids for query in self.queries for chunk_id in query["supporting_chunk_ids"]))
 
-    def test_candidates_are_pending_unique_and_in_trusted_corpus(self) -> None:
+    def test_candidates_are_unique_and_in_trusted_corpus(self) -> None:
         chunk_ids = {chunk["chunk_id"] for chunk in load_chunks()}
         keys = [(row["query_id"], row["chunk_id"]) for row in self.judgments]
         self.assertEqual(len(self.judgments), 474)
         self.assertEqual(len(keys), len(set(keys)))
-        self.assertTrue(all(row["human_status"] == "pending" for row in self.judgments))
-        self.assertTrue(all(row["human_relevance"] == "uncertain" and row["document_relevant"] == "uncertain" for row in self.judgments))
+        self.assertTrue(all(row["human_status"] in {"pending", "reviewed"} for row in self.judgments))
+        self.assertTrue(all(row["human_relevance"] in {0, 1, 2, "uncertain"} for row in self.judgments))
+        self.assertTrue(all(row["document_relevant"] in {"yes", "no", "uncertain"} for row in self.judgments))
         self.assertTrue(all(row["chunk_id"] in chunk_ids for row in self.judgments))
 
     def test_blinding_and_trace_separation(self) -> None:
