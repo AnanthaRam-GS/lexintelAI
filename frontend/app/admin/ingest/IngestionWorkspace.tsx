@@ -1,10 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { IngestionProgress, type IngestionJob } from '../../../components/shared';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
-import type { DocumentType } from '../../../lib/mocks/adminIngestion';
-import { canSubmitBatch, reconcileDrafts, type IngestionDraft } from './ingestion-model';
+import {
+  pollIngestionStatusMock,
+  progressForStage,
+  readPersistedIngestionJobs,
+  submitIngestionMock,
+  writePersistedIngestionJobs,
+  type DocumentType,
+  type PersistedIngestionJob,
+} from '../../../lib/mocks/adminIngestion';
+import {
+  canSubmitBatch,
+  isTerminal,
+  markJobFailedSafely,
+  reconcileDrafts,
+  replaceJobById,
+  type IngestionDraft,
+} from './ingestion-model';
 
 // TODO(contract): confirm doc_type values with Ananthu/Roshinee before treating
 // judgment | statute | other as the live documents-table contract.
@@ -16,14 +32,105 @@ const documentTypeOptions: ReadonlyArray<{ value: DocumentType; label: string }>
 
 const createDraftId = () => crypto.randomUUID();
 
+function persistActiveJob(job: IngestionJob) {
+  const record: PersistedIngestionJob = {
+    id: job.id,
+    filename: job.filename,
+    stage: job.stage,
+  };
+  const current = readPersistedIngestionJobs();
+  const index = current.findIndex(({ id }) => id === job.id);
+  writePersistedIngestionJobs(
+    index === -1
+      ? [record, ...current]
+      : current.map((item) => (item.id === job.id ? record : item)),
+  );
+}
+
+function removePersistedJob(jobId: string) {
+  writePersistedIngestionJobs(readPersistedIngestionJobs().filter(({ id }) => id !== jobId));
+}
+
 export function IngestionWorkspace() {
   const [drafts, setDrafts] = useState<IngestionDraft[]>([]);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const isSubmitting = false;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitError, setHasSubmitError] = useState(false);
+  const [jobs, setJobs] = useState<IngestionJob[]>([]);
+  const [uploadKey, setUploadKey] = useState(0);
+  const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const pollingRef = useRef(new Map<string, symbol>());
+  const aliveRef = useRef(true);
   const incompleteNames = drafts
     .filter((draft) => draft.documentType === '')
     .map((draft) => draft.file.name);
   const canSubmit = canSubmitBatch(drafts, isConfirmed, isSubmitting);
+  const orderedJobs = jobs;
+
+  const stopPolling = useCallback((jobId: string) => {
+    const timer = timersRef.current.get(jobId);
+    if (timer) clearTimeout(timer);
+    timersRef.current.delete(jobId);
+    pollingRef.current.delete(jobId);
+  }, []);
+
+  const startPolling = useCallback(
+    (jobId: string) => {
+      if (pollingRef.current.has(jobId)) return;
+      const generation = Symbol(jobId);
+      pollingRef.current.set(jobId, generation);
+
+      const isCurrentPoll = () => aliveRef.current && pollingRef.current.get(jobId) === generation;
+
+      const poll = async (): Promise<void> => {
+        if (!isCurrentPoll()) return;
+        try {
+          const live = await pollIngestionStatusMock(jobId);
+          if (!isCurrentPoll()) return;
+          setJobs((current) => replaceJobById(current, live));
+          if (isTerminal(live.stage)) {
+            removePersistedJob(jobId);
+            stopPolling(jobId);
+            return;
+          }
+          persistActiveJob(live);
+        } catch {
+          if (!isCurrentPoll()) return;
+          setJobs((current) => markJobFailedSafely(current, jobId));
+          removePersistedJob(jobId);
+          stopPolling(jobId);
+          return;
+        }
+
+        const timer = setTimeout(() => void poll(), 2_500);
+        timersRef.current.set(jobId, timer);
+      };
+
+      void poll();
+    },
+    [stopPolling],
+  );
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    const polling = pollingRef.current;
+    aliveRef.current = true;
+    const restored = readPersistedIngestionJobs().map((record): IngestionJob => ({
+      ...record,
+      progress: progressForStage(record.stage),
+    }));
+    // Rehydration is an intentional client-only external-store synchronization.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setJobs(restored);
+    restored.filter((job) => !isTerminal(job.stage)).forEach(({ id }) => startPolling(id));
+
+    return () => {
+      aliveRef.current = false;
+      timers.forEach(clearTimeout);
+      timers.clear();
+      polling.clear();
+    };
+  }, [startPolling]);
 
   const handleFilesSelected = (files: File[]) => {
     setDrafts((previous) => {
@@ -46,6 +153,39 @@ export function IngestionWorkspace() {
     setDrafts((previous) =>
       previous.map((draft) => (draft.id === id ? { ...draft, ...updates } : draft)),
     );
+  };
+
+  const submitBatch = async () => {
+    if (!canSubmitBatch(drafts, isConfirmed, isSubmitting)) return;
+    setIsSubmitting(true);
+    setHasSubmitError(false);
+
+    try {
+      const files = drafts.map(({ file }) => file);
+      const metadata = drafts.map(({ documentType, note }) => ({
+        documentType: documentType as DocumentType,
+        note: note.trim() || undefined,
+      }));
+      const { jobIds } = await submitIngestionMock(files, metadata);
+      if (jobIds.length !== drafts.length) throw new Error('Unexpected ingestion response');
+
+      const queued = jobIds.map((id, index): IngestionJob => ({
+        id,
+        filename: drafts[index].file.name,
+        stage: 'QUEUED',
+        progress: progressForStage('QUEUED'),
+      }));
+      setJobs((current) => [...[...queued].reverse(), ...current]);
+      queued.forEach(persistActiveJob);
+      setDrafts([]);
+      setIsConfirmed(false);
+      setUploadKey((current) => current + 1);
+      queued.forEach(({ id }) => startPolling(id));
+    } catch {
+      setHasSubmitError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,7 +217,13 @@ export function IngestionWorkspace() {
             </h2>
           </div>
 
-          <UploadDropzone accept="application/pdf" multiple onFilesSelected={handleFilesSelected} />
+          <UploadDropzone
+            accept="application/pdf"
+            disabled={isSubmitting}
+            key={uploadKey}
+            multiple
+            onFilesSelected={handleFilesSelected}
+          />
 
           {drafts.length > 0 ? (
             <section aria-label="Document metadata" className="space-y-3">
@@ -107,6 +253,7 @@ export function IngestionWorkspace() {
                           aria-describedby={isIncomplete ? errorId : undefined}
                           className="text-type-control mt-2 min-h-11 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
                           id={typeId}
+                          disabled={isSubmitting}
                           onChange={(event) =>
                             updateDraft(draft.id, {
                               documentType: event.target.value as DocumentType | '',
@@ -141,6 +288,7 @@ export function IngestionWorkspace() {
                         <textarea
                           className="text-type-control mt-2 min-h-24 w-full rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[var(--color-ink)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
                           id={noteId}
+                          disabled={isSubmitting}
                           onChange={(event) => updateDraft(draft.id, { note: event.target.value })}
                           value={draft.note}
                         />
@@ -155,6 +303,12 @@ export function IngestionWorkspace() {
           {incompleteNames.length > 0 ? (
             <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
               Complete document types for: {incompleteNames.join(', ')}
+            </p>
+          ) : null}
+
+          {hasSubmitError ? (
+            <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
+              This ingestion batch could not be started. Review the files and try again.
             </p>
           ) : null}
 
@@ -177,6 +331,7 @@ export function IngestionWorkspace() {
                 checked={isConfirmed}
                 className="size-5 accent-[var(--color-brass)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
                 onChange={(event) => setIsConfirmed(event.target.checked)}
+                disabled={isSubmitting}
                 type="checkbox"
               />
               I understand this is a permanent corpus update
@@ -184,11 +339,25 @@ export function IngestionWorkspace() {
             <button
               className="text-type-control mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-4 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem] disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!canSubmit}
+              onClick={() => void submitBatch()}
               type="button"
             >
               Start ingestion
             </button>
           </section>
+        </section>
+
+        <section aria-labelledby="jobs-heading" className="mt-8 max-w-3xl">
+          <p className="text-type-label font-semibold uppercase tracking-wide text-[var(--color-brass)]">
+            Current session
+          </p>
+          <h2
+            className="font-display text-type-heading-lg mt-1 mb-4 font-semibold text-[var(--color-ink)]"
+            id="jobs-heading"
+          >
+            Ingestion jobs
+          </h2>
+          <IngestionProgress jobs={orderedJobs} />
         </section>
       </div>
     </main>

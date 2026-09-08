@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
   canSubmitBatch,
   isBatchValid,
+  isTerminal,
+  markJobFailedSafely,
   reconcileDrafts,
+  replaceJobById,
   type IngestionDraft,
 } from './ingestion-model';
 
@@ -74,5 +77,48 @@ describe('ingestion draft model', () => {
     expect(canSubmitBatch([valid, invalid], true, false)).toBe(false);
     const remaining = [valid, invalid].filter((draft) => draft.id !== invalid.id);
     expect(canSubmitBatch(remaining, true, false)).toBe(true);
+  });
+
+  it('replaces a polled job by ID without changing newest-first order', () => {
+    const jobs = [
+      { id: 'job-new', filename: 'new.pdf', stage: 'QUEUED' as const, progress: 0 },
+      { id: 'job-old', filename: 'old.pdf', stage: 'EXTRACTING' as const, progress: 20 },
+    ];
+
+    expect(
+      replaceJobById(jobs, {
+        id: 'job-old',
+        filename: 'old.pdf',
+        stage: 'CHUNKING',
+        progress: 40,
+      }),
+    ).toEqual([
+      { id: 'job-new', filename: 'new.pdf', stage: 'QUEUED', progress: 0 },
+      { id: 'job-old', filename: 'old.pdf', stage: 'CHUNKING', progress: 40 },
+    ]);
+  });
+
+  it('marks only the rejected polling job failed without retaining a private error', () => {
+    const jobs = [
+      {
+        id: 'job-a',
+        filename: 'a.pdf',
+        stage: 'CHUNKING' as const,
+        progress: 40,
+        error: 'PRIVATE_ERROR',
+      },
+      { id: 'job-b', filename: 'b.pdf', stage: 'EMBEDDING' as const, progress: 60 },
+    ];
+
+    expect(markJobFailedSafely(jobs, 'job-a')).toEqual([
+      { id: 'job-a', filename: 'a.pdf', stage: 'FAILED', progress: 40 },
+      { id: 'job-b', filename: 'b.pdf', stage: 'EMBEDDING', progress: 60 },
+    ]);
+  });
+
+  it('recognizes only completed and failed stages as terminal', () => {
+    expect(isTerminal('INDEXING')).toBe(false);
+    expect(isTerminal('COMPLETED')).toBe(true);
+    expect(isTerminal('FAILED')).toBe(true);
   });
 });

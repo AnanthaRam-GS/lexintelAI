@@ -1,4 +1,5 @@
 import type { DocumentType, IngestionMetadata } from '../../../lib/mocks/adminIngestion';
+import type { IngestionJob, IngestionStage } from '../../../components/shared';
 
 export interface IngestionDraft extends Omit<IngestionMetadata, 'documentType'> {
   id: string;
@@ -38,4 +39,25 @@ export function canSubmitBatch(
   isSubmitting: boolean,
 ): boolean {
   return isBatchValid(drafts) && isConfirmed && !isSubmitting;
+}
+
+export function isTerminal(stage: IngestionStage): boolean {
+  return stage === 'COMPLETED' || stage === 'FAILED';
+}
+
+export function replaceJobById(jobs: IngestionJob[], replacement: IngestionJob): IngestionJob[] {
+  return jobs.map((job) => (job.id === replacement.id ? replacement : job));
+}
+
+export function markJobFailedSafely(jobs: IngestionJob[], jobId: string): IngestionJob[] {
+  return jobs.map((job) =>
+    job.id === jobId
+      ? {
+          id: job.id,
+          filename: job.filename,
+          stage: 'FAILED',
+          progress: job.progress,
+        }
+      : job,
+  );
 }
