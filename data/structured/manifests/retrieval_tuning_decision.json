@@ -1,0 +1,134 @@
+{
+  "version": "legalai-retrieval-tuning-decision-v1",
+  "decision_date": "2026-09-08",
+  "final_decision": "RETAIN_UNTUNED_HYBRID_RERANK",
+  "further_phase0_retrieval_tuning": false,
+  "frozen_benchmark_rerun_required": false,
+  "baseline_configuration": {
+    "dense_model": "BAAI/bge-m3",
+    "embedding_dimension": 1024,
+    "normalized_embeddings": true,
+    "bm25_index": "legalai-bm25-index-v1",
+    "bm25_tokenizer": "legalai-legal-tokenizer-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "fusion": "Reciprocal Rank Fusion",
+    "rrf_k": 60,
+    "candidate_depth": 20,
+    "reranker_model": "BAAI/bge-reranker-v2-m3",
+    "reranker_max_length": 512,
+    "reranker_batch_size": 8,
+    "final_top_k": 5
+  },
+  "dev_set_identity": {
+    "development_version": "legalai-retrieval-dev-v1",
+    "query_count": 20,
+    "judgment_count": 474,
+    "human_relevance_counts": {
+      "grade_2": 103,
+      "grade_1": 174,
+      "grade_0": 197,
+      "uncertain": 0
+    }
+  },
+  "frozen_benchmark_identity": {
+    "evaluation_version": "legalai-retrieval-eval-v1",
+    "query_count": 30,
+    "system": "Hybrid+Rerank",
+    "broad_precision_at_5": 0.873333,
+    "broad_pooled_recall_at_5": 0.29011,
+    "broad_pooled_recall_at_20": 0.723272,
+    "broad_mrr_at_5": 0.961111,
+    "graded_ndcg_at_5": 0.819445,
+    "document_hit_at_5": 1.0
+  },
+  "dev_baseline": {
+    "system": "Hybrid+Rerank",
+    "broad_precision_at_5": 0.87,
+    "broad_pooled_recall_at_5": 0.343146,
+    "broad_pooled_recall_at_20": 0.774709,
+    "broad_mrr_at_5": 0.925,
+    "graded_ndcg_at_5": 0.723324,
+    "document_hit_at_5": 0.95,
+    "strict_precision_at_5": 0.39,
+    "strict_pooled_recall_at_5": 0.391059,
+    "strict_mrr_at_5": 0.696296,
+    "strict_binary_ndcg_at_5": 0.508561
+  },
+  "candidate_complementarity": {
+    "frozen_benchmark_broad": {
+      "bm25_relevant_top20": 312,
+      "dense_relevant_top20": 327,
+      "intersection": 171,
+      "bm25_only": 141,
+      "dense_only": 156,
+      "union": 468,
+      "relevant_total": 473
+    },
+    "dev_baseline_broad": {
+      "bm25_relevant_top20": 186,
+      "dense_relevant_top20": 188,
+      "intersection": 99,
+      "bm25_only": 87,
+      "dense_only": 89,
+      "union": 275,
+      "relevant_total": 277
+    }
+  },
+  "experiments": {
+    "T1-A": {
+      "experiment": "Deterministic legal-regime-aware retrieval adjustment",
+      "decision": "INCONCLUSIVE — RETAIN BASELINE",
+      "headline_metrics": {
+        "best_variant_broad_precision_at_5": 0.87,
+        "best_variant_graded_ndcg_at_5": 0.723324
+      },
+      "reason": "Resolver signals were sparse for conservative ranking adjustment; R1/R2/R3 reproduced baseline with no ranking changes or regressions."
+    },
+    "T1-B": {
+      "experiment": "Controlled deterministic legal query expansion",
+      "decision": "INCONCLUSIVE — RETAIN BASELINE",
+      "headline_metrics": {
+        "Q0_broad_precision_at_5": 0.87,
+        "Q0_graded_ndcg_at_5": 0.723324,
+        "Q1_broad_precision_at_5": 0.85,
+        "Q1_graded_ndcg_at_5": 0.71639,
+        "Q2_broad_precision_at_5": 0.85,
+        "Q2_graded_ndcg_at_5": 0.700083,
+        "Q3_broad_precision_at_5": 0.85,
+        "Q3_graded_ndcg_at_5": 0.700083
+      },
+      "reason": "Expansion increased some candidate coverage and strict metrics but reduced overall broad P@5 and graded nDCG, with non-target regressions."
+    },
+    "T1-C": {
+      "experiment": "Metadata-aware post-rerank adjustment",
+      "decision": "INCONCLUSIVE — RETAIN BASELINE",
+      "headline_metrics": {
+        "M0_broad_precision_at_5": 0.87,
+        "M0_graded_ndcg_at_5": 0.723324,
+        "M1_broad_precision_at_5": 0.87,
+        "M1_graded_ndcg_at_5": 0.723324,
+        "M2_broad_precision_at_5": 0.87,
+        "M2_graded_ndcg_at_5": 0.723324,
+        "M3_broad_precision_at_5": 0.87,
+        "M3_graded_ndcg_at_5": 0.723324
+      },
+      "reason": "Metadata features fired, but conservative near-tie adjustment produced no top-5 ordering or membership changes."
+    }
+  },
+  "experimental_features": {
+    "legal_regime_ranking": {
+      "implemented": true,
+      "default_enabled": false
+    },
+    "query_expansion": {
+      "implemented": true,
+      "default_enabled": false
+    },
+    "metadata_reranking": {
+      "implemented": true,
+      "default_enabled": false
+    }
+  },
+  "rationale": "No Phase 0 tuning variant provided sufficient development-set evidence for promotion; further small-grid tuning would risk overfitting the 20-query development set."
+}

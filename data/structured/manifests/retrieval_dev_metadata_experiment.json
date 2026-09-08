@@ -1,0 +1,2930 @@
+{
+  "development_version": "legalai-retrieval-dev-v1",
+  "query_count": 20,
+  "judgment_count": 474,
+  "variants": {
+    "M0": {
+      "config": {
+        "description": "Baseline Hybrid+Rerank ordering.",
+        "weights": {},
+        "near_tie_margin": null
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "metadata_sensitive_subset": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.193122,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.383464,
+        "strict_precision_at_5": 0.2
+      },
+      "metadata_reranking_subset": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.279095,
+        "broad_mrr_at_5": 0.8125,
+        "graded_ndcg_at_5": 0.583489,
+        "strict_precision_at_5": 0.225
+      },
+      "ordering_changes": {},
+      "ordering_summary": {
+        "top5_order_changed": 0,
+        "top5_membership_changed": 0,
+        "p5_improved": 0,
+        "p5_worsened": 0,
+        "p5_unchanged": 20,
+        "ndcg_improved": 0,
+        "ndcg_worsened": 0,
+        "ndcg_unchanged": 20,
+        "per_query": {}
+      },
+      "non_target_regression": {
+        "improved": 0,
+        "unchanged": 0,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "M1": {
+      "config": {
+        "description": "Court/date/posture near-tie tiebreak only.",
+        "weights": {
+          "court_match": 0.1,
+          "court_level_match": 0.08,
+          "date_compatible": 0.04,
+          "posture_match": 0.06
+        },
+        "near_tie_margin": 0.15
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "metadata_sensitive_subset": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.193122,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.383464,
+        "strict_precision_at_5": 0.2
+      },
+      "metadata_reranking_subset": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.279095,
+        "broad_mrr_at_5": 0.8125,
+        "graded_ndcg_at_5": 0.583489,
+        "strict_precision_at_5": 0.225
+      },
+      "ordering_changes": {
+        "dev-q001": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ]
+        },
+        "dev-q002": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ]
+        },
+        "dev-q003": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ]
+        },
+        "dev-q004": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q005": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ]
+        },
+        "dev-q006": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q007": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ]
+        },
+        "dev-q008": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ]
+        },
+        "dev-q009": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ]
+        },
+        "dev-q010": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ],
+          "top5_after": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ]
+        },
+        "dev-q011": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ],
+          "top5_after": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ]
+        },
+        "dev-q012": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ],
+          "top5_after": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ]
+        },
+        "dev-q013": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ],
+          "top5_after": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ]
+        },
+        "dev-q014": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ],
+          "top5_after": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ]
+        },
+        "dev-q015": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ]
+        },
+        "dev-q016": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ]
+        },
+        "dev-q017": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ],
+          "top5_after": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ]
+        },
+        "dev-q018": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ],
+          "top5_after": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ]
+        },
+        "dev-q019": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ]
+        },
+        "dev-q020": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ]
+        }
+      },
+      "ordering_summary": {
+        "top5_order_changed": 0,
+        "top5_membership_changed": 0,
+        "p5_improved": 0,
+        "p5_worsened": 0,
+        "p5_unchanged": 20,
+        "ndcg_improved": 0,
+        "ndcg_worsened": 0,
+        "ndcg_unchanged": 20,
+        "per_query": {
+          "dev-q001": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ]
+          },
+          "dev-q002": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ]
+          },
+          "dev-q003": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ]
+          },
+          "dev-q004": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q005": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ]
+          },
+          "dev-q006": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q007": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ]
+          },
+          "dev-q008": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ]
+          },
+          "dev-q009": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ]
+          },
+          "dev-q010": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ],
+            "top5_after": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ]
+          },
+          "dev-q011": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ],
+            "top5_after": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ]
+          },
+          "dev-q012": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ],
+            "top5_after": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ]
+          },
+          "dev-q013": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ],
+            "top5_after": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ]
+          },
+          "dev-q014": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ],
+            "top5_after": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ]
+          },
+          "dev-q015": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ]
+          },
+          "dev-q016": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ]
+          },
+          "dev-q017": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ],
+            "top5_after": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ]
+          },
+          "dev-q018": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ],
+            "top5_after": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ]
+          },
+          "dev-q019": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ]
+          },
+          "dev-q020": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ]
+          }
+        }
+      },
+      "non_target_regression": {
+        "improved": 0,
+        "unchanged": 12,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "M2": {
+      "config": {
+        "description": "Court/date/posture/family conservative bounded prior.",
+        "weights": {
+          "court_match": 0.1,
+          "court_level_match": 0.08,
+          "date_compatible": 0.04,
+          "posture_match": 0.06,
+          "family_match": 0.04
+        },
+        "near_tie_margin": 0.25
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "metadata_sensitive_subset": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.193122,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.383464,
+        "strict_precision_at_5": 0.2
+      },
+      "metadata_reranking_subset": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.279095,
+        "broad_mrr_at_5": 0.8125,
+        "graded_ndcg_at_5": 0.583489,
+        "strict_precision_at_5": 0.225
+      },
+      "ordering_changes": {
+        "dev-q001": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ]
+        },
+        "dev-q002": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ]
+        },
+        "dev-q003": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ]
+        },
+        "dev-q004": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q005": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ]
+        },
+        "dev-q006": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q007": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ]
+        },
+        "dev-q008": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ]
+        },
+        "dev-q009": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ]
+        },
+        "dev-q010": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ],
+          "top5_after": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ]
+        },
+        "dev-q011": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ],
+          "top5_after": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ]
+        },
+        "dev-q012": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ],
+          "top5_after": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ]
+        },
+        "dev-q013": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ],
+          "top5_after": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ]
+        },
+        "dev-q014": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ],
+          "top5_after": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ]
+        },
+        "dev-q015": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ]
+        },
+        "dev-q016": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ]
+        },
+        "dev-q017": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ],
+          "top5_after": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ]
+        },
+        "dev-q018": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ],
+          "top5_after": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ]
+        },
+        "dev-q019": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ]
+        },
+        "dev-q020": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ]
+        }
+      },
+      "ordering_summary": {
+        "top5_order_changed": 0,
+        "top5_membership_changed": 0,
+        "p5_improved": 0,
+        "p5_worsened": 0,
+        "p5_unchanged": 20,
+        "ndcg_improved": 0,
+        "ndcg_worsened": 0,
+        "ndcg_unchanged": 20,
+        "per_query": {
+          "dev-q001": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ]
+          },
+          "dev-q002": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ]
+          },
+          "dev-q003": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ]
+          },
+          "dev-q004": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q005": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ]
+          },
+          "dev-q006": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q007": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ]
+          },
+          "dev-q008": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ]
+          },
+          "dev-q009": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ]
+          },
+          "dev-q010": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ],
+            "top5_after": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ]
+          },
+          "dev-q011": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ],
+            "top5_after": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ]
+          },
+          "dev-q012": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ],
+            "top5_after": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ]
+          },
+          "dev-q013": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ],
+            "top5_after": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ]
+          },
+          "dev-q014": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ],
+            "top5_after": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ]
+          },
+          "dev-q015": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ]
+          },
+          "dev-q016": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ]
+          },
+          "dev-q017": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ],
+            "top5_after": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ]
+          },
+          "dev-q018": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ],
+            "top5_after": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ]
+          },
+          "dev-q019": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ]
+          },
+          "dev-q020": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ]
+          }
+        }
+      },
+      "non_target_regression": {
+        "improved": 0,
+        "unchanged": 12,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "M3": {
+      "config": {
+        "description": "M2 plus high-confidence regime compatibility.",
+        "weights": {
+          "court_match": 0.1,
+          "court_level_match": 0.08,
+          "date_compatible": 0.04,
+          "posture_match": 0.06,
+          "family_match": 0.04,
+          "regime_match": 0.04
+        },
+        "near_tie_margin": 0.25
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "metadata_sensitive_subset": {
+        "broad_precision_at_5": 0.6,
+        "broad_pooled_recall_at_5": 0.193122,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.383464,
+        "strict_precision_at_5": 0.2
+      },
+      "metadata_reranking_subset": {
+        "broad_precision_at_5": 0.8,
+        "broad_pooled_recall_at_5": 0.279095,
+        "broad_mrr_at_5": 0.8125,
+        "graded_ndcg_at_5": 0.583489,
+        "strict_precision_at_5": 0.225
+      },
+      "ordering_changes": {
+        "dev-q001": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:100558061:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:100558061:chunk:0004"
+          ]
+        },
+        "dev-q002": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004"
+          ]
+        },
+        "dev-q003": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:100558061:chunk:0006",
+            "indian_kanoon:100558061:chunk:0010",
+            "indian_kanoon:100558061:chunk:0007",
+            "indian_kanoon:15148168:chunk:0006",
+            "indian_kanoon:100558061:chunk:0008"
+          ]
+        },
+        "dev-q004": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0003",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q005": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0005",
+            "indian_kanoon:47759402:chunk:0001",
+            "indian_kanoon:47759402:chunk:0008",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:47759402:chunk:0007"
+          ]
+        },
+        "dev-q006": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ],
+          "top5_after": [
+            "indian_kanoon:47759402:chunk:0007",
+            "indian_kanoon:47759402:chunk:0006",
+            "indian_kanoon:183406121:chunk:0002",
+            "indian_kanoon:47759402:chunk:0004",
+            "indian_kanoon:47759402:chunk:0005"
+          ]
+        },
+        "dev-q007": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:127989801:chunk:0014",
+            "indian_kanoon:173395727:chunk:0043",
+            "indian_kanoon:177113492:chunk:0002",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:76377526:chunk:0007"
+          ]
+        },
+        "dev-q008": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:125041151:chunk:0010",
+            "indian_kanoon:184937779:chunk:0012",
+            "indian_kanoon:125041151:chunk:0008",
+            "indian_kanoon:125041151:chunk:0005",
+            "indian_kanoon:125041151:chunk:0009"
+          ]
+        },
+        "dev-q009": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0012",
+            "indian_kanoon:44731735:chunk:0003",
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0008"
+          ]
+        },
+        "dev-q010": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ],
+          "top5_after": [
+            "indian_kanoon:123721856:chunk:0007",
+            "indian_kanoon:189001274:chunk:0031",
+            "indian_kanoon:199689273:chunk:0005",
+            "indian_kanoon:199689273:chunk:0006",
+            "indian_kanoon:173395727:chunk:0053"
+          ]
+        },
+        "dev-q011": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ],
+          "top5_after": [
+            "indian_kanoon:138227421:chunk:0001",
+            "indian_kanoon:138227421:chunk:0013",
+            "indian_kanoon:138227421:chunk:0007",
+            "indian_kanoon:138227421:chunk:0008",
+            "indian_kanoon:183406121:chunk:0002"
+          ]
+        },
+        "dev-q012": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ],
+          "top5_after": [
+            "indian_kanoon:177113492:chunk:0004",
+            "indian_kanoon:177113492:chunk:0003",
+            "indian_kanoon:194768350:chunk:0026",
+            "indian_kanoon:177113492:chunk:0005",
+            "indian_kanoon:156271048:chunk:0010"
+          ]
+        },
+        "dev-q013": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ],
+          "top5_after": [
+            "indian_kanoon:26223875:chunk:0005",
+            "indian_kanoon:36195540:chunk:0004",
+            "indian_kanoon:40368737:chunk:0005",
+            "indian_kanoon:26223875:chunk:0004",
+            "indian_kanoon:83401027:chunk:0003"
+          ]
+        },
+        "dev-q014": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ],
+          "top5_after": [
+            "indian_kanoon:173395727:chunk:0030",
+            "indian_kanoon:77330685:chunk:0004",
+            "indian_kanoon:77330685:chunk:0029",
+            "indian_kanoon:77330685:chunk:0028",
+            "indian_kanoon:77330685:chunk:0020"
+          ]
+        },
+        "dev-q015": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:131331418:chunk:0011",
+            "indian_kanoon:131331418:chunk:0014",
+            "indian_kanoon:131331418:chunk:0003",
+            "indian_kanoon:131331418:chunk:0008",
+            "indian_kanoon:176391710:chunk:0009"
+          ]
+        },
+        "dev-q016": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:179828917:chunk:0000",
+            "indian_kanoon:194128214:chunk:0000",
+            "indian_kanoon:156271048:chunk:0010",
+            "indian_kanoon:179828917:chunk:0038"
+          ]
+        },
+        "dev-q017": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ],
+          "top5_after": [
+            "indian_kanoon:176391710:chunk:0000",
+            "indian_kanoon:47759402:chunk:0002",
+            "indian_kanoon:44731735:chunk:0004",
+            "indian_kanoon:47759402:chunk:0000",
+            "indian_kanoon:47759402:chunk:0001"
+          ]
+        },
+        "dev-q018": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ],
+          "top5_after": [
+            "indian_kanoon:156271048:chunk:0009",
+            "indian_kanoon:189001274:chunk:0053",
+            "indian_kanoon:70774666:chunk:0025",
+            "indian_kanoon:36195540:chunk:0001",
+            "indian_kanoon:1726075:chunk:0006"
+          ]
+        },
+        "dev-q019": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ],
+          "top5_after": [
+            "indian_kanoon:14496522:chunk:0003",
+            "indian_kanoon:44731735:chunk:0006",
+            "indian_kanoon:44731735:chunk:0005",
+            "indian_kanoon:176391710:chunk:0009",
+            "indian_kanoon:176391710:chunk:0007"
+          ]
+        },
+        "dev-q020": {
+          "top5_order_changed": false,
+          "top5_membership_changed": false,
+          "top5_before": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ],
+          "top5_after": [
+            "indian_kanoon:30754679:chunk:0002",
+            "indian_kanoon:123692674:chunk:0011",
+            "indian_kanoon:76377526:chunk:0015",
+            "indian_kanoon:76377526:chunk:0014",
+            "indian_kanoon:123692674:chunk:0009"
+          ]
+        }
+      },
+      "ordering_summary": {
+        "top5_order_changed": 0,
+        "top5_membership_changed": 0,
+        "p5_improved": 0,
+        "p5_worsened": 0,
+        "p5_unchanged": 20,
+        "ndcg_improved": 0,
+        "ndcg_worsened": 0,
+        "ndcg_unchanged": 20,
+        "per_query": {
+          "dev-q001": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:100558061:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:100558061:chunk:0004"
+            ]
+          },
+          "dev-q002": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004"
+            ]
+          },
+          "dev-q003": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:100558061:chunk:0006",
+              "indian_kanoon:100558061:chunk:0010",
+              "indian_kanoon:100558061:chunk:0007",
+              "indian_kanoon:15148168:chunk:0006",
+              "indian_kanoon:100558061:chunk:0008"
+            ]
+          },
+          "dev-q004": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0003",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q005": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0005",
+              "indian_kanoon:47759402:chunk:0001",
+              "indian_kanoon:47759402:chunk:0008",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:47759402:chunk:0007"
+            ]
+          },
+          "dev-q006": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ],
+            "top5_after": [
+              "indian_kanoon:47759402:chunk:0007",
+              "indian_kanoon:47759402:chunk:0006",
+              "indian_kanoon:183406121:chunk:0002",
+              "indian_kanoon:47759402:chunk:0004",
+              "indian_kanoon:47759402:chunk:0005"
+            ]
+          },
+          "dev-q007": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:127989801:chunk:0014",
+              "indian_kanoon:173395727:chunk:0043",
+              "indian_kanoon:177113492:chunk:0002",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:76377526:chunk:0007"
+            ]
+          },
+          "dev-q008": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:125041151:chunk:0010",
+              "indian_kanoon:184937779:chunk:0012",
+              "indian_kanoon:125041151:chunk:0008",
+              "indian_kanoon:125041151:chunk:0005",
+              "indian_kanoon:125041151:chunk:0009"
+            ]
+          },
+          "dev-q009": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0012",
+              "indian_kanoon:44731735:chunk:0003",
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0008"
+            ]
+          },
+          "dev-q010": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ],
+            "top5_after": [
+              "indian_kanoon:123721856:chunk:0007",
+              "indian_kanoon:189001274:chunk:0031",
+              "indian_kanoon:199689273:chunk:0005",
+              "indian_kanoon:199689273:chunk:0006",
+              "indian_kanoon:173395727:chunk:0053"
+            ]
+          },
+          "dev-q011": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ],
+            "top5_after": [
+              "indian_kanoon:138227421:chunk:0001",
+              "indian_kanoon:138227421:chunk:0013",
+              "indian_kanoon:138227421:chunk:0007",
+              "indian_kanoon:138227421:chunk:0008",
+              "indian_kanoon:183406121:chunk:0002"
+            ]
+          },
+          "dev-q012": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ],
+            "top5_after": [
+              "indian_kanoon:177113492:chunk:0004",
+              "indian_kanoon:177113492:chunk:0003",
+              "indian_kanoon:194768350:chunk:0026",
+              "indian_kanoon:177113492:chunk:0005",
+              "indian_kanoon:156271048:chunk:0010"
+            ]
+          },
+          "dev-q013": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ],
+            "top5_after": [
+              "indian_kanoon:26223875:chunk:0005",
+              "indian_kanoon:36195540:chunk:0004",
+              "indian_kanoon:40368737:chunk:0005",
+              "indian_kanoon:26223875:chunk:0004",
+              "indian_kanoon:83401027:chunk:0003"
+            ]
+          },
+          "dev-q014": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ],
+            "top5_after": [
+              "indian_kanoon:173395727:chunk:0030",
+              "indian_kanoon:77330685:chunk:0004",
+              "indian_kanoon:77330685:chunk:0029",
+              "indian_kanoon:77330685:chunk:0028",
+              "indian_kanoon:77330685:chunk:0020"
+            ]
+          },
+          "dev-q015": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:131331418:chunk:0011",
+              "indian_kanoon:131331418:chunk:0014",
+              "indian_kanoon:131331418:chunk:0003",
+              "indian_kanoon:131331418:chunk:0008",
+              "indian_kanoon:176391710:chunk:0009"
+            ]
+          },
+          "dev-q016": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:179828917:chunk:0000",
+              "indian_kanoon:194128214:chunk:0000",
+              "indian_kanoon:156271048:chunk:0010",
+              "indian_kanoon:179828917:chunk:0038"
+            ]
+          },
+          "dev-q017": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ],
+            "top5_after": [
+              "indian_kanoon:176391710:chunk:0000",
+              "indian_kanoon:47759402:chunk:0002",
+              "indian_kanoon:44731735:chunk:0004",
+              "indian_kanoon:47759402:chunk:0000",
+              "indian_kanoon:47759402:chunk:0001"
+            ]
+          },
+          "dev-q018": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ],
+            "top5_after": [
+              "indian_kanoon:156271048:chunk:0009",
+              "indian_kanoon:189001274:chunk:0053",
+              "indian_kanoon:70774666:chunk:0025",
+              "indian_kanoon:36195540:chunk:0001",
+              "indian_kanoon:1726075:chunk:0006"
+            ]
+          },
+          "dev-q019": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ],
+            "top5_after": [
+              "indian_kanoon:14496522:chunk:0003",
+              "indian_kanoon:44731735:chunk:0006",
+              "indian_kanoon:44731735:chunk:0005",
+              "indian_kanoon:176391710:chunk:0009",
+              "indian_kanoon:176391710:chunk:0007"
+            ]
+          },
+          "dev-q020": {
+            "top5_order_changed": false,
+            "top5_membership_changed": false,
+            "top5_before": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ],
+            "top5_after": [
+              "indian_kanoon:30754679:chunk:0002",
+              "indian_kanoon:123692674:chunk:0011",
+              "indian_kanoon:76377526:chunk:0015",
+              "indian_kanoon:76377526:chunk:0014",
+              "indian_kanoon:123692674:chunk:0009"
+            ]
+          }
+        }
+      },
+      "non_target_regression": {
+        "improved": 0,
+        "unchanged": 12,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    }
+  },
+  "feature_usage": {
+    "court_level_match:match": 69,
+    "court_level_match:mismatch": 66,
+    "court_level_match:neutral": 765,
+    "court_match:match": 69,
+    "court_match:mismatch": 66,
+    "court_match:neutral": 765,
+    "date_compatible:match": 45,
+    "date_compatible:mismatch": 45,
+    "date_compatible:neutral": 810,
+    "family_match:match": 240,
+    "family_match:mismatch": 390,
+    "family_match:neutral": 270,
+    "posture_match:match": 153,
+    "posture_match:mismatch": 207,
+    "posture_match:neutral": 540,
+    "regime_match:match": 168,
+    "regime_match:mismatch": 57,
+    "regime_match:neutral": 675
+  },
+  "selection_decision": "INCONCLUSIVE — RETAIN BASELINE",
+  "selection_rationale": "No metadata variant cleared the conservative dev-set selection criteria.",
+  "important_queries": {
+    "dev-q001": {
+      "query": "BNSS bail for an IPC offence registered before July 2024",
+      "intent": {
+        "query_id": "dev-q001",
+        "query": "BNSS bail for an IPC offence registered before July 2024",
+        "court_level": null,
+        "court_name": null,
+        "date_relation": "before",
+        "date_value": "2024-07-01",
+        "posture": "bail_petition",
+        "offence_family": null,
+        "legal_regime": "mixed_or_transition",
+        "confidence": "high",
+        "evidence": [
+          "date intent before 2024-07-01",
+          "posture bail_petition",
+          "regime mixed_or_transition"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5773584151532217,
+        "strict_precision_at_5": 0.4
+      },
+      "M1": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5773584151532217,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5773584151532217,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5773584151532217,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      }
+    },
+    "dev-q003": {
+      "query": "anticipatory bail after new procedural code for old penal offence",
+      "intent": {
+        "query_id": "dev-q003",
+        "query": "anticipatory bail after new procedural code for old penal offence",
+        "court_level": null,
+        "court_name": null,
+        "date_relation": null,
+        "date_value": null,
+        "posture": "bail_petition",
+        "offence_family": null,
+        "legal_regime": null,
+        "confidence": "high",
+        "evidence": [
+          "posture bail_petition"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4569424070462355,
+        "strict_precision_at_5": 0.0
+      },
+      "M1": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4569424070462355,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4569424070462355,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.4569424070462355,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      }
+    },
+    "dev-q005": {
+      "query": "post July 2024 arrest procedure in criminal petition",
+      "intent": {
+        "query_id": "dev-q005",
+        "query": "post July 2024 arrest procedure in criminal petition",
+        "court_level": null,
+        "court_name": null,
+        "date_relation": "after",
+        "date_value": "2024-07-01",
+        "posture": "arrest_procedure",
+        "offence_family": null,
+        "legal_regime": "mixed_or_transition",
+        "confidence": "high",
+        "evidence": [
+          "date intent after 2024-07-01",
+          "posture arrest_procedure",
+          "regime mixed_or_transition"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5,
+        "strict_precision_at_5": 0.0
+      },
+      "M1": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.5,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      }
+    },
+    "dev-q016": {
+      "query": "Supreme Court criminal appeal discussing murder conviction evidence",
+      "intent": {
+        "query_id": "dev-q016",
+        "query": "Supreme Court criminal appeal discussing murder conviction evidence",
+        "court_level": "supreme_court",
+        "court_name": "Supreme Court",
+        "date_relation": null,
+        "date_value": null,
+        "posture": "criminal_appeal",
+        "offence_family": "homicide",
+        "legal_regime": null,
+        "confidence": "high",
+        "evidence": [
+          "explicit Supreme Court",
+          "posture criminal_appeal",
+          "family homicide"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.39602243611936283,
+        "strict_precision_at_5": 0.2
+      },
+      "M1": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.39602243611936283,
+        "strict_precision_at_5": 0.2,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.39602243611936283,
+        "strict_precision_at_5": 0.2,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 0.8,
+        "broad_mrr_at_5": 0.5,
+        "graded_ndcg_at_5": 0.39602243611936283,
+        "strict_precision_at_5": 0.2,
+        "ordering_changed": false
+      }
+    },
+    "dev-q017": {
+      "query": "High Court petition seeking FIR quashing in commercial dispute",
+      "intent": {
+        "query_id": "dev-q017",
+        "query": "High Court petition seeking FIR quashing in commercial dispute",
+        "court_level": "high_court",
+        "court_name": "High Court",
+        "date_relation": null,
+        "date_value": null,
+        "posture": "quashing_petition",
+        "offence_family": "cheating_and_fraud",
+        "legal_regime": null,
+        "confidence": "high",
+        "evidence": [
+          "explicit High Court",
+          "posture quashing_petition",
+          "family cheating_and_fraud"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "strict_precision_at_5": 0.4
+      },
+      "M1": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 1.0,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.7543701539552121,
+        "strict_precision_at_5": 0.4,
+        "ordering_changed": false
+      }
+    },
+    "dev-q018": {
+      "query": "trial court conviction appeal involving prosecutrix testimony",
+      "intent": {
+        "query_id": "dev-q018",
+        "query": "trial court conviction appeal involving prosecutrix testimony",
+        "court_level": "district_court",
+        "court_name": "trial court",
+        "date_relation": null,
+        "date_value": null,
+        "posture": "criminal_appeal",
+        "offence_family": "sexual_offences",
+        "legal_regime": null,
+        "confidence": "high",
+        "evidence": [
+          "explicit trial court",
+          "posture criminal_appeal",
+          "family sexual_offences"
+        ],
+        "warnings": []
+      },
+      "M0": {
+        "broad_precision_at_5": 0.0,
+        "broad_mrr_at_5": 0.0,
+        "graded_ndcg_at_5": 0.0,
+        "strict_precision_at_5": 0.0
+      },
+      "M1": {
+        "broad_precision_at_5": 0.0,
+        "broad_mrr_at_5": 0.0,
+        "graded_ndcg_at_5": 0.0,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M2": {
+        "broad_precision_at_5": 0.0,
+        "broad_mrr_at_5": 0.0,
+        "graded_ndcg_at_5": 0.0,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      },
+      "M3": {
+        "broad_precision_at_5": 0.0,
+        "broad_mrr_at_5": 0.0,
+        "graded_ndcg_at_5": 0.0,
+        "strict_precision_at_5": 0.0,
+        "ordering_changed": false
+      }
+    }
+  },
+  "bootstrap": {
+    "broad_precision_at_5": {
+      "mean_delta": 0.0,
+      "p05": 0.0,
+      "p95": 0.0
+    },
+    "graded_ndcg_at_5": {
+      "mean_delta": 0.0,
+      "p05": 0.0,
+      "p95": 0.0
+    },
+    "broad_mrr_at_5": {
+      "mean_delta": 0.0,
+      "p05": 0.0,
+      "p95": 0.0
+    }
+  }
+}

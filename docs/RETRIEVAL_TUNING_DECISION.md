@@ -1,25 +1,120 @@
 # Retrieval Tuning Decision
 
-The 30-query benchmark has now been inspected, so it must remain baseline diagnostic evidence rather than an unbiased post-tuning test set.
+## Selected Configuration
 
-| Potential Change | Evidence For | Evidence Against | Risk | Recommendation |
-|---|---|---|---|---|
-| BM25 k1/b tuning | BM25 trails hybrid modestly on broad P@5 and nDCG. | BM25 already has strong statute-explicit performance; no parameter sweep evidence. | Overfit 30-query benchmark. | MORE EVALUATION DATA NEEDED |
-| legal tokenizer changes | Some lexical gaps remain in transition and procedural queries. | Tokenizer already preserves section/statute tokens and BM25 P@5 is high. | Could regress exact statute matching. | MORE EVALUATION DATA NEEDED |
-| query expansion | Candidate-generation gaps and ambiguous/composite queries appear. | Expansion can add noise; current benchmark is now inspected. | High overfitting risk. | TARGETED TUNING JUSTIFIED |
-| explicit statute/section weighting | Statute-explicit hybrid P@5 is best, suggesting section signals matter. | Weakest cases are not only statute misses. | May over-prioritize bare provisions over facts. | MORE EVALUATION DATA NEEDED |
-| legal regime filtering/boosting | 4 primary legal-regime failures plus small transition subset. | Only 3 transition-regime queries; evidence is sparse. | Could hide useful old/new law cross references. | TARGETED TUNING JUSTIFIED |
-| RRF K tuning | Hybrid improves pooled recall@20 over BM25 and Dense. | Hybrid P@5/nDCG gains are modest and stable; no clear RRF-specific failure dominates. | Directly tuning on this benchmark would bias results. | MORE EVALUATION DATA NEEDED |
-| dense-only changes | Dense has strong document hit@5 and good nDCG. | Hybrid and rerank already use dense evidence; dense model change is high blast radius. | Model churn and cache/index rebuild cost. | NO TUNING NEEDED |
-| reranker max_length | Reranker improves graded nDCG@5. | Broad P@5 is unchanged and harmful cases exist. | Longer inputs increase latency and may overfit. | MORE EVALUATION DATA NEEDED |
-| reranker candidate depth | Rerank improves pooled recall@20 and strict metrics. | Top20 is censored; depth effects cannot be isolated from frozen traces. | More review workload and latency. | MORE EVALUATION DATA NEEDED |
-| chunk-size changes | Right-document/wrong-chunk count is 32. | Changing chunks invalidates the frozen benchmark and index. | Large rebuild and comparability loss. | MORE EVALUATION DATA NEEDED |
-| metadata-aware reranking | Document/chunk mismatch and regime evidence suggest metadata could help ordering. | Needs separate dev set and careful ablation. | Can encode brittle shortcuts. | TARGETED TUNING JUSTIFIED |
+RETAIN UNTUNED HYBRID + RERANKER CONFIGURATION.
 
-## Overfitting Safeguard
+The selected Phase 0 retrieval path remains:
 
-Use a separate tuning/dev query set before changing retrieval parameters, or freeze a held-out subset before any tuning. Do not repeatedly tune against all 30 evaluated queries and report the same set as unbiased final performance.
+- BM25 lexical retrieval, `legalai-bm25-index-v1`, tokenizer `legalai-legal-tokenizer-v1`, k1=1.5, b=0.75
+- BGE-M3 dense retrieval, `BAAI/bge-m3`, 1024-dimensional normalized embeddings, `legalai-chroma-index-v1`
+- Reciprocal Rank Fusion with K=60 and candidate depth 20
+- BGE reranking with `BAAI/bge-reranker-v2-m3`, max_length=512, batch_size=8
+- final `top_k=5`
 
-## Go / No-Go
+## Evaluation Evidence
 
-TARGETED RETRIEVAL TUNING JUSTIFIED: prioritize legal-regime filtering/boosting, query expansion experiments, and metadata-aware reranking on a separate development set.
+### Frozen Benchmark
+
+These are existing frozen 30-query benchmark results. No benchmark rerun was performed for this decision.
+
+| System | P@5 | R@5 | R@20 | MRR@5 | nDCG@5 | Doc Hit@5 |
+|---|---:|---:|---:|---:|---:|---:|
+| BM25 | 0.833 | 0.277 | 0.673 | 0.917 | 0.728 | 0.933 |
+| Dense | 0.860 | 0.284 | 0.686 | 0.942 | 0.786 | 1.000 |
+| Hybrid | 0.873 | 0.286 | 0.705 | 0.961 | 0.787 | 1.000 |
+| Hybrid+Rerank | 0.873 | 0.290 | 0.723 | 0.961 | 0.819 | 1.000 |
+
+### Development Baseline
+
+The 20-query development set contains 474 judgments: 103 grade-2, 174 grade-1, 197 grade-0, and 0 uncertain labels.
+
+| System | P@5 | R@5 | R@20 | MRR@5 | nDCG@5 | Doc Hit@5 |
+|---|---:|---:|---:|---:|---:|---:|
+| Hybrid+Rerank | 0.870 | 0.343 | 0.775 | 0.925 | 0.723 | 0.950 |
+
+Strict development metrics for Hybrid+Rerank: P@5 0.390, R@5 0.391, MRR@5 0.696, binary nDCG@5 0.509.
+
+## Experiment T1-A
+
+Deterministic legal-regime-aware retrieval adjustment: INCONCLUSIVE — RETAIN BASELINE.
+
+The resolver produced 15 unknown/low, 3 mixed_or_transition/high, and 2 mixed_or_transition/medium query resolutions. Regime features were too sparse for conservative ranking adjustment; R1/R2/R3 reproduced baseline with no ranking changes and no regressions.
+
+The legal-regime resolver is retained as reusable deterministic infrastructure, but it is not active as a retrieval score modifier.
+
+## Experiment T1-B
+
+Controlled deterministic legal query expansion: INCONCLUSIVE — RETAIN BASELINE.
+
+| Variant | P@5 | nDCG@5 | Outcome |
+|---|---:|---:|---|
+| Q0 | 0.870 | 0.723 | baseline |
+| Q1 | 0.850 | 0.716 | rejected for overall regression |
+| Q2 | 0.850 | 0.700 | rejected for overall regression |
+| Q3 | 0.850 | 0.700 | rejected for overall regression |
+
+Q1 improved some strict metrics and Q2/Q3 increased BM25 relevant top20 coverage, but expansion did not improve final broad top-5 quality. All variants reduced overall broad P@5 and graded nDCG, and non-target regressions occurred, including a notable dev-q002 regression.
+
+The query-expansion module is retained as experimental/reusable code, but it is not active in the default retrieval path.
+
+## Experiment T1-C
+
+Metadata-aware post-rerank adjustment: INCONCLUSIVE — RETAIN BASELINE.
+
+M0/M1/M2/M3 all produced broad P@5 0.870, graded nDCG@5 0.723, strict P@5 0.390, and strict binary nDCG@5 0.509. Top-5 order changes and top-5 membership changes were both 0.
+
+Metadata features for court, date, posture, family, and regime did fire, but the conservative near-tie adjustment was insufficient to alter rankings. The metadata-intent parser is retained as reusable infrastructure, but it is not active in default retrieval.
+
+## Ablation Summary
+
+| Stage | Variant | Outcome | Reason |
+|---|---|---|---|
+| Baseline | Hybrid+Rerank | selected | Strong benchmark and dev-set baseline |
+| T1-A | Regime adjustment R1/R2/R3 | inconclusive | No ordering movement |
+| T1-B | Controlled expansion Q1/Q2/Q3 | inconclusive | Candidate coverage gains did not improve overall top-5 quality |
+| T1-C | Metadata adjustment M1/M2/M3 | inconclusive | Feature signals did not alter top-5 order under conservative safeguards |
+
+## Candidate Complementarity
+
+Frozen benchmark broad relevant candidate generation: BM25 312, Dense 327, intersection 171, BM25-only 141, Dense-only 156, union 468 / 473.
+
+Development-set broad relevant candidate generation baseline: BM25 186, Dense 188, intersection 99, BM25-only 87, Dense-only 89, union 275 / 277.
+
+This complementarity supports retaining the hybrid retrieval foundation.
+
+## Why Further Tuning Was Stopped
+
+The baseline Hybrid+Rerank stack is already strong, and three independent development-set experiments did not provide sufficient evidence for promotion. T1-B showed that retrieving additional candidates does not necessarily improve final top-5 quality. T1-A and T1-C showed that conservative post-rerank adjustments did not produce useful ranking movement.
+
+Increasing weights, widening thresholds, or running additional small parameter grids would risk tuning directly to only 20 development queries. Further Phase 0 retrieval tuning is not justified by current evidence.
+
+## Selected Default Pipeline
+
+The default pipeline uses the original query with BM25, BGE-M3 dense retrieval, RRF K=60, BGE reranking, candidate depth 20, and final top_k 5.
+
+## Experimental Features Retained But Disabled
+
+- `legal_regime.py`: keep as reusable deterministic service; not active as retrieval score modifier
+- `legal_query_expansion.py`: keep as experimental/reusable service; not active in default retrieval
+- `retrieval_metadata_intent.py`: keep as reusable parser; not active in default retrieval
+
+## Frozen Benchmark Policy
+
+No post-tuning frozen benchmark evaluation is required because no tuned variant was accepted. The selected retrieval system is exactly the same configuration already evaluated on the frozen benchmark.
+
+If a materially different retrieval configuration is adopted later, the frozen benchmark may be used once under a separately documented evaluation plan.
+
+## Limitations
+
+- 20 development queries only
+- pooled qrels are non-exhaustive
+- tuning experiments are development evidence, not unbiased final performance
+- one human-labelled dev pool
+- no accepted tuning variant was promoted
+
+## Final Decision
+
+RETAIN UNTUNED HYBRID + RERANKER CONFIGURATION.
+
+No Phase 0 tuning variant provided sufficient development-set evidence for promotion.
