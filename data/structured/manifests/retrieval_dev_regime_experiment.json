@@ -1,0 +1,692 @@
+{
+  "development_version": "legalai-retrieval-dev-v1",
+  "resolver_qa": [
+    {
+      "query_id": "dev-q001",
+      "query_text": "BNSS bail for an IPC offence registered before July 2024",
+      "resolved_regime": "mixed_or_transition",
+      "confidence": "high",
+      "evidence": {
+        "explicit_codes": [
+          "IPC",
+          "BNSS"
+        ],
+        "explicit_sections": [],
+        "detected_dates": [
+          "before July 2024"
+        ],
+        "transition_terms": [
+          "before july 2024"
+        ]
+      }
+    },
+    {
+      "query_id": "dev-q002",
+      "query_text": "new criminal law offence with BNSS procedure after commencement",
+      "resolved_regime": "mixed_or_transition",
+      "confidence": "medium",
+      "evidence": {
+        "explicit_codes": [
+          "BNSS"
+        ],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": [
+          "new criminal law",
+          "commencement"
+        ]
+      }
+    },
+    {
+      "query_id": "dev-q003",
+      "query_text": "anticipatory bail after new procedural code for old penal offence",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q004",
+      "query_text": "savings clause issue when criminal case spans IPC and BNS",
+      "resolved_regime": "mixed_or_transition",
+      "confidence": "high",
+      "evidence": {
+        "explicit_codes": [
+          "IPC",
+          "BNS"
+        ],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": [
+          "savings"
+        ]
+      }
+    },
+    {
+      "query_id": "dev-q005",
+      "query_text": "post July 2024 arrest procedure in criminal petition",
+      "resolved_regime": "mixed_or_transition",
+      "confidence": "medium",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [
+          "post July 2024"
+        ],
+        "transition_terms": [
+          "post july 2024"
+        ]
+      }
+    },
+    {
+      "query_id": "dev-q006",
+      "query_text": "old CrPC notice practice compared with BNSS arrest safeguards",
+      "resolved_regime": "mixed_or_transition",
+      "confidence": "high",
+      "evidence": {
+        "explicit_codes": [
+          "CrPC",
+          "BNSS"
+        ],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q007",
+      "query_text": "fatal assault during property robbery with recovery of articles",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q008",
+      "query_text": "minor abducted and later subjected to sexual offence",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q009",
+      "query_text": "business transaction alleging entrusted money and deception",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q010",
+      "query_text": "multiple accused assault where shared intention must be proved",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q011",
+      "query_text": "drug bail with quantity threshold and statutory bar",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q012",
+      "query_text": "property taken by force rather than simple stealing",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q013",
+      "query_text": "woman harassed by husband and in laws for marriage demands",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q014",
+      "query_text": "guardian complains child was lured away from lawful custody",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q015",
+      "query_text": "investors induced to part with money by false promise",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q016",
+      "query_text": "Supreme Court criminal appeal discussing murder conviction evidence",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q017",
+      "query_text": "High Court petition seeking FIR quashing in commercial dispute",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q018",
+      "query_text": "trial court conviction appeal involving prosecutrix testimony",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q019",
+      "query_text": "breach of contract allegation wrongly framed as cheating",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    },
+    {
+      "query_id": "dev-q020",
+      "query_text": "culpable homicide discussion where murder conviction may be reduced",
+      "resolved_regime": "unknown",
+      "confidence": "low",
+      "evidence": {
+        "explicit_codes": [],
+        "explicit_sections": [],
+        "detected_dates": [],
+        "transition_terms": []
+      }
+    }
+  ],
+  "selection_decision": "INCONCLUSIVE — RETAIN BASELINE",
+  "selection_rationale": "No variant cleared the conservative selection criteria.",
+  "bootstrap": {
+    "samples": 10000,
+    "seed": 20260907,
+    "comparisons": {
+      "hybrid_minus_dense": {
+        "broad_precision_at_5": {
+          "mean_delta": 0.03,
+          "ci95": [
+            -0.07,
+            0.12
+          ]
+        },
+        "graded_ndcg_at_5": {
+          "mean_delta": 0.011982,
+          "ci95": [
+            -0.065297,
+            0.099705
+          ]
+        },
+        "broad_mrr_at_5": {
+          "mean_delta": 0.116667,
+          "ci95": [
+            0.025,
+            0.208333
+          ]
+        }
+      },
+      "hybrid_rerank_minus_hybrid": {
+        "broad_precision_at_5": {
+          "mean_delta": 0.06,
+          "ci95": [
+            -0.03,
+            0.15
+          ]
+        },
+        "graded_ndcg_at_5": {
+          "mean_delta": 0.048365,
+          "ci95": [
+            -0.014811,
+            0.113617
+          ]
+        },
+        "broad_mrr_at_5": {
+          "mean_delta": -0.041667,
+          "ci95": [
+            -0.108333,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "variants": {
+    "R0": {
+      "config": {
+        "adjustment": {},
+        "description": "Baseline Hybrid+Rerank ordering."
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "legal_regime_subset": {
+        "broad_precision_at_5": 0.866667,
+        "broad_pooled_recall_at_5": 0.405633,
+        "broad_pooled_recall_at_20": 0.860551,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.662607,
+        "document_hit_at_5": 1,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.33,
+        "strict_mrr_at_5": 0.366667,
+        "strict_binary_ndcg_at_5": 0.279433
+      },
+      "non_regime_regression": {
+        "improved": 0,
+        "unchanged": 0,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "R1": {
+      "config": {
+        "adjustment": {
+          "exact_regime_match": 0.15,
+          "transition_compatible": 0.08,
+          "unknown_metadata": 0.0,
+          "regime_mismatch": -0.05
+        },
+        "description": "Very conservative score prior."
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "legal_regime_subset": {
+        "broad_precision_at_5": 0.866667,
+        "broad_pooled_recall_at_5": 0.405633,
+        "broad_pooled_recall_at_20": 0.860551,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.662607,
+        "document_hit_at_5": 1,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.33,
+        "strict_mrr_at_5": 0.366667,
+        "strict_binary_ndcg_at_5": 0.279433
+      },
+      "non_regime_regression": {
+        "improved": 0,
+        "unchanged": 14,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "R2": {
+      "config": {
+        "adjustment": {
+          "exact_regime_match": 0.3,
+          "transition_compatible": 0.15,
+          "unknown_metadata": 0.0,
+          "regime_mismatch": -0.1
+        },
+        "description": "Moderate score prior."
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "legal_regime_subset": {
+        "broad_precision_at_5": 0.866667,
+        "broad_pooled_recall_at_5": 0.405633,
+        "broad_pooled_recall_at_20": 0.860551,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.662607,
+        "document_hit_at_5": 1,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.33,
+        "strict_mrr_at_5": 0.366667,
+        "strict_binary_ndcg_at_5": 0.279433
+      },
+      "non_regime_regression": {
+        "improved": 0,
+        "unchanged": 14,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    },
+    "R3": {
+      "config": {
+        "adjustment": {
+          "exact_regime_match": 0.2,
+          "transition_compatible": 0.1,
+          "unknown_metadata": 0.0,
+          "regime_mismatch": -0.05
+        },
+        "description": "Rank tie/near-tie preference via adjusted rank."
+      },
+      "overall": {
+        "bm25": {
+          "label": "BM25",
+          "broad_precision_at_5": 0.76,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.296269,
+          "broad_pooled_recall_at_20": 0.666271,
+          "broad_mrr_at_5": 0.975,
+          "graded_ndcg_at_5": 0.601083,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.25,
+          "strict_pooled_recall_at_5": 0.267023,
+          "strict_mrr_at_5": 0.55,
+          "strict_binary_ndcg_at_5": 0.334806,
+          "strict_eligible_query_count": 18
+        },
+        "dense": {
+          "label": "Dense",
+          "broad_precision_at_5": 0.78,
+          "broad_precision_at_5_median": 0.8,
+          "broad_pooled_recall_at_5": 0.300732,
+          "broad_pooled_recall_at_20": 0.691943,
+          "broad_mrr_at_5": 0.85,
+          "graded_ndcg_at_5": 0.662978,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.37,
+          "strict_pooled_recall_at_5": 0.385167,
+          "strict_mrr_at_5": 0.662037,
+          "strict_binary_ndcg_at_5": 0.488352,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid": {
+          "label": "Hybrid",
+          "broad_precision_at_5": 0.81,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.318424,
+          "broad_pooled_recall_at_20": 0.744393,
+          "broad_mrr_at_5": 0.966667,
+          "graded_ndcg_at_5": 0.67496,
+          "document_hit_at_5": 1.0,
+          "strict_precision_at_5": 0.33,
+          "strict_pooled_recall_at_5": 0.323401,
+          "strict_mrr_at_5": 0.633333,
+          "strict_binary_ndcg_at_5": 0.43949,
+          "strict_eligible_query_count": 18
+        },
+        "hybrid_rerank": {
+          "label": "Hybrid+Rerank",
+          "broad_precision_at_5": 0.87,
+          "broad_precision_at_5_median": 1.0,
+          "broad_pooled_recall_at_5": 0.343146,
+          "broad_pooled_recall_at_20": 0.774709,
+          "broad_mrr_at_5": 0.925,
+          "graded_ndcg_at_5": 0.723324,
+          "document_hit_at_5": 0.95,
+          "strict_precision_at_5": 0.39,
+          "strict_pooled_recall_at_5": 0.391059,
+          "strict_mrr_at_5": 0.696296,
+          "strict_binary_ndcg_at_5": 0.508561,
+          "strict_eligible_query_count": 18
+        }
+      },
+      "legal_regime_subset": {
+        "broad_precision_at_5": 0.866667,
+        "broad_pooled_recall_at_5": 0.405633,
+        "broad_pooled_recall_at_20": 0.860551,
+        "broad_mrr_at_5": 1.0,
+        "graded_ndcg_at_5": 0.662607,
+        "document_hit_at_5": 1,
+        "strict_precision_at_5": 0.2,
+        "strict_pooled_recall_at_5": 0.33,
+        "strict_mrr_at_5": 0.366667,
+        "strict_binary_ndcg_at_5": 0.279433
+      },
+      "non_regime_regression": {
+        "improved": 0,
+        "unchanged": 14,
+        "worsened": 0,
+        "mean_p5_delta": 0.0,
+        "mean_ndcg_delta": 0.0,
+        "major_regressions": []
+      }
+    }
+  }
+}
