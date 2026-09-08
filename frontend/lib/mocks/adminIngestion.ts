@@ -199,7 +199,7 @@ export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJ
     if (restored) {
       state = {
         filename: restored.filename,
-        pollCount: ACTIVE_STAGES.indexOf(restored.stage) + 1,
+        pollCount: 0,
       };
       jobs.set(jobId, state);
     }

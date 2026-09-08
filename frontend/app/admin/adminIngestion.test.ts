@@ -111,15 +111,24 @@ describe('admin ingestion mock boundary', () => {
     });
   });
 
-  it('resumes a persisted active job after in-memory mock state is lost', async () => {
-    writePersistedIngestionJobs([{ id: 'job-restored', filename: 'lease.pdf', stage: 'CHUNKING' }]);
+  it('does not use persisted placeholder stages as the first live status', async () => {
+    writePersistedIngestionJobs([
+      { id: 'job-queued', filename: 'lease.pdf', stage: 'QUEUED' },
+      { id: 'job-indexing', filename: 'statute.pdf', stage: 'INDEXING' },
+    ]);
     resetAdminIngestionMockForTests();
 
-    await expect(pollIngestionStatusMock('job-restored')).resolves.toEqual({
-      id: 'job-restored',
+    await expect(pollIngestionStatusMock('job-queued')).resolves.toEqual({
+      id: 'job-queued',
       filename: 'lease.pdf',
-      stage: 'EMBEDDING',
-      progress: 60,
+      stage: 'EXTRACTING',
+      progress: 20,
+    });
+    await expect(pollIngestionStatusMock('job-indexing')).resolves.toEqual({
+      id: 'job-indexing',
+      filename: 'statute.pdf',
+      stage: 'EXTRACTING',
+      progress: 20,
     });
   });
 
