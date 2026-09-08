@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { IngestionProgress, type IngestionJob } from '../../../components/shared/IngestionProgress';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 import {
+  MAX_ACTIVE_INGESTION_JOBS,
   pollIngestionStatusMock,
   progressForStage,
   readPersistedIngestionJobs,
@@ -64,7 +65,11 @@ export function IngestionWorkspace() {
   const incompleteNames = drafts
     .filter((draft) => draft.documentType === '')
     .map((draft) => draft.file.name);
-  const canSubmit = canSubmitBatch(drafts, isConfirmed, isSubmitting);
+  const activeJobCount = jobs.filter((job) => !isTerminal(job.stage)).length;
+  const remainingJobSlots = Math.max(0, MAX_ACTIVE_INGESTION_JOBS - activeJobCount);
+  const excessFileCount = Math.max(0, drafts.length - remainingJobSlots);
+  const exceedsActiveJobCapacity = excessFileCount > 0;
+  const canSubmit = canSubmitBatch(drafts, isConfirmed, isSubmitting) && !exceedsActiveJobCapacity;
   const orderedJobs = jobs;
 
   const stopPolling = useCallback((jobId: string) => {
@@ -152,7 +157,7 @@ export function IngestionWorkspace() {
   };
 
   const submitBatch = async () => {
-    if (!canSubmitBatch(drafts, isConfirmed, isSubmitting)) return;
+    if (!canSubmitBatch(drafts, isConfirmed, isSubmitting) || exceedsActiveJobCapacity) return;
     setIsSubmitting(true);
     setHasSubmitError(false);
 
@@ -316,6 +321,14 @@ export function IngestionWorkspace() {
                 role="alert"
               >
                 Complete document types for: {incompleteNames.join(', ')}
+              </p>
+            ) : null}
+
+            {exceedsActiveJobCapacity ? (
+              <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
+                This batch exceeds the active ingestion capacity. Remove {excessFileCount}{' '}
+                {excessFileCount === 1 ? 'file' : 'files'}; {remainingJobSlots}{' '}
+                {remainingJobSlots === 1 ? 'job slot remains' : 'job slots remain'}.
               </p>
             ) : null}
 

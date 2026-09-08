@@ -278,6 +278,100 @@ describe('IngestionWorkspace', () => {
     expect(screen.queryByTestId('ingestion-jobs')).not.toBeInTheDocument();
   });
 
+  it('disables a batch larger than the active-job capacity and explains the remaining slots', async () => {
+    const user = userEvent.setup();
+    const files = Array.from({ length: 26 }, (_, index) => pdfFile(`batch-${index + 1}.pdf`));
+    render(<IngestionWorkspace />);
+
+    await user.upload(screen.getByLabelText('Choose PDF files'), files);
+
+    expect(
+      screen.getByText(
+        'This batch exceeds the active ingestion capacity. Remove 1 file; 25 job slots remain.',
+      ),
+    ).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeDisabled();
+    expect(submitIngestionMock).not.toHaveBeenCalled();
+  });
+
+  it('counts restored active jobs when deciding whether a complete batch can start', async () => {
+    const user = userEvent.setup();
+    writePersistedIngestionJobs(
+      Array.from({ length: 24 }, (_, index) => ({
+        id: `job-${index + 1}`,
+        filename: `active-${index + 1}.pdf`,
+        stage: 'CHUNKING' as const,
+      })),
+    );
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    render(<IngestionWorkspace />);
+    const files = [pdfFile('new-a.pdf'), pdfFile('new-b.pdf')];
+
+    await user.upload(screen.getByLabelText('Choose PDF files'), files);
+    await user.selectOptions(screen.getByLabelText('Document type for new-a.pdf'), 'judgment');
+    await user.selectOptions(screen.getByLabelText('Document type for new-b.pdf'), 'statute');
+    await user.click(
+      screen.getByRole('checkbox', { name: 'I understand this is a permanent corpus update' }),
+    );
+
+    expect(
+      screen.getByText(
+        'This batch exceeds the active ingestion capacity. Remove 1 file; 1 job slot remains.',
+      ),
+    ).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeDisabled();
+    expect(submitIngestionMock).not.toHaveBeenCalled();
+  });
+
+  it('persists every accepted job when a batch exactly fills the remaining capacity', async () => {
+    const user = userEvent.setup();
+    writePersistedIngestionJobs(
+      Array.from({ length: 24 }, (_, index) => ({
+        id: `job-${index + 1}`,
+        filename: `active-${index + 1}.pdf`,
+        stage: 'CHUNKING' as const,
+      })),
+    );
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-25'] });
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('new.pdf'));
+
+    const start = screen.getByRole('button', { name: 'Start ingestion' });
+    expect(start).toBeEnabled();
+    await user.click(start);
+
+    await waitFor(() => expect(readPersistedIngestionJobs()).toHaveLength(25));
+    expect(readPersistedIngestionJobs().map(({ id }) => id)).toEqual([
+      'job-25',
+      ...Array.from({ length: 24 }, (_, index) => `job-${index + 1}`),
+    ]);
+  });
+
+  it('does not count terminal jobs retained on the mounted screen against active capacity', async () => {
+    const user = userEvent.setup();
+    writePersistedIngestionJobs(
+      Array.from({ length: 25 }, (_, index) => ({
+        id: `job-${index + 1}`,
+        filename: `finished-${index + 1}.pdf`,
+        stage: 'INDEXING' as const,
+      })),
+    );
+    vi.mocked(pollIngestionStatusMock).mockImplementation(async (id) => ({
+      id,
+      filename: `finished-${id.slice(4)}.pdf`,
+      stage: 'COMPLETED',
+      progress: 100,
+    }));
+    render(<IngestionWorkspace />);
+    await waitFor(() => expect(readPersistedIngestionJobs()).toEqual([]));
+
+    await configureValidBatch(user, pdfFile('new.pdf'));
+
+    expect(screen.queryByText(/exceeds the active ingestion capacity/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeEnabled();
+  });
+
   it('rejects a submission response whose job ID collides with a restored job', async () => {
     const user = userEvent.setup();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);

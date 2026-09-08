@@ -43,7 +43,7 @@ const SAFE_SUBMIT_FAILURE_TEXT = 'Unable to start ingestion.';
 // Keep mock-phase rehydration bounded: 25 active rows are enough for one admin
 // session, while 128-character IDs and 255-character display names cover normal
 // backend identifiers and filesystem names without trusting arbitrary storage.
-const MAX_PERSISTED_JOBS = 25;
+export const MAX_ACTIVE_INGESTION_JOBS = 25;
 const MAX_PERSISTED_JOB_ID_LENGTH = 128;
 const MAX_PERSISTED_FILENAME_LENGTH = 255;
 const STAGES: readonly IngestionStage[] = [
@@ -133,7 +133,7 @@ const normalizePersistedRecords = (value: unknown): PersistedIngestionJob[] => {
   const seen = new Set<string>();
   const records: PersistedIngestionJob[] = [];
   for (const valueRecord of value) {
-    if (records.length >= MAX_PERSISTED_JOBS) break;
+    if (records.length >= MAX_ACTIVE_INGESTION_JOBS) break;
     const record = toPersistedRecord(valueRecord);
     if (!record || seen.has(record.id) || isTerminalStage(record.stage)) continue;
     seen.add(record.id);
