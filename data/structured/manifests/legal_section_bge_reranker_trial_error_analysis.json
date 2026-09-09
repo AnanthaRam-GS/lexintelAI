@@ -1,0 +1,23 @@
+{
+  "schema_version": "legalai-section-bge-reranker-trial-error-analysis-v1",
+  "error_taxonomy_hx1": {
+    "AMBIGUOUS_QUERY": 2,
+    "CATALOG_CANDIDATE_NOT_TRIGGERED": 1,
+    "MISSING_GOLD_SECTION": 8,
+    "OVERPREDICTION": 27,
+    "PRIMARY_SECTION_RANKED_LOW": 2,
+    "SUPPLEMENTARY_SECTION_MISSED": 7,
+    "WRONG_SECTION": 4
+  },
+  "total_hx1_misses": 11,
+  "total_hx1_extras": 63,
+  "ranking_fixable_errors": {
+    "primary_ranked_low": 2,
+    "extra_ranked_above_gold_positive": 2
+  },
+  "candidate_generation_limited_errors": {
+    "missing_gold_section": 8,
+    "catalog_candidate_not_triggered": 1,
+    "note": "X1/HX1 cannot recover sections absent from the frozen D0 candidate set."
+  }
+}

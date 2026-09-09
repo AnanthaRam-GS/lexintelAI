@@ -1,0 +1,2967 @@
+{
+  "schema_version": "legalai-section-bge-reranker-trial-eval-v1",
+  "model": {
+    "model_id": "BAAI/bge-reranker-v2-m3",
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "XLMRobertaForSequenceClassification",
+    "task_type": "cross_encoder_pairwise_reranker",
+    "tokenizer": "XLMRobertaTokenizer",
+    "max_sequence_length": 512,
+    "model_max_length": 8192,
+    "device": "cpu",
+    "parameter_count": null,
+    "local_only_loading": true
+  },
+  "trial_design": {
+    "d0": "frozen deterministic baseline",
+    "t1_s1": "frozen BGE-M3 semantic-only ranking from T1",
+    "t1_h1": "frozen BGE-M3 RRF hybrid ranking from T1",
+    "x1": "BGE cross-encoder score descending over bounded deterministic candidates",
+    "hx1": "X1 ranking constrained by explicit-section, regime, zero-positive, and bounded-top-k safety guardrails",
+    "candidate_generation": "frozen deterministic predictor output only",
+    "query_representation": "Q0_original_query_only",
+    "section_representation": "0.7C catalog-fields-only semantic text",
+    "section_representation_sha256": "35d1cabaa5a165ea8ec96275ea08ffb0b85aa97d9c47bc39d37bed24d1c2f83c",
+    "pair_construction": "(original_query_text, section_semantic_text)",
+    "candidate_expansion_count": 0,
+    "fusion_search_count": 0,
+    "t1_rrf_k": 60
+  },
+  "dataset": {
+    "examples": 36,
+    "positive_gold": 60,
+    "uncertain": 1,
+    "zero_positive": 3,
+    "max_top_k": 5,
+    "candidate_pairs_scored": 112
+  },
+  "metrics": {
+    "d0": {
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.388889,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.358586,
+      "recall_at_3": 0.767677,
+      "recall_at_5": 0.853535,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.722516,
+      "hit_at_1": 0.5,
+      "hit_at_3": 0.805556,
+      "hit_at_5": 0.861111
+    },
+    "t1_s1": {
+      "precision_at_1": 0.777778,
+      "precision_at_3": 0.416667,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.560606,
+      "recall_at_3": 0.80303,
+      "recall_at_5": 0.853535,
+      "mrr": 0.814815,
+      "ndcg_at_5": 0.821095,
+      "hit_at_1": 0.777778,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "t1_h1": {
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.416667,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.353535,
+      "recall_at_3": 0.80303,
+      "recall_at_5": 0.853535,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.726846,
+      "hit_at_1": 0.5,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "x1": {
+      "precision_at_1": 0.805556,
+      "precision_at_3": 0.425926,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.580808,
+      "recall_at_3": 0.813131,
+      "recall_at_5": 0.853535,
+      "mrr": 0.833333,
+      "ndcg_at_5": 0.831325,
+      "hit_at_1": 0.805556,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "hx1": {
+      "precision_at_1": 0.805556,
+      "precision_at_3": 0.425926,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.580808,
+      "recall_at_3": 0.813131,
+      "recall_at_5": 0.853535,
+      "mrr": 0.833333,
+      "ndcg_at_5": 0.831325,
+      "hit_at_1": 0.805556,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "hx1_delta_vs_d0": {
+      "precision_at_1": 0.305556,
+      "precision_at_3": 0.037037,
+      "precision_at_5": 0.0,
+      "recall_at_1": 0.222222,
+      "recall_at_3": 0.045454,
+      "recall_at_5": 0.0,
+      "mrr": 0.171296,
+      "ndcg_at_5": 0.108809,
+      "hit_at_1": 0.305556,
+      "hit_at_3": 0.055555,
+      "hit_at_5": 0.0
+    },
+    "hx1_delta_vs_t1_s1": {
+      "precision_at_1": 0.027778,
+      "precision_at_3": 0.009259,
+      "precision_at_5": 0.0,
+      "recall_at_1": 0.020202,
+      "recall_at_3": 0.010101,
+      "recall_at_5": 0.0,
+      "mrr": 0.018518,
+      "ndcg_at_5": 0.01023,
+      "hit_at_1": 0.027778,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0
+    }
+  },
+  "guardrail_metrics": {
+    "d0": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.5,
+      "explicit_recall_at_3": 0.875,
+      "explicit_recall_at_5": 0.875,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "t1_s1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "t1_h1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "x1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "hx1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    }
+  },
+  "primary_rank_movement": {
+    "x1_vs_d0": {
+      "moved_up": 14,
+      "unchanged": 16,
+      "moved_down": 4,
+      "missing": 2,
+      "average_rank_change": -0.470588
+    },
+    "hx1_vs_d0": {
+      "moved_up": 14,
+      "unchanged": 16,
+      "moved_down": 4,
+      "missing": 2,
+      "average_rank_change": -0.470588
+    },
+    "hx1_vs_t1_s1": {
+      "moved_up": 4,
+      "unchanged": 27,
+      "moved_down": 3,
+      "missing": 2,
+      "average_rank_change": -0.058824
+    }
+  },
+  "relevant_rank_movement": {
+    "x1_vs_d0": {
+      "moved_up": 8,
+      "unchanged": 4,
+      "moved_down": 3,
+      "missing": 9,
+      "average_rank_change": -0.466667
+    },
+    "hx1_vs_d0": {
+      "moved_up": 8,
+      "unchanged": 4,
+      "moved_down": 3,
+      "missing": 9,
+      "average_rank_change": -0.466667
+    },
+    "hx1_vs_t1_s1": {
+      "moved_up": 4,
+      "unchanged": 7,
+      "moved_down": 4,
+      "missing": 9,
+      "average_rank_change": -0.133333
+    }
+  },
+  "subset_results": {
+    "plain_language": {
+      "query_count": 29,
+      "d0": {
+        "precision_at_1": 0.482759,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.683908,
+        "ndcg_at_5": 0.692512
+      },
+      "t1_s1": {
+        "precision_at_1": 0.827586,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.873563,
+        "ndcg_at_5": 0.804687
+      },
+      "x1": {
+        "precision_at_1": 0.862069,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.896552,
+        "ndcg_at_5": 0.818044
+      },
+      "hx1": {
+        "precision_at_1": 0.862069,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.896552,
+        "ndcg_at_5": 0.818044
+      }
+    },
+    "procedural": {
+      "query_count": 14,
+      "d0": {
+        "precision_at_1": 0.571429,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.696429,
+        "ndcg_at_5": 0.693125
+      },
+      "t1_s1": {
+        "precision_at_1": 0.785714,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.809524,
+        "ndcg_at_5": 0.750914
+      },
+      "x1": {
+        "precision_at_1": 0.785714,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.821429,
+        "ndcg_at_5": 0.778361
+      },
+      "hx1": {
+        "precision_at_1": 0.785714,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.821429,
+        "ndcg_at_5": 0.778361
+      }
+    },
+    "substantive": {
+      "query_count": 24,
+      "d0": {
+        "precision_at_1": 0.583333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.763889,
+        "ndcg_at_5": 0.75751
+      },
+      "t1_s1": {
+        "precision_at_1": 0.916667,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.958333,
+        "ndcg_at_5": 0.856347
+      },
+      "x1": {
+        "precision_at_1": 0.916667,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.958333,
+        "ndcg_at_5": 0.854576
+      },
+      "hx1": {
+        "precision_at_1": 0.916667,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.958333,
+        "ndcg_at_5": 0.854576
+      }
+    },
+    "ipc_crpc": {
+      "query_count": 20,
+      "d0": {
+        "precision_at_1": 0.45,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.675,
+        "ndcg_at_5": 0.695931
+      },
+      "t1_s1": {
+        "precision_at_1": 0.85,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.891667,
+        "ndcg_at_5": 0.829879
+      },
+      "x1": {
+        "precision_at_1": 0.85,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.9,
+        "ndcg_at_5": 0.834613
+      },
+      "hx1": {
+        "precision_at_1": 0.85,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.9,
+        "ndcg_at_5": 0.834613
+      }
+    },
+    "bns_bnss": {
+      "query_count": 12,
+      "d0": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.652778,
+        "ndcg_at_5": 0.681436
+      },
+      "t1_s1": {
+        "precision_at_1": 0.75,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.791667,
+        "ndcg_at_5": 0.764581
+      },
+      "x1": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.833333,
+        "ndcg_at_5": 0.782614
+      },
+      "hx1": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.833333,
+        "ndcg_at_5": 0.782614
+      }
+    },
+    "special_law": {
+      "query_count": 6,
+      "d0": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 0.916667,
+        "ndcg_at_5": 0.747253
+      },
+      "t1_s1": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 0.888889,
+        "ndcg_at_5": 0.733169
+      },
+      "x1": {
+        "precision_at_1": 1.0,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.800936
+      },
+      "hx1": {
+        "precision_at_1": 1.0,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.800936
+      }
+    },
+    "mixed_transition": {
+      "query_count": 4,
+      "d0": {
+        "precision_at_1": 0.25,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.375,
+        "ndcg_at_5": 0.423357
+      },
+      "t1_s1": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.5
+      },
+      "x1": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.5
+      },
+      "hx1": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.5
+      }
+    }
+  },
+  "explicit_section_audit": [
+    {
+      "example_id": "sec-q001",
+      "statute": "IPC",
+      "section": "302",
+      "d0_rank": 1,
+      "t1_s1_rank": 1,
+      "x1_rank": 1,
+      "hx1_rank": 1
+    },
+    {
+      "example_id": "sec-q002",
+      "statute": "CrPC",
+      "section": "438",
+      "d0_rank": 1,
+      "t1_s1_rank": 1,
+      "x1_rank": 1,
+      "hx1_rank": 1
+    },
+    {
+      "example_id": "sec-q023",
+      "statute": "IPC",
+      "section": "406",
+      "d0_rank": 1,
+      "t1_s1_rank": 2,
+      "x1_rank": 1,
+      "hx1_rank": 1
+    },
+    {
+      "example_id": "sec-q023",
+      "statute": "IPC",
+      "section": "420",
+      "d0_rank": 2,
+      "t1_s1_rank": 1,
+      "x1_rank": 2,
+      "hx1_rank": 2
+    },
+    {
+      "example_id": "sec-q024",
+      "statute": "BNS",
+      "section": "103",
+      "d0_rank": 1,
+      "t1_s1_rank": 1,
+      "x1_rank": 1,
+      "hx1_rank": 1
+    },
+    {
+      "example_id": "sec-q024",
+      "statute": "IPC",
+      "section": "302",
+      "d0_rank": 2,
+      "t1_s1_rank": 2,
+      "x1_rank": 2,
+      "hx1_rank": 2
+    }
+  ],
+  "zero_positive_guardrails": {
+    "false_positive_rate": 0.0,
+    "examples": [
+      {
+        "example_id": "sec-q026",
+        "d0_count": 0,
+        "t1_s1_count": 0,
+        "x1_count": 0,
+        "hx1_count": 0
+      },
+      {
+        "example_id": "sec-q027",
+        "d0_count": 0,
+        "t1_s1_count": 0,
+        "x1_count": 0,
+        "hx1_count": 0
+      },
+      {
+        "example_id": "sec-q035",
+        "d0_count": 0,
+        "t1_s1_count": 0,
+        "x1_count": 0,
+        "hx1_count": 0
+      }
+    ]
+  },
+  "important_examples": [
+    {
+      "example_id": "sec-q001",
+      "gold": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "canonical_name": "Murder",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "439",
+            "normalized_section": "439",
+            "canonical_name": "Special powers regarding bail",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "IPC",
+          "302",
+          1
+        ],
+        [
+          "IPC",
+          "304",
+          2
+        ]
+      ],
+      "t1_s1": [
+        [
+          "IPC",
+          "302",
+          1
+        ],
+        [
+          "IPC",
+          "304",
+          2
+        ]
+      ],
+      "x1": [
+        [
+          "IPC",
+          "302",
+          1,
+          0.532974
+        ],
+        [
+          "IPC",
+          "304",
+          2,
+          -4.565487
+        ]
+      ],
+      "hx1": [
+        [
+          "IPC",
+          "302",
+          1,
+          0.532974
+        ],
+        [
+          "IPC",
+          "304",
+          2,
+          -4.565487
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "439",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "MISSING_GOLD_SECTION",
+        "OVERPREDICTION",
+        "SUPPLEMENTARY_SECTION_MISSED"
+      ]
+    },
+    {
+      "example_id": "sec-q002",
+      "gold": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "normalized_section": "438",
+            "canonical_name": "Anticipatory bail",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "420",
+            "normalized_section": "420",
+            "canonical_name": "Cheating and dishonestly inducing delivery of property",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "CrPC",
+          "438",
+          1
+        ],
+        [
+          "IPC",
+          "420",
+          2
+        ],
+        [
+          "SC/ST Act",
+          "18",
+          3
+        ]
+      ],
+      "t1_s1": [
+        [
+          "CrPC",
+          "438",
+          1
+        ],
+        [
+          "IPC",
+          "420",
+          2
+        ],
+        [
+          "SC/ST Act",
+          "18",
+          3
+        ]
+      ],
+      "x1": [
+        [
+          "CrPC",
+          "438",
+          1,
+          1.33057
+        ],
+        [
+          "SC/ST Act",
+          "18",
+          2,
+          1.117396
+        ],
+        [
+          "IPC",
+          "420",
+          3,
+          -2.766901
+        ]
+      ],
+      "hx1": [
+        [
+          "CrPC",
+          "438",
+          1,
+          1.33057
+        ],
+        [
+          "SC/ST Act",
+          "18",
+          2,
+          1.117396
+        ],
+        [
+          "IPC",
+          "420",
+          3,
+          -2.766901
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "420",
+            "d0_rank": 2,
+            "t1_s1_rank": 2,
+            "x1_rank": 3,
+            "hx1_rank": 3
+          }
+        ]
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q005",
+      "gold": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "394",
+            "normalized_section": "394",
+            "canonical_name": "Voluntarily causing hurt in committing robbery",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "392",
+            "normalized_section": "392",
+            "canonical_name": "Robbery",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "IPC",
+          "394",
+          1
+        ],
+        [
+          "BNS",
+          "115",
+          2
+        ],
+        [
+          "BNS",
+          "303",
+          3
+        ],
+        [
+          "BNS",
+          "309",
+          4
+        ],
+        [
+          "IPC",
+          "323",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "IPC",
+          "394",
+          1
+        ],
+        [
+          "BNS",
+          "309",
+          2
+        ],
+        [
+          "IPC",
+          "323",
+          3
+        ],
+        [
+          "BNS",
+          "115",
+          4
+        ],
+        [
+          "BNS",
+          "303",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "IPC",
+          "394",
+          1,
+          -1.627773
+        ],
+        [
+          "BNS",
+          "309",
+          2,
+          -1.99794
+        ],
+        [
+          "BNS",
+          "115",
+          3,
+          -3.998611
+        ],
+        [
+          "IPC",
+          "323",
+          4,
+          -4.040316
+        ],
+        [
+          "BNS",
+          "303",
+          5,
+          -4.335362
+        ]
+      ],
+      "hx1": [
+        [
+          "IPC",
+          "394",
+          1,
+          -1.627773
+        ],
+        [
+          "BNS",
+          "309",
+          2,
+          -1.99794
+        ],
+        [
+          "BNS",
+          "115",
+          3,
+          -3.998611
+        ],
+        [
+          "IPC",
+          "323",
+          4,
+          -4.040316
+        ],
+        [
+          "BNS",
+          "303",
+          5,
+          -4.335362
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "394",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "392",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "MISSING_GOLD_SECTION",
+        "OVERPREDICTION",
+        "SUPPLEMENTARY_SECTION_MISSED",
+        "WRONG_SECTION"
+      ]
+    },
+    {
+      "example_id": "sec-q007",
+      "gold": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "408",
+            "normalized_section": "408",
+            "canonical_name": "Criminal breach of trust by clerk or servant",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "406",
+            "normalized_section": "406",
+            "canonical_name": "Criminal breach of trust",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "316",
+          1
+        ],
+        [
+          "IPC",
+          "406",
+          2
+        ],
+        [
+          "IPC",
+          "408",
+          3
+        ]
+      ],
+      "t1_s1": [
+        [
+          "IPC",
+          "408",
+          1
+        ],
+        [
+          "IPC",
+          "406",
+          2
+        ],
+        [
+          "BNS",
+          "316",
+          3
+        ]
+      ],
+      "x1": [
+        [
+          "IPC",
+          "408",
+          1,
+          -6.63964
+        ],
+        [
+          "IPC",
+          "406",
+          2,
+          -6.811406
+        ],
+        [
+          "BNS",
+          "316",
+          3,
+          -6.823523
+        ]
+      ],
+      "hx1": [
+        [
+          "IPC",
+          "408",
+          1,
+          -6.63964
+        ],
+        [
+          "IPC",
+          "406",
+          2,
+          -6.811406
+        ],
+        [
+          "BNS",
+          "316",
+          3,
+          -6.823523
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "408",
+            "d0_rank": 3,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "406",
+            "d0_rank": 2,
+            "t1_s1_rank": 2,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          }
+        ]
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q009",
+      "gold": {
+        "primary": [
+          {
+            "statute": "POCSO Act",
+            "section": "7",
+            "normalized_section": "7",
+            "canonical_name": "Sexual assault",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "POCSO Act",
+            "section": "8",
+            "normalized_section": "8",
+            "canonical_name": "Sexual assault punishment",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "POCSO Act",
+          "7",
+          1
+        ],
+        [
+          "POCSO Act",
+          "4",
+          2
+        ],
+        [
+          "POCSO Act",
+          "8",
+          3
+        ],
+        [
+          "BNS",
+          "115",
+          4
+        ],
+        [
+          "IPC",
+          "323",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "POCSO Act",
+          "7",
+          1
+        ],
+        [
+          "POCSO Act",
+          "4",
+          2
+        ],
+        [
+          "POCSO Act",
+          "8",
+          3
+        ],
+        [
+          "IPC",
+          "323",
+          4
+        ],
+        [
+          "BNS",
+          "115",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "POCSO Act",
+          "7",
+          1,
+          -1.028938
+        ],
+        [
+          "POCSO Act",
+          "8",
+          2,
+          -1.276014
+        ],
+        [
+          "POCSO Act",
+          "4",
+          3,
+          -1.728055
+        ],
+        [
+          "IPC",
+          "323",
+          4,
+          -8.198125
+        ],
+        [
+          "BNS",
+          "115",
+          5,
+          -8.363022
+        ]
+      ],
+      "hx1": [
+        [
+          "POCSO Act",
+          "7",
+          1,
+          -1.028938
+        ],
+        [
+          "POCSO Act",
+          "8",
+          2,
+          -1.276014
+        ],
+        [
+          "POCSO Act",
+          "4",
+          3,
+          -1.728055
+        ],
+        [
+          "IPC",
+          "323",
+          4,
+          -8.198125
+        ],
+        [
+          "BNS",
+          "115",
+          5,
+          -8.363022
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "POCSO Act",
+            "section": "7",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "POCSO Act",
+            "section": "8",
+            "d0_rank": 3,
+            "t1_s1_rank": 3,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          }
+        ]
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q011",
+      "gold": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "canonical_name": "Murder",
+            "relevance": "primary"
+          },
+          {
+            "statute": "IPC",
+            "section": "120B",
+            "normalized_section": "120b",
+            "canonical_name": "Criminal conspiracy",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "34",
+            "normalized_section": "34",
+            "canonical_name": "Common intention",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "103",
+          1
+        ],
+        [
+          "BNS",
+          "3(5)",
+          2
+        ],
+        [
+          "BNS",
+          "61",
+          3
+        ],
+        [
+          "IPC",
+          "120B",
+          4
+        ],
+        [
+          "IPC",
+          "302",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNS",
+          "3(5)",
+          1
+        ],
+        [
+          "IPC",
+          "120B",
+          2
+        ],
+        [
+          "BNS",
+          "61",
+          3
+        ],
+        [
+          "IPC",
+          "302",
+          4
+        ],
+        [
+          "BNS",
+          "103",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "BNS",
+          "3(5)",
+          1,
+          0.374674
+        ],
+        [
+          "IPC",
+          "120B",
+          2,
+          -2.259744
+        ],
+        [
+          "BNS",
+          "61",
+          3,
+          -2.453153
+        ],
+        [
+          "IPC",
+          "302",
+          4,
+          -5.087725
+        ],
+        [
+          "BNS",
+          "103",
+          5,
+          -5.3584
+        ]
+      ],
+      "hx1": [
+        [
+          "BNS",
+          "3(5)",
+          1,
+          0.374674
+        ],
+        [
+          "IPC",
+          "120B",
+          2,
+          -2.259744
+        ],
+        [
+          "BNS",
+          "61",
+          3,
+          -2.453153
+        ],
+        [
+          "IPC",
+          "302",
+          4,
+          -5.087725
+        ],
+        [
+          "BNS",
+          "103",
+          5,
+          -5.3584
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "d0_rank": 5,
+            "t1_s1_rank": 4,
+            "x1_rank": 4,
+            "hx1_rank": 4
+          },
+          {
+            "statute": "IPC",
+            "section": "120b",
+            "d0_rank": 4,
+            "t1_s1_rank": 2,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "IPC",
+            "section": "34",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "MISSING_GOLD_SECTION",
+        "OVERPREDICTION",
+        "SUPPLEMENTARY_SECTION_MISSED",
+        "WRONG_SECTION"
+      ]
+    },
+    {
+      "example_id": "sec-q013",
+      "gold": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "167(2)",
+            "normalized_section": "167(2)",
+            "canonical_name": "Default bail",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "NDPS Act",
+            "section": "36A(4)",
+            "normalized_section": "36a(4)",
+            "canonical_name": "Special Court procedure for investigation period",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "NDPS Act",
+          "36A(4)",
+          1
+        ],
+        [
+          "BNSS",
+          "187",
+          2
+        ],
+        [
+          "BNSS",
+          "187(3)",
+          3
+        ],
+        [
+          "CrPC",
+          "167(2)",
+          4
+        ],
+        [
+          "NDPS Act",
+          "20",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNSS",
+          "187(3)",
+          1
+        ],
+        [
+          "BNSS",
+          "187",
+          2
+        ],
+        [
+          "CrPC",
+          "167(2)",
+          3
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          4
+        ],
+        [
+          "NDPS Act",
+          "20",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "CrPC",
+          "167(2)",
+          1,
+          -3.487197
+        ],
+        [
+          "BNSS",
+          "187(3)",
+          2,
+          -3.792155
+        ],
+        [
+          "BNSS",
+          "187",
+          3,
+          -4.290987
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          4,
+          -4.852077
+        ],
+        [
+          "NDPS Act",
+          "20",
+          5,
+          -5.743813
+        ]
+      ],
+      "hx1": [
+        [
+          "CrPC",
+          "167(2)",
+          1,
+          -3.487197
+        ],
+        [
+          "BNSS",
+          "187(3)",
+          2,
+          -3.792155
+        ],
+        [
+          "BNSS",
+          "187",
+          3,
+          -4.290987
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          4,
+          -4.852077
+        ],
+        [
+          "NDPS Act",
+          "20",
+          5,
+          -5.743813
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "167(2)",
+            "d0_rank": 4,
+            "t1_s1_rank": 3,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "NDPS Act",
+            "section": "36a(4)",
+            "d0_rank": 1,
+            "t1_s1_rank": 4,
+            "x1_rank": 4,
+            "hx1_rank": 4
+          }
+        ]
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q016",
+      "gold": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "318",
+            "normalized_section": "318",
+            "canonical_name": "Cheating",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "318",
+          1
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNS",
+          "318",
+          1
+        ]
+      ],
+      "x1": [
+        [
+          "BNS",
+          "318",
+          1,
+          2.508372
+        ]
+      ],
+      "hx1": [
+        [
+          "BNS",
+          "318",
+          1,
+          2.508372
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "318",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": []
+      },
+      "errors": []
+    },
+    {
+      "example_id": "sec-q019",
+      "gold": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "109",
+            "normalized_section": "109",
+            "canonical_name": "Attempt to murder",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "103",
+          1
+        ],
+        [
+          "BNS",
+          "109",
+          2
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNS",
+          "109",
+          1
+        ],
+        [
+          "BNS",
+          "103",
+          2
+        ]
+      ],
+      "x1": [
+        [
+          "BNS",
+          "109",
+          1,
+          2.441098
+        ],
+        [
+          "BNS",
+          "103",
+          2,
+          -0.762894
+        ]
+      ],
+      "hx1": [
+        [
+          "BNS",
+          "109",
+          1,
+          2.441098
+        ],
+        [
+          "BNS",
+          "103",
+          2,
+          -0.762894
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "109",
+            "d0_rank": 2,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": []
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q022",
+      "gold": {
+        "primary": [
+          {
+            "statute": "SC/ST Act",
+            "section": "3(1)(r)",
+            "normalized_section": "3(1)(r)",
+            "canonical_name": "Intentional insult or intimidation",
+            "relevance": "primary"
+          },
+          {
+            "statute": "SC/ST Act",
+            "section": "3(1)(s)",
+            "normalized_section": "3(1)(s)",
+            "canonical_name": "Abuse by caste name",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": [
+          {
+            "statute": "SC/ST Act",
+            "section": "18",
+            "normalized_section": "18",
+            "canonical_name": "Section 438 of the Code not to apply",
+            "relevance": "uncertain"
+          }
+        ]
+      },
+      "d0": [
+        [
+          "SC/ST Act",
+          "3(1)(s)",
+          1
+        ]
+      ],
+      "t1_s1": [
+        [
+          "SC/ST Act",
+          "3(1)(s)",
+          1
+        ]
+      ],
+      "x1": [
+        [
+          "SC/ST Act",
+          "3(1)(s)",
+          1,
+          2.14308
+        ]
+      ],
+      "hx1": [
+        [
+          "SC/ST Act",
+          "3(1)(s)",
+          1,
+          2.14308
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "SC/ST Act",
+            "section": "3(1)(r)",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          },
+          {
+            "statute": "SC/ST Act",
+            "section": "3(1)(s)",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": []
+      },
+      "errors": [
+        "AMBIGUOUS_QUERY",
+        "MISSING_GOLD_SECTION",
+        "PRIMARY_SECTION_RANKED_LOW",
+        "WRONG_SECTION"
+      ]
+    },
+    {
+      "example_id": "sec-q023",
+      "gold": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "420",
+            "normalized_section": "420",
+            "canonical_name": "Cheating and dishonestly inducing delivery of property",
+            "relevance": "primary"
+          },
+          {
+            "statute": "IPC",
+            "section": "406",
+            "normalized_section": "406",
+            "canonical_name": "Criminal breach of trust",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "IPC",
+          "406",
+          1
+        ],
+        [
+          "IPC",
+          "420",
+          2
+        ]
+      ],
+      "t1_s1": [
+        [
+          "IPC",
+          "420",
+          1
+        ],
+        [
+          "IPC",
+          "406",
+          2
+        ]
+      ],
+      "x1": [
+        [
+          "IPC",
+          "406",
+          1,
+          -0.022061
+        ],
+        [
+          "IPC",
+          "420",
+          2,
+          -1.210561
+        ]
+      ],
+      "hx1": [
+        [
+          "IPC",
+          "406",
+          1,
+          -0.022061
+        ],
+        [
+          "IPC",
+          "420",
+          2,
+          -1.210561
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "IPC",
+            "section": "420",
+            "d0_rank": 2,
+            "t1_s1_rank": 1,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          },
+          {
+            "statute": "IPC",
+            "section": "406",
+            "d0_rank": 1,
+            "t1_s1_rank": 2,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": []
+      },
+      "errors": []
+    },
+    {
+      "example_id": "sec-q024",
+      "gold": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "normalized_section": "103",
+            "canonical_name": "Murder",
+            "relevance": "primary"
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "canonical_name": "Murder",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "103",
+          1
+        ],
+        [
+          "IPC",
+          "302",
+          2
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNS",
+          "103",
+          1
+        ],
+        [
+          "IPC",
+          "302",
+          2
+        ]
+      ],
+      "x1": [
+        [
+          "BNS",
+          "103",
+          1,
+          -0.840477
+        ],
+        [
+          "IPC",
+          "302",
+          2,
+          -1.584067
+        ]
+      ],
+      "hx1": [
+        [
+          "BNS",
+          "103",
+          1,
+          -0.840477
+        ],
+        [
+          "IPC",
+          "302",
+          2,
+          -1.584067
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "d0_rank": 2,
+            "t1_s1_rank": 2,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          }
+        ],
+        "relevant": []
+      },
+      "errors": []
+    },
+    {
+      "example_id": "sec-q025",
+      "gold": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "BNS",
+            "section": "358",
+            "normalized_section": "358",
+            "canonical_name": "Repeal and savings",
+            "relevance": "relevant"
+          },
+          {
+            "statute": "BNSS",
+            "section": "531",
+            "normalized_section": "531",
+            "canonical_name": "Repeal and savings",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [],
+      "t1_s1": [],
+      "x1": [],
+      "hx1": [],
+      "rank_movement": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "BNS",
+            "section": "358",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          },
+          {
+            "statute": "BNSS",
+            "section": "531",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "CATALOG_CANDIDATE_NOT_TRIGGERED",
+        "MISSING_GOLD_SECTION",
+        "SUPPLEMENTARY_SECTION_MISSED"
+      ]
+    },
+    {
+      "example_id": "sec-q028",
+      "gold": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "154(3)",
+            "normalized_section": "154(3)",
+            "canonical_name": "Information to Superintendent of Police",
+            "relevance": "relevant"
+          },
+          {
+            "statute": "BNSS",
+            "section": "173(4)",
+            "normalized_section": "173(4)",
+            "canonical_name": "Information to Superintendent of Police",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "115",
+          1
+        ],
+        [
+          "IPC",
+          "323",
+          2
+        ],
+        [
+          "BNS",
+          "116",
+          3
+        ],
+        [
+          "BNS",
+          "117",
+          4
+        ],
+        [
+          "IPC",
+          "325",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "IPC",
+          "325",
+          1
+        ],
+        [
+          "BNS",
+          "115",
+          2
+        ],
+        [
+          "IPC",
+          "323",
+          3
+        ],
+        [
+          "BNS",
+          "117",
+          4
+        ],
+        [
+          "BNS",
+          "116",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "IPC",
+          "323",
+          1,
+          -8.008045
+        ],
+        [
+          "IPC",
+          "325",
+          2,
+          -8.151588
+        ],
+        [
+          "BNS",
+          "115",
+          3,
+          -8.336496
+        ],
+        [
+          "BNS",
+          "116",
+          4,
+          -8.881342
+        ],
+        [
+          "BNS",
+          "117",
+          5,
+          -8.955122
+        ]
+      ],
+      "hx1": [
+        [
+          "IPC",
+          "323",
+          1,
+          -8.008045
+        ],
+        [
+          "IPC",
+          "325",
+          2,
+          -8.151588
+        ],
+        [
+          "BNS",
+          "115",
+          3,
+          -8.336496
+        ],
+        [
+          "BNS",
+          "116",
+          4,
+          -8.881342
+        ],
+        [
+          "BNS",
+          "117",
+          5,
+          -8.955122
+        ]
+      ],
+      "rank_movement": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "154(3)",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          },
+          {
+            "statute": "BNSS",
+            "section": "173(4)",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "MISSING_GOLD_SECTION",
+        "OVERPREDICTION",
+        "SUPPLEMENTARY_SECTION_MISSED"
+      ]
+    },
+    {
+      "example_id": "sec-q029",
+      "gold": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "439",
+            "normalized_section": "439",
+            "canonical_name": "Special powers regarding bail",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "437",
+            "normalized_section": "437",
+            "canonical_name": "Bail in non-bailable offence",
+            "relevance": "relevant"
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "canonical_name": "Murder",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "CrPC",
+          "437",
+          1
+        ],
+        [
+          "CrPC",
+          "439",
+          2
+        ],
+        [
+          "IPC",
+          "302",
+          3
+        ],
+        [
+          "IPC",
+          "304",
+          4
+        ],
+        [
+          "NDPS Act",
+          "37",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "CrPC",
+          "437",
+          1
+        ],
+        [
+          "CrPC",
+          "439",
+          2
+        ],
+        [
+          "IPC",
+          "302",
+          3
+        ],
+        [
+          "IPC",
+          "304",
+          4
+        ],
+        [
+          "NDPS Act",
+          "37",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "CrPC",
+          "437",
+          1,
+          -1.113181
+        ],
+        [
+          "CrPC",
+          "439",
+          2,
+          -2.62875
+        ],
+        [
+          "IPC",
+          "302",
+          3,
+          -3.328387
+        ],
+        [
+          "IPC",
+          "304",
+          4,
+          -4.270228
+        ],
+        [
+          "NDPS Act",
+          "37",
+          5,
+          -7.233688
+        ]
+      ],
+      "hx1": [
+        [
+          "CrPC",
+          "437",
+          1,
+          -1.113181
+        ],
+        [
+          "CrPC",
+          "439",
+          2,
+          -2.62875
+        ],
+        [
+          "IPC",
+          "302",
+          3,
+          -3.328387
+        ],
+        [
+          "IPC",
+          "304",
+          4,
+          -4.270228
+        ],
+        [
+          "NDPS Act",
+          "37",
+          5,
+          -7.233688
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "CrPC",
+            "section": "439",
+            "d0_rank": 2,
+            "t1_s1_rank": 2,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "437",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "d0_rank": 3,
+            "t1_s1_rank": 3,
+            "x1_rank": 3,
+            "hx1_rank": 3
+          }
+        ]
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q033",
+      "gold": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "normalized_section": "438",
+            "canonical_name": "Anticipatory bail",
+            "relevance": "relevant"
+          },
+          {
+            "statute": "BNSS",
+            "section": "482",
+            "normalized_section": "482",
+            "canonical_name": "Anticipatory bail",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "POCSO Act",
+          "4",
+          1
+        ],
+        [
+          "BNSS",
+          "482",
+          2
+        ],
+        [
+          "CrPC",
+          "438",
+          3
+        ],
+        [
+          "POCSO Act",
+          "7",
+          4
+        ],
+        [
+          "POCSO Act",
+          "8",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "CrPC",
+          "438",
+          1
+        ],
+        [
+          "BNSS",
+          "482",
+          2
+        ],
+        [
+          "POCSO Act",
+          "4",
+          3
+        ],
+        [
+          "POCSO Act",
+          "7",
+          4
+        ],
+        [
+          "POCSO Act",
+          "8",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "BNSS",
+          "482",
+          1,
+          -3.44331
+        ],
+        [
+          "CrPC",
+          "438",
+          2,
+          -3.602262
+        ],
+        [
+          "POCSO Act",
+          "4",
+          3,
+          -5.342398
+        ],
+        [
+          "POCSO Act",
+          "7",
+          4,
+          -5.873102
+        ],
+        [
+          "POCSO Act",
+          "8",
+          5,
+          -5.899504
+        ]
+      ],
+      "hx1": [
+        [
+          "BNSS",
+          "482",
+          1,
+          -3.44331
+        ],
+        [
+          "CrPC",
+          "438",
+          2,
+          -3.602262
+        ],
+        [
+          "POCSO Act",
+          "4",
+          3,
+          -5.342398
+        ],
+        [
+          "POCSO Act",
+          "7",
+          4,
+          -5.873102
+        ],
+        [
+          "POCSO Act",
+          "8",
+          5,
+          -5.899504
+        ]
+      ],
+      "rank_movement": {
+        "primary": [],
+        "relevant": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "d0_rank": 3,
+            "t1_s1_rank": 1,
+            "x1_rank": 2,
+            "hx1_rank": 2
+          },
+          {
+            "statute": "BNSS",
+            "section": "482",
+            "d0_rank": 2,
+            "t1_s1_rank": 2,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ]
+      },
+      "errors": [
+        "AMBIGUOUS_QUERY",
+        "OVERPREDICTION"
+      ]
+    },
+    {
+      "example_id": "sec-q034",
+      "gold": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "137",
+            "normalized_section": "137",
+            "canonical_name": "Kidnapping",
+            "relevance": "primary"
+          },
+          {
+            "statute": "POCSO Act",
+            "section": "7",
+            "normalized_section": "7",
+            "canonical_name": "Sexual assault",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "POCSO Act",
+            "section": "8",
+            "normalized_section": "8",
+            "canonical_name": "Sexual assault punishment",
+            "relevance": "relevant"
+          }
+        ],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNS",
+          "115",
+          1
+        ],
+        [
+          "BNS",
+          "137",
+          2
+        ],
+        [
+          "BNS",
+          "116",
+          3
+        ],
+        [
+          "BNS",
+          "117",
+          4
+        ],
+        [
+          "BNS",
+          "64",
+          5
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNS",
+          "137",
+          1
+        ],
+        [
+          "BNS",
+          "64",
+          2
+        ],
+        [
+          "BNS",
+          "115",
+          3
+        ],
+        [
+          "BNS",
+          "117",
+          4
+        ],
+        [
+          "BNS",
+          "116",
+          5
+        ]
+      ],
+      "x1": [
+        [
+          "BNS",
+          "137",
+          1,
+          -0.021672
+        ],
+        [
+          "BNS",
+          "64",
+          2,
+          -1.773029
+        ],
+        [
+          "BNS",
+          "116",
+          3,
+          -2.989135
+        ],
+        [
+          "BNS",
+          "117",
+          4,
+          -3.096669
+        ],
+        [
+          "BNS",
+          "115",
+          5,
+          -3.261177
+        ]
+      ],
+      "hx1": [
+        [
+          "BNS",
+          "137",
+          1,
+          -0.021672
+        ],
+        [
+          "BNS",
+          "64",
+          2,
+          -1.773029
+        ],
+        [
+          "BNS",
+          "116",
+          3,
+          -2.989135
+        ],
+        [
+          "BNS",
+          "117",
+          4,
+          -3.096669
+        ],
+        [
+          "BNS",
+          "115",
+          5,
+          -3.261177
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "BNS",
+            "section": "137",
+            "d0_rank": 2,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          },
+          {
+            "statute": "POCSO Act",
+            "section": "7",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ],
+        "relevant": [
+          {
+            "statute": "POCSO Act",
+            "section": "8",
+            "d0_rank": null,
+            "t1_s1_rank": null,
+            "x1_rank": null,
+            "hx1_rank": null
+          }
+        ]
+      },
+      "errors": [
+        "MISSING_GOLD_SECTION",
+        "OVERPREDICTION",
+        "PRIMARY_SECTION_RANKED_LOW",
+        "SUPPLEMENTARY_SECTION_MISSED"
+      ]
+    },
+    {
+      "example_id": "sec-q036",
+      "gold": {
+        "primary": [
+          {
+            "statute": "BNSS",
+            "section": "187(3)",
+            "normalized_section": "187(3)",
+            "canonical_name": "Investigation not completed within twenty-four hours",
+            "relevance": "primary"
+          }
+        ],
+        "relevant": [],
+        "uncertain": []
+      },
+      "d0": [
+        [
+          "BNSS",
+          "187(3)",
+          1
+        ],
+        [
+          "BNSS",
+          "187",
+          2
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          3
+        ]
+      ],
+      "t1_s1": [
+        [
+          "BNSS",
+          "187(3)",
+          1
+        ],
+        [
+          "BNSS",
+          "187",
+          2
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          3
+        ]
+      ],
+      "x1": [
+        [
+          "BNSS",
+          "187(3)",
+          1,
+          2.188205
+        ],
+        [
+          "BNSS",
+          "187",
+          2,
+          1.859184
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          3,
+          -5.367417
+        ]
+      ],
+      "hx1": [
+        [
+          "BNSS",
+          "187(3)",
+          1,
+          2.188205
+        ],
+        [
+          "BNSS",
+          "187",
+          2,
+          1.859184
+        ],
+        [
+          "NDPS Act",
+          "36A(4)",
+          3,
+          -5.367417
+        ]
+      ],
+      "rank_movement": {
+        "primary": [
+          {
+            "statute": "BNSS",
+            "section": "187(3)",
+            "d0_rank": 1,
+            "t1_s1_rank": 1,
+            "x1_rank": 1,
+            "hx1_rank": 1
+          }
+        ],
+        "relevant": []
+      },
+      "errors": [
+        "OVERPREDICTION"
+      ]
+    }
+  ],
+  "score_diagnostics": {
+    "schema_version": "legalai-section-bge-reranker-trial-score-analysis-v1",
+    "all_candidate_pairs": {
+      "count": 112,
+      "mean": -3.194366,
+      "median": -3.239246,
+      "min": -8.974416,
+      "max": 3.222795
+    },
+    "gold_positive_candidate_pairs": {
+      "count": 49,
+      "mean": -1.525413,
+      "median": -1.276014,
+      "min": -6.811406,
+      "max": 3.222795
+    },
+    "non_gold_candidate_pairs": {
+      "count": 63,
+      "mean": -4.492442,
+      "median": -4.335362,
+      "min": -8.974416,
+      "max": 1.859184
+    },
+    "pairwise_discrimination": {
+      "positive_above_negative_pairs": 83,
+      "positive_negative_pairs": 96,
+      "fraction": 0.864583
+    },
+    "latency": {
+      "model_load_ms": 3791.923,
+      "total_candidate_pairs_scored": 112,
+      "pair_scoring_ms": {
+        "mean": 279.032,
+        "median": 256.087,
+        "p95": 382.89,
+        "max": 1821.312
+      },
+      "x1_total_ms": {
+        "mean": 279.032,
+        "median": 256.087,
+        "p95": 382.89,
+        "max": 1821.312
+      },
+      "hx1_total_ms": {
+        "mean": 279.035,
+        "median": 256.091,
+        "p95": 382.895,
+        "max": 1821.32
+      },
+      "t1_query_embedding_ms": {
+        "mean": 81.947,
+        "median": 80.907,
+        "p95": 89.171,
+        "max": 89.886
+      },
+      "t1_s1_total_ms": {
+        "mean": 81.951,
+        "median": 80.91,
+        "p95": 89.175,
+        "max": 89.891
+      }
+    }
+  },
+  "latency": {
+    "model_load_ms": 3791.923,
+    "total_candidate_pairs_scored": 112,
+    "pair_scoring_ms": {
+      "mean": 279.032,
+      "median": 256.087,
+      "p95": 382.89,
+      "max": 1821.312
+    },
+    "x1_total_ms": {
+      "mean": 279.032,
+      "median": 256.087,
+      "p95": 382.89,
+      "max": 1821.312
+    },
+    "hx1_total_ms": {
+      "mean": 279.035,
+      "median": 256.091,
+      "p95": 382.895,
+      "max": 1821.32
+    },
+    "t1_query_embedding_ms": {
+      "mean": 81.947,
+      "median": 80.907,
+      "p95": 89.171,
+      "max": 89.886
+    },
+    "t1_s1_total_ms": {
+      "mean": 81.951,
+      "median": 80.91,
+      "p95": 89.175,
+      "max": 89.891
+    }
+  },
+  "error_analysis": {
+    "schema_version": "legalai-section-bge-reranker-trial-error-analysis-v1",
+    "error_taxonomy_hx1": {
+      "AMBIGUOUS_QUERY": 2,
+      "CATALOG_CANDIDATE_NOT_TRIGGERED": 1,
+      "MISSING_GOLD_SECTION": 8,
+      "OVERPREDICTION": 27,
+      "PRIMARY_SECTION_RANKED_LOW": 2,
+      "SUPPLEMENTARY_SECTION_MISSED": 7,
+      "WRONG_SECTION": 4
+    },
+    "total_hx1_misses": 11,
+    "total_hx1_extras": 63,
+    "ranking_fixable_errors": {
+      "primary_ranked_low": 2,
+      "extra_ranked_above_gold_positive": 2
+    },
+    "candidate_generation_limited_errors": {
+      "missing_gold_section": 8,
+      "catalog_candidate_not_triggered": 1,
+      "note": "X1/HX1 cannot recover sections absent from the frozen D0 candidate set."
+    }
+  },
+  "candidate_decision": "BGE CROSS-ENCODER ACCEPTED FOR HYBRID SECTION RANKING",
+  "leading_signal_decision": "CROSS-ENCODER IS LEADING SECTION RANKING SIGNAL"
+}
