@@ -1,0 +1,608 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "total_errors": 35,
+  "error_type_counts": {
+    "BOUNDARY_MISMATCH": 16,
+    "MISSING_ENTITY_TYPE": 16,
+    "SPURIOUS_ENTITY": 3
+  },
+  "per_type_error_counts": {
+    "CASE_CITATION": {
+      "BOUNDARY_MISMATCH": 1
+    },
+    "CASE_NAME": {
+      "MISSING_ENTITY_TYPE": 1
+    },
+    "COURT": {
+      "BOUNDARY_MISMATCH": 8
+    },
+    "DATE": {
+      "BOUNDARY_MISMATCH": 5
+    },
+    "LEGAL_PROCEDURE": {
+      "MISSING_ENTITY_TYPE": 1
+    },
+    "LOCATION": {
+      "MISSING_ENTITY_TYPE": 4
+    },
+    "OFFENCE": {
+      "BOUNDARY_MISMATCH": 2,
+      "MISSING_ENTITY_TYPE": 3,
+      "SPURIOUS_ENTITY": 3
+    },
+    "ORGANIZATION": {
+      "MISSING_ENTITY_TYPE": 4
+    },
+    "PERSON": {
+      "MISSING_ENTITY_TYPE": 3
+    }
+  },
+  "false_positive_examples": [
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "entity": {
+        "text": "the Karnataka High Court",
+        "entity_type": "COURT",
+        "start_char": 46,
+        "end_char": 70
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "entity": {
+        "text": "after 1 July 2024",
+        "entity_type": "DATE",
+        "start_char": 28,
+        "end_char": 45
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "The Delhi High Court",
+        "entity_type": "COURT",
+        "start_char": 0,
+        "end_char": 20
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q010",
+      "text": "A minor was lured away from Bengaluru and sexually assaulted.",
+      "entity": {
+        "text": "lured away",
+        "entity_type": "OFFENCE",
+        "start_char": 12,
+        "end_char": 22
+      },
+      "error_type": "SPURIOUS_ENTITY"
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "entity": {
+        "text": "2014",
+        "entity_type": "DATE",
+        "start_char": 22,
+        "end_char": 26
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q016",
+      "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.",
+      "entity": {
+        "text": "false promise",
+        "entity_type": "OFFENCE",
+        "start_char": 24,
+        "end_char": 37
+      },
+      "error_type": "SPURIOUS_ENTITY"
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "entity": {
+        "text": "Before July 2024",
+        "entity_type": "DATE",
+        "start_char": 0,
+        "end_char": 16
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "entity": {
+        "text": "Can the High Court",
+        "entity_type": "COURT",
+        "start_char": 0,
+        "end_char": 18
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "entity": {
+        "text": "the Bombay High Court",
+        "entity_type": "COURT",
+        "start_char": 39,
+        "end_char": 60
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q029",
+      "text": "The informant reported kidnapping from lawful custody.",
+      "entity": {
+        "text": "lawful custody",
+        "entity_type": "OFFENCE",
+        "start_char": 39,
+        "end_char": 53
+      },
+      "error_type": "SPURIOUS_ENTITY"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "entity": {
+        "text": "ganja",
+        "entity_type": "OFFENCE",
+        "start_char": 41,
+        "end_char": 46
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    }
+  ],
+  "false_negative_examples": [
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "entity": {
+        "text": "appeal",
+        "entity_type": "LEGAL_PROCEDURE",
+        "start_char": 3,
+        "end_char": 9
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "entity": {
+        "text": "Karnataka High Court",
+        "entity_type": "COURT",
+        "start_char": 50,
+        "end_char": 70
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "entity": {
+        "text": "1 July 2024",
+        "entity_type": "DATE",
+        "start_char": 34,
+        "end_char": 45
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "Delhi High Court",
+        "entity_type": "COURT",
+        "start_char": 4,
+        "end_char": 20
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "Ramesh Kumar",
+        "entity_type": "PERSON",
+        "start_char": 41,
+        "end_char": 53
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "State of NCT of Delhi",
+        "entity_type": "ORGANIZATION",
+        "start_char": 62,
+        "end_char": 83
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q008",
+      "text": "State of Maharashtra v. Arjun Singh involved Section 420 IPC.",
+      "entity": {
+        "text": "State of Maharashtra v. Arjun Singh",
+        "entity_type": "CASE_NAME",
+        "start_char": 0,
+        "end_char": 35
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q010",
+      "text": "A minor was lured away from Bengaluru and sexually assaulted.",
+      "entity": {
+        "text": "Bengaluru",
+        "entity_type": "LOCATION",
+        "start_char": 28,
+        "end_char": 37
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "entity": {
+        "text": "(2014) 8 SCC 273",
+        "entity_type": "CASE_CITATION",
+        "start_char": 21,
+        "end_char": 37
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q014",
+      "text": "Is Section 21 NDPS Act applicable to possession of heroin?",
+      "entity": {
+        "text": "possession of heroin",
+        "entity_type": "OFFENCE",
+        "start_char": 37,
+        "end_char": 57
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q016",
+      "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.",
+      "entity": {
+        "text": "Alpha Traders",
+        "entity_type": "ORGANIZATION",
+        "start_char": 66,
+        "end_char": 79
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q017",
+      "text": "The trial court in Chennai rejected regular bail.",
+      "entity": {
+        "text": "Chennai",
+        "entity_type": "LOCATION",
+        "start_char": 19,
+        "end_char": 26
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "entity": {
+        "text": "July 2024",
+        "entity_type": "DATE",
+        "start_char": 7,
+        "end_char": 16
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q021",
+      "text": "The victim named Suresh and Meena in the FIR.",
+      "entity": {
+        "text": "Suresh",
+        "entity_type": "PERSON",
+        "start_char": 17,
+        "end_char": 23
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q021",
+      "text": "The victim named Suresh and Meena in the FIR.",
+      "entity": {
+        "text": "Meena",
+        "entity_type": "PERSON",
+        "start_char": 28,
+        "end_char": 33
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q022",
+      "text": "The police investigated alleged theft of a motorcycle in Kochi.",
+      "entity": {
+        "text": "Kochi",
+        "entity_type": "LOCATION",
+        "start_char": 57,
+        "end_char": 62
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "entity": {
+        "text": "High Court",
+        "entity_type": "COURT",
+        "start_char": 8,
+        "end_char": 18
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q025",
+      "text": "The organization Bharat Finance complained about misappropriation.",
+      "entity": {
+        "text": "Bharat Finance",
+        "entity_type": "ORGANIZATION",
+        "start_char": 17,
+        "end_char": 31
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "entity": {
+        "text": "Bombay High Court",
+        "entity_type": "COURT",
+        "start_char": 43,
+        "end_char": 60
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q029",
+      "text": "The informant reported kidnapping from lawful custody.",
+      "entity": {
+        "text": "kidnapping",
+        "entity_type": "OFFENCE",
+        "start_char": 23,
+        "end_char": 33
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q030",
+      "text": "The case concerns common intention and criminal conspiracy.",
+      "entity": {
+        "text": "common intention",
+        "entity_type": "OFFENCE",
+        "start_char": 18,
+        "end_char": 34
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "entity": {
+        "text": "Hyderabad",
+        "entity_type": "LOCATION",
+        "start_char": 27,
+        "end_char": 36
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "entity": {
+        "text": "ganja possession",
+        "entity_type": "OFFENCE",
+        "start_char": 41,
+        "end_char": 57
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q033",
+      "text": "The final report named Zenith Logistics as an accused organization.",
+      "entity": {
+        "text": "Zenith Logistics",
+        "entity_type": "ORGANIZATION",
+        "start_char": 23,
+        "end_char": 39
+      },
+      "error_type": "MISSING_ENTITY_TYPE"
+    }
+  ],
+  "boundary_mismatch_examples": [
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "entity": {
+        "text": "the Karnataka High Court",
+        "entity_type": "COURT",
+        "start_char": 46,
+        "end_char": 70
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "entity": {
+        "text": "Karnataka High Court",
+        "entity_type": "COURT",
+        "start_char": 50,
+        "end_char": 70
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "entity": {
+        "text": "after 1 July 2024",
+        "entity_type": "DATE",
+        "start_char": 28,
+        "end_char": 45
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "entity": {
+        "text": "1 July 2024",
+        "entity_type": "DATE",
+        "start_char": 34,
+        "end_char": 45
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "The Delhi High Court",
+        "entity_type": "COURT",
+        "start_char": 0,
+        "end_char": 20
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "entity": {
+        "text": "Delhi High Court",
+        "entity_type": "COURT",
+        "start_char": 4,
+        "end_char": 20
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "entity": {
+        "text": "2014",
+        "entity_type": "DATE",
+        "start_char": 22,
+        "end_char": 26
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "entity": {
+        "text": "(2014) 8 SCC 273",
+        "entity_type": "CASE_CITATION",
+        "start_char": 21,
+        "end_char": 37
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "entity": {
+        "text": "Before July 2024",
+        "entity_type": "DATE",
+        "start_char": 0,
+        "end_char": 16
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "entity": {
+        "text": "July 2024",
+        "entity_type": "DATE",
+        "start_char": 7,
+        "end_char": 16
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "entity": {
+        "text": "Can the High Court",
+        "entity_type": "COURT",
+        "start_char": 0,
+        "end_char": 18
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "entity": {
+        "text": "High Court",
+        "entity_type": "COURT",
+        "start_char": 8,
+        "end_char": 18
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "entity": {
+        "text": "the Bombay High Court",
+        "entity_type": "COURT",
+        "start_char": 39,
+        "end_char": 60
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "entity": {
+        "text": "Bombay High Court",
+        "entity_type": "COURT",
+        "start_char": 43,
+        "end_char": 60
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "entity": {
+        "text": "ganja",
+        "entity_type": "OFFENCE",
+        "start_char": 41,
+        "end_char": 46
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "entity": {
+        "text": "ganja possession",
+        "entity_type": "OFFENCE",
+        "start_char": 41,
+        "end_char": 57
+      },
+      "error_type": "BOUNDARY_MISMATCH"
+    }
+  ],
+  "wrong_type_examples": []
+}

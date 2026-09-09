@@ -1,0 +1,186 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "eval_version": "legalai-ner-eval-v1",
+  "gold_version": "legalai-ner-gold-template-v1",
+  "system_name": "DETERMINISTIC BASELINE",
+  "extractor_version": "deterministic_legal_ner-v1",
+  "learned_ner_enabled": false,
+  "example_count": 36,
+  "gold_entity_count": 89,
+  "prediction_count": 76,
+  "global_exact": {
+    "precision": 0.855263,
+    "recall": 0.730337,
+    "f1": 0.787879,
+    "true_positive": 65,
+    "false_positive": 11,
+    "false_negative": 24
+  },
+  "span_only": {
+    "tp": 65,
+    "fp": 11,
+    "fn": 24,
+    "precision": 0.855263,
+    "recall": 0.730337,
+    "f1": 0.787879
+  },
+  "per_type": {
+    "PERSON": {
+      "gold_support": 3,
+      "predicted_count": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 3
+    },
+    "ORGANIZATION": {
+      "gold_support": 4,
+      "predicted_count": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 4
+    },
+    "COURT": {
+      "gold_support": 11,
+      "predicted_count": 11,
+      "precision": 0.636364,
+      "recall": 0.636364,
+      "f1": 0.636364,
+      "true_positive": 7,
+      "false_positive": 4,
+      "false_negative": 4
+    },
+    "LOCATION": {
+      "gold_support": 4,
+      "predicted_count": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 4
+    },
+    "DATE": {
+      "gold_support": 4,
+      "predicted_count": 5,
+      "precision": 0.4,
+      "recall": 0.5,
+      "f1": 0.444444,
+      "true_positive": 2,
+      "false_positive": 3,
+      "false_negative": 2
+    },
+    "STATUTE": {
+      "gold_support": 16,
+      "predicted_count": 16,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive": 16,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "SECTION": {
+      "gold_support": 8,
+      "predicted_count": 8,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive": 8,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "CASE_CITATION": {
+      "gold_support": 2,
+      "predicted_count": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.666667,
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 1
+    },
+    "CASE_NAME": {
+      "gold_support": 1,
+      "predicted_count": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 1
+    },
+    "LEGAL_PROCEDURE": {
+      "gold_support": 12,
+      "predicted_count": 11,
+      "precision": 1.0,
+      "recall": 0.916667,
+      "f1": 0.956522,
+      "true_positive": 11,
+      "false_positive": 0,
+      "false_negative": 1
+    },
+    "OFFENCE": {
+      "gold_support": 12,
+      "predicted_count": 12,
+      "precision": 0.666667,
+      "recall": 0.666667,
+      "f1": 0.666667,
+      "true_positive": 8,
+      "false_positive": 4,
+      "false_negative": 4
+    },
+    "LEGAL_ROLE": {
+      "gold_support": 9,
+      "predicted_count": 9,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive": 9,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "POLICE_STATION": {
+      "gold_support": 2,
+      "predicted_count": 2,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive": 2,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "FIR_NUMBER": {
+      "gold_support": 1,
+      "predicted_count": 1,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0
+    }
+  },
+  "zero_entity_examples": [
+    {
+      "example_id": "ner-q026",
+      "gold_count": 0,
+      "prediction_count": 0,
+      "false_positive_count": 0,
+      "false_positives": []
+    },
+    {
+      "example_id": "ner-q036",
+      "gold_count": 0,
+      "prediction_count": 0,
+      "false_positive_count": 0,
+      "false_positives": []
+    }
+  ],
+  "recommendation": "HYBRID RULES + LEARNED MODEL JUSTIFIED"
+}
