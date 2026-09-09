@@ -51,11 +51,11 @@ export interface PublicAskProps {
 function activeInputLabel(activeMode: ActiveInputMode): string {
   switch (activeMode) {
     case 'text':
-      return 'Active input: Text question';
+      return 'Ready to send: Written question';
     case 'file':
-      return 'Active input: Temporary PDF';
+      return 'Ready to send: PDF (not stored)';
     case 'none':
-      return 'Choose text or one PDF';
+      return 'Type a question or add one PDF';
   }
 }
 
@@ -72,10 +72,10 @@ function ChatThreadEntry({
 
   if (message.role === 'user' && message.kind === 'text') {
     return (
-      <li className="justify-self-end" ref={entryRef}>
+      <li className="flex min-w-0 w-full justify-end" ref={entryRef}>
         <article
           aria-label="Your submitted question"
-          className="max-w-[78%] rounded-[var(--radius-standard)] rounded-br-[var(--radius-compact)] bg-[var(--color-ink)] px-4 py-3 text-type-body text-[var(--color-inverse)]"
+          className="max-w-[78%] rounded-[var(--radius-standard)] rounded-br-[var(--radius-compact)] bg-[var(--color-ink)] px-4 py-3 text-type-body text-[var(--color-inverse)] [overflow-wrap:anywhere]"
         >
           {message.content}
         </article>
@@ -85,10 +85,10 @@ function ChatThreadEntry({
 
   if (message.role === 'user' && message.kind === 'file') {
     return (
-      <li className="justify-self-end" ref={entryRef}>
+      <li className="flex min-w-0 w-full justify-end" ref={entryRef}>
         <article
           aria-label={`Temporary PDF: ${message.fileName}`}
-          className="max-w-[78%] rounded-[var(--radius-standard)] border border-[var(--color-info-border)] bg-[var(--color-info-surface)] px-4 py-3 text-type-body text-[var(--color-info-foreground)]"
+          className="min-w-0 max-w-[78%] rounded-[var(--radius-standard)] border border-[var(--color-info-border)] bg-[var(--color-info-surface)] px-4 py-3 text-type-body text-[var(--color-info-foreground)]"
         >
           <p className="truncate font-semibold">{message.fileName}</p>
           <p className="text-type-body-sm mt-1">Checked temporarily for this question</p>
