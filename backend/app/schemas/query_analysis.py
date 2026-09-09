@@ -8,6 +8,9 @@ from pydantic import BaseModel, Field
 
 
 SignalSource = Literal["explicit", "deterministic_inference", "model"]
+SectionPredictionSource = Literal["deterministic_baseline", "classifier", "hybrid"]
+SectionPredictionConfidence = Literal["high", "medium", "low"]
+SectionPredictionRelationship = Literal["supports_explicit", "supplementary", "conflicts_with_explicit"]
 
 
 class TextSpan(BaseModel):
@@ -39,6 +42,24 @@ class SectionSignal(ExtractedSignal):
 
     section: str
     statute: str | None = None
+
+
+class PredictedLegalSection(BaseModel):
+    """Supplementary legal section candidate predicted from query signals."""
+
+    statute: str
+    section: str
+    normalized_section: str
+    score: float
+    rank: int
+    source: SectionPredictionSource
+    confidence: SectionPredictionConfidence
+    evidence: list[str] = Field(default_factory=list)
+    prediction_version: str
+    offence_family: str | None = None
+    legal_regime: str | None = None
+    relationship_to_explicit: SectionPredictionRelationship = "supplementary"
+    warnings: list[str] = Field(default_factory=list)
 
 
 class DateSignal(ExtractedSignal):
@@ -82,6 +103,6 @@ class LegalQueryAnalysis(BaseModel):
     legal_regime_confidence: str
     legal_regime_evidence: LegalRegimeEvidence
     entities: list[ExtractedSignal] = Field(default_factory=list)
-    predicted_sections: list[SectionSignal] = Field(default_factory=list)
+    predicted_sections: list[PredictedLegalSection] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     analysis_version: str

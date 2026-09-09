@@ -123,10 +123,11 @@ class LegalNERFoundationTests(unittest.TestCase):
         self.assertEqual(metrics["overall"]["recall"], 0.0)
         self.assertEqual(metrics["overall"]["f1"], 0.0)
 
-    def test_query_analysis_compatibility_keeps_predicted_sections_empty(self) -> None:
+    def test_query_analysis_compatibility_keeps_predicted_sections_supplementary(self) -> None:
         analysis = analyze_legal_query("Section 302 IPC in Supreme Court")
         result = extract_deterministic_entities(analysis.original_query)
-        self.assertEqual(analysis.predicted_sections, [])
+        self.assertTrue(analysis.predicted_sections)
+        self.assertEqual(analysis.predicted_sections[0].source, "deterministic_baseline")
         self.assertTrue(result.entities)
 
     def test_eval_manifest_pending_and_valid(self) -> None:

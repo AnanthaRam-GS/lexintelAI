@@ -36,7 +36,7 @@ class QueryAnalysisFoundationTests(unittest.TestCase):
         analysis = analyze_legal_query("Section 302 and anticipatory bail")
         self.assertEqual(analysis.explicit_sections[0].statute, None)
         self.assertIn("section_without_explicit_statute", analysis.warnings)
-        self.assertEqual(analysis.predicted_sections, [])
+        self.assertTrue(all(item.source == "deterministic_baseline" for item in analysis.predicted_sections))
 
     def test_date_and_transition_phrase_extraction(self) -> None:
         analysis = analyze_legal_query("offence before 1 July 2024 and after commencement of new criminal laws")
@@ -78,11 +78,12 @@ class QueryAnalysisFoundationTests(unittest.TestCase):
         self.assertIn("dowry", [item.normalized for item in analysis.offence_family_hints])
         self.assertEqual(analysis.explicit_sections, [])
         self.assertEqual(analysis.legal_regime, "unknown")
+        self.assertLessEqual(len(analysis.predicted_sections), 5)
 
     def test_fixture_d_entrustment_no_invented_section(self) -> None:
         analysis = analyze_legal_query("Money was entrusted to a business partner and he dishonestly kept it.")
         self.assertIn("criminal_breach_of_trust", [item.normalized for item in analysis.offence_family_hints])
-        self.assertEqual(analysis.predicted_sections, [])
+        self.assertTrue(analysis.predicted_sections)
 
     def test_regime_resolver_reuse_and_model_fields_empty(self) -> None:
         analysis = analyze_legal_query("BNS offence under BNSS in 2025")

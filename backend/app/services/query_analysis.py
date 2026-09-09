@@ -101,7 +101,7 @@ def analyze_legal_query(query: str) -> LegalQueryAnalysis:
     legal_terms = stable_signals([*posture, *families])
     resolved = resolve_legal_regime(original)
     warnings = build_warnings(statutes, sections, dates, families, resolved.regime)
-    return LegalQueryAnalysis(
+    analysis = LegalQueryAnalysis(
         original_query=original,
         normalized_query=normalized,
         explicit_statutes=statutes,
@@ -125,6 +125,10 @@ def analyze_legal_query(query: str) -> LegalQueryAnalysis:
         warnings=warnings,
         analysis_version=ANALYSIS_VERSION,
     )
+    from backend.app.services.legal_section_prediction import predict_legal_sections_from_analysis
+
+    predicted = predict_legal_sections_from_analysis(analysis)
+    return analysis.model_copy(update={"predicted_sections": predicted})
 
 
 def normalize_query(query: str) -> str:
