@@ -1,0 +1,417 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+  "model_version": "f7d54eb91551da4fb8a6329d1d871559c04e1832",
+  "prediction_status": "candidate_trial_only",
+  "primary_threshold": 0.7,
+  "examples": [
+    {
+      "example_id": "ner-q001",
+      "predicted_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 0.999731,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q001"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 0.9991,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q001"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q002",
+      "predicted_entities": [
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 0.999462,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q002"
+          }
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 0.994569,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q002"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q003",
+      "predicted_entities": [
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 0.99953,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q003"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q004",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q005",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q006",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q007",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q008",
+      "predicted_entities": [
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 0.999688,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q008"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 0.998901,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q008"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q009",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q010",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q011",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q012",
+      "predicted_entities": [
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 0.999472,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "CASE_CITATION",
+            "example_id": "ner-q012"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q013",
+      "predicted_entities": [
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 0.998099,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "CASE_CITATION",
+            "example_id": "ner-q013"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q014",
+      "predicted_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 0.991651,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q014"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q015",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q016",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q017",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q018",
+      "predicted_entities": [
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 0.996238,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q018"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 0.99943,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q018"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q019",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q020",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q021",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q022",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q023",
+      "predicted_entities": [
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 0.998193,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q023"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 0.999599,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q023"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q024",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q025",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q026",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q027",
+      "predicted_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 0.998824,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q027"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q028",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q029",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q030",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q031",
+      "predicted_entities": [
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 0.999882,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q031"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 0.999547,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q031"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q032",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q033",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q034",
+      "predicted_entities": [
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 0.999501,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q034"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q035",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q036",
+      "predicted_entities": []
+    }
+  ]
+}

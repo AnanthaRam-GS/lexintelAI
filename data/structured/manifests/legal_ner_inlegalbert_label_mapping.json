@@ -1,0 +1,84 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "candidate": "evolawyer/inlegalbert-sc-ner-silver",
+  "mapping_policy": [
+    {
+      "raw_model_label": "CASE_CITATION",
+      "canonical_label": "CASE_CITATION",
+      "mapping_status": "mapped",
+      "rationale": "Case-citation labels align directly with LegalAI CASE_CITATION."
+    },
+    {
+      "raw_model_label": "COURT",
+      "canonical_label": "COURT",
+      "mapping_status": "mapped",
+      "rationale": "Court labels align directly with the LegalAI COURT type."
+    },
+    {
+      "raw_model_label": "DATE",
+      "canonical_label": "DATE",
+      "mapping_status": "mapped",
+      "rationale": "Date labels align directly with the LegalAI DATE type."
+    },
+    {
+      "raw_model_label": "GPE",
+      "canonical_label": "LOCATION",
+      "mapping_status": "mapped",
+      "rationale": "Geo-political entity labels are locations in the LegalAI schema."
+    },
+    {
+      "raw_model_label": "JUDGE",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped_actor",
+      "rationale": "Judge labels are mapped to PERSON only for the exact model-predicted span."
+    },
+    {
+      "raw_model_label": "LAWYER",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped_actor",
+      "rationale": "Lawyer labels are mapped to PERSON only for the exact model-predicted span."
+    },
+    {
+      "raw_model_label": "ORG",
+      "canonical_label": "ORGANIZATION",
+      "mapping_status": "mapped",
+      "rationale": "Organization labels map to LegalAI ORGANIZATION."
+    },
+    {
+      "raw_model_label": "OTHER_PERSON",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped",
+      "rationale": "Named or other person labels map to PERSON while preserving the observed span."
+    },
+    {
+      "raw_model_label": "PETITIONER",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped_actor",
+      "rationale": "Legal actor labels are mapped to PERSON only for the exact model-predicted span."
+    },
+    {
+      "raw_model_label": "PROVISION",
+      "canonical_label": "SECTION",
+      "mapping_status": "mapped",
+      "rationale": "Provision labels are closest to LegalAI SECTION spans."
+    },
+    {
+      "raw_model_label": "RESPONDENT",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped_actor",
+      "rationale": "Legal actor labels are mapped to PERSON only for the exact model-predicted span."
+    },
+    {
+      "raw_model_label": "STATUTE",
+      "canonical_label": "STATUTE",
+      "mapping_status": "mapped",
+      "rationale": "Statute labels align directly with the LegalAI STATUTE type."
+    },
+    {
+      "raw_model_label": "WITNESS",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped_actor",
+      "rationale": "Witness labels are mapped to PERSON only for the exact model-predicted span."
+    }
+  ]
+}

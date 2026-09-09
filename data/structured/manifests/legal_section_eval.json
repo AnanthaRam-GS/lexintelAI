@@ -1,0 +1,763 @@
+{
+  "schema_version": "legalai-section-eval-v1",
+  "eval_version": "legalai-section-eval-phase0-v1-human-gold",
+  "annotation_status": "human_gold_frozen",
+  "label_semantics": [
+    "primary",
+    "relevant",
+    "not_relevant",
+    "uncertain"
+  ],
+  "examples": [
+    {
+      "example_id": "sec-q001",
+      "query": "Section 302 IPC murder bail before Sessions Court",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "canonical_name": "Murder",
+          "relevance": "primary"
+        },
+        {
+          "statute": "CrPC",
+          "section": "439",
+          "normalized_section": "439",
+          "canonical_name": "Special powers regarding bail",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q002",
+      "query": "Can Section 438 CrPC anticipatory bail apply in a cheating FIR?",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "438",
+          "normalized_section": "438",
+          "canonical_name": "Anticipatory bail",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "canonical_name": "Cheating and dishonestly inducing delivery of property",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q003",
+      "query": "After July 2024, which BNS section covers murder?",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "canonical_name": "Murder",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q004",
+      "query": "BNSS provision for anticipatory bail after commencement of new criminal laws",
+      "gold_sections": [
+        {
+          "statute": "BNSS",
+          "section": "482",
+          "normalized_section": "482",
+          "canonical_name": "Anticipatory bail",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q005",
+      "query": "Robbery with hurt and stolen mobile phone under old criminal law",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "394",
+          "normalized_section": "394",
+          "canonical_name": "Voluntarily causing hurt in committing robbery",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "392",
+          "normalized_section": "392",
+          "canonical_name": "Robbery",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q006",
+      "query": "False promise to repay money and dishonest inducement complaint",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "canonical_name": "Cheating and dishonestly inducing delivery of property",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q007",
+      "query": "Entrusted company funds were misappropriated by an employee",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "408",
+          "normalized_section": "408",
+          "canonical_name": "Criminal breach of trust by clerk or servant",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "canonical_name": "Criminal breach of trust",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q008",
+      "query": "Minor girl abducted from lawful guardianship before July 2024",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "363",
+          "normalized_section": "363",
+          "canonical_name": "Kidnapping",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "361",
+          "normalized_section": "361",
+          "canonical_name": "Kidnapping from lawful guardianship",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q009",
+      "query": "POCSO sexual assault complaint involving a child victim",
+      "gold_sections": [
+        {
+          "statute": "POCSO Act",
+          "section": "7",
+          "normalized_section": "7",
+          "canonical_name": "Sexual assault",
+          "relevance": "primary"
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "8",
+          "normalized_section": "8",
+          "canonical_name": "Sexual assault punishment",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q010",
+      "query": "Dowry harassment and cruelty by husband under IPC",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "498A",
+          "normalized_section": "498a",
+          "canonical_name": "Cruelty by husband or relatives",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q011",
+      "query": "Criminal conspiracy and common intention in a murder case",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "canonical_name": "Murder",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "120B",
+          "normalized_section": "120b",
+          "canonical_name": "Criminal conspiracy",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "34",
+          "normalized_section": "34",
+          "canonical_name": "Common intention",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q012",
+      "query": "Ganja recovery and NDPS bail for small quantity",
+      "gold_sections": [
+        {
+          "statute": "NDPS Act",
+          "section": "20",
+          "normalized_section": "20",
+          "canonical_name": "Cannabis offences",
+          "relevance": "primary"
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "37",
+          "normalized_section": "37",
+          "canonical_name": "Offences to be cognizable and non-bailable",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q013",
+      "query": "Default bail after charge sheet delay in NDPS case",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "167(2)",
+          "normalized_section": "167(2)",
+          "canonical_name": "Default bail",
+          "relevance": "primary"
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "36A(4)",
+          "normalized_section": "36a(4)",
+          "canonical_name": "Special Court procedure for investigation period",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q014",
+      "query": "FIR quashing petition before High Court in matrimonial dispute",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "482",
+          "normalized_section": "482",
+          "canonical_name": "Inherent powers of High Court",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q015",
+      "query": "Notice before arrest safeguard for non-cognizable looking complaint",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "41A",
+          "normalized_section": "41a",
+          "canonical_name": "Notice of appearance before police officer",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q016",
+      "query": "BNS cheating section for online payment fraud",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "318",
+          "normalized_section": "318",
+          "canonical_name": "Cheating",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q017",
+      "query": "BNSS regular bail before High Court after July 2024",
+      "gold_sections": [
+        {
+          "statute": "BNSS",
+          "section": "483",
+          "normalized_section": "483",
+          "canonical_name": "Bail by High Court or Court of Session",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q018",
+      "query": "Theft of jewellery from house under IPC",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "380",
+          "normalized_section": "380",
+          "canonical_name": "Theft in dwelling house",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "378",
+          "normalized_section": "378",
+          "canonical_name": "Theft",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q019",
+      "query": "Attempted murder with knife injury under BNS",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "109",
+          "normalized_section": "109",
+          "canonical_name": "Attempt to murder",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q020",
+      "query": "Grievous hurt caused during assault after new criminal laws",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "117",
+          "normalized_section": "117",
+          "canonical_name": "Voluntarily causing grievous hurt",
+          "relevance": "primary"
+        },
+        {
+          "statute": "BNS",
+          "section": "116",
+          "normalized_section": "116",
+          "canonical_name": "Grievous hurt",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q021",
+      "query": "Rape allegation before July 2024 with later trial pending",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "376",
+          "normalized_section": "376",
+          "canonical_name": "Rape",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "375",
+          "normalized_section": "375",
+          "canonical_name": "Rape",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q022",
+      "query": "Caste abuse in public view and SC/ST Act bail",
+      "gold_sections": [
+        {
+          "statute": "SC/ST Act",
+          "section": "3(1)(r)",
+          "normalized_section": "3(1)(r)",
+          "canonical_name": "Intentional insult or intimidation",
+          "relevance": "primary"
+        },
+        {
+          "statute": "SC/ST Act",
+          "section": "3(1)(s)",
+          "normalized_section": "3(1)(s)",
+          "canonical_name": "Abuse by caste name",
+          "relevance": "primary"
+        },
+        {
+          "statute": "SC/ST Act",
+          "section": "18",
+          "normalized_section": "18",
+          "canonical_name": "Section 438 of the Code not to apply",
+          "relevance": "uncertain"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q023",
+      "query": "Section 420 IPC and Section 406 IPC both alleged in business dispute",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "canonical_name": "Cheating and dishonestly inducing delivery of property",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "canonical_name": "Criminal breach of trust",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q024",
+      "query": "Section 103 BNS and Section 302 IPC transition issue",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "canonical_name": "Murder",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "canonical_name": "Murder",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q025",
+      "query": "Which law applies to an offence committed before July 2024 but FIR filed later?",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "358",
+          "normalized_section": "358",
+          "canonical_name": "Repeal and savings",
+          "relevance": "relevant"
+        },
+        {
+          "statute": "BNSS",
+          "section": "531",
+          "normalized_section": "531",
+          "canonical_name": "Repeal and savings",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q026",
+      "query": "How to file a certified copy application in court?",
+      "gold_sections": [],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q027",
+      "query": "Property partition dispute between brothers with no criminal allegation",
+      "gold_sections": [],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q028",
+      "query": "Police refused to register FIR in assault complaint",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "154(3)",
+          "normalized_section": "154(3)",
+          "canonical_name": "Information to Superintendent of Police",
+          "relevance": "relevant"
+        },
+        {
+          "statute": "BNSS",
+          "section": "173(4)",
+          "normalized_section": "173(4)",
+          "canonical_name": "Information to Superintendent of Police",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q029",
+      "query": "Regular bail in murder case under CrPC",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "439",
+          "normalized_section": "439",
+          "canonical_name": "Special powers regarding bail",
+          "relevance": "primary"
+        },
+        {
+          "statute": "CrPC",
+          "section": "437",
+          "normalized_section": "437",
+          "canonical_name": "Bail in non-bailable offence",
+          "relevance": "relevant"
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "canonical_name": "Murder",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q030",
+      "query": "Quashing of FIR for cheating and criminal breach of trust",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "482",
+          "normalized_section": "482",
+          "canonical_name": "Inherent powers of High Court",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "canonical_name": "Cheating and dishonestly inducing delivery of property",
+          "relevance": "relevant"
+        },
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "canonical_name": "Criminal breach of trust",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q031",
+      "query": "Heroin possession and conspiracy under NDPS Act",
+      "gold_sections": [
+        {
+          "statute": "NDPS Act",
+          "section": "21",
+          "normalized_section": "21",
+          "canonical_name": "Manufactured drugs and preparations",
+          "relevance": "primary"
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "29",
+          "normalized_section": "29",
+          "canonical_name": "Abetment and criminal conspiracy",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q032",
+      "query": "Common intention in robbery case under old IPC",
+      "gold_sections": [
+        {
+          "statute": "IPC",
+          "section": "392",
+          "normalized_section": "392",
+          "canonical_name": "Robbery",
+          "relevance": "primary"
+        },
+        {
+          "statute": "IPC",
+          "section": "34",
+          "normalized_section": "34",
+          "canonical_name": "Common intention",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q033",
+      "query": "Can anticipatory bail be sought for a POCSO allegation?",
+      "gold_sections": [
+        {
+          "statute": "CrPC",
+          "section": "438",
+          "normalized_section": "438",
+          "canonical_name": "Anticipatory bail",
+          "relevance": "relevant"
+        },
+        {
+          "statute": "BNSS",
+          "section": "482",
+          "normalized_section": "482",
+          "canonical_name": "Anticipatory bail",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q034",
+      "query": "BNS kidnapping from guardian and sexual assault allegation",
+      "gold_sections": [
+        {
+          "statute": "BNS",
+          "section": "137",
+          "normalized_section": "137",
+          "canonical_name": "Kidnapping",
+          "relevance": "primary"
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "7",
+          "normalized_section": "7",
+          "canonical_name": "Sexual assault",
+          "relevance": "primary"
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "8",
+          "normalized_section": "8",
+          "canonical_name": "Sexual assault punishment",
+          "relevance": "relevant"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q035",
+      "query": "Medical negligence complaint seeking compensation only",
+      "gold_sections": [],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    },
+    {
+      "example_id": "sec-q036",
+      "query": "BNSS default bail when investigation period expires",
+      "gold_sections": [
+        {
+          "statute": "BNSS",
+          "section": "187(3)",
+          "normalized_section": "187(3)",
+          "canonical_name": "Investigation not completed within twenty-four hours",
+          "relevance": "primary"
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T10:41:38Z"
+    }
+  ],
+  "reviewer": "Ananthu",
+  "reviewed_at": "2026-09-09T10:41:38Z"
+}

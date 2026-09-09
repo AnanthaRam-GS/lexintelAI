@@ -1,0 +1,5925 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "candidate": "evolawyer/inlegalbert-sc-ner-silver",
+  "examples": [
+    {
+      "example_id": "ner-q001",
+      "text": "Section 302 IPC was considered by the Supreme Court.",
+      "gold_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 0.999731,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q001"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 0.9991,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q001"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q001",
+          "text": "Section 302",
+          "model_text": "section 302",
+          "start_char": 0,
+          "end_char": 11,
+          "raw_label": "PROVISION",
+          "confidence": 0.999731
+        },
+        {
+          "example_id": "ner-q001",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 12,
+          "end_char": 15,
+          "raw_label": "STATUTE",
+          "confidence": 0.9991
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION",
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q001",
+        "merge_ms": 0.021,
+        "deterministic_input_count": 3,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q002",
+      "text": "Can anticipatory bail under Section 438 CrPC be granted in a 2023 cheating case?",
+      "gold_entities": [
+        {
+          "text": "anticipatory bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 21,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "2023",
+          "entity_type": "DATE",
+          "start_char": 61,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cheating",
+          "entity_type": "OFFENCE",
+          "start_char": 66,
+          "end_char": 74,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "anticipatory bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 21,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "2023",
+          "entity_type": "DATE",
+          "start_char": 61,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cheating",
+          "entity_type": "OFFENCE",
+          "start_char": 66,
+          "end_char": 74,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 0.999462,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q002"
+          }
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 0.994569,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q002"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "anticipatory bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 21,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "2023",
+          "entity_type": "DATE",
+          "start_char": 61,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cheating",
+          "entity_type": "OFFENCE",
+          "start_char": 66,
+          "end_char": 74,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q002",
+          "text": "Section 438",
+          "model_text": "section 438",
+          "start_char": 28,
+          "end_char": 39,
+          "raw_label": "PROVISION",
+          "confidence": 0.999462
+        },
+        {
+          "example_id": "ner-q002",
+          "text": "CrPC",
+          "model_text": "crpc",
+          "start_char": 40,
+          "end_char": 44,
+          "raw_label": "STATUTE",
+          "confidence": 0.994569
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION",
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 5,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.4,
+        "f1": 0.571429,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 5,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q002",
+        "merge_ms": 0.01,
+        "deterministic_input_count": 5,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 3,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "gold_entities": [
+        {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 28,
+          "end_char": 32,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 28,
+          "end_char": 32,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "the Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 46,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 0.99953,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q003"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 28,
+          "end_char": 32,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "the Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 46,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q003",
+          "text": "Section 482",
+          "model_text": "section 482",
+          "start_char": 16,
+          "end_char": 27,
+          "raw_label": "PROVISION",
+          "confidence": 0.99953
+        },
+        {
+          "example_id": "ner-q003",
+          "text": "Karnataka High Court",
+          "model_text": "karnataka high court",
+          "start_char": 50,
+          "end_char": 70,
+          "raw_label": "COURT",
+          "confidence": 0.582458
+        }
+      ],
+      "raw_model_labels": [
+        "COURT",
+        "PROVISION"
+      ],
+      "d0_exact": {
+        "precision": 0.666667,
+        "recall": 0.5,
+        "f1": 0.571429,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 2
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.25,
+        "f1": 0.4,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 0.666667,
+        "recall": 0.5,
+        "f1": 0.571429,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 2
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "the Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 46,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q003",
+        "merge_ms": 0.006,
+        "deterministic_input_count": 3,
+        "learned_input_count": 2,
+        "learned_below_threshold": 1,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 1,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "gold_entities": [
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "murder",
+          "entity_type": "OFFENCE",
+          "start_char": 52,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "after 1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 28,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "murder",
+          "entity_type": "OFFENCE",
+          "start_char": 52,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "after 1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 28,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "murder",
+          "entity_type": "OFFENCE",
+          "start_char": 52,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "after 1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 28,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q004",
+        "merge_ms": 0.005,
+        "deterministic_input_count": 3,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "gold_entities": [
+        {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "The Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "The Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q005",
+          "text": "Del",
+          "model_text": "del",
+          "start_char": 4,
+          "end_char": 7,
+          "raw_label": "COURT",
+          "confidence": 0.523535
+        },
+        {
+          "example_id": "ner-q005",
+          "text": "State of NCT of Delhi",
+          "model_text": "state of nct of delhi",
+          "start_char": 62,
+          "end_char": 83,
+          "raw_label": "ORG",
+          "confidence": 0.43319
+        }
+      ],
+      "raw_model_labels": [
+        "COURT",
+        "ORG"
+      ],
+      "d0_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 1,
+        "false_negative": 3
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 1,
+        "false_negative": 3
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "The Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q005",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 1,
+        "learned_input_count": 2,
+        "learned_below_threshold": 2,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q006",
+      "text": "FIR No. 137 of 2023 was registered at Gannavaram Urban Police Station.",
+      "gold_entities": [
+        {
+          "text": "FIR No. 137 of 2023",
+          "entity_type": "FIR_NUMBER",
+          "start_char": 0,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "FIR No. 137 of 2023",
+          "entity_type": "FIR_NUMBER",
+          "start_char": 0,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.fir_number",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.police_station",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "FIR No. 137 of 2023",
+          "entity_type": "FIR_NUMBER",
+          "start_char": 0,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.fir_number",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.police_station",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q006",
+          "text": "Gannavaram Urban Police Station",
+          "model_text": "gannavaram urban police station",
+          "start_char": 38,
+          "end_char": 69,
+          "raw_label": "ORG",
+          "confidence": 0.593747
+        }
+      ],
+      "raw_model_labels": [
+        "ORG"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q006",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 2,
+        "learned_input_count": 1,
+        "learned_below_threshold": 1,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q007",
+      "text": "A complaint was filed at Hauz Qazi Police Station for criminal breach of trust.",
+      "gold_entities": [
+        {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal breach of trust",
+          "entity_type": "OFFENCE",
+          "start_char": 54,
+          "end_char": 78,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.police_station",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal breach of trust",
+          "entity_type": "OFFENCE",
+          "start_char": 54,
+          "end_char": 78,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.police_station",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal breach of trust",
+          "entity_type": "OFFENCE",
+          "start_char": 54,
+          "end_char": 78,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q007",
+          "text": "Hauz Qazi Police Station",
+          "model_text": "hauz qazi police station",
+          "start_char": 25,
+          "end_char": 49,
+          "raw_label": "ORG",
+          "confidence": 0.581819
+        }
+      ],
+      "raw_model_labels": [
+        "ORG"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q007",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 2,
+        "learned_input_count": 1,
+        "learned_below_threshold": 1,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q008",
+      "text": "State of Maharashtra v. Arjun Singh involved Section 420 IPC.",
+      "gold_entities": [
+        {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 0.999688,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q008"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 0.998901,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q008"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q008",
+          "text": "Section 420",
+          "model_text": "section 420",
+          "start_char": 45,
+          "end_char": 56,
+          "raw_label": "PROVISION",
+          "confidence": 0.999688
+        },
+        {
+          "example_id": "ner-q008",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 57,
+          "end_char": 60,
+          "raw_label": "STATUTE",
+          "confidence": 0.998901
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION",
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q008",
+        "merge_ms": 0.005,
+        "deterministic_input_count": 2,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q009",
+      "text": "The accused sought default bail after the charge-sheet was delayed.",
+      "gold_entities": [
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "default bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 19,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "charge-sheet",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 42,
+          "end_char": 54,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "default bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 19,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "charge-sheet",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 42,
+          "end_char": 54,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "default bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 19,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "charge-sheet",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 42,
+          "end_char": 54,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q009",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 3,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 3,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q010",
+      "text": "A minor was lured away from Bengaluru and sexually assaulted.",
+      "gold_entities": [
+        {
+          "text": "Bengaluru",
+          "entity_type": "LOCATION",
+          "start_char": 28,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "sexually assaulted",
+          "entity_type": "OFFENCE",
+          "start_char": 42,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "lured away",
+          "entity_type": "OFFENCE",
+          "start_char": 12,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "sexually assaulted",
+          "entity_type": "OFFENCE",
+          "start_char": 42,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "lured away",
+          "entity_type": "OFFENCE",
+          "start_char": 12,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "sexually assaulted",
+          "entity_type": "OFFENCE",
+          "start_char": 42,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "lured away",
+          "entity_type": "OFFENCE",
+          "start_char": 12,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "Bengaluru",
+          "entity_type": "LOCATION",
+          "start_char": 28,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Bengaluru",
+          "entity_type": "LOCATION",
+          "start_char": 28,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q010",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q011",
+      "text": "The Sessions Court convicted the appellant for dowry harassment.",
+      "gold_entities": [
+        {
+          "text": "Sessions Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 33,
+          "end_char": 42,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "dowry harassment",
+          "entity_type": "OFFENCE",
+          "start_char": 47,
+          "end_char": 63,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Sessions Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 33,
+          "end_char": 42,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "dowry harassment",
+          "entity_type": "OFFENCE",
+          "start_char": 47,
+          "end_char": 63,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "Sessions Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 33,
+          "end_char": 42,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "dowry harassment",
+          "entity_type": "OFFENCE",
+          "start_char": 47,
+          "end_char": 63,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q011",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 3,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q012",
+      "text": "The petitioner relied on AIR 1973 SC 2622 before the Supreme Court.",
+      "gold_entities": [
+        {
+          "text": "petitioner",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "petitioner",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.case_citation",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 0.999472,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "CASE_CITATION",
+            "example_id": "ner-q012"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "petitioner",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.case_citation",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q012",
+          "text": "AIR 1973 SC 2622",
+          "model_text": "air 1973 sc 2622",
+          "start_char": 25,
+          "end_char": 41,
+          "raw_label": "CASE_CITATION",
+          "confidence": 0.999472
+        }
+      ],
+      "raw_model_labels": [
+        "CASE_CITATION"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q012",
+        "merge_ms": 0.005,
+        "deterministic_input_count": 3,
+        "learned_input_count": 1,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 1,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "gold_entities": [
+        {
+          "text": "respondent",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 43,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "respondent",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "2014",
+          "entity_type": "DATE",
+          "start_char": 22,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 43,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 0.998099,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "CASE_CITATION",
+            "example_id": "ner-q013"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "respondent",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "2014",
+          "entity_type": "DATE",
+          "start_char": 22,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 43,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q013",
+          "text": "(2014) 8 SCC 273",
+          "model_text": "( 2014 ) 8 scc 273",
+          "start_char": 21,
+          "end_char": 37,
+          "raw_label": "CASE_CITATION",
+          "confidence": 0.998099
+        }
+      ],
+      "raw_model_labels": [
+        "CASE_CITATION"
+      ],
+      "d0_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "2014",
+          "entity_type": "DATE",
+          "start_char": 22,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q013",
+        "merge_ms": 0.009,
+        "deterministic_input_count": 3,
+        "learned_input_count": 1,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 1,
+        "protected_conflicts": [],
+        "suppressions": [
+          {
+            "reason": "overlap_conflict",
+            "learned_text": "(2014) 8 SCC 273",
+            "learned_type": "CASE_CITATION",
+            "learned_start": 21,
+            "learned_end": 37,
+            "learned_confidence": 0.998099,
+            "existing_text": "2014",
+            "existing_type": "DATE",
+            "existing_start": 22,
+            "existing_end": 26
+          }
+        ]
+      }
+    },
+    {
+      "example_id": "ner-q014",
+      "text": "Is Section 21 NDPS Act applicable to possession of heroin?",
+      "gold_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "NDPS Act",
+          "entity_type": "STATUTE",
+          "start_char": 14,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "NDPS Act",
+          "entity_type": "STATUTE",
+          "start_char": 14,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 0.991651,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q014"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "NDPS Act",
+          "entity_type": "STATUTE",
+          "start_char": 14,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q014",
+          "text": "Section 21",
+          "model_text": "section 21",
+          "start_char": 3,
+          "end_char": 13,
+          "raw_label": "PROVISION",
+          "confidence": 0.991651
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q014",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 2,
+        "learned_input_count": 1,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 1,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q015",
+      "text": "The Special Court took cognizance under the POCSO Act.",
+      "gold_entities": [
+        {
+          "text": "Special Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cognizance",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "POCSO Act",
+          "entity_type": "STATUTE",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Special Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cognizance",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "POCSO Act",
+          "entity_type": "STATUTE",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "Special Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "cognizance",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "POCSO Act",
+          "entity_type": "STATUTE",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q015",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 3,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q016",
+      "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.",
+      "gold_entities": [
+        {
+          "text": "complainant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "complainant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "false promise",
+          "entity_type": "OFFENCE",
+          "start_char": 24,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "complainant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "false promise",
+          "entity_type": "OFFENCE",
+          "start_char": 24,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "false promise",
+          "entity_type": "OFFENCE",
+          "start_char": 24,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q016",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q017",
+      "text": "The trial court in Chennai rejected regular bail.",
+      "gold_entities": [
+        {
+          "text": "trial court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Chennai",
+          "entity_type": "LOCATION",
+          "start_char": 19,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "regular bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "trial court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "regular bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "trial court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "regular bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "Chennai",
+          "entity_type": "LOCATION",
+          "start_char": 19,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Chennai",
+          "entity_type": "LOCATION",
+          "start_char": 19,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q017",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "gold_entities": [
+        {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Before July 2024",
+          "entity_type": "DATE",
+          "start_char": 0,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 0.996238,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q018"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 0.99943,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q018"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Before July 2024",
+          "entity_type": "DATE",
+          "start_char": 0,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q018",
+          "text": "CrPC",
+          "model_text": "crpc",
+          "start_char": 18,
+          "end_char": 22,
+          "raw_label": "STATUTE",
+          "confidence": 0.996238
+        },
+        {
+          "example_id": "ner-q018",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 47,
+          "end_char": 50,
+          "raw_label": "STATUTE",
+          "confidence": 0.99943
+        }
+      ],
+      "raw_model_labels": [
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "h1_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "Before July 2024",
+          "entity_type": "DATE",
+          "start_char": 0,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q018",
+        "merge_ms": 0.006,
+        "deterministic_input_count": 3,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q019",
+      "text": "After commencement of new criminal laws, BNSS procedure may govern the investigation.",
+      "gold_entities": [
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 41,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "investigation",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 71,
+          "end_char": 84,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 41,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "investigation",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 71,
+          "end_char": 84,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 41,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "investigation",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 71,
+          "end_char": 84,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q019",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q020",
+      "text": "The Evidence Act issue arose during trial.",
+      "gold_entities": [
+        {
+          "text": "Evidence Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "trial",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Evidence Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "trial",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "Evidence Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "trial",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q020",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q021",
+      "text": "The victim named Suresh and Meena in the FIR.",
+      "gold_entities": [
+        {
+          "text": "victim",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "victim",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "victim",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q021",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 1,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q022",
+      "text": "The police investigated alleged theft of a motorcycle in Kochi.",
+      "gold_entities": [
+        {
+          "text": "theft",
+          "entity_type": "OFFENCE",
+          "start_char": 32,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Kochi",
+          "entity_type": "LOCATION",
+          "start_char": 57,
+          "end_char": 62,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "theft",
+          "entity_type": "OFFENCE",
+          "start_char": 32,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "theft",
+          "entity_type": "OFFENCE",
+          "start_char": 32,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q022",
+          "text": "Kochi",
+          "model_text": "kochi",
+          "start_char": 57,
+          "end_char": 62,
+          "raw_label": "GPE",
+          "confidence": 0.622047
+        }
+      ],
+      "raw_model_labels": [
+        "GPE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "Kochi",
+          "entity_type": "LOCATION",
+          "start_char": 57,
+          "end_char": 62,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Kochi",
+          "entity_type": "LOCATION",
+          "start_char": 57,
+          "end_char": 62,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q022",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 1,
+        "learned_input_count": 1,
+        "learned_below_threshold": 1,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "gold_entities": [
+        {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Can the High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 0.998193,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q023"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 0.999599,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q023"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Can the High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q023",
+          "text": "Section 498A",
+          "model_text": "section 498a",
+          "start_char": 36,
+          "end_char": 48,
+          "raw_label": "PROVISION",
+          "confidence": 0.998193
+        },
+        {
+          "example_id": "ner-q023",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 49,
+          "end_char": 52,
+          "raw_label": "STATUTE",
+          "confidence": 0.999599
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION",
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "h1_exact": {
+        "precision": 0.666667,
+        "recall": 0.666667,
+        "f1": 0.666667,
+        "true_positive": 2,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "Can the High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q023",
+        "merge_ms": 0.006,
+        "deterministic_input_count": 3,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q024",
+      "text": "A revision was filed before the District Court.",
+      "gold_entities": [
+        {
+          "text": "revision",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "revision",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "revision",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q024",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q025",
+      "text": "The organization Bharat Finance complained about misappropriation.",
+      "gold_entities": [
+        {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "misappropriation",
+          "entity_type": "OFFENCE",
+          "start_char": 49,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "misappropriation",
+          "entity_type": "OFFENCE",
+          "start_char": 49,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "misappropriation",
+          "entity_type": "OFFENCE",
+          "start_char": 49,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q025",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 1,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q026",
+      "text": "No statute or court is mentioned in this sentence.",
+      "gold_entities": [],
+      "d0_entities": [],
+      "l1_entities": [],
+      "h1_entities": [],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "h1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q026",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 0,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q027",
+      "text": "Does Section 302 apply here?",
+      "gold_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 0.998824,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q027"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q027",
+          "text": "Section 302",
+          "model_text": "section 302",
+          "start_char": 5,
+          "end_char": 16,
+          "raw_label": "PROVISION",
+          "confidence": 0.998824
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q027",
+        "merge_ms": 0.004,
+        "deterministic_input_count": 1,
+        "learned_input_count": 1,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 1,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "gold_entities": [
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "the Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 39,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "the Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 39,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "the Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 39,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q028",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q029",
+      "text": "The informant reported kidnapping from lawful custody.",
+      "gold_entities": [
+        {
+          "text": "informant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "informant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "lawful custody",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "informant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "lawful custody",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "lawful custody",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q029",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 1,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q030",
+      "text": "The case concerns common intention and criminal conspiracy.",
+      "gold_entities": [
+        {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "criminal conspiracy",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "criminal conspiracy",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "criminal conspiracy",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.666667,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q030",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 1,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q031",
+      "text": "The SC/ST Act was invoked along with Section 323 IPC.",
+      "gold_entities": [
+        {
+          "text": "SC/ST Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "SC/ST Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 0.999882,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "PROVISION",
+            "example_id": "ner-q031"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 0.999547,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q031"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "SC/ST Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.section",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q031",
+          "text": "Section 323",
+          "model_text": "section 323",
+          "start_char": 37,
+          "end_char": 48,
+          "raw_label": "PROVISION",
+          "confidence": 0.999882
+        },
+        {
+          "example_id": "ner-q031",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 49,
+          "end_char": 52,
+          "raw_label": "STATUTE",
+          "confidence": 0.999547
+        }
+      ],
+      "raw_model_labels": [
+        "PROVISION",
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q031",
+        "merge_ms": 0.005,
+        "deterministic_input_count": 3,
+        "learned_input_count": 2,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 3,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 2,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "gold_entities": [
+        {
+          "text": "Hyderabad",
+          "entity_type": "LOCATION",
+          "start_char": 27,
+          "end_char": 36,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "ganja",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "ganja",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 1,
+        "false_negative": 2
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 1,
+        "false_negative": 2
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [
+        {
+          "text": "ganja",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_false_negatives": [
+        {
+          "text": "Hyderabad",
+          "entity_type": "LOCATION",
+          "start_char": 27,
+          "end_char": 36,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Hyderabad",
+          "entity_type": "LOCATION",
+          "start_char": 27,
+          "end_char": 36,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q032",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 1,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q033",
+      "text": "The final report named Zenith Logistics as an accused organization.",
+      "gold_entities": [
+        {
+          "text": "final report",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "Zenith Logistics",
+          "entity_type": "ORGANIZATION",
+          "start_char": 23,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 46,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "final report",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 46,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "final report",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 46,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "deterministic.legal_role",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 3
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 0.666667,
+        "f1": 0.8,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 1
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [
+        {
+          "text": "Zenith Logistics",
+          "entity_type": "ORGANIZATION",
+          "start_char": 23,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "h1_false_negatives": [
+        {
+          "text": "Zenith Logistics",
+          "entity_type": "ORGANIZATION",
+          "start_char": 23,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "merge_diagnostics": {
+        "example_id": "ner-q033",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 2,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q034",
+      "text": "A quashing petition mentioned both IPC and BNS transition issues.",
+      "gold_entities": [
+        {
+          "text": "quashing petition",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "quashing petition",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 0.999501,
+          "source": "model",
+          "extractor": "inlegalbert_sc_ner_silver",
+          "model_name": "evolawyer/inlegalbert-sc-ner-silver",
+          "metadata": {
+            "raw_label": "STATUTE",
+            "example_id": "ner-q034"
+          }
+        }
+      ],
+      "h1_entities": [
+        {
+          "text": "quashing petition",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.procedure",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.statute",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q034",
+          "text": "IPC",
+          "model_text": "ipc",
+          "start_char": 35,
+          "end_char": 38,
+          "raw_label": "STATUTE",
+          "confidence": 0.999501
+        }
+      ],
+      "raw_model_labels": [
+        "STATUTE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 1.0,
+        "recall": 0.333333,
+        "f1": 0.5,
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 3,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q034",
+        "merge_ms": 0.005,
+        "deterministic_input_count": 3,
+        "learned_input_count": 1,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 3,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 1,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q035",
+      "text": "The District Court order dated July 1, 2024 was appealed.",
+      "gold_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "July 1, 2024",
+          "entity_type": "DATE",
+          "start_char": 31,
+          "end_char": 43,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "d0_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "July 1, 2024",
+          "entity_type": "DATE",
+          "start_char": 31,
+          "end_char": 43,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "l1_entities": [],
+      "h1_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        {
+          "text": "July 1, 2024",
+          "entity_type": "DATE",
+          "start_char": 31,
+          "end_char": 43,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        }
+      ],
+      "raw_model_predictions": [
+        {
+          "example_id": "ner-q035",
+          "text": "July 1, 2024",
+          "model_text": "july 1, 2024",
+          "start_char": 31,
+          "end_char": 43,
+          "raw_label": "DATE",
+          "confidence": 0.621456
+        }
+      ],
+      "raw_model_labels": [
+        "DATE"
+      ],
+      "d0_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2
+      },
+      "h1_exact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q035",
+        "merge_ms": 0.003,
+        "deterministic_input_count": 2,
+        "learned_input_count": 1,
+        "learned_below_threshold": 1,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    },
+    {
+      "example_id": "ner-q036",
+      "text": "Only a generic petition was filed.",
+      "gold_entities": [],
+      "d0_entities": [],
+      "l1_entities": [],
+      "h1_entities": [],
+      "raw_model_predictions": [],
+      "raw_model_labels": [],
+      "d0_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "h1_exact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "l1_false_positives": [],
+      "h1_false_positives": [],
+      "d0_false_negatives": [],
+      "h1_false_negatives": [],
+      "merge_diagnostics": {
+        "example_id": "ner-q036",
+        "merge_ms": 0.002,
+        "deterministic_input_count": 0,
+        "learned_input_count": 0,
+        "learned_below_threshold": 0,
+        "deterministic_protected_count": 0,
+        "learned_suppressed_due_to_protected_overlap": 0,
+        "learned_inserted_count": 0,
+        "exact_duplicates_removed": 0,
+        "same_span_conflicts": 0,
+        "overlap_conflicts": 0,
+        "protected_conflicts": [],
+        "suppressions": []
+      }
+    }
+  ]
+}

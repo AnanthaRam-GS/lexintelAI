@@ -1,0 +1,766 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "model_name": "dslim/bert-base-NER",
+  "model_version": "d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc",
+  "prediction_status": "candidate_trial_only",
+  "primary_threshold": 0.7,
+  "examples": [
+    {
+      "example_id": "ner-q001",
+      "predicted_entities": [
+        {
+          "text": "IP",
+          "entity_type": "ORGANIZATION",
+          "start_char": 12,
+          "end_char": 14,
+          "confidence": 0.891097,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q001"
+          }
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 0.99744,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q001"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q002",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q003",
+      "predicted_entities": [
+        {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 28,
+          "end_char": 29,
+          "confidence": 0.938649,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q003"
+          }
+        },
+        {
+          "text": "Karnataka High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 0.983908,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q003"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q004",
+      "predicted_entities": [
+        {
+          "text": "BNS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 0.95551,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q004"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q005",
+      "predicted_entities": [
+        {
+          "text": "Delhi High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 0.948503,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q005"
+          }
+        },
+        {
+          "text": "Ram",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 44,
+          "confidence": 0.999493,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        {
+          "text": "esh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 0.988294,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        {
+          "text": "State of NCT",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 74,
+          "confidence": 0.756058,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q005"
+          }
+        },
+        {
+          "text": "Delhi",
+          "entity_type": "LOCATION",
+          "start_char": 78,
+          "end_char": 83,
+          "confidence": 0.700901,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q005"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q006",
+      "predicted_entities": [
+        {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "LOCATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 0.950999,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q006"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q007",
+      "predicted_entities": [
+        {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "LOCATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 0.993583,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q007"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q008",
+      "predicted_entities": [
+        {
+          "text": "State of Maharashtra",
+          "entity_type": "ORGANIZATION",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 0.988625,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q008"
+          }
+        },
+        {
+          "text": "A",
+          "entity_type": "PERSON",
+          "start_char": 24,
+          "end_char": 25,
+          "confidence": 0.998864,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        {
+          "text": "rjun Singh",
+          "entity_type": "PERSON",
+          "start_char": 25,
+          "end_char": 35,
+          "confidence": 0.948134,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 0.800014,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q008"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q009",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q010",
+      "predicted_entities": [
+        {
+          "text": "Bengaluru",
+          "entity_type": "LOCATION",
+          "start_char": 28,
+          "end_char": 37,
+          "confidence": 0.998924,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q010"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q011",
+      "predicted_entities": [
+        {
+          "text": "Sessions Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 0.97569,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q011"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q012",
+      "predicted_entities": [
+        {
+          "text": "Supreme Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 0.996933,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q012"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q013",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q014",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q015",
+      "predicted_entities": [
+        {
+          "text": "Special Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 0.867536,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q015"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q016",
+      "predicted_entities": [
+        {
+          "text": "Alpha Trade",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 77,
+          "confidence": 0.915711,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q016"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q017",
+      "predicted_entities": [
+        {
+          "text": "Chennai",
+          "entity_type": "LOCATION",
+          "start_char": 19,
+          "end_char": 26,
+          "confidence": 0.999645,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q017"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q018",
+      "predicted_entities": [
+        {
+          "text": "C",
+          "entity_type": "ORGANIZATION",
+          "start_char": 18,
+          "end_char": 19,
+          "confidence": 0.948441,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        },
+        {
+          "text": "PC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 20,
+          "end_char": 22,
+          "confidence": 0.739406,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        },
+        {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 0.913735,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q019",
+      "predicted_entities": [
+        {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 41,
+          "end_char": 42,
+          "confidence": 0.99613,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q019"
+          }
+        },
+        {
+          "text": "NSS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 42,
+          "end_char": 45,
+          "confidence": 0.838597,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q019"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q020",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q021",
+      "predicted_entities": [
+        {
+          "text": "Sure",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 21,
+          "confidence": 0.999243,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        {
+          "text": "sh",
+          "entity_type": "PERSON",
+          "start_char": 21,
+          "end_char": 23,
+          "confidence": 0.982201,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        {
+          "text": "Me",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 30,
+          "confidence": 0.999091,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        {
+          "text": "ena",
+          "entity_type": "PERSON",
+          "start_char": 30,
+          "end_char": 33,
+          "confidence": 0.956837,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q022",
+      "predicted_entities": [
+        {
+          "text": "Kochi",
+          "entity_type": "LOCATION",
+          "start_char": 57,
+          "end_char": 62,
+          "confidence": 0.998578,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q022"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q023",
+      "predicted_entities": [
+        {
+          "text": "High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 0.86795,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q023"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q024",
+      "predicted_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 0.992301,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q024"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q025",
+      "predicted_entities": [
+        {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 18,
+          "confidence": 0.997452,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        },
+        {
+          "text": "harat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 18,
+          "end_char": 31,
+          "confidence": 0.9893,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q026",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q027",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q028",
+      "predicted_entities": [
+        {
+          "text": "Bombay High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 0.984051,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q028"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q029",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q030",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q031",
+      "predicted_entities": []
+    },
+    {
+      "example_id": "ner-q032",
+      "predicted_entities": [
+        {
+          "text": "Hyderabad",
+          "entity_type": "LOCATION",
+          "start_char": 27,
+          "end_char": 36,
+          "confidence": 0.999665,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q032"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q033",
+      "predicted_entities": [
+        {
+          "text": "Zenith Logistics",
+          "entity_type": "ORGANIZATION",
+          "start_char": 23,
+          "end_char": 39,
+          "confidence": 0.999358,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q033"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q034",
+      "predicted_entities": [
+        {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 0.999147,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q034"
+          }
+        },
+        {
+          "text": "BNS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 0.997329,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q034"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q035",
+      "predicted_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 0.849413,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q035"
+          }
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q036",
+      "predicted_entities": []
+    }
+  ]
+}
