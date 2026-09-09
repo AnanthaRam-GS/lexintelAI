@@ -1,0 +1,38 @@
+{
+  "schema_version": "legalai-section-gold-summary-v1",
+  "summary_version": "legalai-section-gold-summary-phase0-v1",
+  "example_count": 36,
+  "reviewed": 36,
+  "pending": 0,
+  "primary_count": 36,
+  "relevant_count": 24,
+  "uncertain_count": 1,
+  "positive_count": 60,
+  "total_judgment_count": 61,
+  "zero_positive_example_count": 3,
+  "zero_positive_example_ids": [
+    "sec-q026",
+    "sec-q027",
+    "sec-q035"
+  ],
+  "per_statute_counts": {
+    "BNS": 8,
+    "BNSS": 6,
+    "CrPC": 10,
+    "IPC": 25,
+    "NDPS Act": 5,
+    "POCSO Act": 4,
+    "SC/ST Act": 3
+  },
+  "per_regime_counts": {
+    "bns_bnss": 14,
+    "ipc_crpc": 35,
+    "special": 12
+  },
+  "reviewer_counts": {
+    "Ananthu": 36
+  },
+  "reviewed_at": "2026-09-09T10:41:38Z",
+  "catalog_version": "legalai-section-catalog-phase0-v1-human-coverage-reconciled",
+  "catalog_entry_count": 62
+}

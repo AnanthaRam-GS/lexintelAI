@@ -56,14 +56,15 @@ class LegalSectionCatalogReconciliationTests(unittest.TestCase):
         duplicates = duplicate_normalized_keys([("CrPC", "154(3)"), (" crpc ", "154 (3)")])
         self.assertEqual(duplicates, {("crpc", "154(3)"): 2})
 
-    def test_eval_manifest_remains_pending_and_unmaterialized(self) -> None:
+    def test_eval_manifest_is_now_materialized_without_catalog_drift(self) -> None:
         payload = json.loads(
             (REPO_ROOT / "data/structured/manifests/legal_section_eval.json").read_text(encoding="utf-8")
         )
         self.assertEqual(len(payload["examples"]), 36)
-        self.assertEqual({item["review_status"] for item in payload["examples"]}, {"pending"})
-        self.assertEqual(sum(1 for item in payload["examples"] if item["review_status"] == "reviewed"), 0)
-        self.assertTrue(all(item["gold_sections"] == [] for item in payload["examples"]))
+        self.assertEqual({item["review_status"] for item in payload["examples"]}, {"reviewed"})
+        self.assertEqual(sum(1 for item in payload["examples"] if item["review_status"] == "pending"), 0)
+        self.assertEqual(sum(len(item["gold_sections"]) for item in payload["examples"]), 61)
+        self.assertEqual([item["example_id"] for item in payload["examples"] if item["gold_sections"] == []], ["sec-q026", "sec-q027", "sec-q035"])
 
     def test_predictor_source_is_unchanged(self) -> None:
         source = (REPO_ROOT / "backend/app/services/legal_section_prediction.py").read_bytes()

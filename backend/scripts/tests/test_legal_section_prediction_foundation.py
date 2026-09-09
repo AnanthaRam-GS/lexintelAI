@@ -76,12 +76,13 @@ class LegalSectionPredictionFoundationTests(unittest.TestCase):
         self.assertTrue(all(item.prediction_version == PREDICTION_VERSION for item in analysis.predicted_sections))
         self.assertTrue(all(item.evidence for item in analysis.predicted_sections))
 
-    def test_pending_eval_manifest(self) -> None:
+    def test_materialized_eval_manifest(self) -> None:
         payload = json.loads((REPO_ROOT / "data/structured/manifests/legal_section_eval.json").read_text(encoding="utf-8"))
         self.assertEqual(payload["schema_version"], "legalai-section-eval-v1")
         self.assertEqual(len(payload["examples"]), 36)
-        self.assertEqual({item["review_status"] for item in payload["examples"]}, {"pending"})
-        self.assertTrue(all(item["gold_sections"] == [] for item in payload["examples"]))
+        self.assertEqual({item["review_status"] for item in payload["examples"]}, {"reviewed"})
+        self.assertEqual(sum(len(item["gold_sections"]) for item in payload["examples"]), 61)
+        self.assertEqual([item["example_id"] for item in payload["examples"] if item["gold_sections"] == []], ["sec-q026", "sec-q027", "sec-q035"])
         queries = " ".join(item["query"].casefold() for item in payload["examples"])
         for marker in ["ipc", "crpc", "bns", "bnss", "transition", "quashing", "default bail"]:
             self.assertIn(marker, queries)
