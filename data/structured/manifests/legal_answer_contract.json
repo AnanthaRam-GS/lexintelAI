@@ -1,0 +1,28 @@
+{
+  "schema_version": "legalai-grounded-answer-v1",
+  "input": [
+    "LegalQueryUnderstanding",
+    "LegalRetrievalResult"
+  ],
+  "modes": [
+    "public",
+    "professional"
+  ],
+  "citation_source": "retrieval_evidence_only",
+  "citation_ids": "response_local_evidence_ids",
+  "structured_output": true,
+  "claim_grounding_validation": true,
+  "prompt_injection_protection": true,
+  "default_provider": "config",
+  "provider_env": "LEGALAI_LLM_PROVIDER",
+  "gemini_model_env": "GEMINI_MODEL",
+  "gemini_api_key_env": "GEMINI_API_KEY",
+  "fallback_provider": "ollama",
+  "fallback_explicit": true,
+  "ollama_base_url_env": "OLLAMA_BASE_URL",
+  "ollama_model_env": "OLLAMA_MODEL",
+  "llm_required_for_unit_tests": false,
+  "live_generation_default": false,
+  "retrieval_query_policy": "original_query_only",
+  "formal_evaluation_included": false
+}
