@@ -16,12 +16,10 @@ describe('file validation', () => {
     });
 
     expect(result.valid).toHaveLength(0);
-    expect(result.errors).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('notes.txt'),
-        expect.stringContaining('large.pdf'),
-      ]),
-    );
+    expect(result.errors).toEqual([
+      'notes.txt cannot be added. Choose a PDF file.',
+      'large.pdf is too large. Choose a file that is 1 MB or smaller.',
+    ]);
   });
 
   it('accepts a PDF extension when the browser supplies no MIME type', () => {
