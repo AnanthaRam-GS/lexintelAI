@@ -22,6 +22,8 @@ The bounded catalog lives at `data/structured/manifests/legal_section_catalog.js
 
 Coverage includes homicide, hurt and assault, theft, robbery, cheating, criminal breach of trust, kidnapping, sexual offences, dowry, conspiracy, narcotics, bail, default bail, quashing, and arrest safeguards.
 
+The initial foundation catalog contained 44 entries. The post-human-review coverage reconciliation expands the catalog to 62 entries without changing predictor scoring, ranking, or gold-label materialization.
+
 The catalog does not attempt a comprehensive Indian statute universe and does not auto-create speculative old/new code equivalence mappings.
 
 ## Regime Handling
