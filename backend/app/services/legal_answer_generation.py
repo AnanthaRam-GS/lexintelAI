@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from enum import StrEnum
 import json
+import socket
+import urllib.error
+import urllib.request
 from time import perf_counter
 from typing import Any, Protocol
 
@@ -152,7 +155,11 @@ class ModelGenerationMetadata(BaseModel):
     fallback_provider: str | None = None
     fallback_reason: str | None = None
     repair_attempted: bool = False
+    repair_succeeded: bool | None = None
     repair_reason: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    total_tokens: int | None = None
 
 
 class LegalAnswerResult(BaseModel):
@@ -194,20 +201,77 @@ class ModelUnavailableError(RuntimeError):
     """Raised by adapters when an explicitly configured model cannot run."""
 
 
+class ModelProviderError(RuntimeError):
+    """Raised when a configured provider returns a sanitized runtime error."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 class GeminiAnswerAdapter:
-    def __init__(self, settings: Settings, *, temperature: float = 0.1) -> None:
+    def __init__(self, settings: Settings, *, temperature: float | None = None, timeout_seconds: float | None = None) -> None:
         self.settings = settings
-        self.temperature = temperature
+        self.temperature = settings.legalai_llm_temperature if temperature is None else temperature
+        self.timeout_seconds = settings.legalai_llm_timeout_seconds if timeout_seconds is None else timeout_seconds
 
     @property
     def configured_model_id(self) -> str:
         return self.settings.gemini_model
 
     def generate_structured_answer(self, prompt: str, *, schema: type[BaseModel], mode: AnswerMode) -> LegalAnswerModelResponse:
-        del prompt, schema
         if not self.settings.gemini_api_key or not self.settings.gemini_model:
             raise ModelUnavailableError("Gemini API key and GEMINI_MODEL must be configured before live generation.")
-        raise ModelUnavailableError("Live Gemini generation is outside the Phase 0.9A mocked-validation boundary.")
+        started = perf_counter()
+        payload = {
+            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": self.temperature,
+                "responseMimeType": "application/json",
+                "responseSchema": model_payload_schema(schema),
+            },
+        }
+        request = urllib.request.Request(
+            self._endpoint(),
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json", "x-goog-api-key": self.settings.gemini_api_key},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                body = json.loads(response.read().decode("utf-8"))
+        except TimeoutError as exc:
+            raise ModelProviderError("GEMINI_TIMEOUT", "Gemini request timed out.") from exc
+        except socket.timeout as exc:
+            raise ModelProviderError("GEMINI_TIMEOUT", "Gemini request timed out.") from exc
+        except urllib.error.HTTPError as exc:
+            raise ModelProviderError(http_error_code(exc), sanitized_http_error(exc)) from exc
+        except urllib.error.URLError as exc:
+            raise ModelProviderError("GEMINI_PROVIDER_ERROR", sanitized_url_error(exc)) from exc
+        except json.JSONDecodeError as exc:
+            raise ModelProviderError("GEMINI_INVALID_RESPONSE", "Gemini returned a non-JSON API response.") from exc
+        text = extract_gemini_text(body)
+        usage = body.get("usageMetadata", {})
+        metadata = ModelGenerationMetadata(
+            provider="gemini",
+            configured_model_id=self.settings.gemini_model,
+            actual_model_id=body.get("modelVersion") or self.settings.gemini_model,
+            temperature=self.temperature,
+            response_mode=mode,
+            fallback_used=False,
+            prompt_tokens=usage.get("promptTokenCount"),
+            completion_tokens=usage.get("candidatesTokenCount"),
+            total_tokens=usage.get("totalTokenCount"),
+        )
+        return LegalAnswerModelResponse(
+            raw_response=text,
+            parsed_response=None,
+            model_metadata=metadata,
+            timings={"generation_latency_ms": elapsed_ms(perf_counter, started)},
+        )
+
+    def _endpoint(self) -> str:
+        return f"https://generativelanguage.googleapis.com/v1beta/models/{self.settings.gemini_model}:generateContent"
 
 
 class OllamaAnswerAdapter:
@@ -283,6 +347,16 @@ def generate_legal_answer(
         model_response = adapter.generate_structured_answer(prompt, schema=schema, mode=mode)
     except ModelUnavailableError as exc:
         return model_unavailable_result(understanding, retrieval, mode, elapsed_ms(timer, started), message=str(exc))
+    except ModelProviderError as exc:
+        return model_provider_failure_result(
+            understanding,
+            retrieval,
+            mode,
+            elapsed_ms(timer, started),
+            exc.code,
+            str(exc),
+            configured_model_id=getattr(adapter, "configured_model_id", ""),
+        )
     try:
         parsed = parse_model_payload(model_response.raw_response, model_response.parsed_response, schema)
     except (json.JSONDecodeError, KeyError, TypeError, ValueError, ValidationError) as exc:
@@ -413,6 +487,84 @@ def model_output_failure_result(
         evidence_unused=evidence_ids,
         model_metadata=metadata,
         timings={"answer_generation_ms": total_ms, **model_response.timings},
+        query_understanding_version=understanding.schema_version,
+        retrieval_version=retrieval.retrieval_version,
+    )
+
+
+def extract_gemini_text(body: dict[str, Any]) -> str:
+    candidates = body.get("candidates") or []
+    if not candidates:
+        raise ModelProviderError("GEMINI_EMPTY_RESPONSE", "Gemini returned no candidates.")
+    parts = candidates[0].get("content", {}).get("parts") or []
+    texts = [part.get("text", "") for part in parts if isinstance(part, dict)]
+    text = "\n".join(item for item in texts if item).strip()
+    if not text:
+        raise ModelProviderError("GEMINI_EMPTY_RESPONSE", "Gemini returned no text content.")
+    return text
+
+
+def model_payload_schema(schema: type[BaseModel]) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "answer": schema.model_json_schema(mode="serialization"),
+            "summary": {"type": "string"},
+            "claims": {
+                "type": "array",
+                "items": GroundedLegalClaim.model_json_schema(mode="serialization"),
+            },
+        },
+        "required": ["answer", "summary", "claims"],
+    }
+
+
+def http_error_code(exc: urllib.error.HTTPError) -> str:
+    if exc.code == 429:
+        return "GEMINI_RATE_LIMIT"
+    if exc.code in {401, 403}:
+        return "GEMINI_AUTH_ERROR"
+    if 500 <= exc.code <= 599:
+        return "GEMINI_PROVIDER_ERROR"
+    return "GEMINI_HTTP_ERROR"
+
+
+def sanitized_http_error(exc: urllib.error.HTTPError) -> str:
+    return f"Gemini request failed with HTTP {exc.code}."
+
+
+def sanitized_url_error(exc: urllib.error.URLError) -> str:
+    reason = exc.reason.__class__.__name__ if hasattr(exc, "reason") else "URLError"
+    return f"Gemini request failed before receiving a response: {reason}."
+
+
+def model_provider_failure_result(
+    understanding: LegalQueryUnderstanding,
+    retrieval: LegalRetrievalResult,
+    mode: AnswerMode,
+    total_ms: float,
+    code: str,
+    message: str,
+    configured_model_id: str = "",
+) -> LegalAnswerResult:
+    evidence_ids = [item.citation_id for item in retrieval.evidence]
+    metadata = ModelGenerationMetadata(
+        provider="gemini",
+        configured_model_id=configured_model_id,
+        response_mode=mode,
+        fallback_used=False,
+    )
+    return LegalAnswerResult(
+        query=understanding.query,
+        mode=mode,
+        answer=None,
+        summary="Gemini generation failed before a validated structured answer was produced.",
+        grounding_status=GroundingStatus.UNGROUNDED,
+        warnings=[LegalAnswerWarning(code=code, message=message, severity="error")],
+        evidence_retrieved=evidence_ids,
+        evidence_unused=evidence_ids,
+        model_metadata=metadata,
+        timings={"answer_generation_ms": total_ms},
         query_understanding_version=understanding.schema_version,
         retrieval_version=retrieval.retrieval_version,
     )

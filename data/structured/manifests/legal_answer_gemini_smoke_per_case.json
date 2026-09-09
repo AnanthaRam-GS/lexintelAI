@@ -1,0 +1,348 @@
+{
+  "schema_version": "legalai_gemini_grounded_smoke_per_case_v1",
+  "live_requested": true,
+  "cases": [
+    {
+      "id": "SMOKE-01",
+      "query": "Section 302 IPC murder bail before Sessions Court",
+      "mode": "public",
+      "llm_called": false,
+      "query_understanding": {
+        "legal_regime": "ipc_crpc",
+        "explicit_sections": [
+          {
+            "value": "302",
+            "normalized": "302",
+            "source": "explicit",
+            "span": {
+              "start": 8,
+              "end": 11,
+              "text": "302"
+            },
+            "confidence": "high",
+            "section": "302",
+            "statute": "IPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 1,
+            "final_score": 0.99,
+            "deterministic_score": 0.99,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "304",
+            "normalized_section": "304",
+            "rank": 2,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "PublicLegalAnswer",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 24504
+      },
+      "answer": null
+    },
+    {
+      "id": "SMOKE-02",
+      "query": "After July 2024, which BNS section covers murder?",
+      "mode": "public",
+      "llm_called": false,
+      "query_understanding": {
+        "legal_regime": "mixed_or_transition",
+        "explicit_sections": [],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "normalized_section": "103",
+            "rank": 1,
+            "final_score": 0.95,
+            "deterministic_score": 0.95,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 2,
+            "final_score": 0.85,
+            "deterministic_score": 0.85,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "304",
+            "normalized_section": "304",
+            "rank": 3,
+            "final_score": 0.75,
+            "deterministic_score": 0.75,
+            "semantic_score": null,
+            "deterministic_rank": 3,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "PublicLegalAnswer",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 20880
+      },
+      "answer": null
+    },
+    {
+      "id": "SMOKE-03",
+      "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
+      "mode": "professional",
+      "llm_called": false,
+      "query_understanding": {
+        "legal_regime": "ipc_crpc",
+        "explicit_sections": [
+          {
+            "value": "438",
+            "normalized": "438",
+            "source": "explicit",
+            "span": {
+              "start": 36,
+              "end": 39,
+              "text": "438"
+            },
+            "confidence": "high",
+            "section": "438",
+            "statute": "CrPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "normalized_section": "438",
+            "rank": 1,
+            "final_score": 0.99,
+            "deterministic_score": 0.99,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": [
+              "anticipatory_bail",
+              "alias:anticipatory bail"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "420",
+            "normalized_section": "420",
+            "rank": 2,
+            "final_score": 0.85,
+            "deterministic_score": 0.85,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "cheating",
+              "alias:cheating"
+            ]
+          },
+          {
+            "statute": "SC/ST Act",
+            "section": "18",
+            "normalized_section": "18",
+            "rank": 3,
+            "final_score": 0.75,
+            "deterministic_score": 0.75,
+            "semantic_score": null,
+            "deterministic_rank": 3,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "anticipatory_bail"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "ProfessionalLegalBrief",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 23992
+      },
+      "answer": null
+    },
+    {
+      "id": "SMOKE-04",
+      "query": "Section 103 BNS and Section 302 IPC transition issue",
+      "mode": "professional",
+      "llm_called": false,
+      "query_understanding": {
+        "legal_regime": "mixed_or_transition",
+        "explicit_sections": [
+          {
+            "value": "103",
+            "normalized": "103",
+            "source": "explicit",
+            "span": {
+              "start": 8,
+              "end": 11,
+              "text": "103"
+            },
+            "confidence": "high",
+            "section": "103",
+            "statute": "BNS"
+          },
+          {
+            "value": "302",
+            "normalized": "302",
+            "source": "explicit",
+            "span": {
+              "start": 28,
+              "end": 31,
+              "text": "302"
+            },
+            "confidence": "high",
+            "section": "302",
+            "statute": "IPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "normalized_section": "103",
+            "rank": 1,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": []
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 2,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": []
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "ProfessionalLegalBrief",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 21977
+      },
+      "answer": null
+    }
+  ]
+}
