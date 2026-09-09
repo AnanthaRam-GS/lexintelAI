@@ -1,0 +1,176 @@
+"""Corpus ingestion API endpoints for LegalAI."""
+
+from __future__ import annotations
+
+import hashlib
+from pathlib import Path
+import re
+import uuid
+
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+    status,
+)
+from sqlalchemy.orm import Session
+
+from backend.app.core.config import Settings
+from backend.app.core.dependencies import require_admin
+from backend.app.db.models import User
+from backend.app.db.session import get_db
+from backend.app.models.ingest import (
+    CorpusStatsResponse,
+    IngestionStatus,
+    IngestionStatusResponse,
+    IngestionUploadResponse,
+)
+from backend.app.services.ingestion import (
+    create_ingestion_job,
+    get_corpus_stats,
+    get_ingestion_job,
+    get_job_chunk_count,
+    process_ingestion_job,
+)
+
+router = APIRouter(prefix="/ingest", tags=["Corpus Ingestion"])
+settings = Settings()
+
+UPLOAD_DIR = Path("data/raw/uploads")
+
+
+def sanitize_filename(filename: str) -> str:
+    """Sanitize uploaded filename to prevent directory traversal."""
+    cleaned = re.sub(r"[^\w\-.]", "_", Path(filename).name)
+    return cleaned or "document.pdf"
+
+
+@router.post(
+    "/upload",
+    response_model=IngestionUploadResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def upload_corpus_document(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    doc_type: str = Form(...),
+    court_level: str | None = Form(None),
+    year: int | None = Form(None),
+    source_url: str | None = Form(None),
+    case_name: str | None = Form(None),
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+) -> IngestionUploadResponse:
+    """Accept an administrator-supplied PDF for ingestion into the shared corpus."""
+    filename = file.filename or ""
+    if not filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file must have a .pdf extension.",
+        )
+
+    content_type = (file.content_type or "").lower().strip()
+    if content_type and content_type not in {
+        "application/pdf",
+        "application/x-pdf",
+        "application/octet-stream",
+    }:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid content type '{file.content_type}'. Must be a PDF document.",
+        )
+
+    file_bytes = await file.read()
+    if len(file_bytes) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is empty.",
+        )
+
+    max_bytes = settings.max_upload_size_mb * 1024 * 1024
+    if len(file_bytes) > max_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File size exceeds limit of {settings.max_upload_size_mb} MB.",
+        )
+
+    # Validate PDF magic header signature within the first 1024 bytes per ISO 32000-1
+    if not file_bytes.startswith(b"%PDF-") and b"%PDF-" not in file_bytes[:1024]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid PDF file: Missing '%PDF-' header signature.",
+        )
+
+    checksum = hashlib.sha256(file_bytes).hexdigest()
+    job_id = str(uuid.uuid4())
+
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    safe_name = sanitize_filename(filename)
+    saved_path = UPLOAD_DIR / f"{job_id}_{safe_name}"
+    saved_path.write_bytes(file_bytes)
+
+    # Persist job in database
+    job = create_ingestion_job(db=db, job_id=job_id)
+
+    # Dispatch asynchronous background ingestion
+    background_tasks.add_task(
+        process_ingestion_job,
+        job_id=job.id,
+        file_path=str(saved_path),
+        doc_type=doc_type.strip(),
+        court_level=court_level.strip() if court_level else None,
+        year=year,
+        source_url=source_url.strip() if source_url else None,
+        checksum=checksum,
+        case_name=case_name.strip() if case_name else safe_name,
+    )
+
+    return IngestionUploadResponse(
+        job_id=job.id,
+        status=IngestionStatus.QUEUED,
+    )
+
+
+@router.get(
+    "/status/{job_id}",
+    response_model=IngestionStatusResponse,
+)
+def get_job_status(
+    job_id: str,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+) -> IngestionStatusResponse:
+    """Retrieve current progress, stage, document id, chunk count, or error for an ingestion job."""
+    job = get_ingestion_job(db=db, job_id=job_id)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Ingestion job '{job_id}' not found.",
+        )
+
+    chunk_count = get_job_chunk_count(db=db, document_id=job.document_id)
+
+    return IngestionStatusResponse(
+        job_id=job.id,
+        status=IngestionStatus(job.status),
+        progress=job.progress,
+        document_id=job.document_id,
+        chunk_count=chunk_count if job.document_id else None,
+        error=job.error_message,
+    )
+
+
+@router.get(
+    "/corpus/stats",
+    response_model=CorpusStatsResponse,
+)
+def get_corpus_statistics(
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+) -> CorpusStatsResponse:
+    """Return overall corpus document counts, type breakdown, and storage service health."""
+    return get_corpus_stats(db=db)
