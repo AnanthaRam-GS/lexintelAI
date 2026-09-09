@@ -1,0 +1,30 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "candidate": "dslim/bert-base-NER",
+  "mapping_policy": [
+    {
+      "raw_model_label": "LOC",
+      "canonical_label": "LOCATION",
+      "mapping_status": "mapped",
+      "rationale": "General NER location labels map to LegalAI LOCATION."
+    },
+    {
+      "raw_model_label": "MISC",
+      "canonical_label": null,
+      "mapping_status": "unmapped",
+      "rationale": "Generic miscellaneous labels are not forced into LegalAI legal entity types."
+    },
+    {
+      "raw_model_label": "ORG",
+      "canonical_label": "ORGANIZATION",
+      "mapping_status": "mapped",
+      "rationale": "Organization labels map to LegalAI ORGANIZATION."
+    },
+    {
+      "raw_model_label": "PER",
+      "canonical_label": "PERSON",
+      "mapping_status": "mapped",
+      "rationale": "General NER person labels map to LegalAI PERSON."
+    }
+  ]
+}

@@ -1,0 +1,785 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "candidate": "dslim/bert-base-NER",
+  "model_metadata": {
+    "model_id": "dslim/bert-base-NER",
+    "revision": "d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc",
+    "config_architectures": [
+      "BertForTokenClassification"
+    ],
+    "id2label": {
+      "0": "O",
+      "1": "B-MISC",
+      "2": "I-MISC",
+      "3": "B-PER",
+      "4": "I-PER",
+      "5": "B-ORG",
+      "6": "I-ORG",
+      "7": "B-LOC",
+      "8": "I-LOC"
+    },
+    "label2id": {
+      "B-LOC": 7,
+      "B-MISC": 1,
+      "B-ORG": 5,
+      "B-PER": 3,
+      "I-LOC": 8,
+      "I-MISC": 2,
+      "I-ORG": 6,
+      "I-PER": 4,
+      "O": 0
+    },
+    "parameter_count": 107726601,
+    "tokenizer_class": "BertTokenizer",
+    "local_cache_identifier": "huggingface_hub/models--dslim--bert-base-NER/snapshots/d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc",
+    "license": "mit",
+    "environment": {
+      "torch": "2.14.0"
+    }
+  },
+  "model_load_time_ms": 2696.671,
+  "examples": [
+    {
+      "example_id": "ner-q001",
+      "text": "Section 302 IPC was considered by the Supreme Court.",
+      "inference_ms": 31.793,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q001",
+          "text": "IP",
+          "model_text": "IP",
+          "start_char": 12,
+          "end_char": 14,
+          "raw_label": "ORG",
+          "confidence": 0.891097
+        },
+        {
+          "example_id": "ner-q001",
+          "text": "Supreme Court",
+          "model_text": "Supreme Court",
+          "start_char": 38,
+          "end_char": 51,
+          "raw_label": "ORG",
+          "confidence": 0.99744
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q002",
+      "text": "Can anticipatory bail under Section 438 CrPC be granted in a 2023 cheating case?",
+      "inference_ms": 12.878,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q002",
+          "text": "Section",
+          "model_text": "Section",
+          "start_char": 28,
+          "end_char": 35,
+          "raw_label": "MISC",
+          "confidence": 0.729655
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "inference_ms": 12.498,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q003",
+          "text": "Section",
+          "model_text": "Section",
+          "start_char": 16,
+          "end_char": 23,
+          "raw_label": "MISC",
+          "confidence": 0.542693
+        },
+        {
+          "example_id": "ner-q003",
+          "text": "B",
+          "model_text": "B",
+          "start_char": 28,
+          "end_char": 29,
+          "raw_label": "ORG",
+          "confidence": 0.938649
+        },
+        {
+          "example_id": "ner-q003",
+          "text": "Karnataka High Court",
+          "model_text": "Karnataka High Court",
+          "start_char": 50,
+          "end_char": 70,
+          "raw_label": "ORG",
+          "confidence": 0.983908
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "inference_ms": 12.215,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q004",
+          "text": "BNS",
+          "model_text": "BNS",
+          "start_char": 6,
+          "end_char": 9,
+          "raw_label": "ORG",
+          "confidence": 0.95551
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "inference_ms": 12.593,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q005",
+          "text": "Delhi High Court",
+          "model_text": "Delhi High Court",
+          "start_char": 4,
+          "end_char": 20,
+          "raw_label": "ORG",
+          "confidence": 0.948503
+        },
+        {
+          "example_id": "ner-q005",
+          "text": "Ram",
+          "model_text": "Ram",
+          "start_char": 41,
+          "end_char": 44,
+          "raw_label": "PER",
+          "confidence": 0.999493
+        },
+        {
+          "example_id": "ner-q005",
+          "text": "esh Kumar",
+          "model_text": "##esh Kumar",
+          "start_char": 44,
+          "end_char": 53,
+          "raw_label": "PER",
+          "confidence": 0.988294
+        },
+        {
+          "example_id": "ner-q005",
+          "text": "State of NCT",
+          "model_text": "State of NCT",
+          "start_char": 62,
+          "end_char": 74,
+          "raw_label": "ORG",
+          "confidence": 0.756058
+        },
+        {
+          "example_id": "ner-q005",
+          "text": "Delhi",
+          "model_text": "Delhi",
+          "start_char": 78,
+          "end_char": 83,
+          "raw_label": "LOC",
+          "confidence": 0.700901
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q006",
+      "text": "FIR No. 137 of 2023 was registered at Gannavaram Urban Police Station.",
+      "inference_ms": 12.25,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q006",
+          "text": "Gannavaram Urban Police Station",
+          "model_text": "Gannavaram Urban Police Station",
+          "start_char": 38,
+          "end_char": 69,
+          "raw_label": "LOC",
+          "confidence": 0.950999
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q007",
+      "text": "A complaint was filed at Hauz Qazi Police Station for criminal breach of trust.",
+      "inference_ms": 12.153,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q007",
+          "text": "Hauz Qazi Police Station",
+          "model_text": "Hauz Qazi Police Station",
+          "start_char": 25,
+          "end_char": 49,
+          "raw_label": "LOC",
+          "confidence": 0.993583
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q008",
+      "text": "State of Maharashtra v. Arjun Singh involved Section 420 IPC.",
+      "inference_ms": 11.974,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q008",
+          "text": "State of Maharashtra",
+          "model_text": "State of Maharashtra",
+          "start_char": 0,
+          "end_char": 20,
+          "raw_label": "ORG",
+          "confidence": 0.988625
+        },
+        {
+          "example_id": "ner-q008",
+          "text": "A",
+          "model_text": "A",
+          "start_char": 24,
+          "end_char": 25,
+          "raw_label": "PER",
+          "confidence": 0.998864
+        },
+        {
+          "example_id": "ner-q008",
+          "text": "rjun Singh",
+          "model_text": "##rjun Singh",
+          "start_char": 25,
+          "end_char": 35,
+          "raw_label": "PER",
+          "confidence": 0.948134
+        },
+        {
+          "example_id": "ner-q008",
+          "text": "IPC",
+          "model_text": "IPC",
+          "start_char": 57,
+          "end_char": 60,
+          "raw_label": "ORG",
+          "confidence": 0.800014
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q009",
+      "text": "The accused sought default bail after the charge-sheet was delayed.",
+      "inference_ms": 12.357,
+      "raw_predictions": []
+    },
+    {
+      "example_id": "ner-q010",
+      "text": "A minor was lured away from Bengaluru and sexually assaulted.",
+      "inference_ms": 12.469,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q010",
+          "text": "Bengaluru",
+          "model_text": "Bengaluru",
+          "start_char": 28,
+          "end_char": 37,
+          "raw_label": "LOC",
+          "confidence": 0.998924
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q011",
+      "text": "The Sessions Court convicted the appellant for dowry harassment.",
+      "inference_ms": 12.458,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q011",
+          "text": "Sessions Court",
+          "model_text": "Sessions Court",
+          "start_char": 4,
+          "end_char": 18,
+          "raw_label": "ORG",
+          "confidence": 0.97569
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q012",
+      "text": "The petitioner relied on AIR 1973 SC 2622 before the Supreme Court.",
+      "inference_ms": 12.136,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q012",
+          "text": "AIR",
+          "model_text": "AIR",
+          "start_char": 25,
+          "end_char": 28,
+          "raw_label": "MISC",
+          "confidence": 0.905543
+        },
+        {
+          "example_id": "ner-q012",
+          "text": "SC",
+          "model_text": "SC",
+          "start_char": 34,
+          "end_char": 36,
+          "raw_label": "MISC",
+          "confidence": 0.961496
+        },
+        {
+          "example_id": "ner-q012",
+          "text": "Supreme Court",
+          "model_text": "Supreme Court",
+          "start_char": 53,
+          "end_char": 66,
+          "raw_label": "ORG",
+          "confidence": 0.996933
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "inference_ms": 12.119,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q013",
+          "text": "SC",
+          "model_text": "SC",
+          "start_char": 30,
+          "end_char": 32,
+          "raw_label": "ORG",
+          "confidence": 0.660841
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q014",
+      "text": "Is Section 21 NDPS Act applicable to possession of heroin?",
+      "inference_ms": 12.378,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q014",
+          "text": "Section 21",
+          "model_text": "Section 21",
+          "start_char": 3,
+          "end_char": 13,
+          "raw_label": "MISC",
+          "confidence": 0.824013
+        },
+        {
+          "example_id": "ner-q014",
+          "text": "NDPS Act",
+          "model_text": "NDPS Act",
+          "start_char": 14,
+          "end_char": 22,
+          "raw_label": "MISC",
+          "confidence": 0.963546
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q015",
+      "text": "The Special Court took cognizance under the POCSO Act.",
+      "inference_ms": 12.151,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q015",
+          "text": "Special Court",
+          "model_text": "Special Court",
+          "start_char": 4,
+          "end_char": 17,
+          "raw_label": "ORG",
+          "confidence": 0.867536
+        },
+        {
+          "example_id": "ner-q015",
+          "text": "P",
+          "model_text": "P",
+          "start_char": 44,
+          "end_char": 45,
+          "raw_label": "MISC",
+          "confidence": 0.99412
+        },
+        {
+          "example_id": "ner-q015",
+          "text": "OCSO Act",
+          "model_text": "##OCSO Act",
+          "start_char": 45,
+          "end_char": 53,
+          "raw_label": "MISC",
+          "confidence": 0.791058
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q016",
+      "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.",
+      "inference_ms": 12.051,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q016",
+          "text": "Alpha Trade",
+          "model_text": "Alpha Trade",
+          "start_char": 66,
+          "end_char": 77,
+          "raw_label": "ORG",
+          "confidence": 0.915711
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q017",
+      "text": "The trial court in Chennai rejected regular bail.",
+      "inference_ms": 12.229,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q017",
+          "text": "Chennai",
+          "model_text": "Chennai",
+          "start_char": 19,
+          "end_char": 26,
+          "raw_label": "LOC",
+          "confidence": 0.999645
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "inference_ms": 12.575,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q018",
+          "text": "C",
+          "model_text": "C",
+          "start_char": 18,
+          "end_char": 19,
+          "raw_label": "ORG",
+          "confidence": 0.948441
+        },
+        {
+          "example_id": "ner-q018",
+          "text": "PC",
+          "model_text": "##PC",
+          "start_char": 20,
+          "end_char": 22,
+          "raw_label": "ORG",
+          "confidence": 0.739406
+        },
+        {
+          "example_id": "ner-q018",
+          "text": "IPC",
+          "model_text": "IPC",
+          "start_char": 47,
+          "end_char": 50,
+          "raw_label": "ORG",
+          "confidence": 0.913735
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q019",
+      "text": "After commencement of new criminal laws, BNSS procedure may govern the investigation.",
+      "inference_ms": 12.322,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q019",
+          "text": "B",
+          "model_text": "B",
+          "start_char": 41,
+          "end_char": 42,
+          "raw_label": "ORG",
+          "confidence": 0.99613
+        },
+        {
+          "example_id": "ner-q019",
+          "text": "NSS",
+          "model_text": "##NSS",
+          "start_char": 42,
+          "end_char": 45,
+          "raw_label": "ORG",
+          "confidence": 0.838597
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q020",
+      "text": "The Evidence Act issue arose during trial.",
+      "inference_ms": 12.991,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q020",
+          "text": "Evidence Act",
+          "model_text": "Evidence Act",
+          "start_char": 4,
+          "end_char": 16,
+          "raw_label": "MISC",
+          "confidence": 0.997094
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q021",
+      "text": "The victim named Suresh and Meena in the FIR.",
+      "inference_ms": 12.49,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q021",
+          "text": "Sure",
+          "model_text": "Sure",
+          "start_char": 17,
+          "end_char": 21,
+          "raw_label": "PER",
+          "confidence": 0.999243
+        },
+        {
+          "example_id": "ner-q021",
+          "text": "sh",
+          "model_text": "##sh",
+          "start_char": 21,
+          "end_char": 23,
+          "raw_label": "PER",
+          "confidence": 0.982201
+        },
+        {
+          "example_id": "ner-q021",
+          "text": "Me",
+          "model_text": "Me",
+          "start_char": 28,
+          "end_char": 30,
+          "raw_label": "PER",
+          "confidence": 0.999091
+        },
+        {
+          "example_id": "ner-q021",
+          "text": "ena",
+          "model_text": "##ena",
+          "start_char": 30,
+          "end_char": 33,
+          "raw_label": "PER",
+          "confidence": 0.956837
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q022",
+      "text": "The police investigated alleged theft of a motorcycle in Kochi.",
+      "inference_ms": 12.401,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q022",
+          "text": "Kochi",
+          "model_text": "Kochi",
+          "start_char": 57,
+          "end_char": 62,
+          "raw_label": "LOC",
+          "confidence": 0.998578
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "inference_ms": 12.202,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q023",
+          "text": "High Court",
+          "model_text": "High Court",
+          "start_char": 8,
+          "end_char": 18,
+          "raw_label": "ORG",
+          "confidence": 0.86795
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q024",
+      "text": "A revision was filed before the District Court.",
+      "inference_ms": 12.087,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q024",
+          "text": "District Court",
+          "model_text": "District Court",
+          "start_char": 32,
+          "end_char": 46,
+          "raw_label": "ORG",
+          "confidence": 0.992301
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q025",
+      "text": "The organization Bharat Finance complained about misappropriation.",
+      "inference_ms": 12.399,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q025",
+          "text": "B",
+          "model_text": "B",
+          "start_char": 17,
+          "end_char": 18,
+          "raw_label": "ORG",
+          "confidence": 0.997452
+        },
+        {
+          "example_id": "ner-q025",
+          "text": "harat Finance",
+          "model_text": "##harat Finance",
+          "start_char": 18,
+          "end_char": 31,
+          "raw_label": "ORG",
+          "confidence": 0.9893
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q026",
+      "text": "No statute or court is mentioned in this sentence.",
+      "inference_ms": 12.208,
+      "raw_predictions": []
+    },
+    {
+      "example_id": "ner-q027",
+      "text": "Does Section 302 apply here?",
+      "inference_ms": 12.431,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q027",
+          "text": "Section 302",
+          "model_text": "Section 302",
+          "start_char": 5,
+          "end_char": 16,
+          "raw_label": "MISC",
+          "confidence": 0.952724
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "inference_ms": 12.523,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q028",
+          "text": "Bombay High Court",
+          "model_text": "Bombay High Court",
+          "start_char": 43,
+          "end_char": 60,
+          "raw_label": "ORG",
+          "confidence": 0.984051
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q029",
+      "text": "The informant reported kidnapping from lawful custody.",
+      "inference_ms": 12.267,
+      "raw_predictions": []
+    },
+    {
+      "example_id": "ner-q030",
+      "text": "The case concerns common intention and criminal conspiracy.",
+      "inference_ms": 12.166,
+      "raw_predictions": []
+    },
+    {
+      "example_id": "ner-q031",
+      "text": "The SC/ST Act was invoked along with Section 323 IPC.",
+      "inference_ms": 12.077,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q031",
+          "text": "SC/ST Act",
+          "model_text": "SC / ST Act",
+          "start_char": 4,
+          "end_char": 13,
+          "raw_label": "MISC",
+          "confidence": 0.972774
+        },
+        {
+          "example_id": "ner-q031",
+          "text": "IP",
+          "model_text": "IP",
+          "start_char": 49,
+          "end_char": 51,
+          "raw_label": "MISC",
+          "confidence": 0.556511
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "inference_ms": 12.357,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q032",
+          "text": "Hyderabad",
+          "model_text": "Hyderabad",
+          "start_char": 27,
+          "end_char": 36,
+          "raw_label": "LOC",
+          "confidence": 0.999665
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q033",
+      "text": "The final report named Zenith Logistics as an accused organization.",
+      "inference_ms": 12.257,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q033",
+          "text": "Zenith Logistics",
+          "model_text": "Zenith Logistics",
+          "start_char": 23,
+          "end_char": 39,
+          "raw_label": "ORG",
+          "confidence": 0.999358
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q034",
+      "text": "A quashing petition mentioned both IPC and BNS transition issues.",
+      "inference_ms": 12.191,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q034",
+          "text": "IPC",
+          "model_text": "IPC",
+          "start_char": 35,
+          "end_char": 38,
+          "raw_label": "ORG",
+          "confidence": 0.999147
+        },
+        {
+          "example_id": "ner-q034",
+          "text": "BNS",
+          "model_text": "BNS",
+          "start_char": 43,
+          "end_char": 46,
+          "raw_label": "ORG",
+          "confidence": 0.997329
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q035",
+      "text": "The District Court order dated July 1, 2024 was appealed.",
+      "inference_ms": 12.324,
+      "raw_predictions": [
+        {
+          "example_id": "ner-q035",
+          "text": "District Court",
+          "model_text": "District Court",
+          "start_char": 4,
+          "end_char": 18,
+          "raw_label": "ORG",
+          "confidence": 0.849413
+        }
+      ]
+    },
+    {
+      "example_id": "ner-q036",
+      "text": "Only a generic petition was filed.",
+      "inference_ms": 12.616,
+      "raw_predictions": []
+    }
+  ]
+}

@@ -1,0 +1,2775 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "candidate": "dslim/bert-base-NER",
+  "L2_learned": {
+    "error_type_counts": {
+      "BOUNDARY_MISMATCH": 31,
+      "MISSING_ENTITY_TYPE": 56,
+      "UNMAPPED_MODEL_LABEL": 12,
+      "WRONG_ENTITY_TYPE": 34
+    },
+    "records": [
+      {
+        "example_id": "ner-q001",
+        "entity": {
+          "text": "IP",
+          "entity_type": "ORGANIZATION",
+          "start_char": 12,
+          "end_char": 14,
+          "confidence": 0.891097,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q001"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q001",
+        "entity": {
+          "text": "Supreme Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 0.99744,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q001"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q001",
+        "entity": {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q001",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q001",
+        "entity": {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 38,
+          "end_char": 51,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q002",
+        "entity": {
+          "text": "anticipatory bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 21,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q002",
+        "entity": {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q002",
+        "entity": {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q002",
+        "entity": {
+          "text": "2023",
+          "entity_type": "DATE",
+          "start_char": 61,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q002",
+        "entity": {
+          "text": "cheating",
+          "entity_type": "OFFENCE",
+          "start_char": 66,
+          "end_char": 74,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 28,
+          "end_char": 29,
+          "confidence": 0.938649,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q003"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "Karnataka High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 0.983908,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q003"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 28,
+          "end_char": 32,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "BNS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 0.95551,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q004"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 6,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "murder",
+          "entity_type": "OFFENCE",
+          "start_char": 52,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Delhi High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 0.948503,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Ram",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 44,
+          "confidence": 0.999493,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "esh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 0.988294,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "State of NCT",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 74,
+          "confidence": 0.756058,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Delhi",
+          "entity_type": "LOCATION",
+          "start_char": 78,
+          "end_char": 83,
+          "confidence": 0.700901,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q006",
+        "entity": {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "LOCATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 0.950999,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q006"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q006",
+        "entity": {
+          "text": "FIR No. 137 of 2023",
+          "entity_type": "FIR_NUMBER",
+          "start_char": 0,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q006",
+        "entity": {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 38,
+          "end_char": 69,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q007",
+        "entity": {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "LOCATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 0.993583,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q007"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q007",
+        "entity": {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 25,
+          "end_char": 49,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q007",
+        "entity": {
+          "text": "criminal breach of trust",
+          "entity_type": "OFFENCE",
+          "start_char": 54,
+          "end_char": 78,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "State of Maharashtra",
+          "entity_type": "ORGANIZATION",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 0.988625,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "A",
+          "entity_type": "PERSON",
+          "start_char": 24,
+          "end_char": 25,
+          "confidence": 0.998864,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "rjun Singh",
+          "entity_type": "PERSON",
+          "start_char": 25,
+          "end_char": 35,
+          "confidence": 0.948134,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 0.800014,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q009",
+        "entity": {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 11,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q009",
+        "entity": {
+          "text": "default bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 19,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q009",
+        "entity": {
+          "text": "charge-sheet",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 42,
+          "end_char": 54,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q010",
+        "entity": {
+          "text": "sexually assaulted",
+          "entity_type": "OFFENCE",
+          "start_char": 42,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q011",
+        "entity": {
+          "text": "Sessions Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 0.97569,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q011"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q011",
+        "entity": {
+          "text": "Sessions Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q011",
+        "entity": {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 33,
+          "end_char": 42,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q011",
+        "entity": {
+          "text": "dowry harassment",
+          "entity_type": "OFFENCE",
+          "start_char": 47,
+          "end_char": 63,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q012",
+        "entity": {
+          "text": "Supreme Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 0.996933,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q012"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q012",
+        "entity": {
+          "text": "petitioner",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q012",
+        "entity": {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q012",
+        "entity": {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 53,
+          "end_char": 66,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q013",
+        "entity": {
+          "text": "respondent",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q013",
+        "entity": {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q013",
+        "entity": {
+          "text": "criminal appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 43,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q014",
+        "entity": {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q014",
+        "entity": {
+          "text": "NDPS Act",
+          "entity_type": "STATUTE",
+          "start_char": 14,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q014",
+        "entity": {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q015",
+        "entity": {
+          "text": "Special Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 0.867536,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q015"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q015",
+        "entity": {
+          "text": "Special Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 17,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q015",
+        "entity": {
+          "text": "cognizance",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q015",
+        "entity": {
+          "text": "POCSO Act",
+          "entity_type": "STATUTE",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "Alpha Trade",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 77,
+          "confidence": 0.915711,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q016"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "complainant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q017",
+        "entity": {
+          "text": "trial court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 15,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q017",
+        "entity": {
+          "text": "regular bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "C",
+          "entity_type": "ORGANIZATION",
+          "start_char": 18,
+          "end_char": 19,
+          "confidence": 0.948441,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "PC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 20,
+          "end_char": 22,
+          "confidence": 0.739406,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 0.913735,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q018"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q019",
+        "entity": {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 41,
+          "end_char": 42,
+          "confidence": 0.99613,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q019"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q019",
+        "entity": {
+          "text": "NSS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 42,
+          "end_char": 45,
+          "confidence": 0.838597,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q019"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q019",
+        "entity": {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 41,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q019",
+        "entity": {
+          "text": "investigation",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 71,
+          "end_char": 84,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q020",
+        "entity": {
+          "text": "Evidence Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q020",
+        "entity": {
+          "text": "trial",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 41,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Sure",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 21,
+          "confidence": 0.999243,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "sh",
+          "entity_type": "PERSON",
+          "start_char": 21,
+          "end_char": 23,
+          "confidence": 0.982201,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Me",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 30,
+          "confidence": 0.999091,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "ena",
+          "entity_type": "PERSON",
+          "start_char": 30,
+          "end_char": 33,
+          "confidence": 0.956837,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "victim",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q022",
+        "entity": {
+          "text": "theft",
+          "entity_type": "OFFENCE",
+          "start_char": 32,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 0.86795,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q023"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q024",
+        "entity": {
+          "text": "District Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 0.992301,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q024"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q024",
+        "entity": {
+          "text": "revision",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 10,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q024",
+        "entity": {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 32,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 18,
+          "confidence": 0.997452,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "harat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 18,
+          "end_char": 31,
+          "confidence": 0.9893,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "misappropriation",
+          "entity_type": "OFFENCE",
+          "start_char": 49,
+          "end_char": 65,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q027",
+        "entity": {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q028",
+        "entity": {
+          "text": "Bombay High Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 0.984051,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q028"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q028",
+        "entity": {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q028",
+        "entity": {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q029",
+        "entity": {
+          "text": "informant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q029",
+        "entity": {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q030",
+        "entity": {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q030",
+        "entity": {
+          "text": "criminal conspiracy",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 58,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q031",
+        "entity": {
+          "text": "SC/ST Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 13,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q031",
+        "entity": {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q031",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q032",
+        "entity": {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q033",
+        "entity": {
+          "text": "final report",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q033",
+        "entity": {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 46,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q034",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "ORGANIZATION",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 0.999147,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q034"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q034",
+        "entity": {
+          "text": "BNS",
+          "entity_type": "ORGANIZATION",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 0.997329,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q034"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q034",
+        "entity": {
+          "text": "quashing petition",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 19,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q034",
+        "entity": {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q034",
+        "entity": {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 43,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q035",
+        "entity": {
+          "text": "District Court",
+          "entity_type": "ORGANIZATION",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 0.849413,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q035"
+          }
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q035",
+        "entity": {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "WRONG_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q035",
+        "entity": {
+          "text": "July 1, 2024",
+          "entity_type": "DATE",
+          "start_char": 31,
+          "end_char": 43,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      }
+    ],
+    "unmapped_model_predictions": [
+      {
+        "example_id": "ner-q002",
+        "text": "Section",
+        "model_text": "Section",
+        "start_char": 28,
+        "end_char": 35,
+        "raw_label": "MISC",
+        "confidence": 0.729655,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q003",
+        "text": "Section",
+        "model_text": "Section",
+        "start_char": 16,
+        "end_char": 23,
+        "raw_label": "MISC",
+        "confidence": 0.542693,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q012",
+        "text": "AIR",
+        "model_text": "AIR",
+        "start_char": 25,
+        "end_char": 28,
+        "raw_label": "MISC",
+        "confidence": 0.905543,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q012",
+        "text": "SC",
+        "model_text": "SC",
+        "start_char": 34,
+        "end_char": 36,
+        "raw_label": "MISC",
+        "confidence": 0.961496,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q014",
+        "text": "Section 21",
+        "model_text": "Section 21",
+        "start_char": 3,
+        "end_char": 13,
+        "raw_label": "MISC",
+        "confidence": 0.824013,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q014",
+        "text": "NDPS Act",
+        "model_text": "NDPS Act",
+        "start_char": 14,
+        "end_char": 22,
+        "raw_label": "MISC",
+        "confidence": 0.963546,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q015",
+        "text": "P",
+        "model_text": "P",
+        "start_char": 44,
+        "end_char": 45,
+        "raw_label": "MISC",
+        "confidence": 0.99412,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q015",
+        "text": "OCSO Act",
+        "model_text": "##OCSO Act",
+        "start_char": 45,
+        "end_char": 53,
+        "raw_label": "MISC",
+        "confidence": 0.791058,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q020",
+        "text": "Evidence Act",
+        "model_text": "Evidence Act",
+        "start_char": 4,
+        "end_char": 16,
+        "raw_label": "MISC",
+        "confidence": 0.997094,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q027",
+        "text": "Section 302",
+        "model_text": "Section 302",
+        "start_char": 5,
+        "end_char": 16,
+        "raw_label": "MISC",
+        "confidence": 0.952724,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q031",
+        "text": "SC/ST Act",
+        "model_text": "SC / ST Act",
+        "start_char": 4,
+        "end_char": 13,
+        "raw_label": "MISC",
+        "confidence": 0.972774,
+        "normalized_raw_label": "MISC"
+      },
+      {
+        "example_id": "ner-q031",
+        "text": "IP",
+        "model_text": "IP",
+        "start_char": 49,
+        "end_char": 51,
+        "raw_label": "MISC",
+        "confidence": 0.556511,
+        "normalized_raw_label": "MISC"
+      }
+    ]
+  },
+  "H2_hybrid": {
+    "error_type_counts": {
+      "BOUNDARY_MISMATCH": 37,
+      "MISSING_ENTITY_TYPE": 4,
+      "SPURIOUS_ENTITY": 3,
+      "UNMAPPED_MODEL_LABEL": 0
+    },
+    "records": [
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "the Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 46,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q003",
+        "entity": {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "after 1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 28,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q004",
+        "entity": {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "The Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Ram",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 44,
+          "confidence": 0.999493,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "esh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 44,
+          "end_char": 53,
+          "confidence": 0.988294,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "State of NCT",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 74,
+          "confidence": 0.756058,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Delhi",
+          "entity_type": "LOCATION",
+          "start_char": 78,
+          "end_char": 83,
+          "confidence": 0.700901,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "LOC",
+            "example_id": "ner-q005"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q005",
+        "entity": {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "State of Maharashtra",
+          "entity_type": "ORGANIZATION",
+          "start_char": 0,
+          "end_char": 20,
+          "confidence": 0.988625,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "A",
+          "entity_type": "PERSON",
+          "start_char": 24,
+          "end_char": 25,
+          "confidence": 0.998864,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "rjun Singh",
+          "entity_type": "PERSON",
+          "start_char": 25,
+          "end_char": 35,
+          "confidence": 0.948134,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q008"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q008",
+        "entity": {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q010",
+        "entity": {
+          "text": "lured away",
+          "entity_type": "OFFENCE",
+          "start_char": 12,
+          "end_char": 22,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "SPURIOUS_ENTITY"
+      },
+      {
+        "example_id": "ner-q013",
+        "entity": {
+          "text": "2014",
+          "entity_type": "DATE",
+          "start_char": 22,
+          "end_char": 26,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q013",
+        "entity": {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q014",
+        "entity": {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "false promise",
+          "entity_type": "OFFENCE",
+          "start_char": 24,
+          "end_char": 37,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "SPURIOUS_ENTITY"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "Alpha Trade",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 77,
+          "confidence": 0.915711,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q016"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q016",
+        "entity": {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "Before July 2024",
+          "entity_type": "DATE",
+          "start_char": 0,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.date",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q018",
+        "entity": {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Sure",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 21,
+          "confidence": 0.999243,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "sh",
+          "entity_type": "PERSON",
+          "start_char": 21,
+          "end_char": 23,
+          "confidence": 0.982201,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Me",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 30,
+          "confidence": 0.999091,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "ena",
+          "entity_type": "PERSON",
+          "start_char": 30,
+          "end_char": 33,
+          "confidence": 0.956837,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "PER",
+            "example_id": "ner-q021"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q021",
+        "entity": {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "Can the High Court",
+          "entity_type": "COURT",
+          "start_char": 0,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q023",
+        "entity": {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "B",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 18,
+          "confidence": 0.997452,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "harat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 18,
+          "end_char": 31,
+          "confidence": 0.9893,
+          "source": "model",
+          "extractor": "dslim_bert_base_ner",
+          "model_name": "dslim/bert-base-NER",
+          "metadata": {
+            "raw_label": "ORG",
+            "example_id": "ner-q025"
+          }
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q025",
+        "entity": {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q028",
+        "entity": {
+          "text": "the Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 39,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.court",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q028",
+        "entity": {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q029",
+        "entity": {
+          "text": "lawful custody",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 53,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "SPURIOUS_ENTITY"
+      },
+      {
+        "example_id": "ner-q029",
+        "entity": {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q030",
+        "entity": {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "MISSING_ENTITY_TYPE"
+      },
+      {
+        "example_id": "ner-q032",
+        "entity": {
+          "text": "ganja",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 46,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "query_analysis.offence",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      },
+      {
+        "example_id": "ner-q032",
+        "entity": {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57,
+          "confidence": 1.0,
+          "source": "deterministic",
+          "extractor": "human_gold",
+          "model_name": null,
+          "metadata": {}
+        },
+        "error_type": "BOUNDARY_MISMATCH"
+      }
+    ],
+    "unmapped_model_predictions": []
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "primary_threshold": 0.7,
+  "t2_candidate": "dslim/bert-base-NER",
+  "systems": {
+    "D0_deterministic": {
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "true_positive": 65,
+      "false_positive": 11,
+      "false_negative": 24
+    },
+    "L2_general_bert": {
+      "precision": 0.119048,
+      "recall": 0.05618,
+      "f1": 0.076336,
+      "true_positive": 5,
+      "false_positive": 37,
+      "false_negative": 84
+    },
+    "H2_general_hybrid": {
+      "precision": 0.736842,
+      "recall": 0.786517,
+      "f1": 0.76087,
+      "true_positive": 70,
+      "false_positive": 25,
+      "false_negative": 19
+    },
+    "L1_inlegalbert_silver": {
+      "precision": 1.0,
+      "recall": 0.202247,
+      "f1": 0.336449,
+      "true_positive": 18,
+      "false_positive": 0,
+      "false_negative": 71
+    },
+    "H1_inlegalbert_hybrid": {
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "true_positive": 65,
+      "false_positive": 11,
+      "false_negative": 24
+    }
+  },
+  "t2_decision": "GENERAL NER CANDIDATE REJECTED",
+  "model_decision": "NEITHER CANDIDATE JUSTIFIED"
+}
