@@ -1,45 +1,867 @@
 {
   "version": "legalai-ner-gold-template-v1",
   "schema_version": "legalai-ner-schema-v1",
-  "annotation_status": "pending_human_gold_annotation",
+  "annotation_status": "human_gold_materialized",
   "source_manifest": "data/structured/manifests/legal_ner_eval.json",
   "span_convention": "start_char inclusive, end_char exclusive, offsets into original text",
   "examples": [
-    {"example_id": "ner-q001", "text": "Section 302 IPC was considered by the Supreme Court.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q002", "text": "Can anticipatory bail under Section 438 CrPC be granted in a 2023 cheating case?", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q003", "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q004", "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q005", "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q006", "text": "FIR No. 137 of 2023 was registered at Gannavaram Urban Police Station.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q007", "text": "A complaint was filed at Hauz Qazi Police Station for criminal breach of trust.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q008", "text": "State of Maharashtra v. Arjun Singh involved Section 420 IPC.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q009", "text": "The accused sought default bail after the charge-sheet was delayed.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q010", "text": "A minor was lured away from Bengaluru and sexually assaulted.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q011", "text": "The Sessions Court convicted the appellant for dowry harassment.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q012", "text": "The petitioner relied on AIR 1973 SC 2622 before the Supreme Court.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q013", "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q014", "text": "Is Section 21 NDPS Act applicable to possession of heroin?", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q015", "text": "The Special Court took cognizance under the POCSO Act.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q016", "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q017", "text": "The trial court in Chennai rejected regular bail.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q018", "text": "Before July 2024, CrPC procedure applied to an IPC offence.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q019", "text": "After commencement of new criminal laws, BNSS procedure may govern the investigation.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q020", "text": "The Evidence Act issue arose during trial.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q021", "text": "The victim named Suresh and Meena in the FIR.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q022", "text": "The police investigated alleged theft of a motorcycle in Kochi.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q023", "text": "Can the High Court quash an FIR for Section 498A IPC?", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q024", "text": "A revision was filed before the District Court.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q025", "text": "The organization Bharat Finance complained about misappropriation.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q026", "text": "No statute or court is mentioned in this sentence.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q027", "text": "Does Section 302 apply here?", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q028", "text": "The appellant challenged conviction in the Bombay High Court.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q029", "text": "The informant reported kidnapping from lawful custody.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q030", "text": "The case concerns common intention and criminal conspiracy.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q031", "text": "The SC/ST Act was invoked along with Section 323 IPC.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q032", "text": "My brother was arrested in Hyderabad for ganja possession.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q033", "text": "The final report named Zenith Logistics as an accused organization.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q034", "text": "A quashing petition mentioned both IPC and BNS transition issues.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q035", "text": "The District Court order dated July 1, 2024 was appealed.", "gold_entities": [], "review_status": "pending"},
-    {"example_id": "ner-q036", "text": "Only a generic petition was filed.", "gold_entities": [], "review_status": "pending"}
-  ]
+    {
+      "example_id": "ner-q001",
+      "text": "Section 302 IPC was considered by the Supreme Court.",
+      "gold_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 0,
+          "end_char": 11
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 12,
+          "end_char": 15
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 38,
+          "end_char": 51
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q002",
+      "text": "Can anticipatory bail under Section 438 CrPC be granted in a 2023 cheating case?",
+      "gold_entities": [
+        {
+          "text": "anticipatory bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 21
+        },
+        {
+          "text": "Section 438",
+          "entity_type": "SECTION",
+          "start_char": 28,
+          "end_char": 39
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 40,
+          "end_char": 44
+        },
+        {
+          "text": "2023",
+          "entity_type": "DATE",
+          "start_char": 61,
+          "end_char": 65
+        },
+        {
+          "text": "cheating",
+          "entity_type": "OFFENCE",
+          "start_char": 66,
+          "end_char": 74
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q003",
+      "text": "An appeal under Section 482 BNSS was filed in the Karnataka High Court.",
+      "gold_entities": [
+        {
+          "text": "appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 3,
+          "end_char": 9
+        },
+        {
+          "text": "Section 482",
+          "entity_type": "SECTION",
+          "start_char": 16,
+          "end_char": 27
+        },
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 28,
+          "end_char": 32
+        },
+        {
+          "text": "Karnataka High Court",
+          "entity_type": "COURT",
+          "start_char": 50,
+          "end_char": 70
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q004",
+      "text": "Which BNS provision applies after 1 July 2024 for a murder allegation?",
+      "gold_entities": [
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 6,
+          "end_char": 9
+        },
+        {
+          "text": "1 July 2024",
+          "entity_type": "DATE",
+          "start_char": 34,
+          "end_char": 45
+        },
+        {
+          "text": "murder",
+          "entity_type": "OFFENCE",
+          "start_char": 52,
+          "end_char": 58
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q005",
+      "text": "The Delhi High Court heard a petition by Ramesh Kumar against State of NCT of Delhi.",
+      "gold_entities": [
+        {
+          "text": "Delhi High Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 20
+        },
+        {
+          "text": "Ramesh Kumar",
+          "entity_type": "PERSON",
+          "start_char": 41,
+          "end_char": 53
+        },
+        {
+          "text": "State of NCT of Delhi",
+          "entity_type": "ORGANIZATION",
+          "start_char": 62,
+          "end_char": 83
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q006",
+      "text": "FIR No. 137 of 2023 was registered at Gannavaram Urban Police Station.",
+      "gold_entities": [
+        {
+          "text": "FIR No. 137 of 2023",
+          "entity_type": "FIR_NUMBER",
+          "start_char": 0,
+          "end_char": 19
+        },
+        {
+          "text": "Gannavaram Urban Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 38,
+          "end_char": 69
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q007",
+      "text": "A complaint was filed at Hauz Qazi Police Station for criminal breach of trust.",
+      "gold_entities": [
+        {
+          "text": "Hauz Qazi Police Station",
+          "entity_type": "POLICE_STATION",
+          "start_char": 25,
+          "end_char": 49
+        },
+        {
+          "text": "criminal breach of trust",
+          "entity_type": "OFFENCE",
+          "start_char": 54,
+          "end_char": 78
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q008",
+      "text": "State of Maharashtra v. Arjun Singh involved Section 420 IPC.",
+      "gold_entities": [
+        {
+          "text": "State of Maharashtra v. Arjun Singh",
+          "entity_type": "CASE_NAME",
+          "start_char": 0,
+          "end_char": 35
+        },
+        {
+          "text": "Section 420",
+          "entity_type": "SECTION",
+          "start_char": 45,
+          "end_char": 56
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 57,
+          "end_char": 60
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q009",
+      "text": "The accused sought default bail after the charge-sheet was delayed.",
+      "gold_entities": [
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 11
+        },
+        {
+          "text": "default bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 19,
+          "end_char": 31
+        },
+        {
+          "text": "charge-sheet",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 42,
+          "end_char": 54
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q010",
+      "text": "A minor was lured away from Bengaluru and sexually assaulted.",
+      "gold_entities": [
+        {
+          "text": "Bengaluru",
+          "entity_type": "LOCATION",
+          "start_char": 28,
+          "end_char": 37
+        },
+        {
+          "text": "sexually assaulted",
+          "entity_type": "OFFENCE",
+          "start_char": 42,
+          "end_char": 60
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q011",
+      "text": "The Sessions Court convicted the appellant for dowry harassment.",
+      "gold_entities": [
+        {
+          "text": "Sessions Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18
+        },
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 33,
+          "end_char": 42
+        },
+        {
+          "text": "dowry harassment",
+          "entity_type": "OFFENCE",
+          "start_char": 47,
+          "end_char": 63
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q012",
+      "text": "The petitioner relied on AIR 1973 SC 2622 before the Supreme Court.",
+      "gold_entities": [
+        {
+          "text": "petitioner",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14
+        },
+        {
+          "text": "AIR 1973 SC 2622",
+          "entity_type": "CASE_CITATION",
+          "start_char": 25,
+          "end_char": 41
+        },
+        {
+          "text": "Supreme Court",
+          "entity_type": "COURT",
+          "start_char": 53,
+          "end_char": 66
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q013",
+      "text": "The respondent cited (2014) 8 SCC 273 in a criminal appeal.",
+      "gold_entities": [
+        {
+          "text": "respondent",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 14
+        },
+        {
+          "text": "(2014) 8 SCC 273",
+          "entity_type": "CASE_CITATION",
+          "start_char": 21,
+          "end_char": 37
+        },
+        {
+          "text": "criminal appeal",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 43,
+          "end_char": 58
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q014",
+      "text": "Is Section 21 NDPS Act applicable to possession of heroin?",
+      "gold_entities": [
+        {
+          "text": "Section 21",
+          "entity_type": "SECTION",
+          "start_char": 3,
+          "end_char": 13
+        },
+        {
+          "text": "NDPS Act",
+          "entity_type": "STATUTE",
+          "start_char": 14,
+          "end_char": 22
+        },
+        {
+          "text": "possession of heroin",
+          "entity_type": "OFFENCE",
+          "start_char": 37,
+          "end_char": 57
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q015",
+      "text": "The Special Court took cognizance under the POCSO Act.",
+      "gold_entities": [
+        {
+          "text": "Special Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 17
+        },
+        {
+          "text": "cognizance",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 23,
+          "end_char": 33
+        },
+        {
+          "text": "POCSO Act",
+          "entity_type": "STATUTE",
+          "start_char": 44,
+          "end_char": 53
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q016",
+      "text": "The complainant alleged false promise and dishonest inducement by Alpha Traders.",
+      "gold_entities": [
+        {
+          "text": "complainant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 15
+        },
+        {
+          "text": "Alpha Traders",
+          "entity_type": "ORGANIZATION",
+          "start_char": 66,
+          "end_char": 79
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q017",
+      "text": "The trial court in Chennai rejected regular bail.",
+      "gold_entities": [
+        {
+          "text": "trial court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 15
+        },
+        {
+          "text": "Chennai",
+          "entity_type": "LOCATION",
+          "start_char": 19,
+          "end_char": 26
+        },
+        {
+          "text": "regular bail",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 48
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q018",
+      "text": "Before July 2024, CrPC procedure applied to an IPC offence.",
+      "gold_entities": [
+        {
+          "text": "July 2024",
+          "entity_type": "DATE",
+          "start_char": 7,
+          "end_char": 16
+        },
+        {
+          "text": "CrPC",
+          "entity_type": "STATUTE",
+          "start_char": 18,
+          "end_char": 22
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 47,
+          "end_char": 50
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q019",
+      "text": "After commencement of new criminal laws, BNSS procedure may govern the investigation.",
+      "gold_entities": [
+        {
+          "text": "BNSS",
+          "entity_type": "STATUTE",
+          "start_char": 41,
+          "end_char": 45
+        },
+        {
+          "text": "investigation",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 71,
+          "end_char": 84
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q020",
+      "text": "The Evidence Act issue arose during trial.",
+      "gold_entities": [
+        {
+          "text": "Evidence Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 16
+        },
+        {
+          "text": "trial",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 36,
+          "end_char": 41
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q021",
+      "text": "The victim named Suresh and Meena in the FIR.",
+      "gold_entities": [
+        {
+          "text": "victim",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 10
+        },
+        {
+          "text": "Suresh",
+          "entity_type": "PERSON",
+          "start_char": 17,
+          "end_char": 23
+        },
+        {
+          "text": "Meena",
+          "entity_type": "PERSON",
+          "start_char": 28,
+          "end_char": 33
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q022",
+      "text": "The police investigated alleged theft of a motorcycle in Kochi.",
+      "gold_entities": [
+        {
+          "text": "theft",
+          "entity_type": "OFFENCE",
+          "start_char": 32,
+          "end_char": 37
+        },
+        {
+          "text": "Kochi",
+          "entity_type": "LOCATION",
+          "start_char": 57,
+          "end_char": 62
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q023",
+      "text": "Can the High Court quash an FIR for Section 498A IPC?",
+      "gold_entities": [
+        {
+          "text": "High Court",
+          "entity_type": "COURT",
+          "start_char": 8,
+          "end_char": 18
+        },
+        {
+          "text": "Section 498A",
+          "entity_type": "SECTION",
+          "start_char": 36,
+          "end_char": 48
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q024",
+      "text": "A revision was filed before the District Court.",
+      "gold_entities": [
+        {
+          "text": "revision",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 10
+        },
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 32,
+          "end_char": 46
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q025",
+      "text": "The organization Bharat Finance complained about misappropriation.",
+      "gold_entities": [
+        {
+          "text": "Bharat Finance",
+          "entity_type": "ORGANIZATION",
+          "start_char": 17,
+          "end_char": 31
+        },
+        {
+          "text": "misappropriation",
+          "entity_type": "OFFENCE",
+          "start_char": 49,
+          "end_char": 65
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q026",
+      "text": "No statute or court is mentioned in this sentence.",
+      "gold_entities": [],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q027",
+      "text": "Does Section 302 apply here?",
+      "gold_entities": [
+        {
+          "text": "Section 302",
+          "entity_type": "SECTION",
+          "start_char": 5,
+          "end_char": 16
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q028",
+      "text": "The appellant challenged conviction in the Bombay High Court.",
+      "gold_entities": [
+        {
+          "text": "appellant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13
+        },
+        {
+          "text": "Bombay High Court",
+          "entity_type": "COURT",
+          "start_char": 43,
+          "end_char": 60
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q029",
+      "text": "The informant reported kidnapping from lawful custody.",
+      "gold_entities": [
+        {
+          "text": "informant",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 4,
+          "end_char": 13
+        },
+        {
+          "text": "kidnapping",
+          "entity_type": "OFFENCE",
+          "start_char": 23,
+          "end_char": 33
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q030",
+      "text": "The case concerns common intention and criminal conspiracy.",
+      "gold_entities": [
+        {
+          "text": "common intention",
+          "entity_type": "OFFENCE",
+          "start_char": 18,
+          "end_char": 34
+        },
+        {
+          "text": "criminal conspiracy",
+          "entity_type": "OFFENCE",
+          "start_char": 39,
+          "end_char": 58
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q031",
+      "text": "The SC/ST Act was invoked along with Section 323 IPC.",
+      "gold_entities": [
+        {
+          "text": "SC/ST Act",
+          "entity_type": "STATUTE",
+          "start_char": 4,
+          "end_char": 13
+        },
+        {
+          "text": "Section 323",
+          "entity_type": "SECTION",
+          "start_char": 37,
+          "end_char": 48
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 49,
+          "end_char": 52
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q032",
+      "text": "My brother was arrested in Hyderabad for ganja possession.",
+      "gold_entities": [
+        {
+          "text": "Hyderabad",
+          "entity_type": "LOCATION",
+          "start_char": 27,
+          "end_char": 36
+        },
+        {
+          "text": "ganja possession",
+          "entity_type": "OFFENCE",
+          "start_char": 41,
+          "end_char": 57
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q033",
+      "text": "The final report named Zenith Logistics as an accused organization.",
+      "gold_entities": [
+        {
+          "text": "final report",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 4,
+          "end_char": 16
+        },
+        {
+          "text": "Zenith Logistics",
+          "entity_type": "ORGANIZATION",
+          "start_char": 23,
+          "end_char": 39
+        },
+        {
+          "text": "accused",
+          "entity_type": "LEGAL_ROLE",
+          "start_char": 46,
+          "end_char": 53
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q034",
+      "text": "A quashing petition mentioned both IPC and BNS transition issues.",
+      "gold_entities": [
+        {
+          "text": "quashing petition",
+          "entity_type": "LEGAL_PROCEDURE",
+          "start_char": 2,
+          "end_char": 19
+        },
+        {
+          "text": "IPC",
+          "entity_type": "STATUTE",
+          "start_char": 35,
+          "end_char": 38
+        },
+        {
+          "text": "BNS",
+          "entity_type": "STATUTE",
+          "start_char": 43,
+          "end_char": 46
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q035",
+      "text": "The District Court order dated July 1, 2024 was appealed.",
+      "gold_entities": [
+        {
+          "text": "District Court",
+          "entity_type": "COURT",
+          "start_char": 4,
+          "end_char": 18
+        },
+        {
+          "text": "July 1, 2024",
+          "entity_type": "DATE",
+          "start_char": 31,
+          "end_char": 43
+        }
+      ],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    },
+    {
+      "example_id": "ner-q036",
+      "text": "Only a generic petition was filed.",
+      "gold_entities": [],
+      "review_status": "reviewed",
+      "reviewer": "Ananthu",
+      "reviewed_at": "2026-09-09T01:21:02Z"
+    }
+  ],
+  "reviewer": "Ananthu",
+  "reviewed_at": "2026-09-09T01:21:02Z"
 }

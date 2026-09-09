@@ -2,9 +2,10 @@ import copy
 import json
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
-from backend.scripts.validate_legal_ner_eval import validate_gold_template
+from backend.scripts.validate_legal_ner_eval import MATERIALIZED_ENTITY_TYPE_COUNTS, validate_gold_template
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -19,20 +20,36 @@ class LegalNERGoldWorkflowTests(unittest.TestCase):
         self.source = json.loads(SOURCE_PATH.read_text(encoding="utf-8"))
         self.template = json.loads(TEMPLATE_PATH.read_text(encoding="utf-8"))
 
-    def test_template_has_36_pending_examples(self) -> None:
+    def test_template_has_36_reviewed_examples(self) -> None:
         self.assertEqual(self.template["schema_version"], "legalai-ner-schema-v1")
+        self.assertEqual(self.template["annotation_status"], "human_gold_materialized")
         self.assertEqual(len(self.template["examples"]), 36)
-        self.assertEqual(sum(1 for example in self.template["examples"] if example["review_status"] == "pending"), 36)
-        self.assertEqual(sum(1 for example in self.template["examples"] if example["review_status"] == "reviewed"), 0)
-        self.assertEqual(sum(len(example["gold_entities"]) for example in self.template["examples"]), 0)
+        self.assertEqual(sum(1 for example in self.template["examples"] if example["review_status"] == "pending"), 0)
+        self.assertEqual(sum(1 for example in self.template["examples"] if example["review_status"] == "reviewed"), 36)
+        self.assertEqual(sum(len(example["gold_entities"]) for example in self.template["examples"]), 89)
+        self.assertEqual({example["reviewer"] for example in self.template["examples"]}, {"Ananthu"})
 
     def test_template_text_identity_with_eval_manifest(self) -> None:
         source = [(example["example_id"], example["text"]) for example in self.source["examples"]]
         template = [(example["example_id"], example["text"]) for example in self.template["examples"]]
         self.assertEqual(template, source)
 
-    def test_template_validator_accepts_pending_state(self) -> None:
+    def test_template_validator_accepts_materialized_state(self) -> None:
         self.assertEqual(validate_gold_template(), [])
+
+    def test_materialized_type_counts(self) -> None:
+        counts = Counter(entity["entity_type"] for example in self.template["examples"] for entity in example["gold_entities"])
+        self.assertEqual(dict(counts), MATERIALIZED_ENTITY_TYPE_COUNTS)
+
+    def test_materialized_zero_entity_examples(self) -> None:
+        zero = [example["example_id"] for example in self.template["examples"] if not example["gold_entities"]]
+        self.assertEqual(zero, ["ner-q026", "ner-q036"])
+
+    def test_all_materialized_spans_match_exact_text(self) -> None:
+        for example in self.template["examples"]:
+            text = example["text"]
+            for entity in example["gold_entities"]:
+                self.assertEqual(text[entity["start_char"] : entity["end_char"]], entity["text"])
 
     def test_batch_partition_is_9_each(self) -> None:
         text = REVIEW_PATH.read_text(encoding="utf-8")
@@ -48,8 +65,13 @@ class LegalNERGoldWorkflowTests(unittest.TestCase):
 
     def test_valid_offsets_and_exact_span_match_pass(self) -> None:
         payload = copy.deepcopy(self.template)
+        payload["annotation_status"] = "pending_human_gold_annotation"
+        for example in payload["examples"]:
+            example["gold_entities"] = []
+            example["review_status"] = "pending"
+            example.pop("reviewer", None)
+            example.pop("reviewed_at", None)
         payload["examples"][0]["gold_entities"] = [{"text": "Section 302", "entity_type": "SECTION", "start_char": 0, "end_char": 11}]
-        payload["examples"][0]["review_status"] = "reviewed"
         self.assertEqual(validate_temp(payload), [])
 
     def test_invalid_type_is_rejected(self) -> None:
@@ -75,6 +97,7 @@ class LegalNERGoldWorkflowTests(unittest.TestCase):
 
     def test_reviewed_zero_entity_allowed(self) -> None:
         payload = copy.deepcopy(self.template)
+        payload["annotation_status"] = "pending_human_gold_annotation"
         payload["examples"][25]["review_status"] = "reviewed"
         payload["examples"][25]["gold_entities"] = []
         self.assertEqual(validate_temp(payload), [])

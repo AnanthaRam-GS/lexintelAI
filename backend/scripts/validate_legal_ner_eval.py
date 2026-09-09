@@ -13,6 +13,22 @@ EXPECTED_VERSION = "legalai-ner-eval-v1"
 EXPECTED_GOLD_TEMPLATE_VERSION = "legalai-ner-gold-template-v1"
 NER_SCHEMA_VERSION = "legalai-ner-schema-v1"
 REVIEW_STATUSES = {"pending", "reviewed", "needs_revision"}
+MATERIALIZED_ENTITY_TYPE_COUNTS = {
+    "STATUTE": 16,
+    "LEGAL_PROCEDURE": 12,
+    "OFFENCE": 12,
+    "COURT": 11,
+    "LEGAL_ROLE": 9,
+    "SECTION": 8,
+    "DATE": 4,
+    "ORGANIZATION": 4,
+    "LOCATION": 4,
+    "PERSON": 3,
+    "POLICE_STATION": 2,
+    "CASE_CITATION": 2,
+    "FIR_NUMBER": 1,
+    "CASE_NAME": 1,
+}
 CANONICAL_ENTITY_TYPES = (
     "PERSON",
     "ORGANIZATION",
@@ -73,8 +89,8 @@ def validate_gold_template(path: Path = GOLD_TEMPLATE_PATH, source_path: Path = 
         errors.append("unexpected gold template version")
     if payload.get("schema_version") != NER_SCHEMA_VERSION:
         errors.append("unexpected schema version")
-    if payload.get("annotation_status") != "pending_human_gold_annotation":
-        errors.append("annotation_status must remain pending_human_gold_annotation")
+    if payload.get("annotation_status") not in {"pending_human_gold_annotation", "human_gold_materialized"}:
+        errors.append("annotation_status must be pending_human_gold_annotation or human_gold_materialized")
     source_examples = source.get("examples", [])
     examples = payload.get("examples", [])
     if len(source_examples) != 36:
@@ -84,6 +100,11 @@ def validate_gold_template(path: Path = GOLD_TEMPLATE_PATH, source_path: Path = 
     source_text_by_id = {example.get("example_id"): example.get("text") for example in source_examples}
     seen_ids: set[str] = set()
     valid_types = set(CANONICAL_ENTITY_TYPES)
+    total_gold_entities = 0
+    pending_count = 0
+    reviewed_count = 0
+    entity_type_counts: dict[str, int] = {}
+    zero_entity_reviewed: list[str] = []
     for index, example in enumerate(examples, start=1):
         example_id = example.get("example_id")
         text = example.get("text")
@@ -99,6 +120,10 @@ def validate_gold_template(path: Path = GOLD_TEMPLATE_PATH, source_path: Path = 
             errors.append(f"{example_id} text changed from source NER eval manifest")
         if example.get("review_status") not in REVIEW_STATUSES:
             errors.append(f"{example_id} has invalid review_status {example.get('review_status')}")
+        if example.get("review_status") == "pending":
+            pending_count += 1
+        if example.get("review_status") == "reviewed":
+            reviewed_count += 1
         if not isinstance(text, str):
             errors.append(f"{example_id} text must be a string")
             text = ""
@@ -107,6 +132,9 @@ def validate_gold_template(path: Path = GOLD_TEMPLATE_PATH, source_path: Path = 
             errors.append(f"{example_id} gold_entities must be a list")
             gold = []
         seen_entities: set[tuple[int, int, str]] = set()
+        total_gold_entities += len(gold)
+        if example.get("review_status") == "reviewed" and not gold:
+            zero_entity_reviewed.append(example_id)
         for entity_index, entity in enumerate(gold, start=1):
             entity_type = entity.get("entity_type")
             start = entity.get("start_char")
@@ -130,6 +158,19 @@ def validate_gold_template(path: Path = GOLD_TEMPLATE_PATH, source_path: Path = 
             if key in seen_entities:
                 errors.append(f"{label} duplicates entity key {key}")
             seen_entities.add(key)
+            if entity_type in valid_types:
+                entity_type_counts[str(entity_type)] = entity_type_counts.get(str(entity_type), 0) + 1
+    if payload.get("annotation_status") == "human_gold_materialized":
+        if reviewed_count != 36:
+            errors.append(f"materialized gold template must have 36 reviewed examples, found {reviewed_count}")
+        if pending_count != 0:
+            errors.append(f"materialized gold template must have 0 pending examples, found {pending_count}")
+        if total_gold_entities != 89:
+            errors.append(f"materialized gold template must have 89 gold entities, found {total_gold_entities}")
+        if zero_entity_reviewed != ["ner-q026", "ner-q036"]:
+            errors.append(f"zero-entity reviewed examples mismatch: {zero_entity_reviewed}")
+        if entity_type_counts != MATERIALIZED_ENTITY_TYPE_COUNTS:
+            errors.append(f"materialized entity type counts mismatch: {entity_type_counts}")
     return errors
 
 
