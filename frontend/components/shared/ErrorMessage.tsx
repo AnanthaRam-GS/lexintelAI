@@ -31,7 +31,7 @@ export function ErrorMessage({
     >
       <div className="flex items-start gap-3">
         <ErrorIcon className="mt-0.5 shrink-0" size={20} strokeWidth={1.8} />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
           <h2 className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]">
             {title}
           </h2>
