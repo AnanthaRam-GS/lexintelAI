@@ -1,0 +1,109 @@
+{
+  "schema_version": "legalai-section-selected-configuration-v1",
+  "selection_status": "selected",
+  "selection_decision": "SELECT_BGE_CROSS_ENCODER_PROTECTED_HYBRID",
+  "selection_date": "2026-09-09",
+  "runtime_default_policy": {
+    "LEGAL_SECTION_RANKING_MODE": "deterministic",
+    "reason": "Selected learned ranking is frozen as a production-candidate configuration; current runtime remains deterministic unless explicit integration is added separately."
+  },
+  "candidate_generation": {
+    "mode": "deterministic",
+    "source": "legal_section_prediction.py",
+    "candidate_expansion": false,
+    "bounded_catalog": true,
+    "arbitrary_section_generation": false
+  },
+  "ranking": {
+    "selected_model": "BAAI/bge-reranker-v2-m3",
+    "selected_model_revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "XLMRobertaForSequenceClassification",
+    "tokenizer": "XLMRobertaTokenizer",
+    "ranking_mode": "cross_encoder_protected_hybrid",
+    "query_representation": "original_query",
+    "section_representation": "frozen_canonical_section_text",
+    "pair_construction": "(original_query_text, section_semantic_text)",
+    "final_top_k": 5,
+    "device_in_evaluation": "cpu",
+    "training_used": false,
+    "fine_tuning_used": false
+  },
+  "safety_guardrails": {
+    "explicit_section_protection": true,
+    "regime_protection": true,
+    "zero_positive_guardrail": true,
+    "bounded_catalog": true,
+    "candidate_expansion_enabled": false,
+    "top_k_lte_5": true
+  },
+  "fallback": {
+    "if_cross_encoder_unavailable": "deterministic_D0_ranking",
+    "automatic_third_party_model_substitution": false,
+    "automatic_bge_m3_semantic_fallback": false
+  },
+  "model_availability_policy": {
+    "local_model_required_for_learned_mode": true,
+    "automatic_download": false,
+    "public_query_handling_must_not_fail_due_to_missing_learned_reranker": true
+  },
+  "comparative_evidence": {
+    "D0": {
+      "system": "deterministic_baseline",
+      "precision_at_1": 0.5,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.722516,
+      "primary_recall_at_5": 0.944444,
+      "explicit_recall_at_5": 0.875,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "T1_S1": {
+      "system": "bge_m3_semantic_only",
+      "model": "BAAI/bge-m3",
+      "precision_at_1": 0.777778,
+      "mrr": 0.814815,
+      "ndcg_at_5": 0.821095,
+      "primary_recall_at_5": 0.944444,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "T1_H1": {
+      "system": "bge_m3_rrf_hybrid",
+      "model": "BAAI/bge-m3",
+      "precision_at_1": 0.5,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.726846,
+      "primary_recall_at_5": 0.944444,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "T2_HX1": {
+      "system": "bge_cross_encoder_protected_hybrid",
+      "model": "BAAI/bge-reranker-v2-m3",
+      "precision_at_1": 0.805556,
+      "mrr": 0.833333,
+      "ndcg_at_5": 0.831325,
+      "primary_recall_at_5": 0.944444,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    }
+  },
+  "limitations": {
+    "evaluation_queries": 36,
+    "positive_primary_relevant_judgments": 60,
+    "uncertain_judgments": 1,
+    "zero_positive_queries": 3,
+    "human_reviewers": 1,
+    "catalog_entries": 62,
+    "candidate_recall_limited_by_d0_generation": true,
+    "statistical_significance_claim": false,
+    "cpu_latency_development_hardware_only": true,
+    "judgment_document_section_classification_evaluated": false,
+    "supervised_training_used": false
+  },
+  "references": {
+    "deterministic_baseline": "data/structured/manifests/legal_section_baseline_eval.json",
+    "t1_bge_m3_trial": "data/structured/manifests/legal_section_bge_trial_eval.json",
+    "t2_cross_encoder_trial": "data/structured/manifests/legal_section_bge_reranker_trial_eval.json",
+    "selection_decision": "data/structured/manifests/legal_section_ranking_decision.json"
+  }
+}
