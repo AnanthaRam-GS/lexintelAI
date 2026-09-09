@@ -1,0 +1,46 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "selection_status": "selected",
+  "mode": "deterministic",
+  "selected_extractor": "deterministic_legal_ner",
+  "learned_ner_enabled": false,
+  "hybrid_enabled": false,
+  "learned_model": null,
+  "default_learned_model": null,
+  "default_hybrid_mode": "disabled",
+  "confidence_threshold_available_for_experiments": 0.7,
+  "gold_eval": {
+    "examples": 36,
+    "reviewed": 36,
+    "entities": 89,
+    "pending": 0
+  },
+  "baseline": {
+    "system": "D0_deterministic",
+    "predictions": 76,
+    "true_positive": 65,
+    "false_positive": 11,
+    "false_negative": 24,
+    "precision": 0.855263,
+    "recall": 0.730337,
+    "f1": 0.787879
+  },
+  "experimental_candidates": {
+    "T1": {
+      "model": "evolawyer/inlegalbert-sc-ner-silver",
+      "revision": "f7d54eb91551da4fb8a6329d1d871559c04e1832",
+      "decision": "LEARNED CANDIDATE REJECTED",
+      "learned_f1": 0.336449,
+      "hybrid_f1": 0.787879
+    },
+    "T2": {
+      "model": "dslim/bert-base-NER",
+      "revision": "d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc",
+      "decision": "GENERAL NER CANDIDATE REJECTED",
+      "learned_f1": 0.076336,
+      "hybrid_f1": 0.76087
+    }
+  },
+  "candidate_comparison_decision": "NEITHER CANDIDATE JUSTIFIED",
+  "selection_reason": "retain deterministic baseline after two learned candidate trials"
+}
