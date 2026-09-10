@@ -5,6 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 import json
 import socket
+import time
 from dataclasses import dataclass
 import urllib.error
 import urllib.request
@@ -158,6 +159,10 @@ class ModelGenerationMetadata(BaseModel):
     repair_attempted: bool = False
     repair_succeeded: bool | None = None
     repair_reason: str | None = None
+    attempt_count: int = 1
+    retry_count: int = 0
+    retry_reasons: list[str] = Field(default_factory=list)
+    final_provider_status: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
@@ -220,13 +225,28 @@ class ModelProviderError(RuntimeError):
         self.http_status = http_status
         self.provider_code = provider_code
         self.provider_message = provider_message
+        self.attempt_count = 1
+        self.retry_count = 0
+        self.retry_reasons: list[str] = []
+        self.final_provider_status = code
 
 
 class GeminiAnswerAdapter:
-    def __init__(self, settings: Settings, *, temperature: float | None = None, timeout_seconds: float | None = None) -> None:
+    max_attempts = 3
+    backoff_seconds = (0.25, 0.5)
+
+    def __init__(
+        self,
+        settings: Settings,
+        *,
+        temperature: float | None = None,
+        timeout_seconds: float | None = None,
+        sleep=time.sleep,
+    ) -> None:
         self.settings = settings
         self.temperature = settings.legalai_llm_temperature if temperature is None else temperature
         self.timeout_seconds = settings.legalai_llm_timeout_seconds if timeout_seconds is None else timeout_seconds
+        self.sleep = sleep
 
     @property
     def configured_model_id(self) -> str:
@@ -236,6 +256,7 @@ class GeminiAnswerAdapter:
         if not self.settings.gemini_api_key or not self.settings.gemini_model:
             raise ModelUnavailableError("Gemini API key and GEMINI_MODEL must be configured before live generation.")
         started = perf_counter()
+        retry_reasons: list[str] = []
         payload = {
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {
@@ -244,6 +265,49 @@ class GeminiAnswerAdapter:
                 "responseSchema": model_payload_schema(schema),
             },
         }
+        body = None
+        attempt_count = 0
+        for attempt in range(1, self.max_attempts + 1):
+            attempt_count = attempt
+            try:
+                body = self._post(payload)
+                break
+            except ModelProviderError as exc:
+                exc.attempt_count = attempt
+                exc.retry_count = len(retry_reasons)
+                exc.retry_reasons = list(retry_reasons)
+                exc.final_provider_status = provider_status(exc)
+                if not is_retryable_gemini_error(exc) or attempt >= self.max_attempts:
+                    raise
+                retry_reasons.append(provider_status(exc))
+                self.sleep(self.backoff_seconds[min(attempt - 1, len(self.backoff_seconds) - 1)])
+        if body is None:
+            raise ModelProviderError("GEMINI_INVALID_RESPONSE", "Gemini returned no API response.")
+        text = extract_gemini_text(body)
+        usage = body.get("usageMetadata", {})
+        metadata = ModelGenerationMetadata(
+            provider="gemini",
+            configured_model_id=self.settings.gemini_model,
+            actual_model_id=body.get("modelVersion") or self.settings.gemini_model,
+            temperature=self.temperature,
+            response_mode=mode,
+            fallback_used=False,
+            attempt_count=attempt_count,
+            retry_count=len(retry_reasons),
+            retry_reasons=retry_reasons,
+            final_provider_status="SUCCESS",
+            prompt_tokens=usage.get("promptTokenCount"),
+            completion_tokens=usage.get("candidatesTokenCount"),
+            total_tokens=usage.get("totalTokenCount"),
+        )
+        return LegalAnswerModelResponse(
+            raw_response=text,
+            parsed_response=None,
+            model_metadata=metadata,
+            timings={"generation_latency_ms": elapsed_ms(perf_counter, started)},
+        )
+
+    def _post(self, payload: dict[str, Any]) -> dict[str, Any]:
         request = urllib.request.Request(
             self._endpoint(),
             data=json.dumps(payload).encode("utf-8"),
@@ -252,7 +316,7 @@ class GeminiAnswerAdapter:
         )
         try:
             with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-                body = json.loads(response.read().decode("utf-8"))
+                return json.loads(response.read().decode("utf-8"))
         except TimeoutError as exc:
             raise ModelProviderError("GEMINI_TIMEOUT", "Gemini request timed out.") from exc
         except socket.timeout as exc:
@@ -270,25 +334,6 @@ class GeminiAnswerAdapter:
             raise ModelProviderError("GEMINI_PROVIDER_ERROR", sanitized_url_error(exc)) from exc
         except json.JSONDecodeError as exc:
             raise ModelProviderError("GEMINI_INVALID_RESPONSE", "Gemini returned a non-JSON API response.") from exc
-        text = extract_gemini_text(body)
-        usage = body.get("usageMetadata", {})
-        metadata = ModelGenerationMetadata(
-            provider="gemini",
-            configured_model_id=self.settings.gemini_model,
-            actual_model_id=body.get("modelVersion") or self.settings.gemini_model,
-            temperature=self.temperature,
-            response_mode=mode,
-            fallback_used=False,
-            prompt_tokens=usage.get("promptTokenCount"),
-            completion_tokens=usage.get("candidatesTokenCount"),
-            total_tokens=usage.get("totalTokenCount"),
-        )
-        return LegalAnswerModelResponse(
-            raw_response=text,
-            parsed_response=None,
-            model_metadata=metadata,
-            timings={"generation_latency_ms": elapsed_ms(perf_counter, started)},
-        )
 
     def _endpoint(self) -> str:
         return f"https://generativelanguage.googleapis.com/v1beta/models/{self.settings.gemini_model}:generateContent"
@@ -379,6 +424,10 @@ def generate_legal_answer(
             http_status=exc.http_status,
             provider_code=exc.provider_code,
             provider_message=exc.provider_message,
+            attempt_count=exc.attempt_count,
+            retry_count=exc.retry_count,
+            retry_reasons=exc.retry_reasons,
+            final_provider_status=exc.final_provider_status,
         )
     try:
         parsed = parse_model_payload(model_response.raw_response, model_response.parsed_response, schema)
@@ -550,8 +599,23 @@ def model_payload_schema(schema: type[BaseModel]) -> dict[str, Any]:
 
 
 def gemini_schema(schema: dict[str, Any]) -> dict[str, Any]:
-    definitions = schema.get("$defs", {})
+    definitions = collect_schema_definitions(schema)
     return sanitize_gemini_schema(schema, definitions)
+
+
+def collect_schema_definitions(value: Any) -> dict[str, Any]:
+    definitions: dict[str, Any] = {}
+    if isinstance(value, list):
+        for item in value:
+            definitions.update(collect_schema_definitions(item))
+    if not isinstance(value, dict):
+        return definitions
+    nested = value.get("$defs")
+    if isinstance(nested, dict):
+        definitions.update(nested)
+    for item in value.values():
+        definitions.update(collect_schema_definitions(item))
+    return definitions
 
 
 def sanitize_gemini_schema(value: Any, definitions: dict[str, Any]) -> Any:
@@ -640,6 +704,24 @@ def sanitized_url_error(exc: urllib.error.URLError) -> str:
     return f"Gemini request failed before receiving a response: {reason}."
 
 
+def provider_status(exc: ModelProviderError) -> str:
+    if exc.http_status is not None:
+        return f"HTTP_{exc.http_status}"
+    return exc.code
+
+
+def is_retryable_gemini_error(exc: ModelProviderError) -> bool:
+    if exc.http_status in {429, 503}:
+        return True
+    if exc.http_status in {400, 401, 403, 404}:
+        return False
+    if exc.code == "GEMINI_TIMEOUT":
+        return True
+    if exc.code == "GEMINI_PROVIDER_ERROR" and exc.http_status is None:
+        return True
+    return False
+
+
 def model_provider_failure_result(
     understanding: LegalQueryUnderstanding,
     retrieval: LegalRetrievalResult,
@@ -651,6 +733,10 @@ def model_provider_failure_result(
     http_status: int | None = None,
     provider_code: str | None = None,
     provider_message: str | None = None,
+    attempt_count: int = 1,
+    retry_count: int = 0,
+    retry_reasons: list[str] | None = None,
+    final_provider_status: str | None = None,
 ) -> LegalAnswerResult:
     evidence_ids = [item.citation_id for item in retrieval.evidence]
     metadata = ModelGenerationMetadata(
@@ -658,6 +744,10 @@ def model_provider_failure_result(
         configured_model_id=configured_model_id,
         response_mode=mode,
         fallback_used=False,
+        attempt_count=attempt_count,
+        retry_count=retry_count,
+        retry_reasons=retry_reasons or [],
+        final_provider_status=final_provider_status or code,
     )
     return LegalAnswerResult(
         query=understanding.query,

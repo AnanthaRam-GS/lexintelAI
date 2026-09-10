@@ -15,8 +15,12 @@ from backend.app.services.legal_answer_generation import (
     GroundingStatus,
     LegalAnswerModelResponse,
     ModelGenerationMetadata,
+    ProfessionalLegalBrief,
+    PublicLegalAnswer,
     gemini_schema,
     generate_legal_answer,
+    is_retryable_gemini_error,
+    model_payload_schema,
     sanitized_http_diagnostic,
 )
 from backend.scripts.diagnose_gemini_http import classify_root_cause
@@ -181,6 +185,125 @@ class GeminiGroundedSmokeTests(unittest.TestCase):
         self.assertNotIn("title", encoded)
         self.assertTrue(converted["properties"]["maybe"]["nullable"])
 
+    def test_professional_schema_preserves_nested_required_citation_fields(self):
+        canonical_required = set(GroundedCitation.model_json_schema(mode="serialization")["required"])
+        self.assertEqual(canonical_required, {"evidence_id", "claim_id", "supported_text"})
+
+        schema = model_payload_schema(ProfessionalLegalBrief)
+        citation_item = schema["properties"]["answer"]["properties"]["citations"]["items"]
+        self.assertEqual(set(citation_item["required"]), canonical_required)
+        self.assertIn("source_metadata", citation_item["properties"])
+        self.assertEqual(citation_item["properties"]["claim_id"]["type"], "string")
+        self.assertEqual(citation_item["properties"]["supported_text"]["type"], "string")
+        self.assertEqual(citation_item["properties"]["evidence_id"]["type"], "string")
+
+    def test_claim_and_public_schema_nested_citation_arrays_retain_item_schema(self):
+        schema = model_payload_schema(PublicLegalAnswer)
+        public_citation = schema["properties"]["answer"]["properties"]["citations"]["items"]
+        claim_citation = schema["properties"]["claims"]["items"]["properties"]["citations"]["items"]
+        for citation_item in [public_citation, claim_citation]:
+            self.assertEqual(set(citation_item["required"]), {"evidence_id", "claim_id", "supported_text"})
+            self.assertIn("support_level", citation_item["properties"])
+        encoded = json.dumps(schema)
+        self.assertNotIn("$defs", encoded)
+        self.assertNotIn("$ref", encoded)
+        self.assertNotIn("title", encoded)
+        self.assertNotIn("default", encoded)
+
+    def test_retryability_classifier_is_deterministic(self):
+        self.assertTrue(is_retryable_gemini_error(provider_error("GEMINI_RATE_LIMIT", 429)))
+        self.assertTrue(is_retryable_gemini_error(provider_error("GEMINI_PROVIDER_ERROR", 503)))
+        self.assertTrue(is_retryable_gemini_error(provider_error("GEMINI_TIMEOUT", None)))
+        self.assertTrue(is_retryable_gemini_error(provider_error("GEMINI_PROVIDER_ERROR", None)))
+        self.assertFalse(is_retryable_gemini_error(provider_error("GEMINI_HTTP_ERROR", 400)))
+        self.assertFalse(is_retryable_gemini_error(provider_error("GEMINI_AUTH_ERROR", 401)))
+        self.assertFalse(is_retryable_gemini_error(provider_error("GEMINI_AUTH_ERROR", 403)))
+        self.assertFalse(is_retryable_gemini_error(provider_error("GEMINI_HTTP_ERROR", 404)))
+        self.assertFalse(is_retryable_gemini_error(provider_error("MODEL_OUTPUT_VALIDATION_FAILED", None)))
+
+    def test_transient_503_retries_then_success(self):
+        first = http_error(503, "UNAVAILABLE", "temporary")
+        with patch("urllib.request.urlopen", side_effect=[first, FakeHttpResponse(gemini_payload())]) as mocked:
+            response = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None).generate_structured_answer(
+                "prompt",
+                schema=object_with_schema(),
+                mode=AnswerMode.PUBLIC,
+            )
+        self.assertEqual(mocked.call_count, 2)
+        self.assertEqual(response.model_metadata.attempt_count, 2)
+        self.assertEqual(response.model_metadata.retry_count, 1)
+        self.assertEqual(response.model_metadata.retry_reasons, ["HTTP_503"])
+        self.assertEqual(response.model_metadata.final_provider_status, "SUCCESS")
+
+    def test_two_transient_503_retries_then_success(self):
+        with patch(
+            "urllib.request.urlopen",
+            side_effect=[
+                http_error(503, "UNAVAILABLE", "temporary"),
+                http_error(503, "UNAVAILABLE", "temporary"),
+                FakeHttpResponse(gemini_payload()),
+            ],
+        ) as mocked:
+            response = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None).generate_structured_answer(
+                "prompt",
+                schema=object_with_schema(),
+                mode=AnswerMode.PUBLIC,
+            )
+        self.assertEqual(mocked.call_count, 3)
+        self.assertEqual(response.model_metadata.attempt_count, 3)
+        self.assertEqual(response.model_metadata.retry_count, 2)
+        self.assertEqual(response.model_metadata.retry_reasons, ["HTTP_503", "HTTP_503"])
+
+    def test_transient_503_is_bounded_after_three_attempts(self):
+        adapter = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None)
+        with patch(
+            "urllib.request.urlopen",
+            side_effect=[
+                http_error(503, "UNAVAILABLE", "temporary"),
+                http_error(503, "UNAVAILABLE", "temporary"),
+                http_error(503, "UNAVAILABLE", "temporary"),
+            ],
+        ) as mocked:
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertEqual(mocked.call_count, 3)
+        self.assertEqual(result.model_metadata.attempt_count, 3)
+        self.assertEqual(result.model_metadata.retry_count, 2)
+        self.assertEqual(result.model_metadata.retry_reasons, ["HTTP_503", "HTTP_503"])
+        self.assertEqual(result.model_metadata.final_provider_status, "HTTP_503")
+
+    def test_timeout_and_429_retry_then_success(self):
+        for error, expected_reason in [(socket.timeout(), "GEMINI_TIMEOUT"), (http_error(429, "RESOURCE_EXHAUSTED", "quota"), "HTTP_429")]:
+            with self.subTest(expected_reason=expected_reason):
+                with patch("urllib.request.urlopen", side_effect=[error, FakeHttpResponse(gemini_payload())]) as mocked:
+                    response = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None).generate_structured_answer(
+                        "prompt",
+                        schema=object_with_schema(),
+                        mode=AnswerMode.PUBLIC,
+                    )
+                self.assertEqual(mocked.call_count, 2)
+                self.assertEqual(response.model_metadata.retry_reasons, [expected_reason])
+
+    def test_non_retryable_http_errors_do_not_retry(self):
+        for status in [400, 401, 404]:
+            with self.subTest(status=status):
+                adapter = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None)
+                with patch("urllib.request.urlopen", side_effect=http_error(status, "ERROR", "not retryable")) as mocked:
+                    result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+                self.assertEqual(mocked.call_count, 1)
+                self.assertEqual(result.model_metadata.attempt_count, 1)
+                self.assertEqual(result.model_metadata.retry_count, 0)
+                self.assertEqual(result.model_metadata.final_provider_status, f"HTTP_{status}")
+
+    def test_successful_generation_invalid_schema_does_not_transient_retry(self):
+        adapter = GeminiAnswerAdapter(self.settings(), sleep=lambda _: None)
+        with patch("urllib.request.urlopen", return_value=FakeHttpResponse(gemini_payload(text="not json"))) as mocked:
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertEqual(mocked.call_count, 1)
+        self.assertIn("MODEL_OUTPUT_VALIDATION_FAILED", {warning.code for warning in result.warnings})
+        self.assertEqual(result.model_metadata.attempt_count, 1)
+        self.assertEqual(result.model_metadata.retry_count, 0)
+        self.assertFalse(result.model_metadata.repair_attempted)
+
 
 def object_with_schema():
     class MinimalSchema:
@@ -195,6 +318,11 @@ def provider_error(code, status, message=""):
     from backend.app.services.legal_answer_generation import ModelProviderError
 
     return ModelProviderError(code, message, http_status=status, provider_code=None, provider_message=message)
+
+
+def http_error(status, provider_code, message):
+    body = json.dumps({"error": {"code": status, "status": provider_code, "message": message}}).encode()
+    return urllib.error.HTTPError("url", status, "HTTP error", hdrs=None, fp=BytesIO(body))
 
 
 if __name__ == "__main__":
