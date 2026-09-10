@@ -106,6 +106,23 @@ available. The `--live` smoke runner therefore recorded all four cases as:
 
 No live Gemini call was made. No Ollama fallback was used.
 
+## HTTP Diagnostic Follow-Up
+
+The later live completion attempt had credentials available and resolved
+`GEMINI_MODEL` to `gemini-1.5-flash` from local configuration. The four fixed smoke
+cases reached Gemini but failed before answer generation with HTTP 400.
+
+A minimal provider-health diagnostic then isolated two provider/configuration issues
+without sending retrieval evidence:
+
+- the adapter initially sent Pydantic `$defs`/`$ref` schema fields that Gemini rejected;
+- after schema sanitization, Gemini returned HTTP 404 because the configured model was
+  not available for `v1beta generateContent` on the configured account/API path.
+
+Provider model discovery confirmed the configured model was not in the
+`generateContent`-capable model list. Do not rerun the four-case grounded smoke trial
+until `GEMINI_MODEL` is set to an available model and the minimal health check succeeds.
+
 ## Limitations
 
 This trial does not establish that Gemini is legally accurate, better than another

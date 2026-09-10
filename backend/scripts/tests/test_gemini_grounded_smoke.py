@@ -2,6 +2,7 @@ import json
 import socket
 import unittest
 import urllib.error
+from io import BytesIO
 from unittest.mock import patch
 
 from backend.app.core.config import Settings
@@ -14,8 +15,11 @@ from backend.app.services.legal_answer_generation import (
     GroundingStatus,
     LegalAnswerModelResponse,
     ModelGenerationMetadata,
+    gemini_schema,
     generate_legal_answer,
+    sanitized_http_diagnostic,
 )
+from backend.scripts.diagnose_gemini_http import classify_root_cause
 from backend.scripts.run_gemini_grounded_smoke import SMOKE_CASES, base_record, build_parser
 from backend.scripts.tests.test_legal_answer_foundation import MockAdapter, evidence, retrieval
 from backend.app.services.legal_query_understanding import understand_legal_query
@@ -110,6 +114,20 @@ class GeminiGroundedSmokeTests(unittest.TestCase):
         self.assertIn("GEMINI_RATE_LIMIT", {warning.code for warning in result.warnings})
         self.assertNotIn("test-key", result.model_dump_json())
 
+    def test_sanitized_http_diagnostic_extracts_safe_provider_message(self):
+        body = json.dumps({"error": {"code": 400, "status": "INVALID_ARGUMENT", "message": "Invalid response schema field."}}).encode()
+        error = urllib.error.HTTPError("url", 400, "Bad Request", hdrs=None, fp=BytesIO(body))
+        diagnostic = sanitized_http_diagnostic(error)
+        self.assertEqual(diagnostic.http_status, 400)
+        self.assertEqual(diagnostic.provider_code, "INVALID_ARGUMENT")
+        self.assertIn("Invalid response schema", diagnostic.provider_message)
+
+    def test_auth_model_rate_limit_and_schema_root_cause_classification(self):
+        self.assertEqual(classify_root_cause(provider_error("GEMINI_AUTH_ERROR", 403)), "AUTHENTICATION_CONFIGURATION")
+        self.assertEqual(classify_root_cause(provider_error("GEMINI_RATE_LIMIT", 429)), "QUOTA_OR_RATE_LIMIT")
+        self.assertEqual(classify_root_cause(provider_error("GEMINI_HTTP_ERROR", 404, "model not found")), "MODEL_UNAVAILABLE_OR_RETIRED")
+        self.assertEqual(classify_root_cause(provider_error("GEMINI_HTTP_ERROR", 400, "bad schema")), "REQUEST_SCHEMA_INVALID")
+
     def test_invalid_json_from_provider_is_structured_parse_failure(self):
         adapter = GeminiAnswerAdapter(self.settings())
         with patch("urllib.request.urlopen", return_value=FakeHttpResponse(gemini_payload(text="not json"))):
@@ -150,6 +168,19 @@ class GeminiGroundedSmokeTests(unittest.TestCase):
         )
         json.loads(response.model_dump_json())
 
+    def test_gemini_schema_inlines_refs_and_strips_unsupported_fields(self):
+        schema = {
+            "$defs": {"Thing": {"title": "Thing", "type": "object", "properties": {"name": {"type": "string"}}}},
+            "type": "object",
+            "properties": {"thing": {"$ref": "#/$defs/Thing"}, "maybe": {"anyOf": [{"type": "string"}, {"type": "null"}]}},
+        }
+        converted = gemini_schema(schema)
+        encoded = json.dumps(converted)
+        self.assertNotIn("$defs", encoded)
+        self.assertNotIn("$ref", encoded)
+        self.assertNotIn("title", encoded)
+        self.assertTrue(converted["properties"]["maybe"]["nullable"])
+
 
 def object_with_schema():
     class MinimalSchema:
@@ -158,6 +189,12 @@ def object_with_schema():
             return {"type": "object"}
 
     return MinimalSchema
+
+
+def provider_error(code, status, message=""):
+    from backend.app.services.legal_answer_generation import ModelProviderError
+
+    return ModelProviderError(code, message, http_status=status, provider_code=None, provider_message=message)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 import json
 import socket
+from dataclasses import dataclass
 import urllib.error
 import urllib.request
 from time import perf_counter
@@ -177,6 +178,7 @@ class LegalAnswerResult(BaseModel):
     evidence_retrieved: list[str] = Field(default_factory=list)
     evidence_unused: list[str] = Field(default_factory=list)
     model_metadata: ModelGenerationMetadata | None = None
+    provider_diagnostic: dict[str, Any] = Field(default_factory=dict)
     fallbacks: list[dict[str, str]] = Field(default_factory=list)
     timings: dict[str, float] = Field(default_factory=dict)
     query_understanding_version: str
@@ -204,9 +206,20 @@ class ModelUnavailableError(RuntimeError):
 class ModelProviderError(RuntimeError):
     """Raised when a configured provider returns a sanitized runtime error."""
 
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        http_status: int | None = None,
+        provider_code: str | None = None,
+        provider_message: str | None = None,
+    ) -> None:
         super().__init__(message)
         self.code = code
+        self.http_status = http_status
+        self.provider_code = provider_code
+        self.provider_message = provider_message
 
 
 class GeminiAnswerAdapter:
@@ -245,7 +258,14 @@ class GeminiAnswerAdapter:
         except socket.timeout as exc:
             raise ModelProviderError("GEMINI_TIMEOUT", "Gemini request timed out.") from exc
         except urllib.error.HTTPError as exc:
-            raise ModelProviderError(http_error_code(exc), sanitized_http_error(exc)) from exc
+            diagnostic = sanitized_http_diagnostic(exc)
+            raise ModelProviderError(
+                http_error_code(exc),
+                diagnostic.message,
+                http_status=diagnostic.http_status,
+                provider_code=diagnostic.provider_code,
+                provider_message=diagnostic.provider_message,
+            ) from exc
         except urllib.error.URLError as exc:
             raise ModelProviderError("GEMINI_PROVIDER_ERROR", sanitized_url_error(exc)) from exc
         except json.JSONDecodeError as exc:
@@ -356,6 +376,9 @@ def generate_legal_answer(
             exc.code,
             str(exc),
             configured_model_id=getattr(adapter, "configured_model_id", ""),
+            http_status=exc.http_status,
+            provider_code=exc.provider_code,
+            provider_message=exc.provider_message,
         )
     try:
         parsed = parse_model_payload(model_response.raw_response, model_response.parsed_response, schema)
@@ -458,6 +481,11 @@ def model_unavailable_result(
         evidence_retrieved=evidence_ids,
         evidence_unused=evidence_ids,
         model_metadata=metadata,
+        provider_diagnostic={
+            "http_status": http_status,
+            "provider_code": provider_code,
+            "provider_message_sanitized": provider_message,
+        },
         timings={"answer_generation_ms": total_ms},
         query_understanding_version=understanding.schema_version,
         retrieval_version=retrieval.retrieval_version,
@@ -505,7 +533,8 @@ def extract_gemini_text(body: dict[str, Any]) -> str:
 
 
 def model_payload_schema(schema: type[BaseModel]) -> dict[str, Any]:
-    return {
+    return gemini_schema(
+        {
         "type": "object",
         "properties": {
             "answer": schema.model_json_schema(mode="serialization"),
@@ -516,7 +545,37 @@ def model_payload_schema(schema: type[BaseModel]) -> dict[str, Any]:
             },
         },
         "required": ["answer", "summary", "claims"],
-    }
+        }
+    )
+
+
+def gemini_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    definitions = schema.get("$defs", {})
+    return sanitize_gemini_schema(schema, definitions)
+
+
+def sanitize_gemini_schema(value: Any, definitions: dict[str, Any]) -> Any:
+    if isinstance(value, list):
+        return [sanitize_gemini_schema(item, definitions) for item in value]
+    if not isinstance(value, dict):
+        return value
+    if "$ref" in value:
+        name = value["$ref"].rsplit("/", 1)[-1]
+        return sanitize_gemini_schema(definitions.get(name, {}), definitions)
+    sanitized: dict[str, Any] = {}
+    for key, item in value.items():
+        if key in {"$defs", "title", "default", "examples", "additionalProperties"}:
+            continue
+        if key == "anyOf":
+            options = [option for option in item if option.get("type") != "null"]
+            if len(options) == 1:
+                sanitized.update(sanitize_gemini_schema(options[0], definitions))
+                sanitized["nullable"] = True
+            else:
+                sanitized["anyOf"] = sanitize_gemini_schema(options, definitions)
+            continue
+        sanitized[key] = sanitize_gemini_schema(item, definitions)
+    return sanitized
 
 
 def http_error_code(exc: urllib.error.HTTPError) -> str:
@@ -529,8 +588,51 @@ def http_error_code(exc: urllib.error.HTTPError) -> str:
     return "GEMINI_HTTP_ERROR"
 
 
-def sanitized_http_error(exc: urllib.error.HTTPError) -> str:
-    return f"Gemini request failed with HTTP {exc.code}."
+@dataclass(frozen=True)
+class SanitizedHttpDiagnostic:
+    http_status: int
+    provider_code: str | None
+    provider_message: str
+    message: str
+
+
+def sanitized_http_diagnostic(exc: urllib.error.HTTPError) -> SanitizedHttpDiagnostic:
+    provider_code = None
+    provider_message = f"Gemini request failed with HTTP {exc.code}."
+    body = safe_http_error_body(exc)
+    if body:
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            provider_message = body[:300]
+        else:
+            error = payload.get("error", {}) if isinstance(payload, dict) else {}
+            provider_code = safe_string(error.get("status") or error.get("code"))
+            provider_message = safe_string(error.get("message")) or provider_message
+    return SanitizedHttpDiagnostic(
+        http_status=exc.code,
+        provider_code=provider_code,
+        provider_message=provider_message,
+        message=f"Gemini request failed with HTTP {exc.code}: {provider_message}",
+    )
+
+
+def safe_http_error_body(exc: urllib.error.HTTPError) -> str:
+    try:
+        raw = exc.read()
+    except Exception:
+        return ""
+    try:
+        return raw.decode("utf-8", errors="replace")
+    except AttributeError:
+        return str(raw)
+
+
+def safe_string(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value)
+    return text[:500]
 
 
 def sanitized_url_error(exc: urllib.error.URLError) -> str:
@@ -546,6 +648,9 @@ def model_provider_failure_result(
     code: str,
     message: str,
     configured_model_id: str = "",
+    http_status: int | None = None,
+    provider_code: str | None = None,
+    provider_message: str | None = None,
 ) -> LegalAnswerResult:
     evidence_ids = [item.citation_id for item in retrieval.evidence]
     metadata = ModelGenerationMetadata(
@@ -560,7 +665,13 @@ def model_provider_failure_result(
         answer=None,
         summary="Gemini generation failed before a validated structured answer was produced.",
         grounding_status=GroundingStatus.UNGROUNDED,
-        warnings=[LegalAnswerWarning(code=code, message=message, severity="error")],
+        warnings=[
+            LegalAnswerWarning(
+                code=code,
+                message=message,
+                severity="error",
+            )
+        ],
         evidence_retrieved=evidence_ids,
         evidence_unused=evidence_ids,
         model_metadata=metadata,

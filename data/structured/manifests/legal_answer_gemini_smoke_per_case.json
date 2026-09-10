@@ -6,7 +6,7 @@
       "id": "SMOKE-01",
       "query": "Section 302 IPC murder bail before Sessions Court",
       "mode": "public",
-      "llm_called": false,
+      "llm_called": true,
       "query_understanding": {
         "legal_regime": "ipc_crpc",
         "explicit_sections": [
@@ -78,13 +78,71 @@
         "citation_policy": "retrieval_evidence_only",
         "character_count": 24504
       },
-      "answer": null
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Section 302 IPC murder bail before Sessions Court",
+        "mode": "public",
+        "answer": null,
+        "summary": "Gemini generation failed before a validated structured answer was produced.",
+        "claims": [],
+        "citations": [],
+        "grounding_status": "UNGROUNDED",
+        "warnings": [
+          {
+            "code": "GEMINI_HTTP_ERROR",
+            "message": "Gemini request failed with HTTP 400.",
+            "severity": "error",
+            "related_claims": [],
+            "related_evidence": []
+          }
+        ],
+        "uncertainties": [],
+        "evidence_used": [],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-1.5-flash",
+          "actual_model_id": null,
+          "temperature": 0.1,
+          "response_mode": "public",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null
+        },
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 389.151
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": null
+      }
     },
     {
       "id": "SMOKE-02",
       "query": "After July 2024, which BNS section covers murder?",
       "mode": "public",
-      "llm_called": false,
+      "llm_called": true,
       "query_understanding": {
         "legal_regime": "mixed_or_transition",
         "explicit_sections": [],
@@ -160,13 +218,71 @@
         "citation_policy": "retrieval_evidence_only",
         "character_count": 20880
       },
-      "answer": null
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "After July 2024, which BNS section covers murder?",
+        "mode": "public",
+        "answer": null,
+        "summary": "Gemini generation failed before a validated structured answer was produced.",
+        "claims": [],
+        "citations": [],
+        "grounding_status": "UNGROUNDED",
+        "warnings": [
+          {
+            "code": "GEMINI_HTTP_ERROR",
+            "message": "Gemini request failed with HTTP 400.",
+            "severity": "error",
+            "related_claims": [],
+            "related_evidence": []
+          }
+        ],
+        "uncertainties": [],
+        "evidence_used": [],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-1.5-flash",
+          "actual_model_id": null,
+          "temperature": 0.1,
+          "response_mode": "public",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null
+        },
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 311.611
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": null
+      }
     },
     {
       "id": "SMOKE-03",
       "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
       "mode": "professional",
-      "llm_called": false,
+      "llm_called": true,
       "query_understanding": {
         "legal_regime": "ipc_crpc",
         "explicit_sections": [
@@ -256,13 +372,71 @@
         "citation_policy": "retrieval_evidence_only",
         "character_count": 23992
       },
-      "answer": null
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
+        "mode": "professional",
+        "answer": null,
+        "summary": "Gemini generation failed before a validated structured answer was produced.",
+        "claims": [],
+        "citations": [],
+        "grounding_status": "UNGROUNDED",
+        "warnings": [
+          {
+            "code": "GEMINI_HTTP_ERROR",
+            "message": "Gemini request failed with HTTP 400.",
+            "severity": "error",
+            "related_claims": [],
+            "related_evidence": []
+          }
+        ],
+        "uncertainties": [],
+        "evidence_used": [],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-1.5-flash",
+          "actual_model_id": null,
+          "temperature": 0.1,
+          "response_mode": "professional",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null
+        },
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 350.909
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": null
+      }
     },
     {
       "id": "SMOKE-04",
       "query": "Section 103 BNS and Section 302 IPC transition issue",
       "mode": "professional",
-      "llm_called": false,
+      "llm_called": true,
       "query_understanding": {
         "legal_regime": "mixed_or_transition",
         "explicit_sections": [
@@ -342,7 +516,65 @@
         "citation_policy": "retrieval_evidence_only",
         "character_count": 21977
       },
-      "answer": null
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Section 103 BNS and Section 302 IPC transition issue",
+        "mode": "professional",
+        "answer": null,
+        "summary": "Gemini generation failed before a validated structured answer was produced.",
+        "claims": [],
+        "citations": [],
+        "grounding_status": "UNGROUNDED",
+        "warnings": [
+          {
+            "code": "GEMINI_HTTP_ERROR",
+            "message": "Gemini request failed with HTTP 400.",
+            "severity": "error",
+            "related_claims": [],
+            "related_evidence": []
+          }
+        ],
+        "uncertainties": [],
+        "evidence_used": [],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-1.5-flash",
+          "actual_model_id": null,
+          "temperature": 0.1,
+          "response_mode": "professional",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null
+        },
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 319.173
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": null
+      }
     }
   ]
 }

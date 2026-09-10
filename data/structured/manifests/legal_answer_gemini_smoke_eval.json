@@ -7,7 +7,7 @@
       "query": "Section 302 IPC murder bail before Sessions Court",
       "mode": "public",
       "provider": "gemini",
-      "configured_model": "gemini-3.7-flash",
+      "configured_model": "gemini-1.5-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -18,15 +18,15 @@
         "E4",
         "E5"
       ],
-      "generation_status": "SKIPPED_GEMINI_CREDENTIALS_UNAVAILABLE",
-      "structured_parse_status": "SKIPPED",
+      "generation_status": "FAILED",
+      "structured_parse_status": "FAILED",
       "repair_attempted": false,
       "repair_succeeded": null,
       "citation_count": 0,
       "valid_citation_count": 0,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": null,
+      "grounding_status": "UNGROUNDED",
       "claims_requiring_citation": 0,
       "claims_with_valid_citation": 0,
       "claims_without_citation": 0,
@@ -38,9 +38,11 @@
         "E4",
         "E5"
       ],
-      "warnings": [],
+      "warnings": [
+        "GEMINI_HTTP_ERROR"
+      ],
       "errors": [
-        "GEMINI_CREDENTIALS_UNAVAILABLE"
+        "GEMINI_HTTP_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
@@ -48,16 +50,16 @@
       "total_tokens": null,
       "fallback_used": false,
       "query_understanding_latency_ms": 2.952,
-      "retrieval_latency_ms": 8514.143,
-      "prompt_construction_latency_ms": 0.16,
-      "total_latency_ms": 8517.268
+      "retrieval_latency_ms": 10562.391,
+      "prompt_construction_latency_ms": 0.289,
+      "total_latency_ms": 10955.8
     },
     {
       "id": "SMOKE-02",
       "query": "After July 2024, which BNS section covers murder?",
       "mode": "public",
       "provider": "gemini",
-      "configured_model": "gemini-3.7-flash",
+      "configured_model": "gemini-1.5-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -68,15 +70,15 @@
         "E4",
         "E5"
       ],
-      "generation_status": "SKIPPED_GEMINI_CREDENTIALS_UNAVAILABLE",
-      "structured_parse_status": "SKIPPED",
+      "generation_status": "FAILED",
+      "structured_parse_status": "FAILED",
       "repair_attempted": false,
       "repair_succeeded": null,
       "citation_count": 0,
       "valid_citation_count": 0,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": null,
+      "grounding_status": "UNGROUNDED",
       "claims_requiring_citation": 0,
       "claims_with_valid_citation": 0,
       "claims_without_citation": 0,
@@ -88,26 +90,28 @@
         "E4",
         "E5"
       ],
-      "warnings": [],
+      "warnings": [
+        "GEMINI_HTTP_ERROR"
+      ],
       "errors": [
-        "GEMINI_CREDENTIALS_UNAVAILABLE"
+        "GEMINI_HTTP_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 1.324,
-      "retrieval_latency_ms": 8379.162,
-      "prompt_construction_latency_ms": 0.163,
-      "total_latency_ms": 8380.663
+      "query_understanding_latency_ms": 5.142,
+      "retrieval_latency_ms": 7456.435,
+      "prompt_construction_latency_ms": 0.1,
+      "total_latency_ms": 7773.768
     },
     {
       "id": "SMOKE-03",
       "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
       "mode": "professional",
       "provider": "gemini",
-      "configured_model": "gemini-3.7-flash",
+      "configured_model": "gemini-1.5-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -118,15 +122,15 @@
         "E4",
         "E5"
       ],
-      "generation_status": "SKIPPED_GEMINI_CREDENTIALS_UNAVAILABLE",
-      "structured_parse_status": "SKIPPED",
+      "generation_status": "FAILED",
+      "structured_parse_status": "FAILED",
       "repair_attempted": false,
       "repair_succeeded": null,
       "citation_count": 0,
       "valid_citation_count": 0,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": null,
+      "grounding_status": "UNGROUNDED",
       "claims_requiring_citation": 0,
       "claims_with_valid_citation": 0,
       "claims_without_citation": 0,
@@ -138,26 +142,28 @@
         "E4",
         "E5"
       ],
-      "warnings": [],
+      "warnings": [
+        "GEMINI_HTTP_ERROR"
+      ],
       "errors": [
-        "GEMINI_CREDENTIALS_UNAVAILABLE"
+        "GEMINI_HTTP_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 1.194,
-      "retrieval_latency_ms": 8501.672,
-      "prompt_construction_latency_ms": 0.145,
-      "total_latency_ms": 8503.021
+      "query_understanding_latency_ms": 3.776,
+      "retrieval_latency_ms": 7538.844,
+      "prompt_construction_latency_ms": 0.109,
+      "total_latency_ms": 7894.24
     },
     {
       "id": "SMOKE-04",
       "query": "Section 103 BNS and Section 302 IPC transition issue",
       "mode": "professional",
       "provider": "gemini",
-      "configured_model": "gemini-3.7-flash",
+      "configured_model": "gemini-1.5-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -168,15 +174,15 @@
         "E4",
         "E5"
       ],
-      "generation_status": "SKIPPED_GEMINI_CREDENTIALS_UNAVAILABLE",
-      "structured_parse_status": "SKIPPED",
+      "generation_status": "FAILED",
+      "structured_parse_status": "FAILED",
       "repair_attempted": false,
       "repair_succeeded": null,
       "citation_count": 0,
       "valid_citation_count": 0,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": null,
+      "grounding_status": "UNGROUNDED",
       "claims_requiring_citation": 0,
       "claims_with_valid_citation": 0,
       "claims_without_citation": 0,
@@ -188,19 +194,21 @@
         "E4",
         "E5"
       ],
-      "warnings": [],
+      "warnings": [
+        "GEMINI_HTTP_ERROR"
+      ],
       "errors": [
-        "GEMINI_CREDENTIALS_UNAVAILABLE"
+        "GEMINI_HTTP_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 1.255,
-      "retrieval_latency_ms": 8411.797,
-      "prompt_construction_latency_ms": 0.159,
-      "total_latency_ms": 8413.223
+      "query_understanding_latency_ms": 6.018,
+      "retrieval_latency_ms": 7442.588,
+      "prompt_construction_latency_ms": 0.107,
+      "total_latency_ms": 7768.485
     }
   ]
 }
