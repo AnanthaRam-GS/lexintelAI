@@ -1,0 +1,425 @@
+[
+  {
+    "query_id": "dev-q001",
+    "query": "BNSS bail for an IPC offence registered before July 2024",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": "before",
+    "date_value": "2024-07-01",
+    "posture": "bail_petition",
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "date intent before 2024-07-01",
+      "posture bail_petition",
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q002",
+    "query": "new criminal law offence with BNSS procedure after commencement",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q003",
+    "query": "anticipatory bail after new procedural code for old penal offence",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": "bail_petition",
+    "offence_family": null,
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "posture bail_petition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q004",
+    "query": "savings clause issue when criminal case spans IPC and BNS",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q005",
+    "query": "post July 2024 arrest procedure in criminal petition",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": "after",
+    "date_value": "2024-07-01",
+    "posture": "arrest_procedure",
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "date intent after 2024-07-01",
+      "posture arrest_procedure",
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q006",
+    "query": "old CrPC notice practice compared with BNSS arrest safeguards",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": "arrest_procedure",
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "posture arrest_procedure",
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q007",
+    "query": "fatal assault during property robbery with recovery of articles",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "homicide",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family homicide"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q008",
+    "query": "minor abducted and later subjected to sexual offence",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "kidnapping",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family kidnapping"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q009",
+    "query": "business transaction alleging entrusted money and deception",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "cheating_and_fraud",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family cheating_and_fraud"
+    ],
+    "warnings": [
+      "composite_query_family_signal_is_conservative"
+    ]
+  },
+  {
+    "query_id": "dev-q010",
+    "query": "multiple accused assault where shared intention must be proved",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "hurt_and_assault",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family hurt_and_assault"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q011",
+    "query": "drug bail with quantity threshold and statutory bar",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": "bail_petition",
+    "offence_family": "narcotics_related",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "posture bail_petition",
+      "family narcotics_related"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q012",
+    "query": "property taken by force rather than simple stealing",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "theft_and_robbery",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family theft_and_robbery"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q013",
+    "query": "woman harassed by husband and in laws for marriage demands",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "dowry_and_domestic_cruelty",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family dowry_and_domestic_cruelty"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q014",
+    "query": "guardian complains child was lured away from lawful custody",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "kidnapping",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family kidnapping"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q015",
+    "query": "investors induced to part with money by false promise",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "cheating_and_fraud",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family cheating_and_fraud"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q016",
+    "query": "Supreme Court criminal appeal discussing murder conviction evidence",
+    "court_level": "supreme_court",
+    "court_name": "Supreme Court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "criminal_appeal",
+    "offence_family": "homicide",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit Supreme Court",
+      "posture criminal_appeal",
+      "family homicide"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q017",
+    "query": "High Court petition seeking FIR quashing in commercial dispute",
+    "court_level": "high_court",
+    "court_name": "High Court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "quashing_petition",
+    "offence_family": "cheating_and_fraud",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit High Court",
+      "posture quashing_petition",
+      "family cheating_and_fraud"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q018",
+    "query": "trial court conviction appeal involving prosecutrix testimony",
+    "court_level": "district_court",
+    "court_name": "trial court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "criminal_appeal",
+    "offence_family": "sexual_offences",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit trial court",
+      "posture criminal_appeal",
+      "family sexual_offences"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q019",
+    "query": "breach of contract allegation wrongly framed as cheating",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "cheating_and_fraud",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family cheating_and_fraud"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "dev-q020",
+    "query": "culpable homicide discussion where murder conviction may be reduced",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": null,
+    "date_value": null,
+    "posture": null,
+    "offence_family": "homicide",
+    "legal_regime": null,
+    "confidence": "medium",
+    "evidence": [
+      "family homicide"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-001",
+    "query": "Supreme Court criminal appeal discussing murder conviction",
+    "court_level": "supreme_court",
+    "court_name": "Supreme Court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "criminal_appeal",
+    "offence_family": "homicide",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit Supreme Court",
+      "posture criminal_appeal",
+      "family homicide"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-002",
+    "query": "High Court petition seeking FIR quashing",
+    "court_level": "high_court",
+    "court_name": "High Court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "quashing_petition",
+    "offence_family": null,
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit High Court",
+      "posture quashing_petition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-003",
+    "query": "trial court conviction appeal involving prosecutrix testimony",
+    "court_level": "district_court",
+    "court_name": "trial court",
+    "date_relation": null,
+    "date_value": null,
+    "posture": "criminal_appeal",
+    "offence_family": "sexual_offences",
+    "legal_regime": null,
+    "confidence": "high",
+    "evidence": [
+      "explicit trial court",
+      "posture criminal_appeal",
+      "family sexual_offences"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-004",
+    "query": "post July 2024 arrest procedure",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": "after",
+    "date_value": "2024-07-01",
+    "posture": "arrest_procedure",
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "date intent after 2024-07-01",
+      "posture arrest_procedure",
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  },
+  {
+    "query_id": "synthetic-005",
+    "query": "BNSS bail for IPC offence before July 2024",
+    "court_level": null,
+    "court_name": null,
+    "date_relation": "before",
+    "date_value": "2024-07-01",
+    "posture": "bail_petition",
+    "offence_family": null,
+    "legal_regime": "mixed_or_transition",
+    "confidence": "high",
+    "evidence": [
+      "date intent before 2024-07-01",
+      "posture bail_petition",
+      "regime mixed_or_transition"
+    ],
+    "warnings": []
+  }
+]

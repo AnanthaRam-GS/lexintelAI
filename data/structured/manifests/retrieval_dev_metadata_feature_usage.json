@@ -1,0 +1,20 @@
+{
+  "court_level_match:match": 69,
+  "court_level_match:mismatch": 66,
+  "court_level_match:neutral": 765,
+  "court_match:match": 69,
+  "court_match:mismatch": 66,
+  "court_match:neutral": 765,
+  "date_compatible:match": 45,
+  "date_compatible:mismatch": 45,
+  "date_compatible:neutral": 810,
+  "family_match:match": 240,
+  "family_match:mismatch": 390,
+  "family_match:neutral": 270,
+  "posture_match:match": 153,
+  "posture_match:mismatch": 207,
+  "posture_match:neutral": 540,
+  "regime_match:match": 168,
+  "regime_match:mismatch": 57,
+  "regime_match:neutral": 675
+}

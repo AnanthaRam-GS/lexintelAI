@@ -3,8 +3,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.api.analytics import router as analytics_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.ingest import router as ingest_router
+from backend.app.api.query_history import router as query_history_router
 from backend.app.core.config import Settings
 from backend.app.db.session import check_db_connection
 
@@ -34,6 +36,8 @@ app.add_middleware(
 # Router Wiring
 app.include_router(auth_router)
 app.include_router(ingest_router)
+app.include_router(analytics_router)
+app.include_router(query_history_router)
 
 
 @app.get("/health", tags=["Health"])

@@ -36,6 +36,11 @@ class Settings(BaseSettings):
 
     inlegalbert_model_path: str = "./models/inlegalbert-finetuned"
     inlegalbert_classification_threshold: float = 0.5
+    legal_ner_enabled: bool = False
+    legal_ner_model: str = ""
+    legal_ner_device: str = "cpu"
+    legal_ner_min_confidence: float = 0.7
+    legal_ner_mode: str = "deterministic"
 
     embedding_model: str = "BAAI/bge-m3"
     embedding_device: str = "cpu"

@@ -1,0 +1,64 @@
+{
+  "schema_version": "legalai-ner-schema-v1",
+  "decision_version": "legalai-ner-selection-decision-v1",
+  "final_decision": "RETAIN_DETERMINISTIC_NER_PHASE0",
+  "selected_mode": "deterministic",
+  "selected_extractor": "deterministic_legal_ner",
+  "learned_model_selected": null,
+  "learned_ner_enabled": false,
+  "hybrid_ner_enabled": false,
+  "further_pretrained_candidate_search": false,
+  "fine_tuning_now": false,
+  "future_learned_ner_research": "allowed",
+  "model_trials": {
+    "D0": {
+      "system": "deterministic LegalAI NER bridge",
+      "predictions": 76,
+      "true_positive": 65,
+      "false_positive": 11,
+      "false_negative": 24,
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "decision": "SELECTED_FOR_PHASE0"
+    },
+    "T1": {
+      "candidate": "evolawyer/inlegalbert-sc-ner-silver",
+      "revision": "f7d54eb91551da4fb8a6329d1d871559c04e1832",
+      "learned_precision": 1.0,
+      "learned_recall": 0.202247,
+      "learned_f1": 0.336449,
+      "hybrid_precision": 0.855263,
+      "hybrid_recall": 0.730337,
+      "hybrid_f1": 0.787879,
+      "decision": "LEARNED CANDIDATE REJECTED",
+      "reason": "legal-domain candidate was too conservative and did not improve the hybrid system over D0"
+    },
+    "T2": {
+      "candidate": "dslim/bert-base-NER",
+      "revision": "d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc",
+      "learned_precision": 0.119048,
+      "learned_recall": 0.05618,
+      "learned_f1": 0.076336,
+      "hybrid_precision": 0.736842,
+      "hybrid_recall": 0.786517,
+      "hybrid_f1": 0.76087,
+      "hybrid_precision_delta_vs_d0": -0.118421,
+      "hybrid_recall_delta_vs_d0": 0.05618,
+      "hybrid_f1_delta_vs_d0": -0.027009,
+      "decision": "GENERAL NER CANDIDATE REJECTED",
+      "reason": "general NER improved some location and organization recall but reduced precision enough to lower hybrid F1"
+    }
+  },
+  "candidate_comparison_decision": "NEITHER CANDIDATE JUSTIFIED",
+  "model_shopping_policy": {
+    "phase0_pretrained_search_stopped": true,
+    "reason": "two reasonable pretrained candidates were tested and neither improved hybrid F1 over D0; further trials risk evaluation-set overfitting and checkpoint hunting on a small 36-example gold set"
+  },
+  "future_conditions_for_learned_ner": [
+    "larger human-labelled NER corpus exists",
+    "judgment-document spans are annotated",
+    "PERSON/ORGANIZATION/LOCATION/CASE_NAME support increases",
+    "train/dev/test split is available"
+  ]
+}
