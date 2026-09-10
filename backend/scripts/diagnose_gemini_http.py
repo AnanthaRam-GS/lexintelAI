@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import sys
+from time import perf_counter
 
 from pydantic import BaseModel
 
@@ -47,11 +48,13 @@ def main() -> int:
         print(json.dumps(payload, indent=2, ensure_ascii=False))
         return 0
     try:
+        started = perf_counter()
         response = GeminiAnswerAdapter(settings).generate_structured_answer(
             'Return JSON exactly as {"ok":"OK"}.',
             schema=GeminiHealthCheckOutput,
             mode=AnswerMode.PUBLIC,
         )
+        latency_ms = round((perf_counter() - started) * 1000, 3)
     except ModelUnavailableError as exc:
         payload["root_cause"] = "AUTHENTICATION_CONFIGURATION"
         payload["health_check_status"] = "MODEL_UNAVAILABLE"
@@ -67,6 +70,17 @@ def main() -> int:
         payload["health_check_status"] = "SUCCESS"
         payload["actual_model"] = response.model_metadata.actual_model_id
         payload["root_cause"] = "NONE"
+        payload["health_check"] = {
+            "status": "SUCCESS",
+            "http_status": 200,
+            "provider_code": None,
+            "provider_message_sanitized": None,
+            "actual_model": response.model_metadata.actual_model_id,
+            "latency_ms": latency_ms,
+            "prompt_tokens": response.model_metadata.prompt_tokens,
+            "completion_tokens": response.model_metadata.completion_tokens,
+            "total_tokens": response.model_metadata.total_tokens,
+        }
     write_json(payload)
     print(json.dumps(payload, indent=2, ensure_ascii=False))
     return 0

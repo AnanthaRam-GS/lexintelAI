@@ -123,6 +123,24 @@ Provider model discovery confirmed the configured model was not in the
 `generateContent`-capable model list. Do not rerun the four-case grounded smoke trial
 until `GEMINI_MODEL` is set to an available model and the minimal health check succeeds.
 
+## Provider Model Resolution
+
+The D2 provider-selection pass used Gemini model discovery only and did not send legal
+queries, retrieved evidence, retrieval metadata, or grounded smoke prompts.
+
+Discovery returned 50 total models, including 40 models with `generateContent` support.
+The previous configured model, `gemini-1.5-flash`, was not available. The first
+provider-discovered Flash-class candidate, `gemini-2.5-flash`, was then rejected by the
+provider as unavailable to new users. Gemini's sanitized provider message recommended
+`gemini-3.6-flash`; discovery confirmed that model supports `generateContent`.
+
+Local ignored configuration was updated so `GEMINI_MODEL` resolves to
+`gemini-3.6-flash`. Runtime source still reads the model from configuration and does
+not hardcode the selected model.
+
+The minimal provider health check succeeded with HTTP 200 and actual model
+`gemini-3.6-flash`. The four grounded smoke cases were not rerun in D2.
+
 ## Limitations
 
 This trial does not establish that Gemini is legally accurate, better than another
