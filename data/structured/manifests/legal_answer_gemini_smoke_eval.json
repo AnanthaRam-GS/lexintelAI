@@ -8,7 +8,7 @@
       "mode": "public",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
+      "actual_model": "gemini-3.6-flash",
       "retrieval_count": 5,
       "evidence_passed_count": 5,
       "evidence_ids": [
@@ -18,41 +18,38 @@
         "E4",
         "E5"
       ],
-      "generation_status": "FAILED",
-      "structured_parse_status": "FAILED",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
-      "citation_count": 0,
-      "valid_citation_count": 0,
+      "citation_count": 3,
+      "valid_citation_count": 3,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": "UNGROUNDED",
-      "claims_requiring_citation": 0,
-      "claims_with_valid_citation": 0,
+      "grounding_status": "STRUCTURALLY_GROUNDED",
+      "claims_requiring_citation": 2,
+      "claims_with_valid_citation": 2,
       "claims_without_citation": 0,
-      "evidence_used": [],
-      "evidence_unused": [
+      "evidence_used": [
         "E1",
         "E2",
-        "E3",
+        "E3"
+      ],
+      "evidence_unused": [
         "E4",
         "E5"
       ],
-      "warnings": [
-        "GEMINI_PROVIDER_ERROR"
-      ],
-      "errors": [
-        "GEMINI_PROVIDER_ERROR"
-      ],
-      "generation_latency_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 23037.132,
+      "prompt_tokens": 7041,
+      "completion_tokens": 911,
+      "total_tokens": 10649,
       "fallback_used": false,
-      "query_understanding_latency_ms": 3.06,
-      "retrieval_latency_ms": 9034.335,
-      "prompt_construction_latency_ms": 0.346,
-      "total_latency_ms": 10483.441
+      "query_understanding_latency_ms": 2.789,
+      "retrieval_latency_ms": 9277.211,
+      "prompt_construction_latency_ms": 0.285,
+      "total_latency_ms": 32317.996
     },
     {
       "id": "SMOKE-02",
@@ -60,7 +57,7 @@
       "mode": "public",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
+      "actual_model": "gemini-3.6-flash",
       "retrieval_count": 5,
       "evidence_passed_count": 5,
       "evidence_ids": [
@@ -70,41 +67,38 @@
         "E4",
         "E5"
       ],
-      "generation_status": "FAILED",
-      "structured_parse_status": "FAILED",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
-      "citation_count": 0,
-      "valid_citation_count": 0,
+      "citation_count": 3,
+      "valid_citation_count": 3,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": "UNGROUNDED",
-      "claims_requiring_citation": 0,
-      "claims_with_valid_citation": 0,
-      "claims_without_citation": 0,
-      "evidence_used": [],
-      "evidence_unused": [
+      "grounding_status": "PARTIALLY_GROUNDED",
+      "claims_requiring_citation": 3,
+      "claims_with_valid_citation": 2,
+      "claims_without_citation": 1,
+      "evidence_used": [
         "E1",
-        "E2",
         "E3",
-        "E4",
         "E5"
       ],
-      "warnings": [
-        "GEMINI_TIMEOUT"
+      "evidence_unused": [
+        "E2",
+        "E4"
       ],
-      "errors": [
-        "GEMINI_TIMEOUT"
-      ],
-      "generation_latency_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 15960.706,
+      "prompt_tokens": 6597,
+      "completion_tokens": 1549,
+      "total_tokens": 9491,
       "fallback_used": false,
-      "query_understanding_latency_ms": 3.943,
-      "retrieval_latency_ms": 7557.622,
-      "prompt_construction_latency_ms": 0.119,
-      "total_latency_ms": 67624.606
+      "query_understanding_latency_ms": 4.282,
+      "retrieval_latency_ms": 7464.434,
+      "prompt_construction_latency_ms": 0.158,
+      "total_latency_ms": 23430.15
     },
     {
       "id": "SMOKE-03",
@@ -122,41 +116,38 @@
         "E4",
         "E5"
       ],
-      "generation_status": "FAILED",
-      "structured_parse_status": "FAILED",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
-      "citation_count": 0,
-      "valid_citation_count": 0,
+      "citation_count": 3,
+      "valid_citation_count": 3,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": "UNGROUNDED",
-      "claims_requiring_citation": 0,
-      "claims_with_valid_citation": 0,
+      "grounding_status": "STRUCTURALLY_GROUNDED",
+      "claims_requiring_citation": 3,
+      "claims_with_valid_citation": 3,
       "claims_without_citation": 0,
-      "evidence_used": [],
-      "evidence_unused": [
+      "evidence_used": [
         "E1",
+        "E3"
+      ],
+      "evidence_unused": [
         "E2",
-        "E3",
         "E4",
         "E5"
       ],
-      "warnings": [
-        "MODEL_OUTPUT_VALIDATION_FAILED"
-      ],
-      "errors": [
-        "MODEL_OUTPUT_VALIDATION_FAILED"
-      ],
-      "generation_latency_ms": 19938.355,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 24435.919,
       "prompt_tokens": 6889,
-      "completion_tokens": 1164,
-      "total_tokens": 10480,
+      "completion_tokens": 1649,
+      "total_tokens": 10454,
       "fallback_used": false,
-      "query_understanding_latency_ms": 4.202,
-      "retrieval_latency_ms": 7489.4,
-      "prompt_construction_latency_ms": 0.177,
-      "total_latency_ms": 27437.554
+      "query_understanding_latency_ms": 4.381,
+      "retrieval_latency_ms": 7474.039,
+      "prompt_construction_latency_ms": 0.188,
+      "total_latency_ms": 31916.897
     },
     {
       "id": "SMOKE-04",
@@ -164,7 +155,7 @@
       "mode": "professional",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
+      "actual_model": "gemini-3.6-flash",
       "retrieval_count": 5,
       "evidence_passed_count": 5,
       "evidence_ids": [
@@ -174,41 +165,38 @@
         "E4",
         "E5"
       ],
-      "generation_status": "FAILED",
-      "structured_parse_status": "FAILED",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
-      "citation_count": 0,
-      "valid_citation_count": 0,
+      "citation_count": 4,
+      "valid_citation_count": 4,
       "invalid_citation_count": 0,
       "invalid_citation_reasons": [],
-      "grounding_status": "UNGROUNDED",
-      "claims_requiring_citation": 0,
-      "claims_with_valid_citation": 0,
+      "grounding_status": "STRUCTURALLY_GROUNDED",
+      "claims_requiring_citation": 4,
+      "claims_with_valid_citation": 4,
       "claims_without_citation": 0,
-      "evidence_used": [],
-      "evidence_unused": [
-        "E1",
+      "evidence_used": [
         "E2",
         "E3",
         "E4",
         "E5"
       ],
-      "warnings": [
-        "GEMINI_PROVIDER_ERROR"
+      "evidence_unused": [
+        "E1"
       ],
-      "errors": [
-        "GEMINI_PROVIDER_ERROR"
-      ],
-      "generation_latency_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 25456.991,
+      "prompt_tokens": 5821,
+      "completion_tokens": 2780,
+      "total_tokens": 10288,
       "fallback_used": false,
-      "query_understanding_latency_ms": 2.69,
-      "retrieval_latency_ms": 7504.34,
-      "prompt_construction_latency_ms": 0.19,
-      "total_latency_ms": 9524.79
+      "query_understanding_latency_ms": 3.683,
+      "retrieval_latency_ms": 7467.109,
+      "prompt_construction_latency_ms": 0.151,
+      "total_latency_ms": 32928.567
     }
   ]
 }

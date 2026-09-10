@@ -194,6 +194,68 @@ Evaluation readiness:
 
 `NOT READY FOR GROUNDED ANSWER EVALUATION`
 
+## Post-Hardening Frozen Rerun
+
+Phase 0 Step 0.9B-T1R-F2 reran the same frozen four-case grounded smoke runner once
+after generic Gemini integration hardening in `653df88`.
+
+Dry-run precheck passed for all four cases: each case produced five retrieved evidence
+items, constructed the grounded prompt, and did not call the LLM.
+
+The live rerun used `GEMINI_MODEL=gemini-3.6-flash`, reached Gemini for all four fixed
+cases, and produced validated structured output for every case. No Ollama fallback was
+used and no format repair was attempted.
+
+| ID | Mode | Retrieval | Provider Attempts | Generation | Parse | Citations | Grounding |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| SMOKE-01 | public | 5 evidence items | 2; retried `HTTP_503` once | success | success | 3 valid / 0 invalid | `STRUCTURALLY_GROUNDED` |
+| SMOKE-02 | public | 5 evidence items | 1; no retry | success | success | 3 valid / 0 invalid | `PARTIALLY_GROUNDED` |
+| SMOKE-03 | professional | 5 evidence items | 2; retried `HTTP_503` once | success | success | 3 valid / 0 invalid | `STRUCTURALLY_GROUNDED` |
+| SMOKE-04 | professional | 5 evidence items | 1; no retry | success | success | 4 valid / 0 invalid | `STRUCTURALLY_GROUNDED` |
+
+Retry hardening recovered transient provider failures in SMOKE-01 and SMOKE-03. The
+final provider status was `SUCCESS` for all cases. Total provider attempts were six:
+four primary attempts plus two retry attempts.
+
+SMOKE-03 no longer reproduced the prior nested citation schema failure. Generated
+`ProfessionalLegalBrief` citation objects included `evidence_id`, `claim_id`, and
+`supported_text`, and the canonical structured parse succeeded.
+
+Citation validation executed on all four live structured outputs. The rerun recorded
+13 generated citations, 13 valid citations, and zero invalid citations. No unknown
+evidence IDs, unsupported case citations, unsupported URLs, unsupported court/date
+metadata, or orphan citations were reported by the frozen validator.
+
+The grounding validator recorded three `STRUCTURALLY_GROUNDED` cases and one
+`PARTIALLY_GROUNDED` case. SMOKE-02 had one claim requiring citation without a valid
+claim citation, while all generated citation objects remained valid.
+
+Query understanding preserved explicit section handling:
+
+- SMOKE-01 preserved explicit `IPC 302`; supplementary prediction included protected
+  `IPC 302` and `IPC 304`.
+- SMOKE-03 preserved explicit `CrPC 438`; supplementary predictions included protected
+  `CrPC 438`, plus `IPC 420` and `SC/ST Act 18`.
+- SMOKE-04 preserved explicit `BNS 103` and `IPC 302`; supplementary predictions
+  included protected `BNS 103` and protected `IPC 302`.
+
+SMOKE-04 retained `mixed_or_transition` in the structured professional answer and
+represented both `Section 103, Bharatiya Nyaya Sanhita, 2023` and `Section 302, Indian
+Penal Code, 1860` as explicit legal provisions. This is a structural transition
+diagnostic only, not a final legal-correctness grade.
+
+Mean generation latency was 22,222.687 ms. Mean total case latency was 30,148.403 ms.
+The run recorded 26,348 prompt tokens, 6,889 completion tokens, and 40,882 total
+tokens. No cost was calculated.
+
+Integration decision:
+
+`GEMINI GROUNDED INTEGRATION OPERATIONAL WITH VALIDATION WARNINGS`
+
+Evaluation readiness:
+
+`READY FOR GROUNDED ANSWER EVALUATION`
+
 ## Limitations
 
 This trial does not establish that Gemini is legally accurate, better than another
