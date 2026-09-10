@@ -141,6 +141,59 @@ not hardcode the selected model.
 The minimal provider health check succeeded with HTTP 200 and actual model
 `gemini-3.6-flash`. The four grounded smoke cases were not rerun in D2.
 
+## Final Frozen Four-Case Live Result
+
+Phase 0 Step 0.9B-T1R-F executed the frozen four-case grounded smoke runner once with
+`GEMINI_MODEL=gemini-3.6-flash`.
+
+Dry-run precheck passed for all four cases: each case produced five retrieved evidence
+items, constructed the grounded prompt, and did not call the LLM.
+
+The live run then attempted all four fixed cases exactly once through the grounded
+pipeline. Retrieval succeeded for all cases and no Ollama fallback was used. Gemini did
+not produce any validated structured legal answer:
+
+| ID | Mode | Retrieval | Generation | Parse | Grounding | Diagnostic |
+| --- | --- | --- | --- | --- | --- | --- |
+| SMOKE-01 | public | 5 evidence items | failed | failed | `UNGROUNDED` | Gemini HTTP 503 high demand |
+| SMOKE-02 | public | 5 evidence items | failed | failed | `UNGROUNDED` | Gemini timeout |
+| SMOKE-03 | professional | 5 evidence items | failed | failed | `UNGROUNDED` | Generated JSON failed `ProfessionalLegalBrief` citation schema validation |
+| SMOKE-04 | professional | 5 evidence items | failed | failed | `UNGROUNDED` | Gemini HTTP 503 high demand |
+
+Citation validation did not run on any accepted structured answer because no case
+produced a parsed `PublicLegalAnswer` or `ProfessionalLegalBrief`. The generated
+citation totals recorded by the runner are therefore zero generated citations, zero
+valid citations, and zero invalid citations.
+
+The current implementation made no schema-repair calls. The SMOKE-03 result records
+`repair_reason` as `No repair attempted in Phase 0.9A foundation.` Provider-error and
+timeout cases did not have repair metadata because no validated model payload reached
+the repair boundary.
+
+Query understanding preserved explicit section handling before generation:
+
+- SMOKE-01 preserved explicit `IPC 302`; supplementary prediction also included
+  protected `IPC 302` and `IPC 304`.
+- SMOKE-03 preserved explicit `CrPC 438`; supplementary predictions included protected
+  `CrPC 438`, plus `IPC 420` and `SC/ST Act 18`.
+- SMOKE-04 preserved explicit `BNS 103` and `IPC 302`; supplementary predictions
+  included protected `BNS 103` and protected `IPC 302`.
+
+SMOKE-04 retained the mixed or transition regime classification before the failed
+provider response. Because no validated answer was produced, no final legal-content
+transition behavior was graded.
+
+Recorded token usage was available only for SMOKE-03: 6,889 prompt tokens, 1,164
+completion tokens, and 10,480 total tokens. No cost was calculated.
+
+Integration decision:
+
+`GEMINI GROUNDED INTEGRATION BLOCKED`
+
+Evaluation readiness:
+
+`NOT READY FOR GROUNDED ANSWER EVALUATION`
+
 ## Limitations
 
 This trial does not establish that Gemini is legally accurate, better than another

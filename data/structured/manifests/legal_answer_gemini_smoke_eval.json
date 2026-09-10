@@ -7,7 +7,7 @@
       "query": "Section 302 IPC murder bail before Sessions Court",
       "mode": "public",
       "provider": "gemini",
-      "configured_model": "gemini-1.5-flash",
+      "configured_model": "gemini-3.6-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -39,27 +39,27 @@
         "E5"
       ],
       "warnings": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_PROVIDER_ERROR"
       ],
       "errors": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_PROVIDER_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 2.952,
-      "retrieval_latency_ms": 10562.391,
-      "prompt_construction_latency_ms": 0.289,
-      "total_latency_ms": 10955.8
+      "query_understanding_latency_ms": 3.06,
+      "retrieval_latency_ms": 9034.335,
+      "prompt_construction_latency_ms": 0.346,
+      "total_latency_ms": 10483.441
     },
     {
       "id": "SMOKE-02",
       "query": "After July 2024, which BNS section covers murder?",
       "mode": "public",
       "provider": "gemini",
-      "configured_model": "gemini-1.5-flash",
+      "configured_model": "gemini-3.6-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -91,28 +91,28 @@
         "E5"
       ],
       "warnings": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_TIMEOUT"
       ],
       "errors": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_TIMEOUT"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 5.142,
-      "retrieval_latency_ms": 7456.435,
-      "prompt_construction_latency_ms": 0.1,
-      "total_latency_ms": 7773.768
+      "query_understanding_latency_ms": 3.943,
+      "retrieval_latency_ms": 7557.622,
+      "prompt_construction_latency_ms": 0.119,
+      "total_latency_ms": 67624.606
     },
     {
       "id": "SMOKE-03",
       "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
       "mode": "professional",
       "provider": "gemini",
-      "configured_model": "gemini-1.5-flash",
-      "actual_model": null,
+      "configured_model": "gemini-3.6-flash",
+      "actual_model": "gemini-3.6-flash",
       "retrieval_count": 5,
       "evidence_passed_count": 5,
       "evidence_ids": [
@@ -143,27 +143,27 @@
         "E5"
       ],
       "warnings": [
-        "GEMINI_HTTP_ERROR"
+        "MODEL_OUTPUT_VALIDATION_FAILED"
       ],
       "errors": [
-        "GEMINI_HTTP_ERROR"
+        "MODEL_OUTPUT_VALIDATION_FAILED"
       ],
-      "generation_latency_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "generation_latency_ms": 19938.355,
+      "prompt_tokens": 6889,
+      "completion_tokens": 1164,
+      "total_tokens": 10480,
       "fallback_used": false,
-      "query_understanding_latency_ms": 3.776,
-      "retrieval_latency_ms": 7538.844,
-      "prompt_construction_latency_ms": 0.109,
-      "total_latency_ms": 7894.24
+      "query_understanding_latency_ms": 4.202,
+      "retrieval_latency_ms": 7489.4,
+      "prompt_construction_latency_ms": 0.177,
+      "total_latency_ms": 27437.554
     },
     {
       "id": "SMOKE-04",
       "query": "Section 103 BNS and Section 302 IPC transition issue",
       "mode": "professional",
       "provider": "gemini",
-      "configured_model": "gemini-1.5-flash",
+      "configured_model": "gemini-3.6-flash",
       "actual_model": null,
       "retrieval_count": 5,
       "evidence_passed_count": 5,
@@ -195,20 +195,20 @@
         "E5"
       ],
       "warnings": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_PROVIDER_ERROR"
       ],
       "errors": [
-        "GEMINI_HTTP_ERROR"
+        "GEMINI_PROVIDER_ERROR"
       ],
       "generation_latency_ms": null,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
       "fallback_used": false,
-      "query_understanding_latency_ms": 6.018,
-      "retrieval_latency_ms": 7442.588,
-      "prompt_construction_latency_ms": 0.107,
-      "total_latency_ms": 7768.485
+      "query_understanding_latency_ms": 2.69,
+      "retrieval_latency_ms": 7504.34,
+      "prompt_construction_latency_ms": 0.19,
+      "total_latency_ms": 9524.79
     }
   ]
 }

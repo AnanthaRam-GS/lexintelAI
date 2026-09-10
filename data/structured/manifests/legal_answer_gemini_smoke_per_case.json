@@ -89,8 +89,8 @@
         "grounding_status": "UNGROUNDED",
         "warnings": [
           {
-            "code": "GEMINI_HTTP_ERROR",
-            "message": "Gemini request failed with HTTP 400.",
+            "code": "GEMINI_PROVIDER_ERROR",
+            "message": "Gemini request failed with HTTP 503: This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
             "severity": "error",
             "related_claims": [],
             "related_evidence": []
@@ -114,7 +114,7 @@
         ],
         "model_metadata": {
           "provider": "gemini",
-          "configured_model_id": "gemini-1.5-flash",
+          "configured_model_id": "gemini-3.6-flash",
           "actual_model_id": null,
           "temperature": 0.1,
           "response_mode": "public",
@@ -129,9 +129,10 @@
           "completion_tokens": null,
           "total_tokens": null
         },
+        "provider_diagnostic": {},
         "fallbacks": [],
         "timings": {
-          "answer_generation_ms": 389.151
+          "answer_generation_ms": 1444.887
         },
         "query_understanding_version": "legalai-query-understanding-v1",
         "retrieval_version": "legalai-rag-retrieval-v1",
@@ -229,8 +230,8 @@
         "grounding_status": "UNGROUNDED",
         "warnings": [
           {
-            "code": "GEMINI_HTTP_ERROR",
-            "message": "Gemini request failed with HTTP 400.",
+            "code": "GEMINI_TIMEOUT",
+            "message": "Gemini request timed out.",
             "severity": "error",
             "related_claims": [],
             "related_evidence": []
@@ -254,7 +255,7 @@
         ],
         "model_metadata": {
           "provider": "gemini",
-          "configured_model_id": "gemini-1.5-flash",
+          "configured_model_id": "gemini-3.6-flash",
           "actual_model_id": null,
           "temperature": 0.1,
           "response_mode": "public",
@@ -269,9 +270,10 @@
           "completion_tokens": null,
           "total_tokens": null
         },
+        "provider_diagnostic": {},
         "fallbacks": [],
         "timings": {
-          "answer_generation_ms": 311.611
+          "answer_generation_ms": 60062.615
         },
         "query_understanding_version": "legalai-query-understanding-v1",
         "retrieval_version": "legalai-rag-retrieval-v1",
@@ -377,14 +379,14 @@
         "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
         "mode": "professional",
         "answer": null,
-        "summary": "Gemini generation failed before a validated structured answer was produced.",
+        "summary": "Model output failed schema validation.",
         "claims": [],
         "citations": [],
         "grounding_status": "UNGROUNDED",
         "warnings": [
           {
-            "code": "GEMINI_HTTP_ERROR",
-            "message": "Gemini request failed with HTTP 400.",
+            "code": "MODEL_OUTPUT_VALIDATION_FAILED",
+            "message": "6 validation errors for ProfessionalLegalBrief\ncitations.0.claim_id\n  Field required [type=missing, input_value={'citation_id': 'cit_1', ...hal Pradesh High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations.0.supported_text\n  Field required [type=missing, input_value={'citation_id': 'cit_1', ...hal Pradesh High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations.1.claim_id\n  Field required [type=missing, input_value={'citation_id': 'cit_2', ...t': 'Bombay High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations.1.supported_text\n  Field required [type=missing, input_value={'citation_id': 'cit_2', ...t': 'Bombay High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations.2.claim_id\n  Field required [type=missing, input_value={'citation_id': 'cit_3', ...t': 'Bombay High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations.2.supported_text\n  Field required [type=missing, input_value={'citation_id': 'cit_3', ...t': 'Bombay High Court'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
             "severity": "error",
             "related_claims": [],
             "related_evidence": []
@@ -408,8 +410,8 @@
         ],
         "model_metadata": {
           "provider": "gemini",
-          "configured_model_id": "gemini-1.5-flash",
-          "actual_model_id": null,
+          "configured_model_id": "gemini-3.6-flash",
+          "actual_model_id": "gemini-3.6-flash",
           "temperature": 0.1,
           "response_mode": "professional",
           "fallback_used": false,
@@ -418,14 +420,16 @@
           "fallback_reason": null,
           "repair_attempted": false,
           "repair_succeeded": null,
-          "repair_reason": null,
-          "prompt_tokens": null,
-          "completion_tokens": null,
-          "total_tokens": null
+          "repair_reason": "No repair attempted in Phase 0.9A foundation.",
+          "prompt_tokens": 6889,
+          "completion_tokens": 1164,
+          "total_tokens": 10480
         },
+        "provider_diagnostic": {},
         "fallbacks": [],
         "timings": {
-          "answer_generation_ms": 350.909
+          "answer_generation_ms": 19938.655,
+          "generation_latency_ms": 19938.355
         },
         "query_understanding_version": "legalai-query-understanding-v1",
         "retrieval_version": "legalai-rag-retrieval-v1",
@@ -527,8 +531,8 @@
         "grounding_status": "UNGROUNDED",
         "warnings": [
           {
-            "code": "GEMINI_HTTP_ERROR",
-            "message": "Gemini request failed with HTTP 400.",
+            "code": "GEMINI_PROVIDER_ERROR",
+            "message": "Gemini request failed with HTTP 503: This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
             "severity": "error",
             "related_claims": [],
             "related_evidence": []
@@ -552,7 +556,7 @@
         ],
         "model_metadata": {
           "provider": "gemini",
-          "configured_model_id": "gemini-1.5-flash",
+          "configured_model_id": "gemini-3.6-flash",
           "actual_model_id": null,
           "temperature": 0.1,
           "response_mode": "professional",
@@ -567,9 +571,10 @@
           "completion_tokens": null,
           "total_tokens": null
         },
+        "provider_diagnostic": {},
         "fallbacks": [],
         "timings": {
-          "answer_generation_ms": 319.173
+          "answer_generation_ms": 2017.284
         },
         "query_understanding_version": "legalai-query-understanding-v1",
         "retrieval_version": "legalai-rag-retrieval-v1",
