@@ -1,0 +1,8 @@
+{
+  "schema_version": "legalai-grounded-answer-eval-reviews-v1",
+  "eval_version": "legalai-grounded-answer-eval-v1",
+  "rubric_version": "legalai-answer-rubric-v1",
+  "initial_human_reviewer": "Ananthu",
+  "supports_multiple_reviewers": true,
+  "reviews": []
+}
