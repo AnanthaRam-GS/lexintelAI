@@ -72,7 +72,9 @@ describe('UploadDropzone', () => {
     expect(screen.getByText('judgment.pdf')).toBeVisible();
     expect(screen.getByText('8 B')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Remove judgment.pdf' })).toBeVisible();
-    expect(screen.getByRole('alert')).toHaveTextContent('notes.txt is not an accepted file type.');
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'notes.txt cannot be added. Choose a PDF file.',
+    );
     expect(onFilesSelected).toHaveBeenCalledTimes(1);
     expect(onFilesSelected).toHaveBeenLastCalledWith([valid]);
   });

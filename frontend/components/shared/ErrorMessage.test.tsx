@@ -61,4 +61,21 @@ describe('ErrorMessage', () => {
       unmount();
     });
   });
+
+  it('contains long unbroken error details within the available width', () => {
+    const longFilename = `${'a'.repeat(200)}.txt`;
+
+    render(
+      <ErrorMessage
+        message={`${longFilename} cannot be added. Choose a PDF file.`}
+        title="Unable to add files"
+        variant="inline"
+      />,
+    );
+
+    expect(screen.getByText(/cannot be added/).parentElement).toHaveClass(
+      'min-w-0',
+      '[overflow-wrap:anywhere]',
+    );
+  });
 });

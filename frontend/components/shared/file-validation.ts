@@ -100,12 +100,14 @@ export function validateFiles(files: File[], options: ValidationOptions): Valida
     let fileIsValid = true;
 
     if (!isAcceptedFile(file, options.accept)) {
-      errors.push(`${label} is not an accepted file type.`);
+      errors.push(`${label} cannot be added. Choose a PDF file.`);
       fileIsValid = false;
     }
 
     if (file.size > maxSizeBytes) {
-      errors.push(`${label} exceeds the ${options.maxSizeMB} MB size limit.`);
+      errors.push(
+        `${label} is too large. Choose a file that is ${options.maxSizeMB} MB or smaller.`,
+      );
       fileIsValid = false;
     }
 

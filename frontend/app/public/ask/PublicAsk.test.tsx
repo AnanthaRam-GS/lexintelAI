@@ -435,6 +435,18 @@ describe('PublicAsk', () => {
     expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
   });
 
+  it('contains an unbroken submitted question inside the conversation grid below desktop', () => {
+    renderAsk();
+    const question = 'A'.repeat(320);
+
+    fireEvent.change(screen.getByLabelText('Your question'), { target: { value: question } });
+    fireEvent.submit(screen.getByRole('button', { name: 'Send' }).closest('form')!);
+
+    const message = screen.getByRole('article', { name: 'Your submitted question' });
+    expect(message.parentElement).toHaveClass('min-w-0', 'w-full');
+    expect(message).toHaveClass('[overflow-wrap:anywhere]');
+  });
+
   it('serializes a re-entrant submission before notifying the composer observer', async () => {
     const user = userEvent.setup();
     const submitted = vi.fn(() => {
@@ -467,7 +479,7 @@ describe('PublicAsk', () => {
     await user.click(screen.getByRole('button', { name: examples[0] }));
 
     expect(screen.getByLabelText('Your question')).toHaveValue(examples[0]);
-    expect(screen.getByText('Active input: Text question')).toBeVisible();
+    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
@@ -476,12 +488,12 @@ describe('PublicAsk', () => {
     renderAsk();
 
     await user.type(screen.getByLabelText('Your question'), 'Help me understand this');
-    expect(screen.getByText('Active input: Text question')).toBeVisible();
+    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
 
     await selectPdf(user);
 
     expect(screen.getByLabelText('Your question')).toHaveValue('');
-    expect(screen.getByText('Active input: Temporary PDF')).toBeVisible();
+    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
   });
 
   it('clears and remounts the selected PDF when a person starts typing', async () => {
@@ -492,7 +504,7 @@ describe('PublicAsk', () => {
     await user.type(screen.getByLabelText('Your question'), 'Explain this notice');
 
     const replacementUploadInput = screen.getByLabelText('Choose PDF files');
-    expect(screen.getByText('Active input: Text question')).toBeVisible();
+    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
     expect(screen.queryByText('notice.pdf')).not.toBeInTheDocument();
     expect(replacementUploadInput).not.toBe(firstUploadInput);
   });
@@ -505,7 +517,7 @@ describe('PublicAsk', () => {
     await user.click(screen.getByRole('button', { name: examples[1] }));
 
     expect(screen.getByLabelText('Your question')).toHaveValue(examples[1]);
-    expect(screen.getByText('Active input: Text question')).toBeVisible();
+    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
     expect(screen.queryByText('notice.pdf')).not.toBeInTheDocument();
   });
 
@@ -536,7 +548,7 @@ describe('PublicAsk', () => {
     await user.keyboard('{Enter}');
 
     expect(question).toHaveValue('');
-    expect(screen.getByText('Active input: Temporary PDF')).toBeVisible();
+    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
     expect(screen.getByText('notice.pdf')).toBeVisible();
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
@@ -563,7 +575,7 @@ describe('PublicAsk', () => {
     await user.keyboard('{Enter}');
 
     expect(question).toHaveValue('');
-    expect(screen.getByText('Choose text or one PDF')).toBeVisible();
+    expect(screen.getByText('Type a question or add one PDF')).toBeVisible();
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
@@ -573,7 +585,7 @@ describe('PublicAsk', () => {
 
     await user.type(screen.getByLabelText('Your question'), '   {Enter}');
 
-    expect(screen.getByText('Choose text or one PDF')).toBeVisible();
+    expect(screen.getByText('Type a question or add one PDF')).toBeVisible();
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
@@ -593,6 +605,19 @@ describe('PublicAsk', () => {
     if (submittedInput?.kind === 'file') {
       expect(submittedInput.file).toBe(file);
     }
+  });
+
+  it('contains a submitted PDF with a long filename inside the conversation grid', async () => {
+    const user = userEvent.setup();
+    const fileName = `${'a'.repeat(200)}.pdf`;
+    renderAsk();
+
+    await selectPdf(user, fileName);
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    const message = screen.getByRole('article', { name: `Temporary PDF: ${fileName}` });
+    expect(message.parentElement).toHaveClass('flex', 'min-w-0', 'w-full', 'justify-end');
+    expect(message).toHaveClass('min-w-0');
   });
 
   it('disables both composer modes while a request is pending', () => {
@@ -762,7 +787,7 @@ describe('PublicAsk', () => {
     await submitText(user, 'First question');
     expect(await screen.findByRole('alert')).toBeVisible();
     await selectPdf(user);
-    expect(screen.getByText('Active input: Temporary PDF')).toBeVisible();
+    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
     await user.click(screen.getByRole('button', { name: 'Start fresh' }));
@@ -772,7 +797,7 @@ describe('PublicAsk', () => {
     expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
     expect(screen.queryByText('notice.pdf')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Choose PDF files')).not.toBeInTheDocument();
-    expect(screen.getByText('Choose text or one PDF')).toBeVisible();
+    expect(screen.getByText('Type a question or add one PDF')).toBeVisible();
     expect(screen.getByLabelText('Your question')).toHaveValue('');
     expect(screen.getByLabelText('Your question')).toHaveFocus();
     expect(onNewConversation).toHaveBeenCalledTimes(1);
