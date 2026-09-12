@@ -7,6 +7,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -43,15 +44,24 @@ class LegalAnswerEvalFoundationTests(unittest.TestCase):
         self.assertEqual(self.summary["coverage_counts"]["transition_cases"], category_counts["mixed_transition"])
         self.assertEqual(self.summary["coverage_counts"]["special_law_cases"], category_counts["special_statute"])
 
-    def test_no_benchmark_answers_or_completed_reviews_are_populated(self) -> None:
+    def test_examples_and_reviews_remain_unscored(self) -> None:
+        """The frozen example manifest and reviews stay pending regardless of generation state (Phase 0.9C-B only generates model outputs, never human scores)."""
         forbidden = {"ideal_answer", "reference_answer", "model_answer", "citation_suggestions", "retrieved_case_names"}
         for example in self.examples:
             self.assertFalse(forbidden.intersection(example))
             self.assertEqual(example["review_status"], "pending")
             self.assertIsNone(example["human_scores"])
         self.assertEqual(self.reviews["reviews"], [])
-        self.assertEqual(self.outputs["outputs"], [])
-        self.assertEqual(self.outputs["generation_status"], "not_started")
+
+    def test_generated_outputs_cover_every_example_and_condition_exactly_once(self) -> None:
+        """After Phase 0.9C-B generation, outputs.json holds exactly one record per (example, condition) pair."""
+        self.assertEqual(self.outputs["generation_status"], "completed")
+        outputs = self.outputs["outputs"]
+        self.assertEqual(len(outputs), 60)
+        keys = [(record["example_id"], record["condition"]) for record in outputs]
+        self.assertEqual(len(keys), len(set(keys)))
+        expected_keys = {(example["example_id"], condition) for example in self.examples for condition in ("LLM_ONLY", "GROUNDED_RAG")}
+        self.assertEqual(set(keys), expected_keys)
 
     def test_rubric_dimensions_scales_and_composite_are_frozen(self) -> None:
         rubric = self.eval_manifest["rubric"]
@@ -89,14 +99,69 @@ class LegalAnswerEvalFoundationTests(unittest.TestCase):
         for relative_path, expected_digest in self.eval_manifest["component_hashes"].items():
             self.assertEqual(hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest(), expected_digest)
 
-    def test_evaluator_empty_reviews_reports_ready(self) -> None:
+    def test_evaluator_reports_completion_state_matching_actual_success_rate(self) -> None:
+        """A benchmark run that completed but left some slots failed must never be reported as ready for review."""
         result = subprocess.run(
             [sys.executable, str(ROOT / "backend/scripts/evaluate_grounded_legal_answers.py")],
             check=True,
             capture_output=True,
             text=True,
         )
-        self.assertEqual(json.loads(result.stdout)["status"], "READY_FOR_GENERATION_OR_REVIEW")
+        payload = json.loads(result.stdout)
+        outputs = self.outputs["outputs"]
+        successful = sum(1 for record in outputs if record.get("generation_status") == "SUCCESS")
+        expected_status = "OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW" if successful == len(outputs) else "GENERATION_COMPLETED_WITH_FAILURES"
+        self.assertEqual(payload["status"], expected_status)
+
+    def test_evaluator_distinguishes_partial_failures_from_full_success(self) -> None:
+        example_keys = [(example["example_id"], condition) for example in self.examples for condition in ("LLM_ONLY", "GROUNDED_RAG")]
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            all_success_path = Path(tmp_dir) / "outputs_all_success.json"
+            all_success_path.write_text(
+                json.dumps(
+                    {
+                        "generation_status": "completed",
+                        "outputs": [{"example_id": eid, "condition": cond, "generation_status": "SUCCESS"} for eid, cond in example_keys],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "backend/scripts/evaluate_grounded_legal_answers.py"), "--outputs-path", str(all_success_path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(json.loads(result.stdout)["status"], "OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW")
+
+            partial_path = Path(tmp_dir) / "outputs_partial.json"
+            outputs = [{"example_id": eid, "condition": cond, "generation_status": "SUCCESS"} for eid, cond in example_keys]
+            outputs[0]["generation_status"] = "FAILED_PROVIDER"
+            partial_path.write_text(json.dumps({"generation_status": "completed", "outputs": outputs}), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "backend/scripts/evaluate_grounded_legal_answers.py"), "--outputs-path", str(partial_path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(json.loads(result.stdout)["status"], "GENERATION_COMPLETED_WITH_FAILURES")
+
+    def test_evaluator_reports_ready_for_generation_before_outputs_exist(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            not_started_path = Path(tmp_dir) / "outputs_not_started.json"
+            not_started_path.write_text(json.dumps({"generation_status": "not_started", "outputs": []}), encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "backend/scripts/evaluate_grounded_legal_answers.py"),
+                    "--outputs-path",
+                    str(not_started_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(json.loads(result.stdout)["status"], "READY_FOR_GENERATION_OR_REVIEW")
 
     def test_generation_harness_is_dry_run_only(self) -> None:
         result = subprocess.run(
