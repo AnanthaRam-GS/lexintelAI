@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     frontend_origin: str = "http://localhost:3000"
 
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.7-flash"
+    legalai_llm_provider: str = "gemini"
+    gemini_model: str = ""
+    legalai_llm_temperature: float = 0.1
+    legalai_llm_timeout_seconds: float = 60.0
 
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral"

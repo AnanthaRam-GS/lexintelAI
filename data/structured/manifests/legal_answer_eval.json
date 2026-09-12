@@ -1,0 +1,85 @@
+{
+  "schema_version": "legalai-grounded-answer-eval-v1",
+  "rubric_version": "legalai-answer-rubric-v1",
+  "pairing_version": "legalai-answer-pairing-v1",
+  "evaluation_frozen_before_generation": true,
+  "generated_answers_present": false,
+  "reviewer_visible_support_metadata": false,
+  "model_control": {
+    "provider": "gemini",
+    "model_source": "GEMINI_MODEL via Settings",
+    "temperature_source": "LEGALAI_LLM_TEMPERATURE via Settings",
+    "same_model_for_conditions": true,
+    "same_answer_schema_for_conditions": true
+  },
+  "conditions": {
+    "CONDITION_A": {
+      "condition_id": "LLM_ONLY",
+      "description": "Original query plus mode-specific answer contract only; no LegalRetrievalResult evidence, no corpus metadata, no E-style evidence IDs."
+    },
+    "CONDITION_B": {
+      "condition_id": "GROUNDED_RAG",
+      "description": "LegalQueryUnderstanding plus frozen top-5 LegalAI retrieval evidence using the existing grounded prompt and citation contract."
+    }
+  },
+  "component_hashes": {
+    "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
+    "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
+    "backend/app/services/legal_citation_validation.py": "9c072a848f79276b27b158db0a792f30860cb348e5255e32aa0d335a160f63b0",
+    "backend/app/services/legal_rag_retrieval.py": "2034acf1bb2b833e33181eff6f747a4dcb7d0801a43c6d45f85f327dfa7b02db",
+    "backend/app/services/legal_query_understanding.py": "8138c5320293a35407f0c9a115e8b3fc5a57e28ab1bb338e5a07f1532fe4cbf1",
+    "data/structured/manifests/retrieval_selected_configuration.json": "31f6ce663e76e3934ec47935174636964227d56a7eb41256ee520c0152feb7fc",
+    "data/structured/manifests/legal_section_selected_configuration.json": "9b1b3902a30a70890edb88043c07971b10ef6796340cff92cad5ffcabdfb969e",
+    "data/structured/manifests/legal_ner_selected_configuration.json": "45b1e3f8282e58cf99c621e4f7d8d909c3f88549b2c850310ea333cfeafaf2d9"
+  },
+  "rubric": {
+    "positive_scale": {"0": "unacceptable_or_absent", "1": "weak", "2": "adequate", "3": "strong", "4": "excellent"},
+    "hallucination_scale": {"0": "none", "1": "minor_unsupported_wording", "2": "moderate_unsupported_claim", "3": "major_fabricated_or_unsafe_authority_or_fact"},
+    "dimensions": [
+      "LEGAL_RELEVANCE",
+      "LEGAL_CORRECTNESS",
+      "GROUNDING_SUPPORT",
+      "CITATION_QUALITY",
+      "COMPLETENESS",
+      "UNCERTAINTY_HANDLING",
+      "REGIME_HANDLING",
+      "ACTIONABILITY",
+      "HALLUCINATION_SEVERITY",
+      "OVERALL_PREFERENCE"
+    ],
+    "quality_composite_formula": "mean(LEGAL_RELEVANCE, LEGAL_CORRECTNESS, GROUNDING_SUPPORT, CITATION_QUALITY, COMPLETENESS, UNCERTAINTY_HANDLING, REGIME_HANDLING, ACTIONABILITY)",
+    "hallucination_reported_separately": true
+  },
+  "examples": [
+    {"example_id": "ans-q001", "query": "My brother was arrested in a murder case and the FIR mentions Section 302 IPC. What should the family understand before applying for bail?", "mode": "public", "category": ["substantive_offence", "procedural", "explicit_section", "ipc_crpc_old_law"], "difficulty": "basic", "expected_issues": ["murder", "bail", "serious non-bailable offence"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q002", "query": "A neighbour hit someone with a stick during a fight and the person suffered a fracture. What criminal provisions might be relevant?", "mode": "public", "category": ["substantive_offence", "plain_language_public", "ipc_crpc_old_law"], "difficulty": "basic", "expected_issues": ["hurt", "grievous hurt", "fact sensitivity"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q003", "query": "Someone snatched a gold chain on the road and threatened the victim while escaping. Is this theft or robbery?", "mode": "public", "category": ["substantive_offence", "plain_language_public", "ipc_crpc_old_law"], "difficulty": "moderate", "expected_issues": ["theft", "robbery", "force or fear"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q004", "query": "I paid money for a job after false promises and now the person refuses to return it. Can this be cheating?", "mode": "public", "category": ["substantive_offence", "plain_language_public", "ambiguous_insufficient_fact"], "difficulty": "basic", "expected_issues": ["cheating", "dishonest intention at inception", "civil-criminal distinction"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q005", "query": "A business partner kept company funds for personal use after being trusted to deposit them. What offence could this involve?", "mode": "public", "category": ["substantive_offence", "plain_language_public"], "difficulty": "moderate", "expected_issues": ["criminal breach of trust", "entrustment", "dishonest misappropriation"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q006", "query": "A teenager was taken away from home by an adult without the parents agreeing. What should the family know legally?", "mode": "public", "category": ["substantive_offence", "plain_language_public", "ambiguous_insufficient_fact"], "difficulty": "moderate", "expected_issues": ["kidnapping", "minor consent limits", "missing facts"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q007", "query": "After 1 July 2024, which new law section should police consider for a murder allegation?", "mode": "public", "category": ["bns_bnss_new_law", "mixed_transition", "plain_language_public"], "difficulty": "basic", "expected_issues": ["BNS murder provision", "date of offence", "transition"], "expected_regime": "mixed_or_transition", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q008", "query": "The police refused to register my complaint about assault. What options are generally available?", "mode": "public", "category": ["procedural", "plain_language_public"], "difficulty": "basic", "expected_issues": ["FIR refusal", "complaint to senior police", "magistrate remedy"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q009", "query": "Can a person ask for anticipatory bail if they fear arrest in a cheating complaint?", "mode": "public", "category": ["procedural", "plain_language_public"], "difficulty": "basic", "expected_issues": ["anticipatory bail", "discretion", "facts and local practice"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q010", "query": "What does default bail mean if the police do not file the charge sheet on time?", "mode": "public", "category": ["procedural", "plain_language_public"], "difficulty": "moderate", "expected_issues": ["default bail", "statutory period", "right accrual"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q011", "query": "A landlord is not returning a security deposit after the tenant moved out. There is no threat, fraud, or violence alleged. Is this a criminal case?", "mode": "public", "category": ["negative_out_of_scope", "plain_language_public"], "difficulty": "basic", "expected_issues": ["civil dispute", "criminal elements absent", "avoid overcriminalization"], "expected_regime": "no_clear_criminal_regime", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q012", "query": "I only have a vague message saying someone may do something illegal someday. Can police arrest that person now?", "mode": "public", "category": ["ambiguous_insufficient_fact", "negative_out_of_scope", "plain_language_public"], "difficulty": "basic", "expected_issues": ["insufficient facts", "arrest thresholds", "caution"], "expected_regime": "unclear", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q013", "query": "A person was caught with a small packet suspected to be ganja. What matters under NDPS law?", "mode": "public", "category": ["special_statute", "plain_language_public"], "difficulty": "moderate", "expected_issues": ["NDPS", "quantity", "search and seizure"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q014", "query": "Parents say their minor child faced sexual harassment by an adult. What legal safeguards may apply?", "mode": "public", "category": ["special_statute", "plain_language_public"], "difficulty": "moderate", "expected_issues": ["POCSO", "child protection", "mandatory reporting sensitivity"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q015", "query": "Someone used caste abuse during an assault on a Scheduled Caste complainant. What additional law may be relevant?", "mode": "public", "category": ["special_statute", "plain_language_public"], "difficulty": "hard", "expected_issues": ["SC/ST Act", "caste atrocity", "context requirements"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q016", "query": "Analyze whether Section 482 CrPC quashing may be maintainable in a private cheating FIR after settlement.", "mode": "professional", "category": ["procedural", "explicit_section", "professional_analytical", "ipc_crpc_old_law"], "difficulty": "hard", "expected_issues": ["quashing", "settlement", "heinous vs private dispute"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q017", "query": "Assess the bail considerations for an accused charged under Sections 307 and 34 IPC after a group assault.", "mode": "professional", "category": ["procedural", "substantive_offence", "explicit_section", "professional_analytical"], "difficulty": "moderate", "expected_issues": ["attempt to murder", "common intention", "bail factors"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q018", "query": "Evaluate whether Section 420 IPC is attracted when breach of a supply contract is alleged without clear fraudulent intention at inception.", "mode": "professional", "category": ["substantive_offence", "explicit_section", "professional_analytical", "ambiguous_insufficient_fact"], "difficulty": "moderate", "expected_issues": ["cheating", "mens rea at inception", "civil breach"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q019", "query": "For an offence committed on 30 June 2024 but FIR registered on 2 July 2024, analyze IPC versus BNS applicability for murder.", "mode": "professional", "category": ["mixed_transition", "bns_bnss_new_law", "ipc_crpc_old_law", "professional_analytical"], "difficulty": "hard", "expected_issues": ["date of offence", "IPC/BNS transition", "Article 20 concern"], "expected_regime": "mixed_or_transition", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q020", "query": "Compare the procedural framing for remand and investigation references under CrPC and BNSS in a post-July 2024 FIR.", "mode": "professional", "category": ["mixed_transition", "bns_bnss_new_law", "procedural", "professional_analytical"], "difficulty": "hard", "expected_issues": ["BNSS", "CrPC transition", "procedural applicability"], "expected_regime": "mixed_or_transition", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q021", "query": "Advise on default bail arguments under Section 167(2) CrPC where the charge sheet deadline is disputed.", "mode": "professional", "category": ["procedural", "explicit_section", "professional_analytical"], "difficulty": "hard", "expected_issues": ["default bail", "Section 167(2)", "deadline computation"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q022", "query": "Assess whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST Act allegations are included.", "mode": "professional", "category": ["special_statute", "procedural", "explicit_section", "professional_analytical"], "difficulty": "hard", "expected_issues": ["anticipatory bail", "SC/ST Act bar", "prima facie test"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q023", "query": "Analyze search and seizure vulnerabilities in a commercial quantity NDPS prosecution.", "mode": "professional", "category": ["special_statute", "procedural", "professional_analytical"], "difficulty": "hard", "expected_issues": ["NDPS", "commercial quantity", "procedural safeguards"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q024", "query": "Frame the main issues in a dowry cruelty complaint involving Section 498A IPC and allegations of demand soon before separation.", "mode": "professional", "category": ["substantive_offence", "explicit_section", "professional_analytical"], "difficulty": "moderate", "expected_issues": ["498A", "dowry cruelty", "evidence and misuse caution"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q025", "query": "Assess conspiracy liability where messages show planning but no overt act is clearly proved.", "mode": "professional", "category": ["substantive_offence", "professional_analytical", "ambiguous_insufficient_fact"], "difficulty": "moderate", "expected_issues": ["criminal conspiracy", "agreement", "evidentiary sufficiency"], "expected_regime": "ipc_crpc", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q026", "query": "How should counsel approach an FIR that cites both Section 103 BNS and Section 302 IPC for the same alleged murder?", "mode": "professional", "category": ["mixed_transition", "bns_bnss_new_law", "ipc_crpc_old_law", "explicit_section", "professional_analytical"], "difficulty": "hard", "expected_issues": ["BNS 103", "IPC 302", "transition pleading"], "expected_regime": "mixed_or_transition", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q027", "query": "Evaluate whether a request for certified copies from a criminal court requires legal advice about the merits of the offence.", "mode": "professional", "category": ["negative_out_of_scope", "procedural", "professional_analytical"], "difficulty": "basic", "expected_issues": ["court copy procedure", "no merits analysis", "scope control"], "expected_regime": "procedural_administrative", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q028", "query": "Analyze whether BNSS procedural references should replace CrPC references in a bail application filed after July 2024 for an old IPC offence.", "mode": "professional", "category": ["mixed_transition", "bns_bnss_new_law", "ipc_crpc_old_law", "procedural", "professional_analytical"], "difficulty": "hard", "expected_issues": ["old offence", "new procedure", "transition uncertainty"], "expected_regime": "mixed_or_transition", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q029", "query": "Assess whether allegations of stalking and repeated obscene messages should be framed under IPC provisions, special child-protection law, or both when the complainant is seventeen.", "mode": "professional", "category": ["special_statute", "substantive_offence", "professional_analytical", "ambiguous_insufficient_fact"], "difficulty": "hard", "expected_issues": ["minor complainant", "POCSO", "IPC sexual offence provisions"], "expected_regime": "special_law", "review_status": "pending", "human_scores": null},
+    {"example_id": "ans-q030", "query": "A complaint says only that two former friends argued online and stopped speaking, with no threat or demand. What should a criminal-law answer avoid overclaiming?", "mode": "professional", "category": ["negative_out_of_scope", "professional_analytical", "ambiguous_insufficient_fact"], "difficulty": "basic", "expected_issues": ["insufficient criminal facts", "avoid invented offences", "appropriate caution"], "expected_regime": "unclear", "review_status": "pending", "human_scores": null}
+  ]
+}

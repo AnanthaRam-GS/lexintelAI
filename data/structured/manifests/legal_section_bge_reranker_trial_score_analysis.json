@@ -1,0 +1,63 @@
+{
+  "schema_version": "legalai-section-bge-reranker-trial-score-analysis-v1",
+  "all_candidate_pairs": {
+    "count": 112,
+    "mean": -3.194366,
+    "median": -3.239246,
+    "min": -8.974416,
+    "max": 3.222795
+  },
+  "gold_positive_candidate_pairs": {
+    "count": 49,
+    "mean": -1.525413,
+    "median": -1.276014,
+    "min": -6.811406,
+    "max": 3.222795
+  },
+  "non_gold_candidate_pairs": {
+    "count": 63,
+    "mean": -4.492442,
+    "median": -4.335362,
+    "min": -8.974416,
+    "max": 1.859184
+  },
+  "pairwise_discrimination": {
+    "positive_above_negative_pairs": 83,
+    "positive_negative_pairs": 96,
+    "fraction": 0.864583
+  },
+  "latency": {
+    "model_load_ms": 3791.923,
+    "total_candidate_pairs_scored": 112,
+    "pair_scoring_ms": {
+      "mean": 279.032,
+      "median": 256.087,
+      "p95": 382.89,
+      "max": 1821.312
+    },
+    "x1_total_ms": {
+      "mean": 279.032,
+      "median": 256.087,
+      "p95": 382.89,
+      "max": 1821.312
+    },
+    "hx1_total_ms": {
+      "mean": 279.035,
+      "median": 256.091,
+      "p95": 382.895,
+      "max": 1821.32
+    },
+    "t1_query_embedding_ms": {
+      "mean": 81.947,
+      "median": 80.907,
+      "p95": 89.171,
+      "max": 89.886
+    },
+    "t1_s1_total_ms": {
+      "mean": 81.951,
+      "median": 80.91,
+      "p95": 89.175,
+      "max": 89.891
+    }
+  }
+}

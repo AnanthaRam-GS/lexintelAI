@@ -1,0 +1,24 @@
+{
+  "schema_version": "legalai-section-learned-trial-config-v1",
+  "mode": "disabled",
+  "candidate_model": null,
+  "ranking_modes_supported": ["deterministic", "semantic", "hybrid"],
+  "candidate_generation": "deterministic",
+  "candidate_depth": 5,
+  "final_top_k": 5,
+  "semantic_weight": null,
+  "deterministic_weight": null,
+  "explicit_section_protection": true,
+  "regime_protection": true,
+  "zero_positive_guardrail": true,
+  "bounded_catalog_only": true,
+  "free_text_section_generation_allowed": false,
+  "gold_training_allowed": false,
+  "evaluation_gold_usage": "held_out_only",
+  "representation_variants": {
+    "query": ["Q0_original_query", "Q1_query_plus_explicit_evidence", "Q2_query_plus_deterministic_metadata"],
+    "section": "catalog_fields_only"
+  },
+  "weights_status": "unselected_not_tuned",
+  "effectiveness_run_status": "not_run_in_0.7C"
+}

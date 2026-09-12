@@ -1,0 +1,56 @@
+{
+  "schema_version": "legalai_gemini_integration_hardening_v1",
+  "schema_issue_identified": true,
+  "schema_issue_root_cause": "Provider schema conversion collected only top-level $defs. Nested Pydantic $defs inside answer and claim schemas were removed before their $ref citation item schemas were inlined, leaving ProfessionalLegalBrief answer citations item schema empty.",
+  "schema_fix_applied": "Gemini schema conversion now recursively collects nested $defs before sanitizing and removing unsupported provider keywords.",
+  "provider_schema_before": {
+    "citation_item_before_fix_observed": "{} for ProfessionalLegalBrief.answer.citations.items"
+  },
+  "citation_required_fields_preserved": {
+    "canonical_required": [
+      "evidence_id",
+      "claim_id",
+      "supported_text"
+    ],
+    "professional_answer_citation_required": [
+      "evidence_id",
+      "claim_id",
+      "supported_text"
+    ],
+    "public_answer_citation_required": [
+      "evidence_id",
+      "claim_id",
+      "supported_text"
+    ],
+    "claim_citation_required": [
+      "evidence_id",
+      "claim_id",
+      "supported_text"
+    ]
+  },
+  "canonical_schema_weakened": false,
+  "retry_policy": {
+    "max_attempts": 3,
+    "retryable_statuses": [
+      429,
+      503
+    ],
+    "timeout_retryable": true,
+    "temporary_connection_retryable": true,
+    "backoff_policy": "deterministic bounded backoff: 0.25s then 0.5s",
+    "non_retryable_statuses": [
+      400,
+      401,
+      403,
+      404
+    ],
+    "schema_validation_failure_retryable": false
+  },
+  "minimal_structured_health_check": {
+    "performed": false,
+    "success": null,
+    "configured_model": "gemini-3.6-flash",
+    "legal_evidence_sent": false
+  },
+  "grounded_smoke_rerun_performed": false
+}

@@ -1,0 +1,241 @@
+{
+  "schema_version": "legalai-section-baseline-eval-v1",
+  "evaluation_version": "legalai-section-baseline-phase0-v1",
+  "predictor_version": "legalai-section-prediction-baseline-v1",
+  "predictor_sha256": "6dec51c45531b7f4098655266223dca93d4a8d40f5cdb44f6556c35702f27a3c",
+  "catalog_sha256": "2d2c8fbf4a241d2adc6f67ce827f990976d3309cb59b7add15f6bc26d439dbef",
+  "gold_sha256": "b4ac7034d534eb13dc19d512fd0b376730b860754fe4a58e71dab41f9322ae8e",
+  "gold_summary_sha256": "53d8ad35629ee57fc5cb20b9decf682fd8ecd08ab39707e861ef0b8cdc93feee",
+  "dataset": {
+    "examples": 36,
+    "positive_gold": 60,
+    "uncertain_gold": 1,
+    "zero_positive_examples": [
+      "sec-q026",
+      "sec-q027",
+      "sec-q035"
+    ],
+    "max_top_k": 5
+  },
+  "overall_metrics": {
+    "precision_at_1": 0.5,
+    "precision_at_3": 0.388889,
+    "precision_at_5": 0.272222,
+    "recall_at_1": 0.358586,
+    "recall_at_3": 0.767677,
+    "recall_at_5": 0.853535,
+    "mrr": 0.662037,
+    "ndcg_at_5": 0.722516,
+    "hit_at_1": 0.5,
+    "hit_at_3": 0.805556,
+    "hit_at_5": 0.861111
+  },
+  "primary_vs_relevant_recovery": {
+    "primary_gold": 36,
+    "primary_recovered_at_1": 15,
+    "primary_recovered_at_3": 28,
+    "primary_recovered_at_5": 34,
+    "relevant_gold": 24,
+    "relevant_recovered_at_5": 15,
+    "primary_recall_at_5": 0.944444,
+    "relevant_recall_at_5": 0.625
+  },
+  "explicit_subset": {
+    "query_count": 4,
+    "recall_at_1": 0.5,
+    "recall_at_3": 0.875,
+    "recall_at_5": 0.875
+  },
+  "subsets": {
+    "plain_language": {
+      "query_count": 29,
+      "precision_at_1": 0.482759,
+      "precision_at_3": 0.402299,
+      "precision_at_5": 0.289655,
+      "recall_at_1": 0.33908,
+      "recall_at_3": 0.752874,
+      "recall_at_5": 0.850575,
+      "mrr": 0.683908,
+      "ndcg_at_5": 0.692512,
+      "hit_at_1": 0.482759,
+      "hit_at_3": 0.862069,
+      "hit_at_5": 0.931034
+    },
+    "procedural": {
+      "query_count": 14,
+      "precision_at_1": 0.571429,
+      "precision_at_3": 0.380952,
+      "precision_at_5": 0.271429,
+      "recall_at_1": 0.380952,
+      "recall_at_3": 0.714286,
+      "recall_at_5": 0.797619,
+      "mrr": 0.696429,
+      "ndcg_at_5": 0.693125,
+      "hit_at_1": 0.571429,
+      "hit_at_3": 0.785714,
+      "hit_at_5": 0.857143
+    },
+    "substantive": {
+      "query_count": 24,
+      "precision_at_1": 0.583333,
+      "precision_at_3": 0.472222,
+      "precision_at_5": 0.333333,
+      "recall_at_1": 0.347222,
+      "recall_at_3": 0.784722,
+      "recall_at_5": 0.881944,
+      "mrr": 0.763889,
+      "ndcg_at_5": 0.75751,
+      "hit_at_1": 0.583333,
+      "hit_at_3": 0.916667,
+      "hit_at_5": 1.0
+    },
+    "ipc_crpc": {
+      "query_count": 20,
+      "precision_at_1": 0.45,
+      "precision_at_3": 0.466667,
+      "precision_at_5": 0.33,
+      "recall_at_1": 0.241667,
+      "recall_at_3": 0.775,
+      "recall_at_5": 0.866667,
+      "mrr": 0.675,
+      "ndcg_at_5": 0.695931,
+      "hit_at_1": 0.45,
+      "hit_at_3": 0.85,
+      "hit_at_5": 0.95
+    },
+    "bns_bnss": {
+      "query_count": 12,
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.333333,
+      "precision_at_5": 0.216667,
+      "recall_at_1": 0.458333,
+      "recall_at_3": 0.736111,
+      "recall_at_5": 0.777778,
+      "mrr": 0.652778,
+      "ndcg_at_5": 0.681436,
+      "hit_at_1": 0.5,
+      "hit_at_3": 0.833333,
+      "hit_at_5": 0.833333
+    },
+    "special_law": {
+      "query_count": 6,
+      "precision_at_1": 0.833333,
+      "precision_at_3": 0.444444,
+      "precision_at_5": 0.333333,
+      "recall_at_1": 0.416667,
+      "recall_at_3": 0.638889,
+      "recall_at_5": 0.805556,
+      "mrr": 0.916667,
+      "ndcg_at_5": 0.747253,
+      "hit_at_1": 0.833333,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0
+    },
+    "mixed_transition": {
+      "query_count": 4,
+      "precision_at_1": 0.25,
+      "precision_at_3": 0.333333,
+      "precision_at_5": 0.2,
+      "recall_at_1": 0.125,
+      "recall_at_3": 0.5,
+      "recall_at_5": 0.5,
+      "mrr": 0.375,
+      "ndcg_at_5": 0.423357,
+      "hit_at_1": 0.25,
+      "hit_at_3": 0.5,
+      "hit_at_5": 0.5
+    }
+  },
+  "per_statute_results": {
+    "IPC": {
+      "gold_positive_count": 25,
+      "retrieved_at_1": 5,
+      "retrieved_at_3": 19,
+      "retrieved_at_5": 22,
+      "recall_at_5": 0.88
+    },
+    "CrPC": {
+      "gold_positive_count": 10,
+      "retrieved_at_1": 2,
+      "retrieved_at_3": 6,
+      "retrieved_at_5": 8,
+      "recall_at_5": 0.8
+    },
+    "BNS": {
+      "gold_positive_count": 8,
+      "retrieved_at_1": 3,
+      "retrieved_at_3": 6,
+      "retrieved_at_5": 7,
+      "recall_at_5": 0.875
+    },
+    "BNSS": {
+      "gold_positive_count": 6,
+      "retrieved_at_1": 3,
+      "retrieved_at_3": 4,
+      "retrieved_at_5": 4,
+      "recall_at_5": 0.666667
+    },
+    "NDPS Act": {
+      "gold_positive_count": 5,
+      "retrieved_at_1": 3,
+      "retrieved_at_3": 4,
+      "retrieved_at_5": 5,
+      "recall_at_5": 1.0
+    },
+    "POCSO Act": {
+      "gold_positive_count": 4,
+      "retrieved_at_1": 1,
+      "retrieved_at_3": 2,
+      "retrieved_at_5": 2,
+      "recall_at_5": 0.5
+    },
+    "SC/ST Act": {
+      "gold_positive_count": 2,
+      "retrieved_at_1": 1,
+      "retrieved_at_3": 1,
+      "retrieved_at_5": 1,
+      "recall_at_5": 0.5
+    }
+  },
+  "zero_positive_guardrails": {
+    "query_count": 3,
+    "false_positive_count": 0,
+    "false_positive_rate": 0.0,
+    "clean_rate": 1.0,
+    "examples": [
+      {
+        "example_id": "sec-q026",
+        "prediction_count": 0,
+        "predictions": []
+      },
+      {
+        "example_id": "sec-q027",
+        "prediction_count": 0,
+        "predictions": []
+      },
+      {
+        "example_id": "sec-q035",
+        "prediction_count": 0,
+        "predictions": []
+      }
+    ]
+  },
+  "score_confidence_diagnostics": {
+    "confidence_counts": {
+      "high": 92,
+      "medium": 20
+    },
+    "score_min": 0.7,
+    "score_max": 0.99
+  },
+  "error_taxonomy": {
+    "AMBIGUOUS_QUERY": 2,
+    "CATALOG_CANDIDATE_NOT_TRIGGERED": 1,
+    "MISSING_GOLD_SECTION": 8,
+    "OVERPREDICTION": 27,
+    "PRIMARY_SECTION_RANKED_LOW": 2,
+    "SUPPLEMENTARY_SECTION_MISSED": 7,
+    "WRONG_SECTION": 4
+  },
+  "decision": "DETERMINISTIC BASELINE USEFUL BUT LEARNED MULTI-LABEL MODEL JUSTIFIED"
+}

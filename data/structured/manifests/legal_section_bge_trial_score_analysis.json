@@ -1,0 +1,46 @@
+{
+  "schema_version": "legalai-section-bge-trial-score-analysis-v1",
+  "all_candidates": {
+    "count": 112,
+    "mean": 0.509008,
+    "median": 0.51094,
+    "min": 0.298621,
+    "max": 0.722544
+  },
+  "gold_positive_candidates": {
+    "count": 49,
+    "mean": 0.556923,
+    "median": 0.55952,
+    "min": 0.366741,
+    "max": 0.722544
+  },
+  "non_gold_candidates": {
+    "count": 63,
+    "mean": 0.471741,
+    "median": 0.466204,
+    "min": 0.298621,
+    "max": 0.665303
+  },
+  "latency": {
+    "model_load_ms": 2982.862,
+    "section_embedding_preparation_ms": 1764.271,
+    "query_embedding_ms": {
+      "mean": 81.947,
+      "median": 80.907,
+      "p95": 89.171,
+      "max": 89.886
+    },
+    "s1_total_ms": {
+      "mean": 81.951,
+      "median": 80.91,
+      "p95": 89.175,
+      "max": 89.891
+    },
+    "h1_total_ms": {
+      "mean": 81.953,
+      "median": 80.912,
+      "p95": 89.178,
+      "max": 89.895
+    }
+  }
+}

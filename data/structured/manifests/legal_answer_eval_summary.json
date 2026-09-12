@@ -1,0 +1,46 @@
+{
+  "schema_version": "legalai-grounded-answer-eval-summary-v1",
+  "eval_version": "legalai-grounded-answer-eval-v1",
+  "rubric_version": "legalai-answer-rubric-v1",
+  "pairing_version": "legalai-answer-pairing-v1",
+  "example_count": 30,
+  "public_count": 15,
+  "professional_count": 15,
+  "difficulty_distribution": {
+    "basic": 10,
+    "moderate": 10,
+    "hard": 10
+  },
+  "category_distribution": {
+    "ambiguous_insufficient_fact": 7,
+    "bns_bnss_new_law": 5,
+    "explicit_section": 8,
+    "ipc_crpc_old_law": 7,
+    "mixed_transition": 5,
+    "negative_out_of_scope": 4,
+    "plain_language_public": 14,
+    "procedural": 12,
+    "professional_analytical": 15,
+    "special_statute": 6,
+    "substantive_offence": 11
+  },
+  "regime_distribution": {
+    "ipc_crpc": 15,
+    "mixed_or_transition": 5,
+    "no_clear_criminal_regime": 1,
+    "procedural_administrative": 1,
+    "special_law": 6,
+    "unclear": 2
+  },
+  "coverage_counts": {
+    "explicit_section_cases": 8,
+    "plain_language_cases": 14,
+    "transition_cases": 5,
+    "special_law_cases": 6,
+    "negative_or_insufficient_cases": 4
+  },
+  "pending_review_count": 30,
+  "completed_review_count": 0,
+  "model_metrics_present": false,
+  "generated_answers_present": false
+}

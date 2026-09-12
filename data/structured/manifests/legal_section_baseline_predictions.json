@@ -1,0 +1,2321 @@
+{
+  "schema_version": "legalai-section-baseline-predictions-v1",
+  "items": [
+    {
+      "example_id": "sec-q001",
+      "query": "Section 302 IPC murder bail before Sessions Court",
+      "explicit_sections": [
+        {
+          "value": "302",
+          "normalized": "302",
+          "source": "explicit",
+          "span": {
+            "start": 8,
+            "end": 11,
+            "text": "302"
+          },
+          "confidence": "high",
+          "section": "302",
+          "statute": "IPC"
+        }
+      ],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "304",
+          "normalized_section": "304",
+          "score": 0.7,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "homicide"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "conflicts_with_explicit",
+          "warnings": [
+            "predicted_section_conflicts_with_explicit_section"
+          ]
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q002",
+      "query": "Can Section 438 CrPC anticipatory bail apply in a cheating FIR?",
+      "explicit_sections": [
+        {
+          "value": "438",
+          "normalized": "438",
+          "source": "explicit",
+          "span": {
+            "start": 12,
+            "end": 15,
+            "text": "438"
+          },
+          "confidence": "high",
+          "section": "438",
+          "statute": "CrPC"
+        }
+      ],
+      "predicted_sections": [
+        {
+          "statute": "CrPC",
+          "section": "438",
+          "normalized_section": "438",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "anticipatory_bail",
+            "alias:anticipatory bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "cheating",
+            "alias:cheating"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "SC/ST Act",
+          "section": "18",
+          "normalized_section": "18",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "anticipatory_bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q003",
+      "query": "After July 2024, which BNS section covers murder?",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "304",
+          "normalized_section": "304",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "homicide"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q004",
+      "query": "BNSS provision for anticipatory bail after commencement of new criminal laws",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNSS",
+          "section": "482",
+          "normalized_section": "482",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "anticipatory_bail",
+            "alias:anticipatory bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "438",
+          "normalized_section": "438",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "anticipatory_bail",
+            "alias:anticipatory bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "SC/ST Act",
+          "section": "18",
+          "normalized_section": "18",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "anticipatory_bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q005",
+      "query": "Robbery with hurt and stolen mobile phone under old criminal law",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "394",
+          "normalized_section": "394",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "robbery",
+            "alias:robbery with hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "robbery",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "115",
+          "normalized_section": "115",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "303",
+          "normalized_section": "303",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "theft",
+            "alias:stolen"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "theft",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "309",
+          "normalized_section": "309",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "robbery",
+            "alias:robbery"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "robbery",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "323",
+          "normalized_section": "323",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q006",
+      "query": "False promise to repay money and dishonest inducement complaint",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "318",
+          "normalized_section": "318",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "cheating",
+            "alias:false promise",
+            "alias:dishonest inducement"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "cheating",
+            "alias:false promise",
+            "alias:dishonest inducement"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q007",
+      "query": "Entrusted company funds were misappropriated by an employee",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "316",
+          "normalized_section": "316",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "criminal_breach_of_trust",
+            "alias:entrusted"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "criminal_breach_of_trust",
+            "alias:entrusted"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "408",
+          "normalized_section": "408",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "criminal_breach_of_trust"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q008",
+      "query": "Minor girl abducted from lawful guardianship before July 2024",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "137",
+          "normalized_section": "137",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "kidnapping",
+            "alias:abducted",
+            "alias:lawful guardianship"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "kidnapping",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "363",
+          "normalized_section": "363",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "kidnapping",
+            "alias:abducted",
+            "alias:lawful guardianship"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "kidnapping",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "361",
+          "normalized_section": "361",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "kidnapping",
+            "alias:lawful guardianship"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "kidnapping",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q009",
+      "query": "POCSO sexual assault complaint involving a child victim",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "POCSO Act",
+          "section": "7",
+          "normalized_section": "7",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:pocso sexual assault",
+            "alias:sexual assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "4",
+          "normalized_section": "4",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:pocso"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "8",
+          "normalized_section": "8",
+          "score": 0.95,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:pocso sexual assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "115",
+          "normalized_section": "115",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "323",
+          "normalized_section": "323",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q010",
+      "query": "Dowry harassment and cruelty by husband under IPC",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "498A",
+          "normalized_section": "498a",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "dowry",
+            "alias:dowry harassment",
+            "alias:cruelty by husband"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "dowry",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q011",
+      "query": "Criminal conspiracy and common intention in a murder case",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "3(5)",
+          "normalized_section": "3(5)",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "conspiracy",
+            "alias:common intention"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "conspiracy",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "61",
+          "normalized_section": "61",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "conspiracy",
+            "alias:criminal conspiracy"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "conspiracy",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "120B",
+          "normalized_section": "120b",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "conspiracy",
+            "alias:criminal conspiracy"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "conspiracy",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q012",
+      "query": "Ganja recovery and NDPS bail for small quantity",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "NDPS Act",
+          "section": "20",
+          "normalized_section": "20",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics",
+            "alias:ganja"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "37",
+          "normalized_section": "37",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics",
+            "alias:ndps bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "21",
+          "normalized_section": "21",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "22",
+          "normalized_section": "22",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "29",
+          "normalized_section": "29",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q013",
+      "query": "Default bail after charge sheet delay in NDPS case",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "NDPS Act",
+          "section": "36A(4)",
+          "normalized_section": "36a(4)",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNSS",
+          "section": "187",
+          "normalized_section": "187",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "alias:default bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNSS",
+          "section": "187(3)",
+          "normalized_section": "187(3)",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "alias:default bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "167(2)",
+          "normalized_section": "167(2)",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "alias:default bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "20",
+          "normalized_section": "20",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q014",
+      "query": "FIR quashing petition before High Court in matrimonial dispute",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNSS",
+          "section": "528",
+          "normalized_section": "528",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "quashing",
+            "alias:quashing",
+            "alias:fir quashing"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "482",
+          "normalized_section": "482",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "quashing",
+            "alias:quashing",
+            "alias:fir quashing"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q015",
+      "query": "Notice before arrest safeguard for non-cognizable looking complaint",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNSS",
+          "section": "35",
+          "normalized_section": "35",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "arrest_safeguards",
+            "alias:notice before arrest"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "41A",
+          "normalized_section": "41a",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "arrest_safeguards",
+            "alias:notice before arrest"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q016",
+      "query": "BNS cheating section for online payment fraud",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "318",
+          "normalized_section": "318",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "cheating",
+            "alias:cheating"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q017",
+      "query": "BNSS regular bail before High Court after July 2024",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNSS",
+          "section": "483",
+          "normalized_section": "483",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "regular_bail",
+            "alias:regular bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "437",
+          "normalized_section": "437",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "regular_bail",
+            "alias:regular bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "439",
+          "normalized_section": "439",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "regular_bail",
+            "alias:regular bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "37",
+          "normalized_section": "37",
+          "score": 0.75,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "regular_bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q018",
+      "query": "Theft of jewellery from house under IPC",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "379",
+          "normalized_section": "379",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "theft",
+            "alias:theft"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "theft",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "378",
+          "normalized_section": "378",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "theft"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "theft",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "380",
+          "normalized_section": "380",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "theft"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "theft",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q019",
+      "query": "Attempted murder with knife injury under BNS",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "109",
+          "normalized_section": "109",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "attempt_to_murder",
+            "alias:attempted murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q020",
+      "query": "Grievous hurt caused during assault after new criminal laws",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "115",
+          "normalized_section": "115",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:hurt",
+            "alias:grievous hurt",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "323",
+          "normalized_section": "323",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:hurt",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "116",
+          "normalized_section": "116",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:grievous hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "117",
+          "normalized_section": "117",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:grievous hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "325",
+          "normalized_section": "325",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:grievous hurt"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q021",
+      "query": "Rape allegation before July 2024 with later trial pending",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "64",
+          "normalized_section": "64",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:rape"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "375",
+          "normalized_section": "375",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:rape"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "376",
+          "normalized_section": "376",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:rape"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "4",
+          "normalized_section": "4",
+          "score": 0.75,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "sexual_offences"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "7",
+          "normalized_section": "7",
+          "score": 0.75,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "sexual_offences"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q022",
+      "query": "Caste abuse in public view and SC/ST Act bail",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "SC/ST Act",
+          "section": "3(1)(s)",
+          "normalized_section": "3(1)(s)",
+          "score": 0.75,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "alias:caste abuse"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "special_atrocities",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q023",
+      "query": "Section 420 IPC and Section 406 IPC both alleged in business dispute",
+      "explicit_sections": [
+        {
+          "value": "420",
+          "normalized": "420",
+          "source": "explicit",
+          "span": {
+            "start": 8,
+            "end": 11,
+            "text": "420"
+          },
+          "confidence": "high",
+          "section": "420",
+          "statute": "IPC"
+        },
+        {
+          "value": "406",
+          "normalized": "406",
+          "source": "explicit",
+          "span": {
+            "start": 28,
+            "end": 31,
+            "text": "406"
+          },
+          "confidence": "high",
+          "section": "406",
+          "statute": "IPC"
+        }
+      ],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "score": 0.7,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "420",
+          "normalized_section": "420",
+          "score": 0.7,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q024",
+      "query": "Section 103 BNS and Section 302 IPC transition issue",
+      "explicit_sections": [
+        {
+          "value": "103",
+          "normalized": "103",
+          "source": "explicit",
+          "span": {
+            "start": 8,
+            "end": 11,
+            "text": "103"
+          },
+          "confidence": "high",
+          "section": "103",
+          "statute": "BNS"
+        },
+        {
+          "value": "302",
+          "normalized": "302",
+          "source": "explicit",
+          "span": {
+            "start": 28,
+            "end": 31,
+            "text": "302"
+          },
+          "confidence": "high",
+          "section": "302",
+          "statute": "IPC"
+        }
+      ],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "103",
+          "normalized_section": "103",
+          "score": 0.7,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "score": 0.7,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supports_explicit",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q025",
+      "query": "Which law applies to an offence committed before July 2024 but FIR filed later?",
+      "explicit_sections": [],
+      "predicted_sections": []
+    },
+    {
+      "example_id": "sec-q026",
+      "query": "How to file a certified copy application in court?",
+      "explicit_sections": [],
+      "predicted_sections": []
+    },
+    {
+      "example_id": "sec-q027",
+      "query": "Property partition dispute between brothers with no criminal allegation",
+      "explicit_sections": [],
+      "predicted_sections": []
+    },
+    {
+      "example_id": "sec-q028",
+      "query": "Police refused to register FIR in assault complaint",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "115",
+          "normalized_section": "115",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "323",
+          "normalized_section": "323",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "116",
+          "normalized_section": "116",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "hurt_and_assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "117",
+          "normalized_section": "117",
+          "score": 0.75,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "hurt_and_assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "325",
+          "normalized_section": "325",
+          "score": 0.75,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "hurt_and_assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q029",
+      "query": "Regular bail in murder case under CrPC",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "CrPC",
+          "section": "437",
+          "normalized_section": "437",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "regular_bail",
+            "alias:regular bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "439",
+          "normalized_section": "439",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "regular_bail",
+            "alias:regular bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "302",
+          "normalized_section": "302",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "homicide",
+            "alias:murder"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "304",
+          "normalized_section": "304",
+          "score": 0.75,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "homicide"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "homicide",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "37",
+          "normalized_section": "37",
+          "score": 0.75,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "regular_bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q030",
+      "query": "Quashing of FIR for cheating and criminal breach of trust",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "316",
+          "normalized_section": "316",
+          "score": 0.85,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "criminal_breach_of_trust",
+            "alias:criminal breach of trust"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "318",
+          "normalized_section": "318",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "cheating",
+            "alias:cheating"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "cheating",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNSS",
+          "section": "528",
+          "normalized_section": "528",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "quashing",
+            "alias:quashing"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "482",
+          "normalized_section": "482",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "quashing",
+            "alias:quashing"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "406",
+          "normalized_section": "406",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "criminal_breach_of_trust",
+            "alias:criminal breach of trust"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "criminal_breach_of_trust",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q031",
+      "query": "Heroin possession and conspiracy under NDPS Act",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "NDPS Act",
+          "section": "21",
+          "normalized_section": "21",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics",
+            "alias:heroin"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "20",
+          "normalized_section": "20",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "22",
+          "normalized_section": "22",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "29",
+          "normalized_section": "29",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "36A(4)",
+          "normalized_section": "36a(4)",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "narcotics"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q032",
+      "query": "Common intention in robbery case under old IPC",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "IPC",
+          "section": "34",
+          "normalized_section": "34",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "conspiracy",
+            "alias:common intention"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "conspiracy",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "392",
+          "normalized_section": "392",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "robbery",
+            "alias:robbery"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "robbery",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "120B",
+          "normalized_section": "120b",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "conspiracy"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "conspiracy",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "IPC",
+          "section": "394",
+          "normalized_section": "394",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "robbery"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "robbery",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "29",
+          "normalized_section": "29",
+          "score": 0.75,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "conspiracy"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "narcotics",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q033",
+      "query": "Can anticipatory bail be sought for a POCSO allegation?",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "POCSO Act",
+          "section": "4",
+          "normalized_section": "4",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences",
+            "alias:pocso"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNSS",
+          "section": "482",
+          "normalized_section": "482",
+          "score": 0.85,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "anticipatory_bail",
+            "alias:anticipatory bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "CrPC",
+          "section": "438",
+          "normalized_section": "438",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "anticipatory_bail",
+            "alias:anticipatory bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "ipc_crpc",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "7",
+          "normalized_section": "7",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "POCSO Act",
+          "section": "8",
+          "normalized_section": "8",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q034",
+      "query": "BNS kidnapping from guardian and sexual assault allegation",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNS",
+          "section": "115",
+          "normalized_section": "115",
+          "score": 0.95,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault",
+            "alias:assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "137",
+          "normalized_section": "137",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "kidnapping",
+            "alias:kidnapping"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "kidnapping",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "116",
+          "normalized_section": "116",
+          "score": 0.85,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "117",
+          "normalized_section": "117",
+          "score": 0.85,
+          "rank": 4,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "hurt_and_assault"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "hurt_and_assault",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNS",
+          "section": "64",
+          "normalized_section": "64",
+          "score": 0.85,
+          "rank": 5,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "sexual_offences"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "sexual_offences",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "example_id": "sec-q035",
+      "query": "Medical negligence complaint seeking compensation only",
+      "explicit_sections": [],
+      "predicted_sections": []
+    },
+    {
+      "example_id": "sec-q036",
+      "query": "BNSS default bail when investigation period expires",
+      "explicit_sections": [],
+      "predicted_sections": [
+        {
+          "statute": "BNSS",
+          "section": "187(3)",
+          "normalized_section": "187(3)",
+          "score": 0.99,
+          "rank": 1,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "alias:default bail",
+            "alias:investigation period"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "BNSS",
+          "section": "187",
+          "normalized_section": "187",
+          "score": 0.95,
+          "rank": 2,
+          "source": "deterministic_baseline",
+          "confidence": "high",
+          "evidence": [
+            "default_bail",
+            "alias:default bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "bns_bnss",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        },
+        {
+          "statute": "NDPS Act",
+          "section": "36A(4)",
+          "normalized_section": "36a(4)",
+          "score": 0.75,
+          "rank": 3,
+          "source": "deterministic_baseline",
+          "confidence": "medium",
+          "evidence": [
+            "default_bail"
+          ],
+          "prediction_version": "legalai-section-prediction-baseline-v1",
+          "offence_family": "procedure",
+          "legal_regime": "special",
+          "relationship_to_explicit": "supplementary",
+          "warnings": []
+        }
+      ]
+    }
+  ]
+}

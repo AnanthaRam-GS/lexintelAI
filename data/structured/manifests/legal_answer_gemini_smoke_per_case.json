@@ -1,0 +1,1203 @@
+{
+  "schema_version": "legalai_gemini_grounded_smoke_per_case_v1",
+  "live_requested": true,
+  "cases": [
+    {
+      "id": "SMOKE-01",
+      "query": "Section 302 IPC murder bail before Sessions Court",
+      "mode": "public",
+      "llm_called": true,
+      "query_understanding": {
+        "legal_regime": "ipc_crpc",
+        "explicit_sections": [
+          {
+            "value": "302",
+            "normalized": "302",
+            "source": "explicit",
+            "span": {
+              "start": 8,
+              "end": 11,
+              "text": "302"
+            },
+            "confidence": "high",
+            "section": "302",
+            "statute": "IPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 1,
+            "final_score": 0.99,
+            "deterministic_score": 0.99,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "304",
+            "normalized_section": "304",
+            "rank": 2,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "PublicLegalAnswer",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 24504
+      },
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Section 302 IPC murder bail before Sessions Court",
+        "mode": "public",
+        "answer": {
+          "summary": "In legal proceedings under the Indian Penal Code (IPC), cases involving Section 302 (murder) fall under the jurisdiction of the Sessions Court for trial and related procedural matters. The grant of bail or determination of charges by a Sessions Court depends heavily on the specific facts, medical evidence, and admissibility of statements in each case.",
+          "what_this_may_mean": [
+            "Offences under Section 302 IPC are serious non-bailable offences where bail applications before the Sessions Court require establishing strong factual or procedural grounds.",
+            "Applicability of legal principles and court jurisdiction depends on the specific procedural posture and case facts."
+          ],
+          "possible_legal_provisions": [
+            "Section 302, Indian Penal Code (IPC) - Punishment for murder",
+            "Section 304, Indian Penal Code (IPC) - Culpable homicide not amounting to murder",
+            "Section 439, Code of Criminal Procedure (CrPC) - Special powers of High Court or Court of Session regarding bail"
+          ],
+          "possible_next_steps": [
+            "Consult a qualified criminal defense advocate to prepare and file a formal bail application before the competent Sessions Court.",
+            "Review the charge sheet, medical/post-mortem reports, and witness statements to assess grounds for bail."
+          ],
+          "important_cautions": [
+            "Bail decisions in severe offences such as murder under Section 302 IPC are discretionary and depend on factual circumstances, nature of evidence, and legal requirements.",
+            "Legal information provided here does not constitute formal legal representation or personalized legal advice."
+          ],
+          "citations": [
+            {
+              "evidence_id": "E1",
+              "claim_id": "claim_1",
+              "supported_text": "After committal of the case to the Sessions Court, charge was framed against the appellant under Section 302 IPC.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E3",
+              "claim_id": "claim_1",
+              "supported_text": "Case No.67 of 2008 and was made over to the learned Additional Sessions Judge, for disposal in accordance with law. On appearance of the accused before the learned Additional Sessions Judge, a charge under Section 302 of I.P.C. was framed against the accused",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E2",
+              "claim_id": "claim_2",
+              "supported_text": "In view of the fact that the alleged statement/confession made by the appellant has only been made to police officers, the said statement/confession cannot be the basis for convicting the appellant for an offence under Section 302 IPC, as the same is inadmissible in evidence.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            }
+          ]
+        },
+        "summary": "Cases registered under Section 302 IPC for murder are tried before a Sessions Court following committal. Evaluation of bail or charges before the Sessions Court depends on evidence strength, medical findings, and procedural compliance.",
+        "claims": [
+          {
+            "claim_id": "claim_1",
+            "text": "Cases involving offences under Section 302 IPC are committed to and tried before the Sessions Court or Additional Sessions Court.",
+            "claim_type": "PROCEDURAL_GUIDANCE",
+            "citations": [
+              {
+                "evidence_id": "E1",
+                "claim_id": "claim_1",
+                "supported_text": "After committal of the case to the Sessions Court, charge was framed against the appellant under Section 302 IPC.",
+                "source_metadata": {},
+                "support_level": "structural"
+              },
+              {
+                "evidence_id": "E3",
+                "claim_id": "claim_1",
+                "supported_text": "Case No.67 of 2008 and was made over to the learned Additional Sessions Judge, for disposal in accordance with law. On appearance of the accused before the learned Additional Sessions Judge, a charge under Section 302 of I.P.C. was framed",
+                "source_metadata": {},
+                "support_level": "structural"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "claim_2",
+            "text": "Statements or confessions made solely to police officers while in custody are inadmissible as evidence for sustaining a conviction under Section 302 IPC.",
+            "claim_type": "CASE_LAW",
+            "citations": [
+              {
+                "evidence_id": "E2",
+                "claim_id": "claim_2",
+                "supported_text": "In view of the fact that the alleged statement/confession made by the appellant has only been made to police officers, the said statement/confession cannot be the basis for convicting the appellant for an offence under Section 302 IPC, as the same is inadmissible in evidence.",
+                "source_metadata": {},
+                "support_level": "structural"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "claim_id": "claim_1",
+            "supported_text": "After committal of the case to the Sessions Court, charge was framed against the appellant under Section 302 IPC.",
+            "source_metadata": {},
+            "support_level": "structural"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "claim_1",
+            "supported_text": "Case No.67 of 2008 and was made over to the learned Additional Sessions Judge, for disposal in accordance with law. On appearance of the accused before the learned Additional Sessions Judge, a charge under Section 302 of I.P.C. was framed",
+            "source_metadata": {},
+            "support_level": "structural"
+          },
+          {
+            "evidence_id": "E2",
+            "claim_id": "claim_2",
+            "supported_text": "In view of the fact that the alleged statement/confession made by the appellant has only been made to police officers, the said statement/confession cannot be the basis for convicting the appellant for an offence under Section 302 IPC, as the same is inadmissible in evidence.",
+            "source_metadata": {},
+            "support_level": "structural"
+          }
+        ],
+        "grounding_status": "STRUCTURALLY_GROUNDED",
+        "warnings": [],
+        "uncertainties": [],
+        "evidence_used": [
+          "E1",
+          "E2",
+          "E3"
+        ],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-3.6-flash",
+          "actual_model_id": "gemini-3.6-flash",
+          "temperature": 0.1,
+          "response_mode": "public",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "attempt_count": 2,
+          "retry_count": 1,
+          "retry_reasons": [
+            "HTTP_503"
+          ],
+          "final_provider_status": "SUCCESS",
+          "prompt_tokens": 7041,
+          "completion_tokens": 911,
+          "total_tokens": 10649
+        },
+        "provider_diagnostic": {},
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 23037.328,
+          "generation_latency_ms": 23037.132
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": {
+          "valid": true,
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "SMOKE-02",
+      "query": "After July 2024, which BNS section covers murder?",
+      "mode": "public",
+      "llm_called": true,
+      "query_understanding": {
+        "legal_regime": "mixed_or_transition",
+        "explicit_sections": [],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "normalized_section": "103",
+            "rank": 1,
+            "final_score": 0.95,
+            "deterministic_score": 0.95,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 2,
+            "final_score": 0.85,
+            "deterministic_score": 0.85,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide",
+              "alias:murder"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "304",
+            "normalized_section": "304",
+            "rank": 3,
+            "final_score": 0.75,
+            "deterministic_score": 0.75,
+            "semantic_score": null,
+            "deterministic_rank": 3,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "homicide"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "PublicLegalAnswer",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 20880
+      },
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "After July 2024, which BNS section covers murder?",
+        "mode": "public",
+        "answer": {
+          "summary": "For offences committed on or after July 1, 2024, murder is covered under Section 103 of the Bharatiya Nyaya Sanhita (BNS), 2023, which replaced Section 302 of the Indian Penal Code (IPC). However, for acts committed before July 1, 2024, the substantive offence remains governed by the IPC.",
+          "what_this_may_mean": [
+            "If the incident occurred on or after July 1, 2024, charges will be framed under Section 103 of the BNS.",
+            "If the incident occurred prior to July 1, 2024, charges will be framed under Section 302 of the IPC, regardless of when the FIR is registered."
+          ],
+          "possible_legal_provisions": [
+            "Bharatiya Nyaya Sanhita (BNS), 2023 - Section 103 (Punishment for murder)",
+            "Indian Penal Code (IPC), 1860 - Section 302 (Punishment for murder)",
+            "Bharatiya Nyaya Sanhita (BNS), 2023 - Section 358 (Repeal and savings)",
+            "Constitution of India - Article 20(1) (Protection in respect of conviction for offences)"
+          ],
+          "possible_next_steps": [
+            "Verify the exact date of the incident to determine whether BNS or IPC applies.",
+            "Consult a qualified criminal defence advocate for case-specific legal advice."
+          ],
+          "important_cautions": [
+            "The specific law applicable depends on the exact date and time the alleged offence was committed.",
+            "This guidance is provided for educational purposes and does not constitute formal legal representation or professional counsel."
+          ],
+          "citations": [
+            {
+              "evidence_id": "E1",
+              "claim_id": "claim_1",
+              "supported_text": "If the offences committed on or after 01.07.2024 then the offences shall be registered under the Bharatiya Nyaya Sanhita (BNS) 2023",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E3",
+              "claim_id": "claim_2",
+              "supported_text": "The offences were alleged to have been committed by the accused prior to 01.07.2024. The repealed IPC was in force till 30.06.2024. Hence, the FIR is required to be registered for the offences committed under IPC and not under BNS.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E5",
+              "claim_id": "claim_2",
+              "supported_text": "In view of the safeguard guaranteed under Article 20 (1) of the Constitution of India the offences cannot be registered against the petitioner under the BNS, which was come into force only on 01.07.2024.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            }
+          ]
+        },
+        "summary": "Under the new criminal laws effective July 1, 2024, Section 103 of the BNS covers the offence of murder for acts committed on or after that date. Acts committed prior to July 1, 2024 remain governed by Section 302 of the IPC.",
+        "claims": [
+          {
+            "claim_id": "claim_1",
+            "text": "Offences committed on or after July 1, 2024 are registered and prosecuted under the provisions of the Bharatiya Nyaya Sanhita (BNS), 2023.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [
+              {
+                "evidence_id": "E1",
+                "claim_id": "claim_1",
+                "supported_text": "If the offences committed on or after 01.07.2024 then the offences shall be registered under the Bharatiya Nyaya Sanhita (BNS) 2023",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "claim_2",
+            "text": "Offences committed prior to July 1, 2024 remain governed by the Indian Penal Code (IPC) under repeal and savings provisions and Article 20(1) of the Constitution.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [
+              {
+                "evidence_id": "E3",
+                "claim_id": "claim_2",
+                "supported_text": "The offences were alleged to have been committed by the accused prior to 01.07.2024. The repealed IPC was in force till 30.06.2024. Hence, the FIR is required to be registered for the offences committed under IPC and not under BNS.",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              },
+              {
+                "evidence_id": "E5",
+                "claim_id": "claim_2",
+                "supported_text": "In view of the safeguard guaranteed under Article 20 (1) of the Constitution of India the offences cannot be registered against the petitioner under the BNS, which was come into force only on 01.07.2024.",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "claim_3",
+            "text": "Section 103 of the Bharatiya Nyaya Sanhita (BNS) corresponds to Section 302 of the Indian Penal Code (IPC) and covers murder.",
+            "claim_type": "STATUTORY_REFERENCE",
+            "citations": [],
+            "grounding_status": "INSUFFICIENT_RETRIEVED_AUTHORITY",
+            "warnings": [
+              {
+                "code": "MISSING_DIRECT_EVIDENCE_TEXT",
+                "message": "Section 103 BNS is identified via supplementary mapping rather than direct text in the retrieved judgments.",
+                "severity": "LOW",
+                "related_claims": [
+                  "claim_3"
+                ],
+                "related_evidence": []
+              }
+            ]
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "claim_id": "claim_1",
+            "supported_text": "If the offences committed on or after 01.07.2024 then the offences shall be registered under the Bharatiya Nyaya Sanhita (BNS) 2023",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "claim_2",
+            "supported_text": "The offences were alleged to have been committed by the accused prior to 01.07.2024. The repealed IPC was in force till 30.06.2024. Hence, the FIR is required to be registered for the offences committed under IPC and not under BNS.",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          },
+          {
+            "evidence_id": "E5",
+            "claim_id": "claim_2",
+            "supported_text": "In view of the safeguard guaranteed under Article 20 (1) of the Constitution of India the offences cannot be registered against the petitioner under the BNS, which was come into force only on 01.07.2024.",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          }
+        ],
+        "grounding_status": "PARTIALLY_GROUNDED",
+        "warnings": [],
+        "uncertainties": [],
+        "evidence_used": [
+          "E1",
+          "E3",
+          "E5"
+        ],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E2",
+          "E4"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-3.6-flash",
+          "actual_model_id": "gemini-3.6-flash",
+          "temperature": 0.1,
+          "response_mode": "public",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "attempt_count": 1,
+          "retry_count": 0,
+          "retry_reasons": [],
+          "final_provider_status": "SUCCESS",
+          "prompt_tokens": 6597,
+          "completion_tokens": 1549,
+          "total_tokens": 9491
+        },
+        "provider_diagnostic": {},
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 15960.987,
+          "generation_latency_ms": 15960.706
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": {
+          "valid": true,
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "SMOKE-03",
+      "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
+      "mode": "professional",
+      "llm_called": true,
+      "query_understanding": {
+        "legal_regime": "ipc_crpc",
+        "explicit_sections": [
+          {
+            "value": "438",
+            "normalized": "438",
+            "source": "explicit",
+            "span": {
+              "start": 36,
+              "end": 39,
+              "text": "438"
+            },
+            "confidence": "high",
+            "section": "438",
+            "statute": "CrPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "CrPC",
+            "section": "438",
+            "normalized_section": "438",
+            "rank": 1,
+            "final_score": 0.99,
+            "deterministic_score": 0.99,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": [
+              "anticipatory_bail",
+              "alias:anticipatory bail"
+            ]
+          },
+          {
+            "statute": "IPC",
+            "section": "420",
+            "normalized_section": "420",
+            "rank": 2,
+            "final_score": 0.85,
+            "deterministic_score": 0.85,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "cheating",
+              "alias:cheating"
+            ]
+          },
+          {
+            "statute": "SC/ST Act",
+            "section": "18",
+            "normalized_section": "18",
+            "rank": 3,
+            "final_score": 0.75,
+            "deterministic_score": 0.75,
+            "semantic_score": null,
+            "deterministic_rank": 3,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": false,
+            "regime_compatible": true,
+            "evidence": [
+              "anticipatory_bail"
+            ]
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "ProfessionalLegalBrief",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 23992
+      },
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Can anticipatory bail under Section 438 CrPC be sought in a cheating FIR?",
+        "mode": "professional",
+        "answer": {
+          "issue_summary": "Anticipatory bail under Section 438 of the Code of Criminal Procedure (CrPC) can be sought by an individual apprehending arrest in connection with an FIR alleging cheating or fraudulent offences.",
+          "material_facts_from_query": [
+            "Seeking anticipatory bail under Section 438 CrPC in relation to a cheating FIR."
+          ],
+          "explicit_legal_provisions": [
+            "Section 438, Code of Criminal Procedure, 1973",
+            "Section 420, Indian Penal Code, 1860"
+          ],
+          "potential_additional_provisions": [
+            "Section 406, Indian Penal Code, 1860",
+            "Section 437, Code of Criminal Procedure, 1973"
+          ],
+          "procedural_posture": [
+            "Pre-arrest bail application under Section 438 CrPC."
+          ],
+          "legal_regime": "ipc_crpc",
+          "retrieved_authorities": [
+            {
+              "evidence_id": "E1",
+              "case_name": "Amit Kumar Alias Sushil vs State Of H.P on 4 February, 2021",
+              "court": {},
+              "judgment_date": null,
+              "source_url": null,
+              "paragraph_start": null,
+              "paragraph_end": null
+            },
+            {
+              "evidence_id": "E3",
+              "case_name": "Kausalya Bhujangrao Telang vs The State Of Maharashtra And Another on 26 February, 2026",
+              "court": {},
+              "judgment_date": null,
+              "source_url": null,
+              "paragraph_start": null,
+              "paragraph_end": null
+            }
+          ],
+          "legal_issues": [
+            "Whether anticipatory bail under Section 438 CrPC can be sought in respect of an FIR alleging cheating.",
+            "What key factors courts consider when deciding anticipatory bail in cheating and fraud cases."
+          ],
+          "applicable_principles": [
+            "Anticipatory bail requires a reasonable apprehension of arrest based on clear and concrete facts rather than vague or general allegations.",
+            "Courts must weigh factors including the seriousness of the offence, the applicant's role, risk of fleeing, likelihood of influencing investigation or witnesses, and whether custodial interrogation is required.",
+            "Where custodial interrogation is not necessary or recovery can be facilitated without arrest, anticipatory bail may be granted subject to appropriate conditions."
+          ],
+          "analysis": [
+            "An application for anticipatory bail under Section 438 CrPC is maintainable in respect of FIRs alleging cheating (such as under Section 420 IPC) and related financial or fraudulent offences.",
+            "The maintainability of an anticipatory bail application depends on a reasonable and clear apprehension of arrest based on concrete facts.",
+            "While evaluating anticipatory bail in cheating matters, courts examine the nature and gravity of the offence, the role attributed to the applicant, the necessity of custodial interrogation, and whether there exists any likelihood of the applicant fleeing justice or tampering with evidence."
+          ],
+          "counterpoints": [
+            "Anticipatory bail may be denied if the court finds a prima facie case, a risk of the applicant absconding, a history of habitual offending, or if custodial interrogation is indispensable for investigation and recovery."
+          ],
+          "uncertainties": [],
+          "recommended_research_questions": [
+            "Does the FIR disclose a purely civil dispute or a prima facie criminal offence of cheating?",
+            "Is custodial interrogation required by the investigating agency for recovery or discovery under Section 27 of the Evidence Act?"
+          ],
+          "citations": [
+            {
+              "evidence_id": "E1",
+              "claim_id": "C1",
+              "supported_text": "For the allegations of fraud and cheating, the petitioner is apprehending arrest came up before this Court under Section 438 CrPC, seeking anticipatory bail.",
+              "source_metadata": {},
+              "support_level": "structural"
+            },
+            {
+              "evidence_id": "E3",
+              "claim_id": "C2",
+              "supported_text": "It is not a necessary condition that an application should be moved only after an FIR is filed; it can be moved earlier, so long as the facts are clear and there is reasonable basis for apprehending arrest.",
+              "source_metadata": {},
+              "support_level": "structural"
+            },
+            {
+              "evidence_id": "E3",
+              "claim_id": "C3",
+              "supported_text": "While weighing and considering an application (for grant of anticipatory bail) the court has to consider the nature of the offence, the role of the person, the likelihood of his influencing the course of investigation, or tampering with evidence (including intimidating witnesses), likelihood of fleeing justice (such as leaving the country), etc.",
+              "source_metadata": {},
+              "support_level": "structural"
+            }
+          ]
+        },
+        "summary": "Anticipatory bail under Section 438 CrPC can be legally sought in cases involving an FIR registered for cheating. Courts evaluate such applications by considering the gravity of allegations, necessity of custodial interrogation, and risk of absconding or evidence tampering.",
+        "claims": [
+          {
+            "claim_id": "C1",
+            "text": "An application for anticipatory bail under Section 438 CrPC can be filed by a person apprehending arrest in connection with offences involving cheating and fraud.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [
+              {
+                "evidence_id": "E1",
+                "claim_id": "C1",
+                "supported_text": "For the allegations of fraud and cheating, the petitioner is apprehending arrest came up before this Court under Section 438 CrPC, seeking anticipatory bail.",
+                "source_metadata": {},
+                "support_level": "structural"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "C2",
+            "text": "Anticipatory bail under Section 438 CrPC requires a clear and reasonable apprehension of arrest based on concrete facts.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [
+              {
+                "evidence_id": "E3",
+                "claim_id": "C2",
+                "supported_text": "It is not a necessary condition that an application should be moved only after an FIR is filed; it can be moved earlier, so long as the facts are clear and there is reasonable basis for apprehending arrest.",
+                "source_metadata": {},
+                "support_level": "structural"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "C3",
+            "text": "In evaluating anticipatory bail, courts consider the nature of the offence, the role of the accused, likelihood of fleeing justice, and potential tampering with evidence or witnesses.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [
+              {
+                "evidence_id": "E3",
+                "claim_id": "C3",
+                "supported_text": "While weighing and considering an application (for grant of anticipatory bail) the court has to consider the nature of the offence, the role of the person, the likelihood of his influencing the course of investigation, or tampering with evidence (including intimidating witnesses), likelihood of fleeing justice (such as leaving the country), etc.",
+                "source_metadata": {},
+                "support_level": "structural"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "claim_id": "C1",
+            "supported_text": "For the allegations of fraud and cheating, the petitioner is apprehending arrest came up before this Court under Section 438 CrPC, seeking anticipatory bail.",
+            "source_metadata": {},
+            "support_level": "structural"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "C2",
+            "supported_text": "It is not a necessary condition that an application should be moved only after an FIR is filed; it can be moved earlier, so long as the facts are clear and there is reasonable basis for apprehending arrest.",
+            "source_metadata": {},
+            "support_level": "structural"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "C3",
+            "supported_text": "While weighing and considering an application (for grant of anticipatory bail) the court has to consider the nature of the offence, the role of the person, the likelihood of his influencing the course of investigation, or tampering with evidence (including intimidating witnesses), likelihood of fleeing justice (such as leaving the country), etc.",
+            "source_metadata": {},
+            "support_level": "structural"
+          }
+        ],
+        "grounding_status": "STRUCTURALLY_GROUNDED",
+        "warnings": [],
+        "uncertainties": [],
+        "evidence_used": [
+          "E1",
+          "E3"
+        ],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E2",
+          "E4",
+          "E5"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-3.6-flash",
+          "actual_model_id": "gemini-3.6-flash",
+          "temperature": 0.1,
+          "response_mode": "professional",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "attempt_count": 2,
+          "retry_count": 1,
+          "retry_reasons": [
+            "HTTP_503"
+          ],
+          "final_provider_status": "SUCCESS",
+          "prompt_tokens": 6889,
+          "completion_tokens": 1649,
+          "total_tokens": 10454
+        },
+        "provider_diagnostic": {},
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 24436.164,
+          "generation_latency_ms": 24435.919
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": {
+          "valid": true,
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "SMOKE-04",
+      "query": "Section 103 BNS and Section 302 IPC transition issue",
+      "mode": "professional",
+      "llm_called": true,
+      "query_understanding": {
+        "legal_regime": "mixed_or_transition",
+        "explicit_sections": [
+          {
+            "value": "103",
+            "normalized": "103",
+            "source": "explicit",
+            "span": {
+              "start": 8,
+              "end": 11,
+              "text": "103"
+            },
+            "confidence": "high",
+            "section": "103",
+            "statute": "BNS"
+          },
+          {
+            "value": "302",
+            "normalized": "302",
+            "source": "explicit",
+            "span": {
+              "start": 28,
+              "end": 31,
+              "text": "302"
+            },
+            "confidence": "high",
+            "section": "302",
+            "statute": "IPC"
+          }
+        ],
+        "predicted_sections_supplementary_only": [
+          {
+            "statute": "BNS",
+            "section": "103",
+            "normalized_section": "103",
+            "rank": 1,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 1,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": []
+          },
+          {
+            "statute": "IPC",
+            "section": "302",
+            "normalized_section": "302",
+            "rank": 2,
+            "final_score": 0.7,
+            "deterministic_score": 0.7,
+            "semantic_score": null,
+            "deterministic_rank": 2,
+            "semantic_rank": null,
+            "ranking_source": "deterministic",
+            "protected_explicit": true,
+            "regime_compatible": true,
+            "evidence": []
+          }
+        ]
+      },
+      "retrieval": {
+        "evidence_ids": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "warnings": [],
+        "error": null
+      },
+      "prompt": {
+        "answer_schema": "ProfessionalLegalBrief",
+        "citation_policy": "retrieval_evidence_only",
+        "character_count": 21977
+      },
+      "answer": {
+        "answer_schema_version": "legalai-grounded-answer-v1",
+        "query": "Section 103 BNS and Section 302 IPC transition issue",
+        "mode": "professional",
+        "answer": {
+          "issue_summary": "The query concerns the legal transition and relationship between Section 302 of the Indian Penal Code (IPC) and Section 103 of the Bharatiya Nyaya Sanhita (BNS) regarding murder offences.",
+          "material_facts_from_query": [
+            "User inquired about the transition issue between Section 103 BNS and Section 302 IPC."
+          ],
+          "explicit_legal_provisions": [
+            "Section 302, Indian Penal Code, 1860",
+            "Section 103, Bharatiya Nyaya Sanhita, 2023"
+          ],
+          "potential_additional_provisions": [
+            "Section 354(3), Code of Criminal Procedure, 1973",
+            "Section 319, Code of Criminal Procedure, 1973",
+            "Section 531, Bharatiya Nagarik Suraksha Sanhita, 2023 (Repeal and Savings)"
+          ],
+          "procedural_posture": [],
+          "legal_regime": "mixed_or_transition",
+          "retrieved_authorities": [
+            {
+              "evidence_id": "E1",
+              "case_name": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+              "court": {},
+              "judgment_date": null,
+              "source_url": "https://indiankanoon.org/doc/179828917/",
+              "paragraph_start": 81,
+              "paragraph_end": 82
+            },
+            {
+              "evidence_id": "E2",
+              "case_name": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+              "court": {},
+              "judgment_date": null,
+              "source_url": "https://indiankanoon.org/doc/179828917/",
+              "paragraph_start": 110,
+              "paragraph_end": 111
+            },
+            {
+              "evidence_id": "E3",
+              "case_name": "Mukesh Khandelwal @ Devendra Kumar S/O ... vs State Of Rajasthan Through Pp on 29 January, 2019",
+              "court": {},
+              "judgment_date": null,
+              "source_url": "https://indiankanoon.org/doc/15834217/",
+              "paragraph_start": 9,
+              "paragraph_end": 10
+            },
+            {
+              "evidence_id": "E4",
+              "case_name": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022",
+              "court": {},
+              "judgment_date": null,
+              "source_url": "https://indiankanoon.org/doc/179828917/",
+              "paragraph_start": 87,
+              "paragraph_end": 87
+            },
+            {
+              "evidence_id": "E5",
+              "case_name": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+              "court": {},
+              "judgment_date": null,
+              "source_url": "https://indiankanoon.org/doc/70774666/",
+              "paragraph_start": 27,
+              "paragraph_end": 27
+            }
+          ],
+          "legal_issues": [
+            "Applicability of Section 302 IPC versus Section 103 BNS depending on date of commission",
+            "Continuity of judicial precedents on murder sentencing (Bachan Singh doctrine) under BNS Section 103"
+          ],
+          "applicable_principles": [
+            "Rarest of rare doctrine for capital punishment under murder provisions (Bachan Singh)",
+            "Requirement of separate sentencing for distinct offences arising out of the same transaction",
+            "Evidentiary threshold for summoning additional accused under Section 319 CrPC",
+            "Assessment of reformability and mitigating factors in capital sentencing"
+          ],
+          "analysis": [
+            "Section 302 IPC defines the punishment for murder under the penal regime of 1860, while Section 103 BNS serves as the corresponding penal provision under the newly enacted Bharatiya Nyaya Sanhita.",
+            "The retrieved legal authorities establish key principles governing Section 302 IPC prosecution and sentencing. Under Bachan Singh, the Supreme Court established the 'rarest of rare' doctrine governing capital punishment under Section 302 IPC.",
+            "Courts must evaluate aggravating and mitigating factors, including scope for reform and post-conviction conduct, when deciding between life imprisonment and capital punishment under Section 302 IPC.",
+            "Where multiple counts of murder occur within a single incident, separate sentences must be explicitly awarded for each distinct offence under Section 302 IPC rather than a single combined sentence.",
+            "In procedural matters involving Section 302 IPC, such as summoning additional accused under Section 319 CrPC, courts require evidence stronger than mere probability of complicity as laid down in Hardeep Singh.",
+            "The retrieved case authorities do not explicitly address the specific statutory repeal, savings, or transitional application rules governing the shift from Section 302 IPC to Section 103 BNS."
+          ],
+          "counterpoints": [
+            "While substantive definitions and sentencing principles remain aligned between IPC Section 302 and BNS Section 103, statutory transition rules govern whether IPC or BNS applies depending on the date of commission of the offence."
+          ],
+          "uncertainties": [
+            {
+              "code": "MISSING_TRANSITION_PRECEDENT",
+              "message": "The retrieved evidence set contains historical judgments on IPC Section 302 but lacks retrieved judicial precedents specifically interpreting BNS Section 103 transition clauses.",
+              "severity": "MODERATE",
+              "related_claims": [
+                "CLM-005"
+              ],
+              "related_evidence": []
+            }
+          ],
+          "recommended_research_questions": [
+            "How do repeal and savings clauses under the new criminal laws govern offences committed prior to July 1, 2024?",
+            "Does jurisprudence under Section 302 IPC directly bind the interpretation and sentencing under Section 103 BNS?"
+          ],
+          "citations": [
+            {
+              "evidence_id": "E4",
+              "claim_id": "CLM-001",
+              "supported_text": "The opinion of majority in Bachan Singh is the guiding light and foundational discipline for all the later developments and enunciations on the subject... whether death penalty provided for the offence of murder under Section 302 IPC was unconstitutional",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E2",
+              "claim_id": "CLM-002",
+              "supported_text": "This Court reiterated the principle that life imprisonment was the rule and death sentence was the exception, which was to be imposed only when the alternative of life imprisonment had been unquestionably foreclosed.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E3",
+              "claim_id": "CLM-003",
+              "supported_text": "In the instant case, the trial court has given sentence for the offence u/s 302 IPC ignoring that said offence was committed twice by the accused-appellants. Separate sentence should have been given for each offence for which accused have been convicted.",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            },
+            {
+              "evidence_id": "E5",
+              "claim_id": "CLM-004",
+              "supported_text": "As held in the Constitution Bench judgment in Hardeep Singh... for summoning an accused under Section 319 CrPC it requires much stronger evidence than mere probability of his complicity",
+              "source_metadata": {},
+              "support_level": "DIRECT"
+            }
+          ]
+        },
+        "summary": "This response analyzes the legal framework around Section 302 IPC and its transition context with Section 103 BNS based on retrieved authorities governing sentencing and procedural standards under murder provisions.",
+        "claims": [
+          {
+            "claim_id": "CLM-001",
+            "text": "Under Section 302 IPC jurisprudence, the Constitution Bench in Bachan Singh established the rarest of rare doctrine regarding capital punishment.",
+            "claim_type": "CASE_LAW",
+            "citations": [
+              {
+                "evidence_id": "E4",
+                "claim_id": "CLM-001",
+                "supported_text": "The opinion of majority in Bachan Singh is the guiding light and foundational discipline for all the later developments and enunciations on the subject...",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "CLM-002",
+            "text": "Life imprisonment is the rule and death sentence is an exception imposed only when life imprisonment is unquestionably foreclosed.",
+            "claim_type": "CASE_LAW",
+            "citations": [
+              {
+                "evidence_id": "E2",
+                "claim_id": "CLM-002",
+                "supported_text": "This Court reiterated the principle that life imprisonment was the rule and death sentence was the exception...",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "CLM-003",
+            "text": "In incidents involving multiple murders, separate sentences must be awarded for each distinct offence under Section 302 IPC.",
+            "claim_type": "CASE_LAW",
+            "citations": [
+              {
+                "evidence_id": "E3",
+                "claim_id": "CLM-003",
+                "supported_text": "Separate sentence should have been given for each offence for which accused have been convicted.",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "CLM-004",
+            "text": "Summoning an additional accused under Section 319 CrPC for offences including Section 302 IPC requires evidence stronger than mere probability of complicity.",
+            "claim_type": "CASE_LAW",
+            "citations": [
+              {
+                "evidence_id": "E5",
+                "claim_id": "CLM-004",
+                "supported_text": "As held in the Constitution Bench judgment in Hardeep Singh... for summoning an accused under Section 319 CrPC it requires much stronger evidence than mere probability of his complicity",
+                "source_metadata": {},
+                "support_level": "DIRECT"
+              }
+            ],
+            "grounding_status": "STRUCTURALLY_GROUNDED",
+            "warnings": []
+          },
+          {
+            "claim_id": "CLM-005",
+            "text": "The retrieved evidence set does not contain direct judicial decisions interpreting statutory transition provisions specific to BNS Section 103.",
+            "claim_type": "UNCERTAINTY",
+            "citations": [],
+            "grounding_status": "INSUFFICIENT_RETRIEVED_AUTHORITY",
+            "warnings": []
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "E4",
+            "claim_id": "CLM-001",
+            "supported_text": "The opinion of majority in Bachan Singh is the guiding light and foundational discipline for all the later developments and enunciations on the subject...",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          },
+          {
+            "evidence_id": "E2",
+            "claim_id": "CLM-002",
+            "supported_text": "This Court reiterated the principle that life imprisonment was the rule and death sentence was the exception...",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "CLM-003",
+            "supported_text": "Separate sentence should have been given for each offence for which accused have been convicted.",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          },
+          {
+            "evidence_id": "E5",
+            "claim_id": "CLM-004",
+            "supported_text": "As held in the Constitution Bench judgment in Hardeep Singh... for summoning an accused under Section 319 CrPC it requires much stronger evidence than mere probability of his complicity",
+            "source_metadata": {},
+            "support_level": "DIRECT"
+          }
+        ],
+        "grounding_status": "STRUCTURALLY_GROUNDED",
+        "warnings": [],
+        "uncertainties": [],
+        "evidence_used": [
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_retrieved": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "evidence_unused": [
+          "E1"
+        ],
+        "model_metadata": {
+          "provider": "gemini",
+          "configured_model_id": "gemini-3.6-flash",
+          "actual_model_id": "gemini-3.6-flash",
+          "temperature": 0.1,
+          "response_mode": "professional",
+          "fallback_used": false,
+          "primary_provider": null,
+          "fallback_provider": null,
+          "fallback_reason": null,
+          "repair_attempted": false,
+          "repair_succeeded": null,
+          "repair_reason": null,
+          "attempt_count": 1,
+          "retry_count": 0,
+          "retry_reasons": [],
+          "final_provider_status": "SUCCESS",
+          "prompt_tokens": 5821,
+          "completion_tokens": 2780,
+          "total_tokens": 10288
+        },
+        "provider_diagnostic": {},
+        "fallbacks": [],
+        "timings": {
+          "answer_generation_ms": 25457.353,
+          "generation_latency_ms": 25456.991
+        },
+        "query_understanding_version": "legalai-query-understanding-v1",
+        "retrieval_version": "legalai-rag-retrieval-v1",
+        "citation_validation": {
+          "valid": true,
+          "issues": []
+        }
+      }
+    }
+  ]
+}

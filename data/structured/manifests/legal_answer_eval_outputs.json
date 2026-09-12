@@ -1,0 +1,10 @@
+{
+  "schema_version": "legalai-grounded-answer-eval-outputs-v1",
+  "eval_version": "legalai-grounded-answer-eval-v1",
+  "generation_status": "not_started",
+  "conditions": [
+    "LLM_ONLY",
+    "GROUNDED_RAG"
+  ],
+  "outputs": []
+}

@@ -1,0 +1,404 @@
+{
+  "schema_version": "legalai-section-bge-trial-eval-v1",
+  "model": {
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "architecture": "XLMRobertaModel",
+    "embedding_dimension": 1024,
+    "pooling": {
+      "word_embedding_dimension": 1024,
+      "pooling_mode_cls_token": true,
+      "pooling_mode_mean_tokens": false,
+      "pooling_mode_max_tokens": false,
+      "pooling_mode_mean_sqrt_len_tokens": false
+    },
+    "normalization": "l2_normalized_by_provider",
+    "similarity": "cosine_via_dot_product_on_normalized_vectors",
+    "device": "cpu",
+    "parameter_count": null
+  },
+  "trial_design": {
+    "d0": "frozen deterministic baseline",
+    "s1": "BGE-M3 semantic-only ranking over bounded deterministic candidates",
+    "h1": "RRF fusion of deterministic rank and BGE-M3 semantic rank",
+    "candidate_generation": "frozen deterministic predictor output only",
+    "query_representation": "Q0_original_query_only",
+    "section_representation": "0.7C catalog-fields-only semantic text",
+    "fusion_strategy": "reciprocal_rank_fusion",
+    "rrf_k": 60,
+    "candidate_expansion_count": 0
+  },
+  "dataset": {
+    "examples": 36,
+    "positive_gold": 60,
+    "uncertain": 1,
+    "zero_positive": 3,
+    "max_top_k": 5
+  },
+  "metrics": {
+    "d0": {
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.388889,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.358586,
+      "recall_at_3": 0.767677,
+      "recall_at_5": 0.853535,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.722516,
+      "hit_at_1": 0.5,
+      "hit_at_3": 0.805556,
+      "hit_at_5": 0.861111
+    },
+    "s1": {
+      "precision_at_1": 0.777778,
+      "precision_at_3": 0.416667,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.560606,
+      "recall_at_3": 0.80303,
+      "recall_at_5": 0.853535,
+      "mrr": 0.814815,
+      "ndcg_at_5": 0.821095,
+      "hit_at_1": 0.777778,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "h1": {
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.416667,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.353535,
+      "recall_at_3": 0.80303,
+      "recall_at_5": 0.853535,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.726846,
+      "hit_at_1": 0.5,
+      "hit_at_3": 0.861111,
+      "hit_at_5": 0.861111
+    },
+    "h1_delta_vs_d0": {
+      "precision_at_1": 0.0,
+      "precision_at_3": 0.027778,
+      "precision_at_5": 0.0,
+      "recall_at_1": -0.005051,
+      "recall_at_3": 0.035353,
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.00433,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.055555,
+      "hit_at_5": 0.0
+    }
+  },
+  "guardrail_metrics": {
+    "d0": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.5,
+      "explicit_recall_at_3": 0.875,
+      "explicit_recall_at_5": 0.875,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "s1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "h1": {
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_1": 0.75,
+      "explicit_recall_at_3": 1.0,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0
+    }
+  },
+  "primary_rank_movement": {
+    "s1": {
+      "moved_up": 14,
+      "unchanged": 14,
+      "moved_down": 6,
+      "missing": 2,
+      "average_rank_change": -0.411765
+    },
+    "h1": {
+      "moved_up": 7,
+      "unchanged": 24,
+      "moved_down": 3,
+      "missing": 2,
+      "average_rank_change": -0.147059
+    }
+  },
+  "relevant_rank_movement": {
+    "s1": {
+      "moved_up": 4,
+      "unchanged": 9,
+      "moved_down": 2,
+      "missing": 9,
+      "average_rank_change": -0.333333
+    },
+    "h1": {
+      "moved_up": 4,
+      "unchanged": 5,
+      "moved_down": 6,
+      "missing": 9,
+      "average_rank_change": 0.2
+    }
+  },
+  "subset_results": {
+    "plain_language": {
+      "query_count": 29,
+      "d0": {
+        "precision_at_1": 0.482759,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.683908,
+        "ndcg_at_5": 0.692512
+      },
+      "s1": {
+        "precision_at_1": 0.827586,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.873563,
+        "ndcg_at_5": 0.804687
+      },
+      "h1": {
+        "precision_at_1": 0.482759,
+        "precision_at_5": 0.289655,
+        "recall_at_5": 0.850575,
+        "mrr": 0.683908,
+        "ndcg_at_5": 0.697439
+      }
+    },
+    "procedural": {
+      "query_count": 14,
+      "d0": {
+        "precision_at_1": 0.571429,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.696429,
+        "ndcg_at_5": 0.693125
+      },
+      "s1": {
+        "precision_at_1": 0.785714,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.809524,
+        "ndcg_at_5": 0.750914
+      },
+      "h1": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.271429,
+        "recall_at_5": 0.797619,
+        "mrr": 0.654762,
+        "ndcg_at_5": 0.670112
+      }
+    },
+    "substantive": {
+      "query_count": 24,
+      "d0": {
+        "precision_at_1": 0.583333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.763889,
+        "ndcg_at_5": 0.75751
+      },
+      "s1": {
+        "precision_at_1": 0.916667,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.958333,
+        "ndcg_at_5": 0.856347
+      },
+      "h1": {
+        "precision_at_1": 0.625,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.881944,
+        "mrr": 0.791667,
+        "ndcg_at_5": 0.771383
+      }
+    },
+    "ipc_crpc": {
+      "query_count": 20,
+      "d0": {
+        "precision_at_1": 0.45,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.675,
+        "ndcg_at_5": 0.695931
+      },
+      "s1": {
+        "precision_at_1": 0.85,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.891667,
+        "ndcg_at_5": 0.829879
+      },
+      "h1": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.33,
+        "recall_at_5": 0.866667,
+        "mrr": 0.65,
+        "ndcg_at_5": 0.693655
+      }
+    },
+    "bns_bnss": {
+      "query_count": 12,
+      "d0": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.652778,
+        "ndcg_at_5": 0.681436
+      },
+      "s1": {
+        "precision_at_1": 0.75,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.791667,
+        "ndcg_at_5": 0.764581
+      },
+      "h1": {
+        "precision_at_1": 0.583333,
+        "precision_at_5": 0.216667,
+        "recall_at_5": 0.777778,
+        "mrr": 0.694444,
+        "ndcg_at_5": 0.698595
+      }
+    },
+    "special_law": {
+      "query_count": 6,
+      "d0": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 0.916667,
+        "ndcg_at_5": 0.747253
+      },
+      "s1": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 0.888889,
+        "ndcg_at_5": 0.733169
+      },
+      "h1": {
+        "precision_at_1": 0.833333,
+        "precision_at_5": 0.333333,
+        "recall_at_5": 0.805556,
+        "mrr": 0.888889,
+        "ndcg_at_5": 0.745366
+      }
+    },
+    "mixed_transition": {
+      "query_count": 4,
+      "d0": {
+        "precision_at_1": 0.25,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.375,
+        "ndcg_at_5": 0.423357
+      },
+      "s1": {
+        "precision_at_1": 0.5,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.5
+      },
+      "h1": {
+        "precision_at_1": 0.25,
+        "precision_at_5": 0.2,
+        "recall_at_5": 0.5,
+        "mrr": 0.375,
+        "ndcg_at_5": 0.423357
+      }
+    }
+  },
+  "zero_positive_guardrails": {
+    "false_positive_rate": 0.0,
+    "examples": [
+      {
+        "example_id": "sec-q026",
+        "d0_count": 0,
+        "s1_count": 0,
+        "h1_count": 0
+      },
+      {
+        "example_id": "sec-q027",
+        "d0_count": 0,
+        "s1_count": 0,
+        "h1_count": 0
+      },
+      {
+        "example_id": "sec-q035",
+        "d0_count": 0,
+        "s1_count": 0,
+        "h1_count": 0
+      }
+    ]
+  },
+  "score_diagnostics": {
+    "all_candidates": {
+      "count": 112,
+      "mean": 0.509008,
+      "median": 0.51094,
+      "min": 0.298621,
+      "max": 0.722544
+    },
+    "gold_positive_candidates": {
+      "count": 49,
+      "mean": 0.556923,
+      "median": 0.55952,
+      "min": 0.366741,
+      "max": 0.722544
+    },
+    "non_gold_candidates": {
+      "count": 63,
+      "mean": 0.471741,
+      "median": 0.466204,
+      "min": 0.298621,
+      "max": 0.665303
+    }
+  },
+  "latency": {
+    "model_load_ms": 2982.862,
+    "section_embedding_preparation_ms": 1764.271,
+    "query_embedding_ms": {
+      "mean": 81.947,
+      "median": 80.907,
+      "p95": 89.171,
+      "max": 89.886
+    },
+    "s1_total_ms": {
+      "mean": 81.951,
+      "median": 80.91,
+      "p95": 89.175,
+      "max": 89.891
+    },
+    "h1_total_ms": {
+      "mean": 81.953,
+      "median": 80.912,
+      "p95": 89.178,
+      "max": 89.895
+    }
+  },
+  "error_analysis": {
+    "schema_version": "legalai-section-bge-trial-error-analysis-v1",
+    "error_taxonomy_h1": {
+      "AMBIGUOUS_QUERY": 2,
+      "CATALOG_CANDIDATE_NOT_TRIGGERED": 1,
+      "MISSING_GOLD_SECTION": 8,
+      "OVERPREDICTION": 27,
+      "PRIMARY_SECTION_RANKED_LOW": 2,
+      "SUPPLEMENTARY_SECTION_MISSED": 7,
+      "WRONG_SECTION": 4
+    },
+    "total_h1_misses": 11,
+    "total_h1_extras": 63,
+    "candidate_generation_limitation": "Semantic reranking cannot recover gold sections absent from D0 deterministic candidates."
+  },
+  "decision": "INCONCLUSIVE \u2014 TRY CROSS-ENCODER RERANKER"
+}

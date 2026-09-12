@@ -1,0 +1,30 @@
+{
+  "schema_version": "legalai_gemini_http_diagnostic_v1",
+  "configured_model_before": "gemini-1.5-flash",
+  "selected_model": "gemini-3.6-flash",
+  "configured_model_after": "gemini-3.6-flash",
+  "endpoint_version": "v1beta",
+  "diagnostic_http_status": 200,
+  "provider_error_code": null,
+  "provider_error_message_sanitized": null,
+  "root_cause": "NONE",
+  "fix_applied": "SANITIZE_PYDANTIC_JSON_SCHEMA_FOR_GEMINI",
+  "health_check_status": "SUCCESS",
+  "actual_model": "gemini-3.6-flash",
+  "provider_discovery_count": 50,
+  "generate_content_capable_count": 40,
+  "previous_model_available": false,
+  "selection_basis": "Provider discovery listed gemini-3.6-flash with generateContent support after gemini-2.5-flash was discovered but provider-rejected as unavailable to new users; selected a stable Flash-class text generation model without using legal smoke output.",
+  "health_check": {
+    "status": "SUCCESS",
+    "http_status": 200,
+    "provider_code": null,
+    "provider_message_sanitized": null,
+    "actual_model": "gemini-3.6-flash",
+    "latency_ms": null,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null
+  },
+  "external_data_boundary": "No legal query, retrieved evidence, retrieval metadata, or grounded smoke prompt was sent in D2."
+}

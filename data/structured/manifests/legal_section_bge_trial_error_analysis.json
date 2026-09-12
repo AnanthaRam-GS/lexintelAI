@@ -1,0 +1,15 @@
+{
+  "schema_version": "legalai-section-bge-trial-error-analysis-v1",
+  "error_taxonomy_h1": {
+    "AMBIGUOUS_QUERY": 2,
+    "CATALOG_CANDIDATE_NOT_TRIGGERED": 1,
+    "MISSING_GOLD_SECTION": 8,
+    "OVERPREDICTION": 27,
+    "PRIMARY_SECTION_RANKED_LOW": 2,
+    "SUPPLEMENTARY_SECTION_MISSED": 7,
+    "WRONG_SECTION": 4
+  },
+  "total_h1_misses": 11,
+  "total_h1_extras": 63,
+  "candidate_generation_limitation": "Semantic reranking cannot recover gold sections absent from D0 deterministic candidates."
+}

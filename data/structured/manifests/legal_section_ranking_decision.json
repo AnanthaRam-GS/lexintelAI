@@ -1,0 +1,101 @@
+{
+  "schema_version": "legalai-section-ranking-decision-v1",
+  "final_decision": "SELECT_BGE_CROSS_ENCODER_PROTECTED_HYBRID",
+  "final_decision_text": "SELECT BGE CROSS-ENCODER PROTECTED HYBRID FOR PHASE 0 SECTION RANKING",
+  "decision_date": "2026-09-09",
+  "further_model_search": false,
+  "fine_tuning_now": false,
+  "candidate_expansion_now": false,
+  "future_training_research": "allowed",
+  "selected_architecture": {
+    "candidate_generation": "deterministic",
+    "ranking_model": "BAAI/bge-reranker-v2-m3",
+    "ranking_model_revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "ranking_mode": "cross_encoder_protected_hybrid",
+    "safety_guardrails": [
+      "explicit_section_protection",
+      "regime_protection",
+      "zero_positive_preservation",
+      "bounded_catalog",
+      "top_k_lte_5"
+    ],
+    "fallback": "deterministic_D0_ranking"
+  },
+  "frozen_gold": {
+    "examples": 36,
+    "primary": 36,
+    "relevant": 24,
+    "uncertain": 1,
+    "binary_positive_primary_relevant": 60,
+    "zero_positive_ids": [
+      "sec-q026",
+      "sec-q027",
+      "sec-q035"
+    ]
+  },
+  "key_metrics": {
+    "D0": {
+      "precision_at_1": 0.5,
+      "precision_at_3": 0.388889,
+      "precision_at_5": 0.272222,
+      "recall_at_1": 0.358586,
+      "recall_at_3": 0.767677,
+      "recall_at_5": 0.853535,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.722516,
+      "primary_recall_at_5": 0.944444,
+      "relevant_recall_at_5": 0.625,
+      "explicit_recall_at_5": 0.875,
+      "zero_positive_false_positive_rate": 0.0
+    },
+    "T1_S1": {
+      "candidate": "BAAI/bge-m3",
+      "precision_at_1": 0.777778,
+      "mrr": 0.814815,
+      "ndcg_at_5": 0.821095,
+      "decision": "INCONCLUSIVE — TRY CROSS-ENCODER RERANKER"
+    },
+    "T1_H1": {
+      "candidate": "BAAI/bge-m3",
+      "precision_at_1": 0.5,
+      "mrr": 0.662037,
+      "ndcg_at_5": 0.726846
+    },
+    "T2_HX1": {
+      "candidate": "BAAI/bge-reranker-v2-m3",
+      "precision_at_1": 0.805556,
+      "mrr": 0.833333,
+      "ndcg_at_5": 0.831325,
+      "primary_recall_at_5": 0.944444,
+      "explicit_recall_at_5": 1.0,
+      "zero_positive_false_positive_rate": 0.0,
+      "candidate_pairs_scored": 112,
+      "candidate_decision": "BGE CROSS-ENCODER ACCEPTED FOR HYBRID SECTION RANKING",
+      "leading_signal": "CROSS-ENCODER IS LEADING SECTION RANKING SIGNAL"
+    }
+  },
+  "selection_rationale": [
+    "T2-HX1 produced the strongest P@1 among tested systems.",
+    "T2-HX1 produced the strongest MRR.",
+    "T2-HX1 produced the strongest nDCG@5.",
+    "T2-HX1 preserved primary recall@5.",
+    "T2-HX1 improved explicit recall@5 relative to D0.",
+    "T2-HX1 preserved zero-positive cleanliness.",
+    "T2-HX1 used no candidate expansion.",
+    "T2-HX1 required no training or fine-tuning."
+  ],
+  "why_bge_m3_not_selected": "BGE-M3 semantic-only remains a strong fallback and experimental signal, but the BGE cross-encoder produced better measured ranking metrics. The T1 issue was the predeclared RRF hybrid failing to preserve semantic-only gains.",
+  "no_further_model_search_reason": "BGE-M3 produced strong ranking gains, the cross-encoder improved further while preserving safety guardrails, and a third pretrained model is not justified in Phase 0.",
+  "no_fine_tuning_reason": "The 36-query human gold set is held-out evaluation data and is too small for responsible supervised training.",
+  "candidate_generation_limitation": "Cross-encoder reranking cannot recover gold sections absent from deterministic candidate generation; candidate generation remains a separate future improvement track.",
+  "frozen_artifact_hashes": {
+    "predictor": "6dec51c45531b7f4098655266223dca93d4a8d40f5cdb44f6556c35702f27a3c",
+    "catalog": "2d2c8fbf4a241d2adc6f67ce827f990976d3309cb59b7add15f6bc26d439dbef",
+    "gold": "b4ac7034d534eb13dc19d512fd0b376730b860754fe4a58e71dab41f9322ae8e",
+    "d0_eval": "f4346089eb05bd205646fa56218317a049d9d15fbe16e5c8aa20ef34ce0ce2b3",
+    "t1_eval": "11f57fd24c5b5e13df842e55b852fd86e693dd6932d28c4f1e1169ce12e5d747",
+    "t2_eval": "c560715c60b97676274b01f856555319c7b917eee22a238d662e3bc00996708d",
+    "retrieval_freeze": "31f6ce663e76e3934ec47935174636964227d56a7eb41256ee520c0152feb7fc",
+    "ner_freeze": "45b1e3f8282e58cf99c621e4f7d8d909c3f88549b2c850310ea333cfeafaf2d9"
+  }
+}

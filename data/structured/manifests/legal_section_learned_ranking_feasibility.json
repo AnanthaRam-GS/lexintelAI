@@ -1,0 +1,62 @@
+{
+  "schema_version": "legalai-section-learned-ranking-feasibility-v1",
+  "status": "foundation_ready_no_learned_trial_run",
+  "baseline": {
+    "source": "data/structured/manifests/legal_section_baseline_eval.json",
+    "decision": "DETERMINISTIC BASELINE USEFUL BUT LEARNED MULTI-LABEL MODEL JUSTIFIED",
+    "precision_at_1": 0.5,
+    "precision_at_5": 0.272222,
+    "recall_at_5": 0.853535,
+    "mrr": 0.662037,
+    "ndcg_at_5": 0.722516,
+    "primary_recall_at_5": 0.944444,
+    "overprediction_count": 27
+  },
+  "gold": {
+    "examples": 36,
+    "positive_primary_relevant": 60,
+    "uncertain": 1,
+    "zero_positive_examples": ["sec-q026", "sec-q027", "sec-q035"],
+    "training_allowed": false,
+    "usage": "held_out_evaluation_only"
+  },
+  "catalog": {
+    "entries": 62,
+    "sha256": "2d2c8fbf4a241d2adc6f67ce827f990976d3309cb59b7add15f6bc26d439dbef"
+  },
+  "predictor": {
+    "sha256": "6dec51c45531b7f4098655266223dca93d4a8d40f5cdb44f6556c35702f27a3c",
+    "default_mode": "deterministic"
+  },
+  "local_candidates": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "task_type": "embedding_similarity",
+      "local_status": "cache_directory_present",
+      "compatible": true,
+      "notes": "Already used by retrieval as a 1024-dimensional normalized embedding model; suitable for a future zero-shot query-to-section-description similarity trial."
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "task_type": "cross_encoder_reranker",
+      "local_status": "cache_directory_present",
+      "compatible": true,
+      "notes": "Already used by retrieval reranking; suitable for a future zero-shot query-section pair reranking trial with higher per-candidate latency."
+    },
+    {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "task_type": "embedding_similarity",
+      "local_status": "not_found_in_local_cache",
+      "compatible": "possible_future_baseline",
+      "notes": "Mentioned in prior NER feasibility docs as an embedding model but not found in local cache during this task; no download authorized."
+    }
+  ],
+  "recommended_trial_order": [
+    "S1 zero-shot BGE-M3 section-description similarity using deterministic candidates only",
+    "H1 BGE-M3 semantic score combined with deterministic score using predeclared non-tuned weights",
+    "S1/H1 BGE reranker over query-section pairs if latency budget allows",
+    "Supervised multi-label classifier only after a separate train/development/test section-label corpus exists"
+  ],
+  "no_download_performed": true,
+  "no_learned_effectiveness_run_performed": true
+}
