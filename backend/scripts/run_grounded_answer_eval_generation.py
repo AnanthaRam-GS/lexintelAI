@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, NamedTuple
 
 from pydantic import ValidationError
 
@@ -91,6 +91,13 @@ def build_parser() -> argparse.ArgumentParser:
     mode.add_argument("--live", action="store_true", help="Execute live Gemini generation for all frozen examples (authorized for this benchmark only)")
     parser.add_argument("--eval-path", type=Path, default=EVAL_PATH)
     parser.add_argument("--populate-review-packet-only", action="store_true", help="Rebuild the blinded review packet from existing outputs without generating")
+    parser.add_argument(
+        "--max-new-outputs",
+        type=int,
+        default=None,
+        help="Stop after attempting this many currently-missing slots (frozen manifest order); purely an invocation-count "
+        "limiter for conservative quota usage, does not change which slots are eligible, their order, or generation semantics.",
+    )
     parser.add_argument("--bm25-persist-dir", type=Path, default=REPO_ROOT / "bm25_store")
     parser.add_argument("--chroma-persist-dir", type=Path, default=REPO_ROOT / "chroma_store")
     parser.add_argument("--index-name", default="legalai_trusted_judgments_bm25_v1")
@@ -147,23 +154,24 @@ def run_live_generation(manifest: dict[str, Any], args: argparse.Namespace) -> i
     write_outputs(results, run_metadata, generation_status="in_progress")
 
     service = make_service(args)
-    for example in examples:
-        example_id = example["example_id"]
-        query = example["query"]
-        mode = AnswerMode.PUBLIC if example["mode"] == "public" else AnswerMode.PROFESSIONAL
-
-        if (example_id, "LLM_ONLY") not in completed_keys:
-            results.append(generate_llm_only_record(example_id, query, mode, settings))
-            write_outputs(results, run_metadata, generation_status="in_progress")
-            time.sleep(INTER_CALL_PACING_SECONDS)
-        if (example_id, "GROUNDED_RAG") not in completed_keys:
-            results.append(generate_grounded_rag_record(example_id, query, mode, settings, service))
-            write_outputs(results, run_metadata, generation_status="in_progress")
-            time.sleep(INTER_CALL_PACING_SECONDS)
+    new_attempts = 0
+    limit_reached = False
+    for slot in iter_missing_slots(examples, completed_keys):
+        if args.max_new_outputs is not None and new_attempts >= args.max_new_outputs:
+            limit_reached = True
+            break
+        if slot.condition == "LLM_ONLY":
+            results.append(generate_llm_only_record(slot.example_id, slot.query, slot.mode, settings))
+        else:
+            results.append(generate_grounded_rag_record(slot.example_id, slot.query, slot.mode, settings, service))
+        new_attempts += 1
+        write_outputs(results, run_metadata, generation_status="in_progress")
+        time.sleep(INTER_CALL_PACING_SECONDS)
 
     completed_at = utc_now_iso()
     run_metadata = build_run_metadata(manifest, settings, started_at, completed_at=completed_at)
-    write_outputs(results, run_metadata, generation_status="completed")
+    final_status = "in_progress" if limit_reached else "completed"
+    write_outputs(results, run_metadata, generation_status=final_status)
 
     summary = build_generation_summary(results, run_metadata)
     write_json(GENERATION_SUMMARY_PATH, summary)
@@ -468,6 +476,24 @@ def build_run_metadata(manifest: dict[str, Any], settings: Settings, started_at:
         "completed_at": completed_at,
         "component_hashes": manifest["component_hashes"],
     }
+
+
+class MissingSlot(NamedTuple):
+    example_id: str
+    query: str
+    mode: AnswerMode
+    condition: str
+
+
+def iter_missing_slots(examples: list[dict[str, Any]], completed_keys: set[tuple[str, str]]):
+    """Yield (example, condition) slots not yet SUCCESS, in frozen manifest order, LLM_ONLY before GROUNDED_RAG per example."""
+    for example in examples:
+        example_id = example["example_id"]
+        query = example["query"]
+        mode = AnswerMode.PUBLIC if example["mode"] == "public" else AnswerMode.PROFESSIONAL
+        for condition in CONDITIONS:
+            if (example_id, condition) not in completed_keys:
+                yield MissingSlot(example_id, query, mode, condition)
 
 
 def completed_keys_from_outputs(outputs: list[dict[str, Any]]) -> set[tuple[str, str]]:

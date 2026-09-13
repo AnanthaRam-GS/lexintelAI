@@ -6,6 +6,7 @@ and retrieval service are always substituted with in-memory fakes.
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import subprocess
@@ -166,7 +167,92 @@ class FakeAdapter:
         )
 
 
+class MissingSlotIteratorTests(unittest.TestCase):
+    def _examples(self):
+        return [
+            {"example_id": "ans-q001", "query": "q1", "mode": "public"},
+            {"example_id": "ans-q002", "query": "q2", "mode": "professional"},
+        ]
+
+    def test_yields_frozen_order_llm_only_before_grounded_rag_per_example(self) -> None:
+        slots = list(harness.iter_missing_slots(self._examples(), completed_keys=set()))
+        self.assertEqual(
+            [(slot.example_id, slot.condition) for slot in slots],
+            [
+                ("ans-q001", "LLM_ONLY"),
+                ("ans-q001", "GROUNDED_RAG"),
+                ("ans-q002", "LLM_ONLY"),
+                ("ans-q002", "GROUNDED_RAG"),
+            ],
+        )
+
+    def test_skips_already_completed_slots_without_reordering_remainder(self) -> None:
+        completed = {("ans-q001", "LLM_ONLY")}
+        slots = list(harness.iter_missing_slots(self._examples(), completed_keys=completed))
+        self.assertEqual(
+            [(slot.example_id, slot.condition) for slot in slots],
+            [
+                ("ans-q001", "GROUNDED_RAG"),
+                ("ans-q002", "LLM_ONLY"),
+                ("ans-q002", "GROUNDED_RAG"),
+            ],
+        )
+
+    def test_max_new_outputs_limiter_only_bounds_count_not_selection(self) -> None:
+        """The --max-new-outputs limiter must stop after N slots without skipping specific
+        conditions/examples or altering the frozen order; verified by taking a prefix of the
+        same iterator used without a limit."""
+        examples = self._examples()
+        full_order = [(slot.example_id, slot.condition) for slot in harness.iter_missing_slots(examples, set())]
+        limited_order = []
+        for index, slot in enumerate(harness.iter_missing_slots(examples, set())):
+            if index >= 2:
+                break
+            limited_order.append((slot.example_id, slot.condition))
+        self.assertEqual(limited_order, full_order[:2])
+
+
 class GenerationHarnessTests(unittest.TestCase):
+    def test_max_new_outputs_stops_after_n_attempts_regardless_of_success_or_failure(self) -> None:
+        # Model matches the recorded smoke-eval model so verify_model_or_die's drift check passes.
+        settings = Settings(gemini_api_key="fixture-key", gemini_model="gemini-3.6-flash")
+        manifest = json.loads((ROOT / "data/structured/manifests/legal_answer_eval.json").read_text(encoding="utf-8"))
+        limited_manifest = dict(manifest, examples=manifest["examples"][:3])
+        eval_path = ROOT / "backend/scripts/tests/_tmp_limited_eval.json"
+        outputs_path = ROOT / "backend/scripts/tests/_tmp_limited_outputs.json"
+        eval_path.write_text(json.dumps(limited_manifest), encoding="utf-8")
+        outputs_path.write_text(json.dumps({"outputs": [], "generation_status": "not_started"}), encoding="utf-8")
+        args = argparse.Namespace(
+            eval_path=eval_path,
+            max_new_outputs=2,
+            bm25_persist_dir=ROOT / "bm25_store",
+            chroma_persist_dir=ROOT / "chroma_store",
+            index_name="legalai_trusted_judgments_bm25_v1",
+            collection="legalai_trusted_judgments_v1",
+        )
+        try:
+            with patch(f"{MODULE}.OUTPUTS_PATH", outputs_path), patch(f"{MODULE}.Settings", return_value=settings), patch(
+                f"{MODULE}.GeminiAnswerAdapter", return_value=FakeAdapter()
+            ), patch(f"{MODULE}.make_service", return_value=object()), patch(
+                f"{MODULE}.retrieve_legal_evidence", side_effect=lambda understanding, **kw: make_retrieval(understanding.query, ["E1"])
+            ), patch(
+                f"{MODULE}.REVIEW_PACKET_PATH", ROOT / "backend/scripts/tests/_tmp_limited_review.md"
+            ), patch(
+                f"{MODULE}.GENERATION_SUMMARY_PATH", ROOT / "backend/scripts/tests/_tmp_limited_summary.json"
+            ):
+                harness.run_live_generation(limited_manifest, args)
+            written = json.loads(outputs_path.read_text(encoding="utf-8"))
+        finally:
+            for path in [
+                eval_path,
+                outputs_path,
+                ROOT / "backend/scripts/tests/_tmp_limited_review.md",
+                ROOT / "backend/scripts/tests/_tmp_limited_summary.json",
+            ]:
+                path.unlink(missing_ok=True)
+        self.assertEqual(len(written["outputs"]), 2, "limiter must stop after exactly N new attempts")
+        self.assertEqual(written["generation_status"], "in_progress", "a limited run is not the completed run")
+
     def test_dry_run_makes_zero_model_calls(self) -> None:
         result = subprocess.run(
             [sys.executable, str(ROOT / "backend/scripts/run_grounded_answer_eval_generation.py"), "--dry-run"],
