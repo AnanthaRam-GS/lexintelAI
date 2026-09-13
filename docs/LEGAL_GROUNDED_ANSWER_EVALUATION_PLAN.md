@@ -162,50 +162,68 @@ Run ID: `legalai-answer-eval-generation-v1`
 Provider: `gemini`. Configured model: `gemini-3.6-flash` (read from
 `GEMINI_MODEL` via `Settings`, never hardcoded in generation logic).
 
-Started: 2026-09-12T18:02:34Z. Completed: 2026-09-12T18:37:27Z (across three
-invocations: one initial run and two resumes of only the still-failing slots).
+Started: 2026-09-12T18:02:34Z. Last resume completed: 2026-09-13T14:13:16Z
+(across five invocations total: one initial run in Step 0.9C-B, then two
+Step 0.9C-B-R1 resumes of only the still-failing slots).
 
 Planned outputs: 60 (30 examples x 2 conditions). Attempted: 60.
-Successful: 21. Failed: 39.
+Cumulative successful: 41. Cumulative failed: 19.
 
-- `LLM_ONLY`: 30 attempted, 11 generated/parsed successfully, 19 failed.
-- `GROUNDED_RAG`: 30 attempted, 10 generated/parsed successfully, 20 failed,
-  10/10 successful outputs had fully valid citations. Grounding status among
-  successful outputs: 8 STRUCTURALLY_GROUNDED, 1 PARTIALLY_GROUNDED,
-  1 UNGROUNDED.
+- `LLM_ONLY`: 30 attempted, 21 generated/parsed successfully, 9 failed.
+- `GROUNDED_RAG`: 30 attempted, 20 generated/parsed successfully, 10 failed,
+  20/20 successful outputs had fully valid citations. Grounding status among
+  successful outputs: 17 STRUCTURALLY_GROUNDED, 1 PARTIALLY_GROUNDED,
+  2 UNGROUNDED.
 
-All 39 failures carried the identical diagnostic: `GEMINI_RATE_LIMIT`
+All 19 remaining failures carry the identical diagnostic: `GEMINI_RATE_LIMIT`
 (HTTP 429), exhausted after the frozen 3-attempt/0.25s+0.5s retry policy.
-The failure signature was byte-identical across three attempts roughly 20 and
-35 minutes apart, including one attempt with added 8-second client-side
-inter-call pacing, which indicates a hard provider quota (not a short-lived
-per-minute burst) rather than a code defect. Per the frozen policy, the model,
-provider, and retry backoff were not changed, and generation was not forced
-past the authorized retry bounds.
+The model, provider, and retry backoff were not changed at any point, and
+generation was never forced past the authorized retry bounds.
 
-Provider attempts: 138. Retries: 78. Schema repairs: 0 (no repair path exists
-in the frozen architecture). Fallback to Ollama: never used
-(`fallback_used_count: 0`).
+### Step 0.9C-B-R1 resume (2026-09-13)
 
-Token usage (provider-reported, summed across all 60 attempts):
-65,300 prompt tokens, 21,691 completion tokens, 121,093 total tokens.
+A minimal, harmless one-shot health check ("Return the word OK.", no legal
+content) confirmed `gemini-3.6-flash` was responding (HTTP 200) before any
+benchmark call resumed. Two resume invocations followed, both against the
+existing run ID:
 
-Latency (summed across all attempts): ~372.1s of Gemini generation latency;
-~421.4s of end-to-end answer-generation latency (includes retrieval, prompt
-construction, and validation for `GROUNDED_RAG`).
+1. **Resume 1**: attempted the 39 then-incomplete slots. 20 new successes,
+   19 renewed failures (still `GEMINI_RATE_LIMIT`). Cumulative: 21 -> 41
+   successful. All 21 previously-successful records were verified
+   byte-identical (immutable) before and after.
+2. **Resume 2**: attempted the 19 still-incomplete slots. 0 new successes;
+   identical `GEMINI_RATE_LIMIT` failures on all 19. Cumulative unchanged at
+   41 successful. All 41 successful records (including the 20 new from
+   Resume 1) were verified byte-identical before and after this second
+   resume.
+
+Further resume attempts were deliberately not made in the same task run to
+avoid repeatedly hammering the provider; the harness remains safely resumable
+for a later attempt.
+
+Provider attempts (current state of all 60 records): 98. Retries: 38. Schema
+repairs: 0 (no repair path exists in the frozen architecture). Fallback to
+Ollama: never used (`fallback_used_count: 0`).
+
+Token usage (provider-reported, summed across all 60 current records):
+133,385 prompt tokens, 51,037 completion tokens, 250,607 total tokens.
+
+Latency (summed across all current records): ~755.5s of Gemini generation
+latency; ~783.9s of end-to-end answer-generation latency (includes retrieval,
+prompt construction, and validation for `GROUNDED_RAG`).
 
 Full machine-readable detail: `data/structured/manifests/legal_answer_eval_outputs.json`
 (per-slot records) and `data/structured/manifests/legal_answer_eval_generation_summary.json`
-(aggregate counts).
+(aggregate counts, recomputed from current record state on every run).
 
 ### Review packet status
 
-`docs/LEGAL_ANSWER_EVAL_REVIEW.md` has been populated with Answer A / Answer B
+`docs/LEGAL_ANSWER_EVAL_REVIEW.md` has been regenerated with Answer A / Answer B
 content from the current outputs using the frozen, concealed pair map. Items
-whose underlying condition failed to generate show "Answer unavailable
-(FAILED_PROVIDER)" rather than fabricated content. Given the 21/60 success
-rate, `backend/scripts/evaluate_grounded_legal_answers.py` reports
-`GENERATION_COMPLETED_WITH_FAILURES`, not `OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW`.
+whose underlying condition still has not generated show "Answer unavailable
+(FAILED_PROVIDER)" rather than fabricated content (19 such placeholders
+remain). Given the 41/60 success rate, `backend/scripts/evaluate_grounded_legal_answers.py`
+reports `GENERATION_COMPLETED_WITH_FAILURES`, not `OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW`.
 Human review of this run should not be treated as covering the full frozen set;
 resuming generation (same run ID, only missing/failed slots) once provider
 capacity allows would raise coverage without invalidating already-successful
