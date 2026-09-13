@@ -253,6 +253,97 @@ class GenerationHarnessTests(unittest.TestCase):
         self.assertEqual(len(written["outputs"]), 2, "limiter must stop after exactly N new attempts")
         self.assertEqual(written["generation_status"], "in_progress", "a limited run is not the completed run")
 
+    def test_limited_resume_never_drops_preexisting_failed_records(self) -> None:
+        """Regression test: a limiter that stops before reaching every missing slot must not cause
+        previously-recorded (non-SUCCESS) slots outside this invocation's batch to vanish from the
+        output artifact — only the slots actually reprocessed this invocation may change."""
+        settings = Settings(gemini_api_key="fixture-key", gemini_model="gemini-3.6-flash")
+        manifest = json.loads((ROOT / "data/structured/manifests/legal_answer_eval.json").read_text(encoding="utf-8"))
+        limited_manifest = dict(manifest, examples=manifest["examples"][:3])  # 3 examples -> 6 slots
+        eval_path = ROOT / "backend/scripts/tests/_tmp_regress_eval.json"
+        outputs_path = ROOT / "backend/scripts/tests/_tmp_regress_outputs.json"
+        eval_path.write_text(json.dumps(limited_manifest), encoding="utf-8")
+        example_ids = [example["example_id"] for example in limited_manifest["examples"]]
+
+        def stub_record(example_id: str, condition: str, status: str, marker: str) -> dict:
+            return {
+                "example_id": example_id,
+                "condition": condition,
+                "generation_status": status,
+                "structured_parse_status": "SUCCESS" if status == "SUCCESS" else "FAILED",
+                "answer_structured": None,
+                "summary": "",
+                "citation_validation": None,
+                "grounding_status": "STRUCTURALLY_GROUNDED" if status == "SUCCESS" else "UNGROUNDED",
+                "provider_attempt_count": 1,
+                "retry_count": 0,
+                "prompt_tokens": None,
+                "completion_tokens": None,
+                "total_tokens": None,
+                "generation_latency_ms": None,
+                "answer_generation_ms": None,
+                "repair_attempted": False,
+                "fallback_used": False,
+                "marker": marker,
+            }
+
+        preexisting_outputs = [
+            stub_record(example_ids[0], "LLM_ONLY", "SUCCESS", "pre-existing-success"),
+            stub_record(example_ids[0], "GROUNDED_RAG", "FAILED_PROVIDER", "pre-existing-failure-untouched"),
+            stub_record(example_ids[1], "LLM_ONLY", "FAILED_PROVIDER", "pre-existing-failure-untouched"),
+            stub_record(example_ids[1], "GROUNDED_RAG", "FAILED_PROVIDER", "pre-existing-failure-untouched"),
+            stub_record(example_ids[2], "LLM_ONLY", "FAILED_PROVIDER", "pre-existing-failure-untouched"),
+            stub_record(example_ids[2], "GROUNDED_RAG", "FAILED_PROVIDER", "pre-existing-failure-untouched"),
+        ]
+        outputs_path.write_text(json.dumps({"outputs": preexisting_outputs, "generation_status": "in_progress"}), encoding="utf-8")
+        # Frozen order is per-example (LLM_ONLY then GROUNDED_RAG); the first non-SUCCESS slot is
+        # example_ids[0]'s GROUNDED_RAG (its LLM_ONLY sibling is already SUCCESS), so with limit=1
+        # that is the only slot this invocation reattempts.
+        args = argparse.Namespace(
+            eval_path=eval_path,
+            max_new_outputs=1,
+            bm25_persist_dir=ROOT / "bm25_store",
+            chroma_persist_dir=ROOT / "chroma_store",
+            index_name="legalai_trusted_judgments_bm25_v1",
+            collection="legalai_trusted_judgments_v1",
+        )
+        try:
+            with patch(f"{MODULE}.OUTPUTS_PATH", outputs_path), patch(f"{MODULE}.Settings", return_value=settings), patch(
+                f"{MODULE}.GeminiAnswerAdapter", return_value=FakeAdapter()
+            ), patch(f"{MODULE}.make_service", return_value=object()), patch(
+                f"{MODULE}.retrieve_legal_evidence", side_effect=lambda understanding, **kw: make_retrieval(understanding.query, ["E1"])
+            ), patch(
+                f"{MODULE}.REVIEW_PACKET_PATH", ROOT / "backend/scripts/tests/_tmp_regress_review.md"
+            ), patch(
+                f"{MODULE}.GENERATION_SUMMARY_PATH", ROOT / "backend/scripts/tests/_tmp_regress_summary.json"
+            ):
+                harness.run_live_generation(limited_manifest, args)
+            written = json.loads(outputs_path.read_text(encoding="utf-8"))
+        finally:
+            for path in [
+                eval_path,
+                outputs_path,
+                ROOT / "backend/scripts/tests/_tmp_regress_review.md",
+                ROOT / "backend/scripts/tests/_tmp_regress_summary.json",
+            ]:
+                path.unlink(missing_ok=True)
+        self.assertEqual(len(written["outputs"]), 6, "no pre-existing slot may disappear from the artifact")
+        by_key = {(r["example_id"], r["condition"]): r for r in written["outputs"]}
+        # The immutable SUCCESS record is untouched.
+        self.assertEqual(by_key[(example_ids[0], "LLM_ONLY")]["marker"], "pre-existing-success")
+        # Failed slots outside this invocation's one-slot batch are preserved exactly as they were.
+        for key in [
+            (example_ids[1], "LLM_ONLY"),
+            (example_ids[1], "GROUNDED_RAG"),
+            (example_ids[2], "LLM_ONLY"),
+            (example_ids[2], "GROUNDED_RAG"),
+        ]:
+            self.assertEqual(by_key[key].get("marker"), "pre-existing-failure-untouched", f"{key} must be preserved unchanged")
+        # Only the one slot actually reattempted this invocation (example_ids[0]'s GROUNDED_RAG,
+        # the first non-SUCCESS slot in frozen order) was replaced with a fresh record.
+        self.assertNotIn("marker", by_key[(example_ids[0], "GROUNDED_RAG")])
+        self.assertEqual(by_key[(example_ids[0], "GROUNDED_RAG")]["generation_status"], "SUCCESS")
+
     def test_dry_run_makes_zero_model_calls(self) -> None:
         result = subprocess.run(
             [sys.executable, str(ROOT / "backend/scripts/run_grounded_answer_eval_generation.py"), "--dry-run"],

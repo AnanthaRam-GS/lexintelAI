@@ -147,11 +147,19 @@ def run_live_generation(manifest: dict[str, Any], args: argparse.Namespace) -> i
     outputs_manifest = load_or_init_outputs()
     existing = list(outputs_manifest.get("outputs", []))
     completed_keys = completed_keys_from_outputs(existing)
-    results = [record for record in existing if (record["example_id"], record["condition"]) in completed_keys]
+    # Keep every existing record (SUCCESS and non-SUCCESS) on disk; a slot not reached by this
+    # invocation's limiter must not disappear from the artifact, only be superseded when re-attempted.
+    results_by_key: dict[tuple[str, str], dict[str, Any]] = {
+        (record["example_id"], record["condition"]): record for record in existing
+    }
+
+    def results_in_manifest_order() -> list[dict[str, Any]]:
+        ordered_keys = [(example["example_id"], condition) for example in examples for condition in CONDITIONS]
+        return [results_by_key[key] for key in ordered_keys if key in results_by_key]
 
     started_at = existing_started_at(outputs_manifest) or utc_now_iso()
     run_metadata = build_run_metadata(manifest, settings, started_at, completed_at=None)
-    write_outputs(results, run_metadata, generation_status="in_progress")
+    write_outputs(results_in_manifest_order(), run_metadata, generation_status="in_progress")
 
     service = make_service(args)
     new_attempts = 0
@@ -161,16 +169,18 @@ def run_live_generation(manifest: dict[str, Any], args: argparse.Namespace) -> i
             limit_reached = True
             break
         if slot.condition == "LLM_ONLY":
-            results.append(generate_llm_only_record(slot.example_id, slot.query, slot.mode, settings))
+            record = generate_llm_only_record(slot.example_id, slot.query, slot.mode, settings)
         else:
-            results.append(generate_grounded_rag_record(slot.example_id, slot.query, slot.mode, settings, service))
+            record = generate_grounded_rag_record(slot.example_id, slot.query, slot.mode, settings, service)
+        results_by_key[(slot.example_id, slot.condition)] = record
         new_attempts += 1
-        write_outputs(results, run_metadata, generation_status="in_progress")
+        write_outputs(results_in_manifest_order(), run_metadata, generation_status="in_progress")
         time.sleep(INTER_CALL_PACING_SECONDS)
 
     completed_at = utc_now_iso()
     run_metadata = build_run_metadata(manifest, settings, started_at, completed_at=completed_at)
     final_status = "in_progress" if limit_reached else "completed"
+    results = results_in_manifest_order()
     write_outputs(results, run_metadata, generation_status=final_status)
 
     summary = build_generation_summary(results, run_metadata)
