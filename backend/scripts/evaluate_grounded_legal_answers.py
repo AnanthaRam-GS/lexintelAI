@@ -64,9 +64,13 @@ def main() -> int:
 def generation_readiness(eval_manifest: dict[str, Any], outputs_manifest: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """Distinguish "no generation attempted yet" from "generation ran but some slots failed" from "fully generated"
 
-    so a majority-failed run is never reported as ready for blinded human review.
+    so a majority-failed run is never reported as ready for blinded human review. A resumable batch-limited
+    invocation may leave generation_status as "in_progress" while every slot still has a real recorded
+    outcome (success or failure) from some invocation; that state must not be reported the same as
+    "nothing has been generated yet", so both "completed" and "in_progress" are inspected by actual
+    slot coverage rather than trusting the label alone.
     """
-    if outputs_manifest.get("generation_status") != "completed":
+    if outputs_manifest.get("generation_status") not in {"completed", "in_progress"}:
         return "READY_FOR_GENERATION_OR_REVIEW", {}
     examples = eval_manifest.get("examples", [])
     outputs = outputs_manifest.get("outputs", [])

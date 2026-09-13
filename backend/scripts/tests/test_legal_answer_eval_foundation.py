@@ -54,8 +54,9 @@ class LegalAnswerEvalFoundationTests(unittest.TestCase):
         self.assertEqual(self.reviews["reviews"], [])
 
     def test_generated_outputs_cover_every_example_and_condition_exactly_once(self) -> None:
-        """After Phase 0.9C-B generation, outputs.json holds exactly one record per (example, condition) pair."""
-        self.assertEqual(self.outputs["generation_status"], "completed")
+        """After Phase 0.9C-B generation, outputs.json holds exactly one record per (example, condition) pair,
+        whether the run's top-level status is "completed" or a batch-limited "in_progress" resume."""
+        self.assertIn(self.outputs["generation_status"], {"completed", "in_progress"})
         outputs = self.outputs["outputs"]
         self.assertEqual(len(outputs), 60)
         keys = [(record["example_id"], record["condition"]) for record in outputs]

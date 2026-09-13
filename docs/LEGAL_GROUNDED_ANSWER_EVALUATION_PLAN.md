@@ -212,6 +212,41 @@ Latency (summed across all current records): ~755.5s of Gemini generation
 latency; ~783.9s of end-to-end answer-generation latency (includes retrieval,
 prompt construction, and validation for `GROUNDED_RAG`).
 
+### Step 0.9C-B-R2 resume (2026-09-13, later same day)
+
+Another minimal, harmless health check confirmed `gemini-3.6-flash` was
+responding (HTTP 200) before this resume. An optional `--max-new-outputs`
+invocation-count limiter was added to the harness first (feat commit) so a
+free-tier quota window would not be exhausted in one large burst; it only
+bounds how many currently-missing slots a single invocation attempts and does
+not alter prompts, model, schemas, retry policy, or slot ordering.
+
+The first live batch (`--max-new-outputs 5`) exposed a genuine bug introduced
+by that same limiter: it seeded its in-memory results only from the
+immutable SUCCESS records on disk, so the 14 previously-recorded
+`FAILED_PROVIDER` slots outside that batch's 5 disappeared from
+`legal_answer_eval_outputs.json` (46 records instead of 60) instead of being
+carried forward unchanged. This was caught immediately via the routine
+60-slot coverage check, fixed (results are now tracked by
+`(example_id, condition)` key seeded from every existing record, success or
+failure, and written back in frozen manifest order), and covered by a new
+regression test. The corrupted on-disk artifact was restored from the last
+known-good commit before any further live calls were made; no generated data
+was lost. This fix did not touch generation semantics.
+
+A follow-up batch (`--max-new-outputs 5`, fixed harness) then ran cleanly: all
+60 records were preserved, all 41 successful records remained byte-identical,
+but this batch produced 0 new successes — all 5 reattempted slots hit the
+identical `GEMINI_RATE_LIMIT` (HTTP 429) signature. Per the "do not hammer
+the provider" guidance, no further batches were attempted in this task run.
+
+Cumulative after Step 0.9C-B-R2: 41/60 successful, 19/60 failed (unchanged
+from the end of Step 0.9C-B-R1) — the free-tier quota window did not reopen
+during this attempt. `backend/scripts/evaluate_grounded_legal_answers.py` was
+also made to recognize a batch-limited `in_progress` outputs file with full
+60-slot coverage as a real (if incomplete) generation state, rather than
+reporting it identically to "nothing generated yet".
+
 Full machine-readable detail: `data/structured/manifests/legal_answer_eval_outputs.json`
 (per-slot records) and `data/structured/manifests/legal_answer_eval_generation_summary.json`
 (aggregate counts, recomputed from current record state on every run).

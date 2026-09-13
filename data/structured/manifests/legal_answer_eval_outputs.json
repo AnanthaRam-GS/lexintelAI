@@ -1,7 +1,7 @@
 {
   "schema_version": "legalai-grounded-answer-eval-outputs-v1",
   "eval_version": "legalai-grounded-answer-eval-v1",
-  "generation_status": "completed",
+  "generation_status": "in_progress",
   "conditions": [
     "LLM_ONLY",
     "GROUNDED_RAG"
@@ -17,7 +17,7 @@
     "ordering_strategy": "frozen manifest order; per example LLM_ONLY then GROUNDED_RAG",
     "fallback_provider_enabled": false,
     "started_at": "2026-09-12T18:02:34.406405+00:00",
-    "completed_at": "2026-09-13T14:13:16.373664+00:00",
+    "completed_at": "2026-09-13T17:35:31.113268+00:00",
     "component_hashes": {
       "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
       "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
@@ -3930,10 +3930,10 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 9.466302187s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 54.128288623s."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 2903.094,
+      "answer_generation_ms": 2580.457,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
@@ -3971,7 +3971,7 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 59.304233306s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 43.610927099s."
       ],
       "generation_latency_ms": null,
       "answer_generation_ms": null,
@@ -4024,10 +4024,10 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 41.353693754s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 25.697326051s."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 2337.003,
+      "answer_generation_ms": 2427.155,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
@@ -4065,7 +4065,7 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 31.20371252s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 15.467281673s."
       ],
       "generation_latency_ms": null,
       "answer_generation_ms": null,
@@ -4118,10 +4118,10 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 12.826712459s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 36.943367839s."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 2735.608,
+      "answer_generation_ms": 23109.519,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
