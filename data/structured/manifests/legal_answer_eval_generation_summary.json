@@ -1,0 +1,45 @@
+{
+  "run_id": "legalai-answer-eval-generation-v1",
+  "eval_version": "legalai-grounded-answer-eval-v1",
+  "rubric_version": "legalai-answer-rubric-v1",
+  "pairing_version": "legalai-answer-pairing-v1",
+  "provider": "gemini",
+  "configured_model": "gemini-3.6-flash",
+  "started_at": "2026-09-12T18:02:34.406405+00:00",
+  "completed_at": "2026-09-13T17:35:31.113268+00:00",
+  "planned_outputs": 60,
+  "attempted_outputs": 60,
+  "successful_outputs": 41,
+  "failed_outputs": 19,
+  "LLM_ONLY": {
+    "attempted": 30,
+    "generated": 21,
+    "parse_success": 21,
+    "failed": 9
+  },
+  "GROUNDED_RAG": {
+    "attempted": 30,
+    "generated": 20,
+    "parse_success": 20,
+    "failed": 10,
+    "citation_valid_outputs": 20,
+    "grounding_status_counts": {
+      "PARTIALLY_GROUNDED": 1,
+      "STRUCTURALLY_GROUNDED": 17,
+      "UNGROUNDED": 2
+    }
+  },
+  "provider_attempts": 98,
+  "retry_count": 38,
+  "repair_count": 0,
+  "fallback_used_count": 0,
+  "token_totals": {
+    "prompt_tokens": 133385,
+    "completion_tokens": 51037,
+    "total_tokens": 250607
+  },
+  "latency_summary_ms": {
+    "sum_generation_latency": 755549.039,
+    "sum_answer_generation_ms": 804029.766
+  }
+}

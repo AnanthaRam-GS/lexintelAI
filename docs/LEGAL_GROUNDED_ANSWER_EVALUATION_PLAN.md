@@ -151,10 +151,121 @@ cautiously later, but the primary analysis is descriptive.
 4. Store completed reviews in `legal_answer_eval_reviews.json`.
 5. Run `backend/scripts/evaluate_grounded_legal_answers.py` to aggregate results.
 
-## Future Generation Step
+## Generation Run (Phase 0 Step 0.9C-B)
 
-The dry-run-only generation interface is `backend/scripts/run_grounded_answer_eval_generation.py`.
-Live generation belongs to the next phase and must not alter the query set or rubric.
+Generation interface: `backend/scripts/run_grounded_answer_eval_generation.py`
+(`--dry-run` plans with zero model calls; `--live` executes real Gemini
+generation and is safely resumable).
+
+Run ID: `legalai-answer-eval-generation-v1`
+
+Provider: `gemini`. Configured model: `gemini-3.6-flash` (read from
+`GEMINI_MODEL` via `Settings`, never hardcoded in generation logic).
+
+Started: 2026-09-12T18:02:34Z. Last resume completed: 2026-09-13T14:13:16Z
+(across five invocations total: one initial run in Step 0.9C-B, then two
+Step 0.9C-B-R1 resumes of only the still-failing slots).
+
+Planned outputs: 60 (30 examples x 2 conditions). Attempted: 60.
+Cumulative successful: 41. Cumulative failed: 19.
+
+- `LLM_ONLY`: 30 attempted, 21 generated/parsed successfully, 9 failed.
+- `GROUNDED_RAG`: 30 attempted, 20 generated/parsed successfully, 10 failed,
+  20/20 successful outputs had fully valid citations. Grounding status among
+  successful outputs: 17 STRUCTURALLY_GROUNDED, 1 PARTIALLY_GROUNDED,
+  2 UNGROUNDED.
+
+All 19 remaining failures carry the identical diagnostic: `GEMINI_RATE_LIMIT`
+(HTTP 429), exhausted after the frozen 3-attempt/0.25s+0.5s retry policy.
+The model, provider, and retry backoff were not changed at any point, and
+generation was never forced past the authorized retry bounds.
+
+### Step 0.9C-B-R1 resume (2026-09-13)
+
+A minimal, harmless one-shot health check ("Return the word OK.", no legal
+content) confirmed `gemini-3.6-flash` was responding (HTTP 200) before any
+benchmark call resumed. Two resume invocations followed, both against the
+existing run ID:
+
+1. **Resume 1**: attempted the 39 then-incomplete slots. 20 new successes,
+   19 renewed failures (still `GEMINI_RATE_LIMIT`). Cumulative: 21 -> 41
+   successful. All 21 previously-successful records were verified
+   byte-identical (immutable) before and after.
+2. **Resume 2**: attempted the 19 still-incomplete slots. 0 new successes;
+   identical `GEMINI_RATE_LIMIT` failures on all 19. Cumulative unchanged at
+   41 successful. All 41 successful records (including the 20 new from
+   Resume 1) were verified byte-identical before and after this second
+   resume.
+
+Further resume attempts were deliberately not made in the same task run to
+avoid repeatedly hammering the provider; the harness remains safely resumable
+for a later attempt.
+
+Provider attempts (current state of all 60 records): 98. Retries: 38. Schema
+repairs: 0 (no repair path exists in the frozen architecture). Fallback to
+Ollama: never used (`fallback_used_count: 0`).
+
+Token usage (provider-reported, summed across all 60 current records):
+133,385 prompt tokens, 51,037 completion tokens, 250,607 total tokens.
+
+Latency (summed across all current records): ~755.5s of Gemini generation
+latency; ~783.9s of end-to-end answer-generation latency (includes retrieval,
+prompt construction, and validation for `GROUNDED_RAG`).
+
+### Step 0.9C-B-R2 resume (2026-09-13, later same day)
+
+Another minimal, harmless health check confirmed `gemini-3.6-flash` was
+responding (HTTP 200) before this resume. An optional `--max-new-outputs`
+invocation-count limiter was added to the harness first (feat commit) so a
+free-tier quota window would not be exhausted in one large burst; it only
+bounds how many currently-missing slots a single invocation attempts and does
+not alter prompts, model, schemas, retry policy, or slot ordering.
+
+The first live batch (`--max-new-outputs 5`) exposed a genuine bug introduced
+by that same limiter: it seeded its in-memory results only from the
+immutable SUCCESS records on disk, so the 14 previously-recorded
+`FAILED_PROVIDER` slots outside that batch's 5 disappeared from
+`legal_answer_eval_outputs.json` (46 records instead of 60) instead of being
+carried forward unchanged. This was caught immediately via the routine
+60-slot coverage check, fixed (results are now tracked by
+`(example_id, condition)` key seeded from every existing record, success or
+failure, and written back in frozen manifest order), and covered by a new
+regression test. The corrupted on-disk artifact was restored from the last
+known-good commit before any further live calls were made; no generated data
+was lost. This fix did not touch generation semantics.
+
+A follow-up batch (`--max-new-outputs 5`, fixed harness) then ran cleanly: all
+60 records were preserved, all 41 successful records remained byte-identical,
+but this batch produced 0 new successes — all 5 reattempted slots hit the
+identical `GEMINI_RATE_LIMIT` (HTTP 429) signature. Per the "do not hammer
+the provider" guidance, no further batches were attempted in this task run.
+
+Cumulative after Step 0.9C-B-R2: 41/60 successful, 19/60 failed (unchanged
+from the end of Step 0.9C-B-R1) — the free-tier quota window did not reopen
+during this attempt. `backend/scripts/evaluate_grounded_legal_answers.py` was
+also made to recognize a batch-limited `in_progress` outputs file with full
+60-slot coverage as a real (if incomplete) generation state, rather than
+reporting it identically to "nothing generated yet".
+
+Full machine-readable detail: `data/structured/manifests/legal_answer_eval_outputs.json`
+(per-slot records) and `data/structured/manifests/legal_answer_eval_generation_summary.json`
+(aggregate counts, recomputed from current record state on every run).
+
+### Review packet status
+
+`docs/LEGAL_ANSWER_EVAL_REVIEW.md` has been regenerated with Answer A / Answer B
+content from the current outputs using the frozen, concealed pair map. Items
+whose underlying condition still has not generated show "Answer unavailable
+(FAILED_PROVIDER)" rather than fabricated content (19 such placeholders
+remain). Given the 41/60 success rate, `backend/scripts/evaluate_grounded_legal_answers.py`
+reports `GENERATION_COMPLETED_WITH_FAILURES`, not `OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW`.
+Human review of this run should not be treated as covering the full frozen set;
+resuming generation (same run ID, only missing/failed slots) once provider
+capacity allows would raise coverage without invalidating already-successful
+outputs.
+
+No quality comparison, preference, or correctness conclusion is drawn here.
+Human scoring has not started; `legal_answer_eval_reviews.json` remains empty.
 
 ## Final Decision Framework
 

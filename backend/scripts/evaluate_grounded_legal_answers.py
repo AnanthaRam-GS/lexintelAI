@@ -15,6 +15,7 @@ MANIFEST_DIR = REPO_ROOT / "data/structured/manifests"
 EVAL_PATH = MANIFEST_DIR / "legal_answer_eval.json"
 REVIEWS_PATH = MANIFEST_DIR / "legal_answer_eval_reviews.json"
 PAIR_MAP_PATH = MANIFEST_DIR / "legal_answer_eval_pair_map.json"
+OUTPUTS_PATH = MANIFEST_DIR / "legal_answer_eval_outputs.json"
 
 POSITIVE_DIMENSIONS = [
     "LEGAL_RELEVANCE",
@@ -35,6 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--eval-path", type=Path, default=EVAL_PATH)
     parser.add_argument("--reviews-path", type=Path, default=REVIEWS_PATH)
     parser.add_argument("--pair-map-path", type=Path, default=PAIR_MAP_PATH)
+    parser.add_argument("--outputs-path", type=Path, default=OUTPUTS_PATH)
     return parser
 
 
@@ -43,6 +45,7 @@ def main() -> int:
     eval_manifest = load_json(args.eval_path)
     reviews_manifest = load_json(args.reviews_path)
     pair_map = load_json(args.pair_map_path)
+    outputs_manifest = load_json(args.outputs_path) if args.outputs_path.exists() else {"outputs": [], "generation_status": "not_started"}
     errors = validate_eval_manifest(eval_manifest)
     errors.extend(validate_pair_map(eval_manifest, pair_map))
     errors.extend(validate_reviews(eval_manifest, reviews_manifest))
@@ -51,10 +54,35 @@ def main() -> int:
         return 1
     completed = [review for review in reviews_manifest.get("reviews", []) if review.get("review_status") == "completed"]
     if not completed:
-        print(json.dumps({"status": "READY_FOR_GENERATION_OR_REVIEW", "completed_reviews": 0, "metrics": {}}, indent=2))
+        status, generation_diagnostics = generation_readiness(eval_manifest, outputs_manifest)
+        print(json.dumps({"status": status, "completed_reviews": 0, "metrics": {}, **generation_diagnostics}, indent=2))
         return 0
     print(json.dumps({"status": "REVIEWS_AGGREGATED", "completed_reviews": len(completed), "metrics": aggregate_reviews(completed)}, indent=2))
     return 0
+
+
+def generation_readiness(eval_manifest: dict[str, Any], outputs_manifest: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Distinguish "no generation attempted yet" from "generation ran but some slots failed" from "fully generated"
+
+    so a majority-failed run is never reported as ready for blinded human review. A resumable batch-limited
+    invocation may leave generation_status as "in_progress" while every slot still has a real recorded
+    outcome (success or failure) from some invocation; that state must not be reported the same as
+    "nothing has been generated yet", so both "completed" and "in_progress" are inspected by actual
+    slot coverage rather than trusting the label alone.
+    """
+    if outputs_manifest.get("generation_status") not in {"completed", "in_progress"}:
+        return "READY_FOR_GENERATION_OR_REVIEW", {}
+    examples = eval_manifest.get("examples", [])
+    outputs = outputs_manifest.get("outputs", [])
+    expected_keys = {(example["example_id"], condition) for example in examples for condition in ("LLM_ONLY", "GROUNDED_RAG")}
+    actual_keys = {(record.get("example_id"), record.get("condition")) for record in outputs}
+    if len(outputs) != len(examples) * 2 or actual_keys != expected_keys:
+        return "READY_FOR_GENERATION_OR_REVIEW", {}
+    successful = sum(1 for record in outputs if record.get("generation_status") == "SUCCESS")
+    diagnostics = {"successful_outputs": successful, "total_outputs": len(outputs)}
+    if successful == len(outputs):
+        return "OUTPUTS_READY_FOR_BLINDED_HUMAN_REVIEW", diagnostics
+    return "GENERATION_COMPLETED_WITH_FAILURES", diagnostics
 
 
 def load_json(path: Path) -> dict[str, Any]:

@@ -9,7 +9,57 @@ Reviewer confidence: high / medium / low.
 Use scores 0-4 for positive dimensions. Use hallucination severity 0-3. Overall
 preference: A / B / Tie.
 
-## Blank Scoring Table
+## Review Items
+
+### ans-q001
+Mode: public
+Difficulty: basic
+Query: My brother was arrested in a murder case and the FIR mentions Section 302 IPC. What should the family understand before applying for bail?
+
+#### Answer A
+
+Summary: Understanding bail considerations for Section 302 IPC requires consulting legal counsel, as murder is a non-bailable offense subject to judicial discretion based on case facts.
+What this may mean:
+- Bail in non-bailable offenses requires demonstrating strong grounds to the court, such as lack of prima facie evidence or procedural irregularities.
+- Courts evaluate factors such as the severity of the alleged offense, potential tampering with evidence or witnesses, and the risk of absconding before granting bail.
+Possible legal provisions:
+- Section 302 of the Indian Penal Code (IPC) - Punishment for murder
+- Provisions governing bail for non-bailable offenses under criminal procedure laws
+Possible next steps:
+- Engage a criminal defense advocate immediately to represent the accused.
+- Obtain copies of the First Information Report (FIR) and remand orders from the court.
+- Gather relevant documentation demonstrating community ties, absence of flight risk, and lack of interference with the investigation.
+Important cautions:
+- Murder under Section 302 IPC is a non-bailable offense, meaning bail is discretionary and not guaranteed.
+- The applicability of legal rules and chances of securing bail depend entirely on specific factual details and court findings.
+- This legal information does not constitute formal legal representation or legal advice.
+Citations: none
+
+#### Answer B
+
+Summary: An FIR under Section 302 IPC involves a charge of murder, which is a serious and non-bailable offence under Indian criminal law. Before applying for bail, the family should understand the gravity of the charge, the evidentiary standards required to establish murder, the inadmissibility of police confessions, and the factors courts examine when considering bail.
+What this may mean:
+- Section 302 IPC is a non-bailable offence carrying life imprisonment or death penalty.
+- Statements or confessions made to police officers while in custody cannot be used as direct evidentiary proof of guilt in court.
+- Courts evaluate bail applications by examining the specific role attributed to the accused, the nature of evidence, and the duration of custody.
+Possible legal provisions:
+- Section 302, Indian Penal Code (IPC) - Punishment for murder
+- Section 300, Indian Penal Code (IPC) - Definition of murder and distinction from culpable homicide
+- Section 26, Indian Evidence Act - Inadmissibility of confessions made in police custody
+- Section 437/439, Code of Criminal Procedure (CrPC) - Provisions governing bail in non-bailable cases
+Possible next steps:
+- Consult an experienced criminal defense advocate to review the FIR, remand paper, and investigation progress.
+- Obtain certified copies of the FIR and relevant court documents from the jurisdictional Magistrate court.
+- Analyze whether the prosecution's case relies on direct eyewitness testimony or circumstantial evidence before moving a bail petition in the Sessions Court or High Court.
+Important cautions:
+- Bail decisions depend heavily on specific case facts, including the post-mortem report, witness statements, and forensic findings.
+- This information is for general educational purposes and does not constitute formal legal representation.
+Citations:
+- [E5] life sentence is a rule and death sentence is an exception... award death sentence for the offence under Section 302 IPC.
+- [E4] The distinction between culpable homicide (Section 299 of the IPC) and murder (Section 300 of the IPC) has always to be carefully borne in mind while dealing with a charge under Section 302 of the IPC.
+- [E1] Once it is established that the accused intentionally inflicted the injury, then the offence would be murder, if it is sufficient in the ordinary course of nature to cause death.
+- [E2] Section 26 of the Indian Evidence Act prohibits proof of a confession made by a person in custody, unless the confession is made in the immediate presence of a Magistrate.
+- [E3] In such circumstances, bail was granted only to Manohar and Vishnu, Accused Nos. 3 and 5, and not to the other three accused/appellants. It was only on 16.02.2015, that these three accused/appellants were also granted bail, taking note of the fact that they had completed approximately 5 years in jail.
 
 | Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
 | --- | --- | --- | --- | --- |
@@ -25,154 +75,1752 @@ preference: A / B / Tie.
 
 Overall preference: A / B / Tie
 
-## Review Items
-
-### ans-q001
-Mode: public
-Difficulty: basic
-Query: My brother was arrested in a murder case and the FIR mentions Section 302 IPC. What should the family understand before applying for bail?
+Reviewer confidence: High / Medium / Low
 
 ### ans-q002
 Mode: public
 Difficulty: basic
 Query: A neighbour hit someone with a stick during a fight and the person suffered a fracture. What criminal provisions might be relevant?
 
+#### Answer A
+
+Summary: In incidents where an individual strikes another with a stick causing a fracture during an altercation, relevant criminal legal provisions may include offences relating to voluntarily causing hurt, causing severe bodily injury, or attempt to murder depending on the assailant's intent, knowledge, and the nature of the weapon used. Procedural rules also dictate how multiple acts in a single transaction are charged and tried.
+What this may mean:
+- The severity of the charge hinges on whether the act is viewed as causing hurt, causing grievous hurt, or attempt to commit culpable homicide/murder based on bodily location, force, and weapon.
+- Multiple connected acts during the fight may be tried together in a single proceeding.
+Possible legal provisions:
+- IPC Section 71 (Limit of punishment of offence made up of several offences)
+- IPC Section 307 (Attempt to murder / Knowledge or intention requirements)
+- IPC Section 300 / 304 (Culpable homicide provisions depending on intent and knowledge)
+- CrPC Section 220 (Trial for more than one offence in a single transaction)
+Possible next steps:
+- Ensure immediate medical treatment and obtain a formal Medico-Legal Certificate (MLC) documenting the fracture and injuries.
+- Report the incident to the local police station to record a First Information Report (FIR).
+- Consult a qualified legal practitioner to evaluate appropriate criminal charges and legal remedies based on the facts.
+Important cautions:
+- Applicability of specific criminal sections depends on detailed factual findings, medical reports, and evidence of intention or knowledge.
+- Legal information provided here does not constitute formal legal representation or professional advice.
+Citations:
+- [E1] A gives Z fifty strokes with a stick. Here A may have committed the offence of voluntarily causing hurt to Z by the whole beating
+- [E3] for making out an offence under Section 307 of IPC, it is not necessary that the victim must suffer a fracture of skull / parietal bone. The knowledge or intention on the part of the accused is sufficient to make out an offence under Section 307 of IPC.
+- [E2] Whether an accused had the required guilty intention or not, is a question of fact which has to be determined on the facts of each case.
+- [E1] If, in one series of acts so connected together as to form the same transaction, more offences than one are committed by the same person, he may be charged with, and tried at one trial for, every such offence.
+
+#### Answer B
+
+Summary: Striking a person with a stick resulting in a fracture typically invokes criminal provisions related to grievous hurt or aggravated assault, depending on jurisdictional laws and specific facts.
+What this may mean:
+- A fracture is typically classified as a serious or grievous injury rather than a minor injury under criminal codes.
+- Using an instrument such as a stick may elevate charges to aggravated assault or assault with a dangerous object.
+Possible legal provisions:
+- Voluntary causing grievous hurt / Aggravated assault (covering severe injuries such as bone fractures).
+- Voluntary causing hurt by dangerous weapons or means (depending on whether the stick is classified as a weapon).
+- Criminal assault, battery, or affray (depending on local statutory definitions and public fight conditions).
+Possible next steps:
+- Report the incident to local law enforcement authorities for formal documentation and investigation.
+- Seek immediate medical treatment and maintain detailed records of fractures and injuries sustained.
+- Gather witness statements, photographic evidence, and physical evidence from the location.
+- Consult a licensed criminal defense attorney or legal assistance professional in your jurisdiction.
+Important cautions:
+- Applicability of criminal provisions depends entirely on the jurisdiction and specific factual details of the incident.
+- Self-defense, mutual provocation, or accidental harm may alter the applicability of criminal charges.
+- This information provides general legal guidance and does not constitute formal legal representation or advice.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q003
 Mode: public
 Difficulty: moderate
 Query: Someone snatched a gold chain on the road and threatened the victim while escaping. Is this theft or robbery?
+
+#### Answer A
+
+Summary: Snatching property combined with threats of harm during the taking or escape generally elevates an offense from basic theft to robbery under many legal frameworks, as robbery typically involves using force or fear to accomplish the taking or overcome resistance.
+What this may mean:
+- Theft generally refers to taking another person's property without their consent and with the intent to permanently deprive them of it.
+- Robbery generally occurs when force, intimidation, or threat of immediate harm is used before, during, or immediately after taking the property to carry out the theft or facilitate escape.
+Possible legal provisions:
+- General theft / larceny provisions (taking movable property without consent)
+- Robbery provisions (theft accompanied by force, violence, or threat of immediate injury)
+Possible next steps:
+- Report the crime and all details regarding threats or force immediately to local law enforcement authorities.
+- Consult a qualified legal professional or local prosecutor's office to understand how local criminal statutes apply to the specific facts.
+Important cautions:
+- This information is for general educational purposes and does not constitute formal legal representation or legal advice.
+- Criminal classifications and statutory definitions vary significantly by jurisdiction and depend heavily on specific factual evidence.
+Citations: none
+
+#### Answer B
+
+Summary: Snatching a gold chain on the road accompanied by threats to the victim while carrying away the property generally elevates the offence from theft to robbery under Indian criminal law, provided the threat induced fear of instant harm or restraint.
+What this may mean:
+- If threats or force were used during the snatching or while fleeing with the stolen chain, the offence is likely classified as robbery.
+- If no force or threat was used while taking or carrying away the chain, the offence remains theft.
+Possible legal provisions:
+- Indian Penal Code (IPC) Section 378 & Section 379 (Theft)
+- Indian Penal Code (IPC) Section 390 & Section 392 (Robbery)
+- Bharatiya Nyaya Sanhita (BNS) Section 303 (Theft) & Section 309 (Robbery)
+Possible next steps:
+- Report the precise sequence of events and threats in the First Information Report (FIR) to police.
+- Consult a qualified legal practitioner for case-specific advice.
+Important cautions:
+- Legal applicability depends strictly on the exact sequence of facts proved during investigation and trial.
+- This information provides general legal guidance and does not constitute formal legal representation.
+Citations:
+- [E2] Theft is robbery if, in order to the committing of the theft, or in committing the theft, or in carrying away or attempting to carry away property obtained by the theft, the offender, for that end, voluntarily causes or attempts to cause to any person death or hurt or wrongful restraint, or fear of instant death or of instant hurt, or of instant wrongful restraint.
+- [E3] The line of distinction between robbery as defined under Section 390 of the IPC and theft as defined in Section 378 of the IPC is thin but nevertheless distinct. Theft becomes robbery if in the process of committing the theft the offender causes or attempts to cause either death or hurt or a wrongful restraint.
+- [E1] Section 392 IPC is an aggravated form of theft.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q004
 Mode: public
 Difficulty: basic
 Query: I paid money for a job after false promises and now the person refuses to return it. Can this be cheating?
 
+#### Answer A
+
+Summary: Paying money based on false promises of a job followed by a refusal to return the money can potentially constitute cheating if dishonest intention existed at the very beginning of the transaction. Under Indian law, to establish cheating, it must be shown that the person made a false representation with fraudulent or dishonest intent to induce you to deliver money. If dishonest intention at the time of the promise cannot be proved, the matter may be regarded as a civil breach of contract rather than a criminal offence.
+What this may mean:
+- If the person knowingly made a false job promise to obtain your money with dishonest intent from the outset, it may qualify as cheating.
+- If dishonest intent at the start is absent, the law may classify the refusal to refund as a civil breach of contract.
+Possible legal provisions:
+- Section 415 of the Indian Penal Code (IPC) - Cheating
+- Section 420 of the Indian Penal Code (IPC) - Cheating and dishonestly inducing delivery of property
+- Section 318 of the Bharatiya Nyaya Sanhita (BNS) - Cheating
+Possible next steps:
+- Collect all documentary proof, including messages, offer letters, payment receipts, and bank transaction records.
+- Consult a legal practitioner to assess whether the evidence demonstrates initial fraudulent intent.
+- Determine with legal counsel whether to file a criminal complaint or initiate civil money recovery proceedings.
+Important cautions:
+- Whether an act constitutes criminal cheating or a civil dispute depends heavily on specific facts proving dishonest intention at the inception.
+- This information is for general educational purposes and does not constitute formal legal representation or legal advice.
+Citations:
+- [E4] To establish the offence of Cheating in inducing the delivery of property, the following ingredients need to be proved:- 1. The representation made by the person was false 2. The accused had prior knowledge that the representation he made was false. 3. The accused made false representation with dishonest intention in order to deceive the person to whom it was made. 4. The act where the accused induced the person to deliver the property...
+- [E2] To hold a person guilty of cheating it is necessary to show that he had fraudulent or dishonest intention at the time of making the promise. From his mere failure to keep up promise subsequently such a culpable intention right at the beginning, that is, when he made the promise cannot be presumed.
+- [E1] some inability of the appellant to return the loan amount cannot give rise to a criminal prosecution for cheating unless fraudulent or dishonest intention is shown right at the beginning of the transaction, as it is the mens rea which is the crux of the offence.
+- [E5] The High Court can very well quash the proceeding holding, inter alia, that the dispute between the parties is civil in nature and giving liberty to the opposite party to move the Civil Court to recover the unpaid amount of consideration money.
+
+#### Answer B
+
+Summary: Paying money based on false job promises may constitute cheating or fraud if initial fraudulent intent is established, though specific legal applicability depends on local law and case facts.
+What this may mean:
+- If the person induced you to hand over money knowing they could not or would not provide the job, it may be treated as a criminal offense of cheating or fraud.
+- If the failure was a breach of contract without initial fraudulent intent, civil remedies rather than criminal charges may be applicable.
+Possible legal provisions:
+- General criminal law provisions relating to cheating, deception, or fraud (e.g., provisions against cheating by personation or fraudulent inducement in local criminal codes).
+Possible next steps:
+- Gather all documentation, payment receipts, written messages, and details of the promises made.
+- Consult a qualified local attorney or legal aid organization to evaluate the specific facts of your case.
+- Consider filing a complaint with local law enforcement or consumer protection authorities if fraud is suspected.
+Important cautions:
+- This information is for educational purposes and does not constitute formal legal representation.
+- Whether an act constitutes criminal cheating depends on specific factual evidence, such as establishing dishonest intention at the time the money was solicited.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q005
 Mode: public
 Difficulty: moderate
 Query: A business partner kept company funds for personal use after being trusted to deposit them. What offence could this involve?
+
+#### Answer A
+
+Summary: Misappropriating entrusted company funds for personal use may constitute offences like criminal breach of trust, embezzlement, fraud, or theft depending on jurisdiction and factual details.
+What this may mean:
+- The partner's actions may expose them to criminal accountability for unauthorized appropriation of entrusted property.
+- The business may also have grounds for civil claims, such as breach of fiduciary duty and accounting of funds.
+Possible legal provisions:
+- Criminal Breach of Trust / Embezzlement
+- Fraud / Misappropriation of Property
+- Theft / Larceny
+Possible next steps:
+- Gather and secure all relevant financial records, bank receipts, partnership agreements, and communications.
+- Consult a legal professional to evaluate potential civil remedies and formal reporting options.
+- Review corporate or partnership agreement terms regarding asset management and dispute resolution.
+Important cautions:
+- Whether particular conduct constitutes a criminal offence depends entirely on applicable local statutes, contract terms, and proof of intent.
+- Legal information does not constitute legal representation; consultation with a qualified legal professional in your jurisdiction is recommended before taking formal action.
+Citations: none
+
+#### Answer B
+
+Summary: When a business partner dishonestly keeps company funds for personal use after being entrusted to deposit them, the act may constitute Criminal Breach of Trust under Indian penal law, provided entrustment and dishonest intent are demonstrated.
+What this may mean:
+- If property or money was entrusted to a partner and that partner dishonestly converted it for personal use in violation of an express or implied contract, it meets the essential legal ingredients for criminal breach of trust.
+- If dishonest intention cannot be established or if the dispute relates purely to accounting or breach of contract between partners, courts may treat the matter as a civil dispute rather than a criminal offence.
+Possible legal provisions:
+- Section 405, Indian Penal Code (Criminal breach of trust defined)
+- Section 406, Indian Penal Code (Punishment for criminal breach of trust)
+- Section 415 / 420, Indian Penal Code (Cheating and dishonestly inducing delivery of property)
+Possible next steps:
+- Gather and preserve evidence showing entrustment of funds (e.g., bank transfers, written partnership agreements, deposit instructions, receipts, and communication logs).
+- Consult a qualified advocate to review partnership agreements, financial accounts, and correspondence.
+- Determine whether the appropriate remedy is filing a police complaint/criminal information or seeking civil recovery/accounting in court.
+Important cautions:
+- Whether an act amounts to a criminal offence or a civil dispute depends entirely on the specific facts, evidence of entrustment, and dishonest intention.
+- Legal information provided here is for educational purposes and does not constitute formal legal representation or legal advice.
+Citations:
+- [E2] Section 405 of IPC deals with the ingredients of a criminal breach of trust. Section 405 of IPC may be reproduced herein for convenience:- ―405. Criminal breach of trust.—Whoever, being in any manner entrusted with property, or with any dominion over property, dishonestly misappropriates or converts to his own use that property, or dishonestly uses or disposes of that property in violation of any direction of law prescribing the mode in which such trust is to be discharged, or of any legal contract, express or implied, which he has made touching the discharge of such trust, or willfully suffers any other person so to do, commits “criminal breach of trust”.
+- [E2] Section 406 of IPC prescribes the period of punishment for committing the offence of criminal breach of trust.
+- [E2] A careful reading of Section 405 shows that the ingredients of a criminal breach of trust are as follows: i) A person should have been entrusted with property, or entrusted with dominion over property; ii) That person should dishonestly misappropriate or convert to their own use that property, or dishonestly use or dispose of that property or willfully suffer any other person to do so; and iii) That such misappropriation, conversion, use or disposal should be in violation of any direction of law prescribing the mode in which such trust is to be discharged, or of any legal contract which the person has made, touching the discharge of such trust.
+- [E4] Ld. Counsel for the accused persons has submitted that the law is well settled that an accused can not be convicted for offence of criminal breach of trust unless there was some dishonest intention.
+- [E1] In such a case, considering the settled law that every breach of contract would not give rise to offence of cheating or attracts criminal offence, the nature of complaint/disputes in the present case, in my opinion, does not disclose any criminal offence at all and much less any offence under Sections 406/420 of IPC and Section 3 of the TPID Act and the present case is a case of purely civil dispute between the parties for which remedy lies before a Civil Court by filing a properly constituted suit.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q006
 Mode: public
 Difficulty: moderate
 Query: A teenager was taken away from home by an adult without the parents agreeing. What should the family know legally?
 
+#### Answer A
+
+Summary: Taking a teenager away from home without parental consent can constitute an offence such as kidnapping from lawful guardianship or abduction under statutory legal frameworks like the Indian Penal Code (IPC). Applicability depends on facts including the minor's age, gender, presence of consent, and whether force, enticement, or deceit was used.
+What this may mean:
+- If the teenager is under the statutory age threshold (such as under 16 for males or under 18 for females under IPC Section 361) and was taken without parental consent, the act may be treated legally as kidnapping from lawful guardianship.
+- If force or deceit was used to induce the individual to leave, provisions governing abduction may apply.
+- Proving the age of the minor through admissible evidence is a critical evidentiary requirement in establishing offences related to lawful guardianship.
+Possible legal provisions:
+- Section 361, Indian Penal Code (Kidnapping from lawful guardianship)
+- Section 362, Indian Penal Code (Abduction)
+- Section 363, Indian Penal Code (Punishment for kidnapping)
+- Section 364A, Indian Penal Code (Kidnapping for ransom)
+Possible next steps:
+- Immediately report the situation to local law enforcement authorities.
+- Gather official documentation verifying the teenager's age, such as a birth certificate or school records.
+- Provide law enforcement with all known details regarding the adult involved and the circumstances of the teenager's departure.
+- Consult with an advocate or legal counsel for guidance tailored to the specific jurisdiction.
+Important cautions:
+- Legal provisions and age limits depend on the specific legal jurisdiction and regime applicable to the case.
+- Determining whether an offence occurred depends heavily on specific factual details, such as exact age, evidence of non-consent, and whether enticement or force occurred.
+- This summary is for informational purposes only and does not constitute formal legal representation or legal advice.
+Citations:
+- [E5] 361. Kidnapping from lawful guardianship. — Whoever takes or entices any minor under sixteen years of age if a male, or under eighteen years of age if a female, or any person of unsound mind, out of the keeping of the lawful guardian of such minor or person of unsound mind, without the consent of such guardian, is said to kidnap such minor or person from lawful guardianship.
+- [E5] 362. Abduction – Whoever by force compels, or by any deceitful means induces, any person to go from any place, is said to abduct that person.
+- [E5] 363. Punishment for kidnapping. — Whoever kidnaps any person from India or from lawful guardianship, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.
+- [E3] For the offence of kidnapping from lawful guardianship, defined under Section 361 of the Penal Code, the prosecution has the duty to prove that the age of the victim was under sixteen years of age if a male or under eighteen years of age if a female, by legal admissible documentary age proof.
+- [E5] 364A. Kidnapping for ransom, etc. — Whoever kidnaps or abducts any person or keeps a person in detention after such kidnapping or abduction, and threatens to cause death or hurt to such person... shall be punishable with death, or imprisonment for life, and shall also be liable to fine.
+
+#### Answer B
+
+Summary: Taking a teenager from their home without parental consent is a serious situation that may involve criminal violations such as custodial interference, abduction, or kidnapping. Families facing this situation should prioritize safety and immediate legal or emergency steps.
+What this may mean:
+- An adult who takes or retains a minor without parental permission may face criminal investigation or charges.
+- Specific legal consequences depend on factors such as the minor's age, whether coercion or consent was involved, and applicable local legislation.
+Possible legal provisions:
+- Custodial interference or interference with custody statutes
+- Kidnapping or child abduction laws
+- Harboring a runaway or minor without parental consent
+Possible next steps:
+- File an official report with local law enforcement immediately.
+- Preserve all evidence, including text messages, social media posts, and details about the adult involved.
+- Consult a licensed legal professional or family law attorney to understand jurisdictional remedies and rights.
+Important cautions:
+- If the teenager's immediate safety is at risk, contact emergency law enforcement services immediately.
+- Legal consequences and definitions vary significantly by state or national jurisdiction, as well as the minor's exact age.
+- This information provides general legal guidance and does not constitute formal legal representation or legal advice.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q007
 Mode: public
 Difficulty: basic
 Query: After 1 July 2024, which new law section should police consider for a murder allegation?
+
+#### Answer A
+
+Summary: On July 1, 2024, the Bharatiya Nyaya Sanhita (BNS) came into force in India, replacing the IPC. Under the BNS, police consider Section 103 for murder allegations.
+What this may mean:
+- For allegations of murder alleged to have occurred on or after July 1, 2024, police in India will generally register the case under Section 103 of the Bharatiya Nyaya Sanhita (BNS).
+Possible legal provisions:
+- Bharatiya Nyaya Sanhita, 2023 - Section 101 (Definition of murder)
+- Bharatiya Nyaya Sanhita, 2023 - Section 103 (Punishment for murder)
+- Indian Penal Code, 1860 - Section 302 (Applicable for offenses committed prior to July 1, 2024)
+Possible next steps:
+- Verify the date of the alleged offense to determine whether the IPC or BNS governs the investigation.
+- Consult the official Gazette notification or a qualified legal professional for official procedural guidance.
+Important cautions:
+- No external legal evidence was retrieved in this session; this information is provided for general reference.
+- Whether the new law applies depends on the date of the alleged commission of the offense and specific facts of the case.
+- This summary provides general legal information and does not constitute formal legal representation or advice.
+Citations: none
+
+#### Answer B
+
+Summary: For murder allegations committed on or after 1 July 2024, police should consider Section 103 of the Bharatiya Nyaya Sanhita (BNS), 2023, while procedural steps are governed by the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023.
+What this may mean:
+- If the incident occurred on or after 1 July 2024, charges will be framed under BNS Section 103 and procedure will follow BNSS.
+- If the incident occurred before 1 July 2024, charges will be framed under IPC Section 302, but procedural aspects of investigation and trial will proceed under BNSS.
+Possible legal provisions:
+- Bharatiya Nyaya Sanhita (BNS), 2023 - Section 103 (Punishment for murder)
+- Indian Penal Code (IPC), 1860 - Section 302 (Punishment for murder, applicable for pre-July 1, 2024 offences)
+- Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 - Section 173 (Information in cognizable cases / FIR registration)
+- Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 - Section 176 (Procedure for investigation)
+Possible next steps:
+- Verify the precise date and time of the alleged incident to determine whether BNS or IPC substantive provisions apply.
+- Ensure the police report or FIR references the correct procedural law (BNSS Section 173) for complaints filed on or after 1 July 2024.
+- Consult a qualified legal professional for case-specific legal strategy and formal legal advice.
+Important cautions:
+- Applicability of penal provisions depends strictly on the exact date of commission of the alleged crime, not merely the date on which the complaint or FIR is lodged.
+- This information is provided for educational purposes and does not constitute formal legal representation or legal advice.
+Citations:
+- [E4] If the offences committed on or after 01.07.2024 then the offences shall be registered under the Bharatiya Nyaya Sanhita (BNS) 2023 and if any other special law and all the investigation and final report shall be filed under the BNSS.
+- [E1] If an FIR is registered on or after 1.7.2024 for the offence committed prior to 1.07.2024, then FIR would be registered under the provisions of IPC but the investigation will continue as per BNSS
+- [E5] if any offences committed prior to 01.07.2024 and if the FIR registered on or after 01.07.2024, the FIR should be registered under Section 173 of BNSS, the offences shall be registered under the Indian Penal Code, apart from any other special law, but the investigation shall be done and final report shall be submitted under the BNSS.
+- [E1] registering the FIR under BNSS on or after 01.07.2024 and the FIR must be under Section 173 of BNSS and the investigation must be conducted as per Section 176 of BNSS.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q008
 Mode: public
 Difficulty: basic
 Query: The police refused to register my complaint about assault. What options are generally available?
 
+#### Answer A
+
+Summary: If local police refuse to register an assault complaint, available options include escalating to superior officers under procedural provisions, securing medical records, or approaching a Magistrate.
+What this may mean:
+- A refusal by a local police station does not terminate the legal remedies available to an aggrieved person.
+- Statutory procedural frameworks provide administrative and judicial avenues to compel an investigation.
+Possible legal provisions:
+- Section 36, Code of Criminal Procedure (CrPC) (Powers of superior police officers)
+- Section 154, CrPC / Section 176, Bharatiya Nagarik Suraksha Sanhita (BNSS) (Registration of FIR)
+- Section 115, Bharatiya Nyaya Sanhita (BNS) / Section 323, Indian Penal Code (IPC) (Voluntarily causing hurt)
+Possible next steps:
+- Escalate the written complaint to superior police officers such as the Superintendent of Police or Commissioner of Police.
+- Preserve medical records, injury reports, and documentation showing the refusal or date of filing.
+- Consult a legal professional to evaluate filing a private judicial complaint before a competent Magistrate court.
+Important cautions:
+- Procedural rules and statutory references vary based on jurisdiction, date of occurrence, and applicable legal regime.
+- This legal summary is provided for informational purposes only and does not constitute formal legal representation.
+Citations:
+- [E2] Section 36 of the Code of Criminal Procedure speaks of powers of superior officers of police. It provides that, police officers superior in rank to an officer in charge of a police station may exercise the same powers
+- [E1] police have registered the FIR under Section 154 of Cr.P.C.
+- [E3] FIR is required to be registered on the complaint filed on 01.07.2024 under BNSS, 2023
+- [E4] The normal human conduct in such case would be to shift the injured persons to the hospital first for providing them early treatment rather than rushing to lodge FIR.
+
+#### Answer B
+
+Summary: General options available when police refuse to register an assault complaint.
+What this may mean:
+- A refusal by initial responding officers does not necessarily prevent further legal action.
+- Courts or higher authorities may have the power to review police inaction and order appropriate steps.
+Possible legal provisions:
+- Administrative oversight mechanisms for police conduct
+- Judicial procedures to compel police registration or investigation of offenses
+- Private criminal complaint mechanisms or judicial filings
+Possible next steps:
+- Escalate the complaint in writing to senior police officials or oversight bodies.
+- Document all details of the incident, including dates, times, and details of the refusal by police officers.
+- Consult a legal professional or legal aid service to evaluate court petitions or formal complaints.
+Important cautions:
+- This information is provided for general educational purposes only and does not constitute formal legal advice or legal representation.
+- Specific legal remedies, deadlines, and procedural requirements vary significantly by jurisdiction and the specific facts of the case.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q009
 Mode: public
 Difficulty: basic
 Query: Can a person ask for anticipatory bail if they fear arrest in a cheating complaint?
+
+#### Answer A
+
+Summary: Generally, a person who apprehends arrest in connection with a non-bailable cheating complaint may apply for anticipatory bail, though specific eligibility depends on jurisdiction, the non-bailable nature of the charge, and factual circumstances.
+What this may mean:
+- If a person has a reasonable apprehension of arrest in a non-bailable cheating case, they can file an application for anticipatory bail before the appropriate court.
+- The court will consider factors such as the nature and gravity of the accusation before granting protection.
+Possible legal provisions:
+- Section 438 of the Code of Criminal Procedure, 1973
+- Section 482 of the Bharatiya Nagarik Suraksha Sanhita, 2023
+Possible next steps:
+- Consult a qualified criminal defense attorney to evaluate the specific complaint and jurisdiction.
+- Determine whether an FIR or complaint has been lodged and whether the offense alleged is non-bailable.
+Important cautions:
+- Anticipatory bail applicability depends on whether the specific offense is non-bailable under local law.
+- Legal information provided here does not constitute formal legal representation or legal advice.
+Citations: none
+
+#### Answer B
+
+Summary: Yes, a person who reasonably apprehends arrest in connection with a cheating complaint can apply for anticipatory bail before the Court of Session or the High Court.
+What this may mean:
+- If you fear arrest due to a complaint of cheating, you are legally entitled to move a court for pre-arrest protection.
+- Filing an FIR is not strictly necessary to apply for anticipatory bail, provided there is a clear and reasonable basis to believe an arrest is imminent.
+Possible legal provisions:
+- Section 438, Code of Criminal Procedure, 1973 (CrPC) - Direction for grant of bail to person apprehending arrest
+- Section 482, Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) - Pre-arrest bail provisions
+- Section 420, Indian Penal Code, 1860 (IPC) / Section 318, Bharatiya Nyaya Sanhita, 2023 (BNS) - Cheating
+Possible next steps:
+- Consult a qualified advocate to assess whether the apprehension of arrest is supported by concrete facts and legal grounds.
+- Gather relevant facts, notices, or communication showing a concrete apprehension of arrest.
+- Prepare and file an application for anticipatory bail before the appropriate Sessions Court or High Court.
+Important cautions:
+- Anticipatory bail is not automatically granted; courts evaluate specific facts, antecedents, and the necessity of custodial interrogation.
+- The legal framework and available procedures depend on whether the matter falls under the Code of Criminal Procedure (CrPC) or the Bharatiya Nagarik Suraksha Sanhita (BNSS), as well as any statutory bars in specific criminal statutes.
+- This information is for educational purposes only and does not constitute formal legal representation.
+Citations:
+- [E2] Where any person has reason to believe that he may be arrested on an accusation of having committed a nonbailable offence, he may apply to the High Court or the Court of Session for a direction under this section that in the event of such arrest he shall be released on bail
+- [E1] For the allegations of fraud and cheating, the petitioner is apprehending arrest came up before this Court under Section 438 CrPC, seeking anticipatory bail.
+- [E3] It is not a necessary condition that an application should be moved only after an FIR is filed; it can be moved earlier, so long as the facts are clear and there is reasonable basis for apprehending arrest.
+- [E3] While weighing and considering an application (for grant of anticipatory bail) the court has to consider the nature of the offence, the role of the person, the likelihood of his influencing the course of investigation, or tampering with evidence (including intimidating witnesses), likelihood of fleeing justice (such as leaving the country), etc.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q010
 Mode: public
 Difficulty: moderate
 Query: What does default bail mean if the police do not file the charge sheet on time?
 
+#### Answer A
+
+Summary: Default bail is an indefeasible statutory right under Section 167(2) Cr.P.C. / Section 187(3) BNSS that entitles an accused to be released from custody if the police fail to file the charge sheet within the prescribed statutory period.
+What this may mean:
+- If the police fail to file the charge sheet within the statutory timeline, the accused becomes entitled to release on bail as a matter of right.
+- Default bail is granted due to procedural default by the investigating agency rather than an assessment of the case's factual merits.
+Possible legal provisions:
+- Section 167(2) of the Code of Criminal Procedure, 1973 (Cr.P.C.)
+- Section 187(3) of the Bharatiya Nyaya Suraksha Sanhita, 2023 (BNSS)
+- Section 439 / Section 439(2) of the Code of Criminal Procedure, 1973 (Cr.P.C.)
+- Section 483 of the Bharatiya Nyaya Suraksha Sanhita, 2023 (BNSS)
+Possible next steps:
+- Consult a qualified criminal defense advocate to calculate the specific statutory deadline applicable to the alleged offence.
+- Verify whether the statutory period for filing the charge sheet has elapsed without the investigation agency filing it.
+- Prepare and file a default bail application before the competent court prior to the submission of the charge sheet.
+Important cautions:
+- This information is for general educational purposes only and does not constitute formal legal advice or professional legal representation.
+- The practical applicability of default bail depends on specific case facts, such as the exact offence, calculation of detention periods, and timely filing of the application.
+Citations:
+- [E1] right upon accused to be released on bail, on non-filing of charge sheet, within the prescribed time period whereas Section 439 Cr.P.C./Section 483 Bharatiya Nyaya Suraksha Sanhita, 2023 (hereinafter referred to as 'the BNSS') is regular bail procedure and is wholly discretionary in nature.
+- [E2] Section 167(2) Cr.P.C. (corresponding to Section 187(3) BNS, 2023) is a statutory provision which confers indefeasible
+- [E1] Section 167 (2) Cr.P.C./187(3) of BNSS 2023.
+- [E1] the order passed under Section 167(2) Cr.P.C./187(3) BNSS is not passed, on the merits of this case
+- [E1] non-filing of charge sheet within the prescribed time, mandates release of an accused under statutory remedy of default bail and such release is a deemed release under Chapter XXXIII of Cr.P.C., however, order for the bail can be cancelled under Section 439 (2) of Cr.P.C.
+
+#### Answer B
+
+Summary: Default bail is a statutory right ensuring release on bail when an investigating agency fails to complete its investigation and file a charge sheet within the legally mandated time frame.
+What this may mean:
+- When the police fail to submit the charge sheet within the mandated period (commonly 60 or 90 days depending on the gravity of the offense under general Indian criminal procedure), the accused gains an indefeasible right to bail.
+- To benefit from default bail, the accused person must express readiness to furnish bail and apply for it before the police subsequently file the charge sheet.
+Possible legal provisions:
+- Section 167(2) of the Code of Criminal Procedure, 1973 (CrPC) / Section 187 of the Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS)
+- Article 21 of the Constitution of India (Right to Personal Liberty)
+Possible next steps:
+- Consult a qualified criminal defense attorney to verify the exact custody period and calculation of dates.
+- Determine whether the relevant statutory timeframe (e.g., 60 days or 90 days) has lapsed without a charge sheet being filed.
+- Submit a formal application for default bail before the court having jurisdiction before the charge sheet is submitted.
+Important cautions:
+- Specific time limits may vary depending on the statutory framework governing the offense (for example, special laws like the NDPS Act or UAPA may prescribe longer investigation periods).
+- The exact calculation of time depends on specific case facts, including the date of first judicial remand.
+- This information is intended for general informational purposes and does not constitute formal legal representation or legal counsel.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q011
 Mode: public
 Difficulty: basic
 Query: A landlord is not returning a security deposit after the tenant moved out. There is no threat, fraud, or violence alleged. Is this a criminal case?
+
+#### Answer A
+
+Summary: A landlord failing to return a security deposit without fraud or violence is generally a civil dispute rather than a criminal offense.
+What this may mean:
+- Law enforcement agencies generally consider security deposit disputes to be civil contract issues and will not file criminal charges.
+- The tenant's primary legal recourse is typically pursuing civil remedies or statutory damages in civil court.
+Possible legal provisions:
+- State or local residential landlord-tenant acts
+- Small claims court statutory provisions governing tenant security deposits
+Possible next steps:
+- Review the lease agreement and local statutory deadlines for returning security deposits.
+- Send a formal written demand letter specifying the missing deposit and requested return date.
+- Consult a local legal aid organization or file a claim in small claims court if the dispute remains unresolved.
+Important cautions:
+- Specific laws governing security deposits vary by jurisdiction, and actual outcomes depend on detailed facts.
+- This summary provides general legal information and does not constitute formal legal representation or legal advice.
+Citations: none
+
+#### Answer B
+
+Summary: A landlord's failure to return a security deposit where no threat, fraud, or violence is alleged is generally classified as a civil contractual dispute rather than a criminal case. Under legal principles, the mere failure to discharge a contractual obligation or debt does not automatically amount to a criminal offence such as cheating or criminal breach of trust unless dishonest intention or fraudulent inducement is demonstrated.
+What this may mean:
+- Without evidence of fraudulent intention at the inception or criminal intimidation, law enforcement typically treats unpaid security deposit matters as civil disputes.
+- The tenant's primary remedy lies in civil recovery mechanisms rather than criminal prosecution.
+Possible legal provisions:
+- IPC Section 405/406 (Criminal breach of trust)
+- IPC Section 415/420 (Cheating and dishonest inducement)
+- Civil Law remedies (Suit for recovery of money / breach of contract)
+Possible next steps:
+- Review the written lease agreement for clauses governing security deposit return, deductions, and timelines.
+- Issue a formal legal notice to the landlord demanding the refund of the security deposit within a specified period.
+- Consider filing a civil suit for money recovery in the competent court if the landlord fails to respond or refund.
+- Consult a legal practitioner to evaluate the specific facts and pursue appropriate legal remedies.
+Important cautions:
+- This information is general legal information and does not constitute formal legal representation or advice.
+- The exact classification of a dispute depends on specific case facts, terms of the lease agreement, and jurisdiction.
+Citations:
+- [E2] In the complaint, there is no allegation that there was fraud or dishonest inducement on the part of the respondents and thereby the respondents parted with the property... simple case of civil disputes between the parties.
+- [E1] The ingredients to constitute an offence under Section 420 are as follows: i) A person must commit the offence of cheating under Section 415; and ii) The person cheated must be dishonestly induced
+- [E2] It must also be shown that there existed a fraudulent and dishonest intention at the time of commission of the offence.
+- [E1] Section 405 of IPC deals with the ingredients of a criminal breach of trust... Whoever, being in any manner entrusted with property... dishonestly misappropriates or converts to his own use that property
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q012
 Mode: public
 Difficulty: basic
 Query: I only have a vague message saying someone may do something illegal someday. Can police arrest that person now?
 
+#### Answer A
+
+Summary: Police generally cannot arrest someone based only on a vague message indicating possible future illegal behavior, as criminal legal standards require concrete facts and actionable conduct.
+What this may mean:
+- A vague rumor or message about possible future wrongdoing typically lacks the factual detail required for police to make an arrest.
+- Intervention or legal action usually requires concrete evidence of an ongoing crime, a formal conspiracy, or an overt criminal act.
+Possible legal provisions:
+- Principles governing lawful arrest and requirement of concrete facts
+- Law of criminal attempt and conspiracy (requirement of overt act or agreement)
+- Legal standard distinguishing suspicion from proof
+Possible next steps:
+- Preserve the message and any relevant surrounding context or details.
+- Consult a legal professional or report credible safety concerns to appropriate local authorities.
+Important cautions:
+- This explanation provides general legal information and does not constitute formal legal representation or advice.
+- If there is an immediate or credible threat to safety or life, local law enforcement should be contacted immediately regardless of the level of detail.
+Citations:
+- [E1] arrest), has to be based on concrete facts (and not vague or general allegations) relatable a specific offence or particular of offences.
+- [E3] as so long a crime is generated in the mind of an accused, it does not become punishable. What is necessary is not thoughts, which may even be criminal in character, often involuntary, but offence would be said to have been committed thereunder only when that take concrete shape of an agreement to do or cause to be done an illegal act
+- [E5] Suspicion, however grave it may be, cannot take the place of proof, and there is a large difference between something that "may be" proved, and something that "will be proved".
+
+#### Answer B
+
+Summary: Generally, law enforcement cannot arrest someone based solely on a vague message predicting possible future illegal activity without probable cause or reasonable suspicion of a specific crime.
+What this may mean:
+- A vague assertion about potential future wrongdoing usually lacks the specific factual basis necessary to establish probable cause for an arrest.
+- Police typically require evidence that a crime has been committed, is in progress, or that an overt act or credible actionable threat exists.
+Possible legal provisions:
+- Fourth Amendment Probable Cause Requirements / Statutory Rules on Arrest
+- Criminal Conspiracy and Illegal Threat Statutes
+Possible next steps:
+- Report the situation to local law enforcement if there is concern about potential danger or safety.
+- Preserve the message and any related context in case further details emerge.
+Important cautions:
+- This information provides general legal principles and does not constitute formal legal representation or advice.
+- Whether law enforcement can act depends on specific facts, including whether there is a credible, immediate threat or an overt act.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q013
 Mode: public
 Difficulty: moderate
 Query: A person was caught with a small packet suspected to be ganja. What matters under NDPS law?
+
+#### Answer A
+
+Summary: Under the NDPS Act, key factors regarding suspected ganja possession include forensic verification of the substance, the exact weight/quantity possessed, conscious possession, and strict adherence to mandatory procedural requirements by law enforcement.
+What this may mean:
+- The quantity involved (small vs. intermediate vs. commercial) directly dictates legal penalties, bail conditions, and court jurisdiction.
+- Failure by law enforcement to comply with mandatory search and seizure procedures under the NDPS Act can significantly affect the prosecution's case.
+Possible legal provisions:
+- NDPS Act Section 20 (Punishment for contravention in relation to cannabis plant and cannabis)
+- NDPS Act Section 50 (Conditions under which search of persons shall be conducted)
+- NDPS Act Section 42 / Section 52 (Procedural rules for search, seizure, and arrest)
+Possible next steps:
+- Consult a qualified legal practitioner specializing in criminal defense and NDPS matters immediately.
+- Verify whether procedural safeguards, such as statutory search requirements and seizure memos, were properly observed.
+- Await official forensic laboratory report results regarding substance identification and exact weight.
+Important cautions:
+- This explanation is for informational purposes only and does not constitute formal legal representation or legal advice.
+- The application of the NDPS Act depends heavily on specific case facts, chemical test results, and law enforcement compliance with statutory procedures.
+Citations: none
+
+#### Answer B
+
+Summary: Key legal considerations under the NDPS Act for suspected ganja possession include statutory substance definition, quantity categorization, mandatory search safeguards, and chain of custody proof.
+What this may mean:
+- If the packet contains only seeds or leaves without flowering/fruiting tops, it may not satisfy the legal definition of ganja under the NDPS Act.
+- Violations of search safeguards or gaps in the chain of custody can affect the prosecution's case in court.
+Possible legal provisions:
+- NDPS Act Section 2(iii)(b) - Definition of Cannabis (Ganja)
+- NDPS Act Section 20 - Offenses and penalties relating to cannabis
+- NDPS Act Section 50 - Conditions under which search of persons shall be conducted
+Possible next steps:
+- Consult a qualified criminal defense attorney experienced in NDPS matters to examine the seizure record and police documentation.
+- Verify the chemical analyst report to determine whether the tested substance meets the statutory definition of ganja.
+- Review seizure memos, sampling documentation, and search protocols to identify any procedural non-compliance.
+Important cautions:
+- This information is for educational purposes only and does not constitute formal legal representation or advice.
+- The applicability of specific legal defenses and statutory protections depends on the precise factual circumstances of the recovery and seizure.
+Citations:
+- [E1] Ganja is defined under Section 2(iii)(b) of the NDPS Act as the flowering or fruiting tops of the cannabis plant, excluding seeds and leaves when not accompanied by tops.
+- [E1] Section 20 of the NDPS Act regulates offenses and penalties involving cannabis, where quantity and identification of the specific contraband part are central.
+- [E2] Section 50 of the NDPS Act requires informing a suspect of their right to be searched before a Gazetted Officer or Magistrate when a personal search is conducted.
+- [E3] Judicial precedents analyze whether recovery from a bag versus a personal search requires Section 50 compliance, along with procedural aspects like joining public witnesses.
+- [E4] The prosecution must establish safe custody and proper handling of the seized contraband from recovery until chemical examination.
+- [E5] Procedural steps involve weighing, representative sampling, sealing pullandas, filling laboratory forms, and registry entries to secure the chain of custody.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q014
 Mode: public
 Difficulty: moderate
 Query: Parents say their minor child faced sexual harassment by an adult. What legal safeguards may apply?
 
+#### Answer A
+
+Summary: In cases where a minor child reports sexual harassment or abuse, legal safeguards under special statutes like the POCSO Act apply, and proceedings can be initiated through a complaint filed by a parent.
+What this may mean:
+- A parent can validly set criminal proceedings in motion based on the minor's account.
+- Determining the exact age of the victim through established legal records is a crucial step in child protection proceedings.
+Possible legal provisions:
+- Section 7, Protection of Children from Sexual Offences (POCSO) Act, 2012 (Definition of Sexual Assault)
+- Section 8, Protection of Children from Sexual Offences (POCSO) Act, 2012 (Punishment for Sexual Assault)
+- Section 94, Juvenile Justice (Care and Protection of Children) Act, 2015 (Age Determination Rules)
+Possible next steps:
+- Report the incident to local law enforcement or child protection authorities to initiate formal investigation under applicable child protection laws.
+- Gather official age proof documentation such as school records or a birth certificate issued by municipal/corporation authorities.
+- Seek direct advice and assistance from a qualified legal practitioner or legal aid organization.
+Important cautions:
+- The exact legal outcome and procedural applicability depend on the specific facts of each case and the relevant legal jurisdiction.
+- Informational guidance does not constitute formal legal representation or professional legal advice.
+Citations:
+- [E3] Section 7 defines sexual assault and Section 8 provides punishment under the POCSO Act.
+- [E1] Ext.P2 complaint need be considered only as a document, on the basis of which the criminal law was set in motion by a relative of the victim.
+- [E1] One has to understand the limitations of a mother to obtain information of this nature from a minor daughter under the circumstances in which she is placed.
+- [E3] Section 94(2) of the Juvenile Justice Act sets out the hierarchy of evidence for age determination.
+- [E5] Statutory provisions under the Juvenile Justice Act can form the basis for determining the age of a minor victim.
+
+#### Answer B
+
+Summary: When a minor child faces alleged sexual harassment by an adult, civil, criminal, and institutional safeguards may apply, though specific remedies depend on the jurisdiction and detailed facts.
+What this may mean:
+- The situation may involve both law enforcement involvement for criminal law violations and civil legal remedies to restrict access.
+- Schools or organizations where the harassment occurred may have independent statutory duties to investigate and protect the child.
+Possible legal provisions:
+- Criminal statutes concerning child protection, child sexual abuse, or harassment.
+- Civil protective orders, restraining orders, or injunctions to prevent contact by the adult.
+- Institutional liability rules if the conduct occurred within a school, youth organization, or workplace context.
+Possible next steps:
+- Ensure the immediate physical and emotional safety of the child.
+- Document all details, communications, dates, and witnesses regarding the incident.
+- Report the incident to local law enforcement or child protective services if appropriate or mandatory.
+- Consult a licensed attorney specializing in child advocacy, family law, or criminal justice.
+Important cautions:
+- Mandatory reporting laws in many jurisdictions require individuals in certain roles (such as teachers, medical professionals, or counselors) to report suspected child abuse or harassment to authorities immediately.
+- Legal definitions, statutes of limitations, and reporting procedures vary significantly depending on state or national jurisdiction.
+- Consulting with specialized legal counsel and child advocacy professionals is critical before taking formal legal action.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q015
 Mode: public
 Difficulty: hard
 Query: Someone used caste abuse during an assault on a Scheduled Caste complainant. What additional law may be relevant?
+
+#### Answer A
+
+Summary: In addition to general penal provisions for physical assault, acts involving caste-based slurs or abuse against a member of a Scheduled Caste may attract provisions under the Scheduled Castes and the Scheduled Tribes (Prevention of Atrocities) Act, 1989. Specific applicability depends on the context, location, and factual details of the incident.
+What this may mean:
+- The use of caste-based abuse during an assault may convert or add specialized legal charges beyond general criminal assault laws.
+- Specialized legislation provides specific protection and procedural mechanisms for offenses committed against members of Scheduled Castes.
+Possible legal provisions:
+- Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989
+- Indian Penal Code, 1860 / Bharatiya Nyaya Sanhita, 2023 (provisions relating to assault, hurt, or criminal intimidation)
+Possible next steps:
+- Consult a legal practitioner or legal aid service for guidance specific to the jurisdiction and facts.
+- Report the incident to the appropriate local law enforcement authorities for investigation.
+- Preserve any relevant evidence, such as witness details, electronic recordings, or medical reports.
+Important cautions:
+- This information is for general educational purposes only and does not constitute legal advice or formal legal representation.
+- Whether specific offenses under statutory provisions apply depends entirely on verified facts, intent, public view, and statutory thresholds.
+- You should consult a qualified legal professional or local authorities to evaluate the exact circumstances of any incident.
+Citations: none
+
+#### Answer B
+
+Summary: When caste abuse occurs during an assault on a Scheduled Caste complainant, provisions under the Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989 apply alongside standard laws against physical hurt and assault.
+What this may mean:
+- Directing caste-based slurs or insults during an assault elevates the matter from a routine hurt/assault case to a specialized offence under the SC/ST Atrocities Act, bringing stricter statutory consequences and constraints regarding anticipatory bail under Section 18 of the Act.
+Possible legal provisions:
+- Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989: Section 3(1)(r), Section 3(1)(s), Section 3(2)(va), Section 18
+- Bharatiya Nyaya Sanhita, 2023 (BNS): Section 115 (voluntarily causing hurt), Section 351, Section 352
+- Indian Penal Code, 1860 (IPC): Section 323, Section 506
+Possible next steps:
+- Record precise details of the incident, including specific casteist words used, physical injury details, and witnesses who were present in public view.
+- Consult a qualified advocate to review the FIR or complaint to ensure all essential statutory elements are properly documented.
+Important cautions:
+- Applicability of specific legal provisions depends on the concrete facts of each case, including the exact location of the incident, specific words used, and the caste identities of the parties involved.
+- This explanation is for informational purposes only and does not constitute formal legal advice or legal representation.
+Citations:
+- [E3] commission of the offences punishable u/s 115(2), 118(1), 351(2), 352 of the Bharatiya Nyaya Sanhita, 2023 read with Section 3(1)(r), 3(1)(s), 3(2)(va) of the SC and ST (Prevention of Atrocities) Amendment Act, 2015
+- [E1] if the offence of abusement on caste has occurred within the public view, it constitutes an offence under Section 3 of the SC/ST Atrocities Act.
+- [E2] in order to attract the offence under Section 3(1) or 3(2) of the Act of 1989, it is essential to demonstrate that the appellants committed the present crimes under the Act of 1989, not being a members of Scheduled Caste or Scheduled Tribe.
+- [E1] as per the provisions of Section 18 of the Act, bar is created for exercising power for grant of anticipatory bail under Section 438 of Cr.P.C.
+- [E2] in spite of bar under Section 18 of the Act of 1989, for invocation of powers under Section 438 of the Cr.P.C. it is still open to this Court to find out by looking to the recitals of FIR of the case itself, as to whether prima facie case is made out or not
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q016
 Mode: professional
 Difficulty: hard
 Query: Analyze whether Section 482 CrPC quashing may be maintainable in a private cheating FIR after settlement.
 
+#### Answer A
+
+Summary: A Section 482 CrPC quashing petition in a private cheating FIR after settlement is maintainable where the dispute is overwhelmingly private or commercial in nature and continuation of proceedings would amount to an abuse of court process. High Courts exercise this inherent jurisdiction sparingly, ensuring no factual disputes require trial adjudication and verifying that public interest is not adversely affected.
+Issue summary: Analysis of the maintainability of Section 482 CrPC quashing petitions in private cheating FIRs following a settlement between the private parties.
+Material facts from query:
+- The FIR relates to a private cheating offence.
+- A settlement has been arrived at between the parties.
+- Quashing is sought under Section 482 CrPC.
+Explicit legal provisions:
+- Section 482 of the Code of Criminal Procedure, 1973
+Potential additional provisions:
+- Section 420 of the Indian Penal Code, 1860
+- Section 320 of the Code of Criminal Procedure, 1973
+- Section 173 of the Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 528 of the Bharatiya Nagarik Suraksha Sanhita, 2023
+Procedural posture:
+- Petition for quashing of FIR under Section 482 CrPC post-settlement.
+Legal regime: ipc_crpc
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 112, "paragraph_end": 124}
+- {"evidence_id": "E2", "case_name": "Dr. Lakshman vs The State Of Karnataka on 17 October, 2019", "court": {}, "judgment_date": null, "source_url": "https://indiankanoon.org/doc/14496522/", "paragraph_start": 7, "paragraph_end": 9}
+- {"evidence_id": "E3", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 36, "paragraph_end": 53}
+- {"evidence_id": "E4", "case_name": "Venus Goyal And Another vs State Of Punjab And Another on 11 April, 2023", "court": {}, "judgment_date": "2023-04-11", "source_url": "https://indiankanoon.org/doc/176391710/", "paragraph_start": 8, "paragraph_end": 8}
+- {"evidence_id": "E5", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 23, "paragraph_end": 35}
+Legal issues:
+- Whether an FIR alleging cheating (Section 420 IPC) can be quashed under Section 482 CrPC on the basis of a compromise/settlement between private parties.
+- What standards govern the exercise of inherent power under Section 482 CrPC when civil remedies or parallel proceedings co-exist with criminal allegations.
+Applicable principles:
+- Inherent power under Section 482 CrPC is exercised sparingly to prevent abuse of court process and secure the ends of justice.
+- Disputed questions of fact cannot be adjudicated by the High Court in a quashing petition under Section 482 CrPC.
+- The co-existence of civil remedies or parallel proceedings does not bar criminal prosecution if criminal cheating or fraud is prima facie made out.
+- Private disputes settled between parties may justify quashing to prevent abuse of judicial process where no public interest is adversely impacted.
+Analysis:
+- Section 482 of the CrPC preserves the inherent jurisdiction of the High Court to make such orders as necessary to give effect to any order under the Code, prevent abuse of the process of any court, or otherwise secure the ends of justice.
+- In disputes involving allegations of cheating and fraud, the Supreme Court has established that High Courts must exercise Section 482 powers sparingly and refrain from adjudicating disputed questions of fact or entering full-fledged factual inquiries at the threshold quashing stage.
+- Where an offence is predominantly private or commercial in nature, such as cheating, and the dispute has been amicably settled between the parties, courts evaluate whether continuation of criminal proceedings serves any legitimate purpose or constitutes an abuse of judicial process.
+- Even where civil remedies or parallel statutory complaints (e.g., Section 138 of the Negotiable Instruments Act) exist, the presence of fraudulent intent at the inception can maintain a criminal charge; conversely, genuine private settlements in commercial/cheating disputes often form a valid ground for quashing under inherent powers to prevent futile litigation.
+- For FIRs registered on or after July 1, 2024 regarding offences committed prior to that date, courts apply procedural laws under the BNSS while substantive liabilities continue under the IPC.
+Counterpoints:
+- If the FIR discloses prima facie elements of criminal conspiracy and cheating with initial fraudulent intention, the presence of civil remedies or settlements does not automatically oust criminal jurisdiction if public interest or serious criminality is involved.
+- Where factual disputes exist as to the validity, voluntariness, or scope of the settlement, the High Court will not resolve such disputed facts under Section 482 CrPC and will relegate the parties to trial.
+Uncertainties:
+- {"code": "SETTLEMENT_VERIFICATION_UNCERTAIN", "message": "The query does not specify whether the settlement terms have been formally verified or whether any non-compoundable public law elements are involved.", "severity": "LOW", "related_claims": ["C-02"], "related_evidence": ["E2"]}
+Recommended research questions:
+- Whether the specific offence of cheating charged is compoundable under Section 320 CrPC or requires exercise of inherent powers under Section 482 CrPC following landmark precedents like Gian Singh v. State of Punjab and Narinder Singh v. State of Punjab.
+- Whether the settlement Deed/Deed of Compromise has been duly executed and verified by the parties before the High Court or trial court.
+- Applicability of BNSS Section 528 procedural provisions if the quashing petition was filed after July 1, 2024.
+Citations:
+- [E4] Section 482 CrPC saves the inherent power of the High Court to make such orders as may be necessary to give effect to any order under this Code, or to prevent abuse of the process of any court or otherwise to secure the ends of justice.
+- [E2] In a petition under Section 482 Cr.P.C. it is fairly well settled that it is not permissible for the High Court to record any findings, wherever there are factual disputes, and power is to be exercised sparingly.
+- [E2] Though the contract is of civil nature, if there is an element of cheating and fraud it is open for a party to prosecute, and mere filing of a suit or Section 138 NI Act complaint is by itself no ground to quash.
+- [E1] If offences are committed prior to 01.07.2024 and FIR registered on or after 01.07.2024, offences shall be registered under IPC but investigation and final report shall be submitted under BNSS.
+
+#### Answer B
+
+Summary: A petition under Section 482 CrPC to quash a private cheating FIR post-settlement is generally maintainable where the dispute is overwhelmingly private or commercial and the parties have voluntarily compromised, provided the offence does not involve serious public harm or economic fraud.
+Issue summary: Analysis of the maintainability of a petition under Section 482 of the Code of Criminal Procedure, 1973 (CrPC) for quashing a private cheating FIR following a compromise or settlement between the parties.
+Material facts from query:
+- Registration of a private FIR alleging cheating.
+- Subsequent settlement or compromise reached between the complainant and the accused.
+Explicit legal provisions:
+- Section 482, Code of Criminal Procedure, 1973
+- Section 420, Indian Penal Code, 1860
+- Section 320, Code of Criminal Procedure, 1973
+Potential additional provisions:
+- Section 528, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 318, Bharatiya Nyaya Sanhita, 2023
+Procedural posture:
+- Petition filed under Section 482 CrPC before the High Court seeking quashing of the FIR and consequential proceedings.
+Legal regime: Indian Criminal Jurisprudence (Code of Criminal Procedure, 1973 / Bharatiya Nagarik Suraksha Sanhita, 2023 and Indian Penal Code, 1860 / Bharatiya Nyaya Sanhita, 2023)
+Legal issues:
+- Whether a petition under Section 482 CrPC is maintainable for quashing an FIR registered for cheating post-settlement.
+- What standards apply to the exercise of inherent power when quashing non-compoundable or private commercial offences based on compromise.
+Applicable principles:
+- Inherent jurisdiction under Section 482 CrPC to secure the ends of justice and prevent abuse of court process.
+- Distinction between offences having predominantly private/civil overtones and serious offences against society.
+- Requirement for voluntary and genuine settlement without duress or coercion.
+Analysis:
+- Section 482 of the CrPC saves the inherent powers of the High Court to make such orders as may be necessary to give effect to any order under the Code, prevent abuse of the process of any court, or otherwise secure the ends of justice.
+- In cases involving private or commercial disputes, such as offences of cheating under Section 420 IPC, Courts recognize that the grievance is predominantly personal in nature.
+- When the complainant and the accused voluntarily resolve their private dispute and reach an amicable settlement, continuing criminal prosecution often leads to an abuse of process and low probability of conviction.
+- Consequently, Section 482 CrPC petitions seeking to quash a private cheating FIR on the basis of settlement are generally maintainable, subject to the High Court verifying that the settlement is genuine, voluntary, and uncoerced.
+Counterpoints:
+- Quashing may be refused if the allegations involve public financial institutions, systemic fraud, or serious economic offences impacting public interest.
+- The High Court must be satisfied that the settlement has actually resolved the entire underlying dispute and is not an instrument of intimidation.
+Uncertainties:
+- {"code": "NO_RETRIEVED_EVIDENCE", "message": "No case law authorities or statutory excerpts were provided in the retrieval set to anchor specific citations.", "severity": "HIGH", "related_claims": ["CLM-001", "CLM-002", "CLM-003"], "related_evidence": []}
+Recommended research questions:
+- What specific precedents of the Supreme Court of India delineate the boundary between private cheating disputes and public economic offences for Section 482 quashing?
+- How does the procedural stage (investigation vs. post-charge sheet) affect the High Court's discretion in quashing post-settlement?
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q017
 Mode: professional
 Difficulty: moderate
 Query: Assess the bail considerations for an accused charged under Sections 307 and 34 IPC after a group assault.
+
+#### Answer A
+
+Summary: The assessment of bail for an accused charged under Sections 307 and 34 IPC following a group assault depends on the gravity of the injury, the specific role and overt act attributed to the accused, the presence of common intention, duration of custody, charge sheet status, and risks of witness tampering or fleeing justice.
+Issue summary: Assessment of bail considerations for an accused facing charges under Sections 307 (Attempt to Murder) and Section 34 (Acts done by several persons in furtherance of common intention) of the Indian Penal Code (IPC) arising from a group assault incident.
+Material facts from query:
+- Accused is charged under Sections 307 and 34 of the Indian Penal Code.
+- Offense stems from a group assault incident.
+Explicit legal provisions:
+- Section 307, Indian Penal Code, 1860 (Attempt to murder)
+- Section 34, Indian Penal Code, 1860 (Common intention)
+- Section 437, Code of Criminal Procedure, 1973 (When bail may be taken in case of non-bailable offense)
+- Section 439, Code of Criminal Procedure, 1973 (Special powers of High Court or Court of Session regarding bail)
+Potential additional provisions:
+- Section 147 IPC (Rioting)
+- Section 148 IPC (Rioting, armed with deadly weapon)
+- Section 149 IPC (Every member of unlawful assembly guilty of offence committed in prosecution of common object)
+- Section 323/324/326 IPC (Voluntarily causing hurt / hurt by dangerous weapons / grievous hurt)
+Procedural posture:
+- Anticipatory bail application under Section 438 CrPC or regular bail application under Section 437/439 CrPC during investigation or pending trial.
+Legal regime: Indian Penal Code, 1860 & Code of Criminal Procedure, 1973 (or Bharatiya Nyaya Sanhita, 2023 / Bharatiya Nagarik Suraksha Sanhita, 2023)
+Legal issues:
+- Whether an accused charged under Section 307 read with Section 34 IPC is entitled to bail based on the degree of participation in a group assault.
+- How the nature of injuries and weapon recovery influence judicial discretion in granting bail under Section 439 CrPC.
+Applicable principles:
+- Gravity of the offense and severity of punishment associated with Section 307 IPC.
+- Assessment of vicarious liability under Section 34 IPC in group violence context.
+- Prima facie case established by the prosecution, nature of injuries (simple vs. grievous/dangerous to life).
+- Risk of tampering with evidence, influencing prosecution witnesses, or absconding.
+- Duration of pre-trial detention and status of charge sheet submission.
+Analysis:
+- Section 307 IPC is a non-bailable, cognizable offense punishable with imprisonment up to 10 years or life imprisonment. Section 34 IPC invokes vicarious criminal liability for acts done in furtherance of a common intention.
+- When considering a bail application under Section 437 or 439 CrPC for offenses under Sections 307 and 34 IPC, courts evaluate factors such as the nature and gravity of the accusation, the specific role attributed to the applicant in the group assault, the severity of injuries inflicted on the victim, and the danger of the accused absconding or tampering with evidence.
+- Where individual overt acts are disputed in a group assault, courts examine whether the applicant actively participated, carried lethal weapons, or merely was present at the scene. However, the presence of common intention under Section 34 can disentitle an accused to bail if active participation is prima facie established.
+- Additional judicial considerations include the completion of investigation/filing of the charge sheet, period of custody undergone, presence of prior criminal antecedents, and threat perception to witnesses.
+Counterpoints:
+- Prosecution argument: The collective action under Section 34 IPC makes all participants equally liable for the attempt to murder regardless of who inflicted the fatal/grievous blow, creating a high risk of witness intimidation if released on bail.
+- Defense argument: Absence of specific overt acts or weapon usage by the applicant, lack of intention to kill, simple nature of injuries, and prolonged custody justify grant of bail with stringent conditions.
+Uncertainties:
+- {"code": "NO_RETRIEVED_EVIDENCE", "message": "No external legal authorities or case precedents were provided in the retrieval context. Legal principles are derived from standard statutory frameworks.", "severity": "MODERATE", "related_claims": ["c1", "c2"], "related_evidence": []}
+Recommended research questions:
+- What is the specific medical opinion regarding the injuries sustained by the victim (whether life-threatening)?
+- What specific overt act is attributed to the applicant in the FIR and statements recorded under Section 161 CrPC?
+- Has the charge sheet been filed, and have weapons/objects been recovered from the applicant?
+- Does the applicant have any prior criminal antecedents?
+Citations: none
+
+#### Answer B
+
+Summary: Legal assessment of bail factors under IPC Sections 307 and 34 following a group assault, addressing intention, common intention, nature/locus of injuries, and individual role attribution.
+Issue summary: Assessment of key factors governing bail considerations for an accused charged under Sections 307 (Attempt to Murder) and 34 (Common Intention) of the Indian Penal Code following a group assault.
+Explicit legal provisions:
+- IPC Section 307
+- IPC Section 34
+Potential additional provisions:
+- IPC Section 323
+- IPC Section 325
+Legal regime: ipc_crpc
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "State vs Praveen @ Kaira Etc on 21 September, 2023", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E2", "case_name": "Mrinal Sharma vs The State Of Madhya Pradesh on 14 July, 2022", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E3", "case_name": "Mrinal Sharma vs The State Of Madhya Pradesh on 14 July, 2022", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E4", "case_name": "Manvir Singh And Others vs State Of U.P. on 7 February, 2024", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E5", "case_name": "Santosh Paswan Son Of Ramdin Paswan vs The State Of Jharkhand on 12 February, 2024", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+Uncertainties:
+- {"code": "MISSING_FACTUAL_DETAILS", "message": "Specific factual details such as individual overt acts, weapon used, locus of injury, and existence of pre-concert are required to definitively determine bail outcomes.", "severity": "MODERATE", "related_claims": ["C2", "C3"], "related_evidence": ["E2", "E5"]}
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q018
 Mode: professional
 Difficulty: moderate
 Query: Evaluate whether Section 420 IPC is attracted when breach of a supply contract is alleged without clear fraudulent intention at inception.
 
+#### Answer A
+
+Summary: Section 420 IPC is not attracted for a breach of a supply contract unless fraudulent or dishonest intention existed at the very inception of the transaction. In the absence of initial deception, the matter remains a purely civil dispute.
+Issue summary: Evaluation of whether Section 420 IPC is attracted in cases alleging breach of a supply contract where clear fraudulent or dishonest intention at inception is absent.
+Material facts from query:
+- Allegation involves a breach of a supply contract.
+- Clear fraudulent intention at the inception of the contract is absent.
+Explicit legal provisions:
+- Section 420, Indian Penal Code, 1860
+- Section 415, Indian Penal Code, 1860
+Potential additional provisions:
+- Section 405, Indian Penal Code, 1860
+- Section 406, Indian Penal Code, 1860
+- Section 482, Code of Criminal Procedure, 1973
+Procedural posture:
+- Legal assessment of criminal liability under Section 420 IPC based on factual query context.
+Legal regime: ipc_crpc
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Sahadev Prasad Agarwal & Anr vs The State Of West Bengal & Anr on 30 July, 2021", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E2", "case_name": "Sahadev Prasad Agarwal & Anr vs The State Of West Bengal & Anr on 30 July, 2021", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E3", "case_name": "Sahadev Prasad Agarwal & Anr vs The State Of West Bengal & Anr on 30 July, 2021", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E4", "case_name": "Sri Tanay Das vs The State Of Tripura on 2 May, 2022", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E5", "case_name": "Sri Tanay Das vs The State Of Tripura on 2 May, 2022", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+Legal issues:
+- Whether a failure to execute a supply contract constitutes cheating under Section 420 IPC in the absence of fraudulent intention at inception.
+- What distinguishes a purely civil breach of contract from the criminal offence of cheating under IPC.
+Applicable principles:
+- Fraudulent or dishonest intention must be present right at the beginning of the transaction to constitute cheating under Section 420 IPC.
+- Mere breach of contract or failure to keep a promise does not ipso facto give rise to criminal liability.
+- Distinction between mere breach of contract and cheating lies in the presence of fraudulent inducement at inception.
+- Civil remedies and criminal proceedings can coexist provided the factual allegations disclose a distinct criminal offence.
+Analysis:
+- Section 420 IPC requires proof of cheating along with dishonest inducement to deliver property. The essential crux of cheating under Section 415 and Section 420 IPC is the existence of mens rea—specifically fraudulent or dishonest intention—at the time the initial representation or promise was made.
+- A breach of a commercial or supply contract, by itself, does not automatically amount to a criminal offence under Section 420 IPC. In the absence of evidence showing deception at the very inception of the transaction, failure to perform contractual obligations or deliver promised results gives rise only to civil liability for damages.
+- Subsequent failure to fulfil a contractual promise or an intention to cheat that develops later in the course of performance cannot retroactively satisfy the statutory requirement of dishonest inducement at inception.
+- Where allegations in a complaint or FIR reveal an essentially civil dispute arising from a breach of contract without any foundational element of deception at the start, criminal proceedings under Section 420 IPC are unsustainable and subject to quashing under Section 482 CrPC.
+- However, civil remedies and criminal proceedings are not mutually exclusive; if the allegations independently disclose elements of a criminal offence alongside a contractual breach, criminal proceedings may proceed.
+Counterpoints:
+- If evidence demonstrates that the party made false representations knowing them to be false at the time of inducement (e.g. issuing cheques with knowledge of insufficient funds), criminal intent at inception may be inferred.
+- Where civil and criminal remedies overlap, the existence of a civil remedy does not automatically bar criminal prosecution under Section 420 IPC if criminal elements are explicitly pleaded and established.
+Uncertainties:
+- {"code": "UNCERTAIN_FACTS", "message": "Specific factual documents, contractual terms, and FIR/complaint contents were not provided in the query context.", "severity": "low", "related_claims": [], "related_evidence": []}
+Recommended research questions:
+- Are there specific factual averments in the complaint demonstrating false representations made by the accused prior to contract execution?
+- Was there any initial part-performance or partial payment that negatives an inference of fraudulent intent at inception?
+- Does the dispute warrant an application under Section 482 CrPC for quashing the complaint/FIR on grounds of being purely civil in nature?
+Citations:
+- [E1] Mere breach of contract cannot give rise to criminal prosecution for cheating unless fraudulent or dishonest intention is shown right at the beginning of the transaction, that is, the time when the offence is said to have been committed.
+- [E5] To establish the offence of Cheating in inducing the delivery of property, the following ingredients need to be proved:- 1. The representation made by the person was false 2. The accused had prior knowledge that the representation he made was false. 3. The accused made false representation with dishonest intention in order to deceive the person to whom it was made.
+- [E1] From his mere failure to keep up promise subsequently such a culpable intention right at the beginning, that is, when he made the promise cannot be presumed.
+- [E2] Moreover, some inability of the appellant to return the loan amount cannot give rise to a criminal prosecution for cheating unless fraudulent or dishonest intention is shown right at the beginning of the transaction, as it is the mens rea which is the crux of the offence.
+- [E4] In such a case, considering the settled law that every breach of contract would not give rise to offence of cheating or attracts criminal offence, the nature of complaint/disputes in the present case, in my opinion, does not disclose any criminal offence at all and much less any offence under Sections 406/420 of IPC
+- [E5] only in those cases of breach of contract would amount to cheating where there was any deception played at the very inception. If the intention to cheat has developed later on, the same cannot amount to cheating.
+- [E1] Since there is no ingredient of offence under Section 420 of the IPC against the petitioners from the very inception of transaction between the parties the dispute is essentially civil in nature.
+- [E2] It is consistently held by the Apex Court that no criminal case shall lie, the dispute being essentially civil in nature arising out breach of contract.
+- [E3] wherein it was held that where the civil remedy is availed of any dispute arising from a breach of contract, remedy under the criminal law is not barred if the allegation disclosed a criminal offence.
+
+#### Answer B
+
+Summary: Section 420 IPC requires dishonest intention at the inception of a transaction. A mere breach of a supply contract without initial fraudulent intent constitutes a civil breach rather than a criminal offence.
+Issue summary: Evaluation of whether Section 420 of the Indian Penal Code (IPC) is applicable in cases involving breach of a supply contract where fraudulent intention at inception is absent.
+Material facts from query:
+- Allegation of breach of a supply contract.
+- Absence of clear fraudulent intention at inception.
+Explicit legal provisions:
+- Section 415, Indian Penal Code, 1860 (Definition of Cheating)
+- Section 420, Indian Penal Code, 1860 (Cheating and dishonestly inducing delivery of property)
+Potential additional provisions:
+- Section 406, Indian Penal Code, 1860 (Criminal Breach of Trust)
+- Section 482, Code of Criminal Procedure, 1973 / Section 528, Bharatiya Nagarik Suraksha Sanhita, 2023 (Inherent powers of High Court)
+Procedural posture:
+- Pre-litigation legal assessment / Quashing petition analysis.
+Legal regime: Indian Criminal Jurisprudence (Indian Penal Code, 1860 / Bharatiya Nyaya Sanhita, 2023)
+Legal issues:
+- Does a breach of a commercial supply contract constitute an offence under Section 420 IPC in the absence of fraudulent intention at inception?
+- What legal remedies are available when criminal proceedings under Section 420 IPC are initiated for a pure contractual breach?
+Applicable principles:
+- Distinction between civil breach of contract and criminal offence of cheating.
+- Requirement of mens rea / fraudulent intention at the inception of the agreement for Section 420 IPC.
+- Prohibition against converting pure civil financial disputes into criminal prosecutions.
+Analysis:
+- Under Indian criminal law, Section 420 IPC deals with cheating and dishonestly inducing delivery of property. A foundational element of cheating under Section 415 IPC is the existence of fraudulent or dishonest intention at the time the promise or representation was made.
+- Where a dispute arises out of a breach of a supply contract, the crucial distinction lies between a mere breach of contract and the offence of cheating. Mere failure to keep a promise or fulfill a contractual obligation subsequently does not automatically constitute criminal cheating unless dishonest intention existed at the inception of the transaction.
+- If dishonest intention at the time of entering into the contract is absent, the matter remains purely of a civil nature (breach of contract), and initiation of criminal proceedings under Section 420 IPC is liable to be quashed under Section 482 CrPC / Section 528 BNS to prevent abuse of judicial process.
+Counterpoints:
+- It may be argued by complainants that initial dishonest intention can be inferred from subsequent conduct, such as immediate absconding or failure to perform any part of the obligation despite accepting advance payment.
+Uncertainties:
+- {"code": "NO_RETRIEVED_AUTHORITIES", "message": "No primary legal authorities or case law precedents were supplied in the retrieval context for specific citation.", "severity": "WARNING", "related_claims": ["claim_1", "claim_2"], "related_evidence": []}
+Recommended research questions:
+- Examine landmark Supreme Court rulings (e.g., HR Yadram, Uma Shankar Gopalika, Hridayaya Ranjan Prasad Verma) regarding the necessity of mens rea at inception for Section 420 IPC.
+- Determine whether any ancillary civil remedies or arbitration clauses exist under the supply contract.
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q019
 Mode: professional
 Difficulty: hard
 Query: For an offence committed on 30 June 2024 but FIR registered on 2 July 2024, analyze IPC versus BNS applicability for murder.
+
+#### Answer A
+
+Summary: For a murder committed on 30 June 2024 and reported via FIR on 2 July 2024, the substantive offence is governed by the Indian Penal Code (IPC), specifically Section 302, due to constitutional protections against retroactive penal laws. However, procedural aspects for FIR registration and investigation are governed by the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023.
+Issue summary: Analysis of whether IPC or BNS applies to a murder offence committed on 30 June 2024 when the FIR was registered on 2 July 2024.
+Material facts from query:
+- Offence committed on 30 June 2024
+- FIR registered on 2 July 2024
+- Alleged crime is murder
+Explicit legal provisions:
+- Article 20(1) of the Constitution of India
+- Section 302 of the Indian Penal Code, 1860
+- Section 103 of the Bharatiya Nyaya Sanhita, 2023
+- Section 531 of the Bharatiya Nagarik Suraksha Sanhita, 2023
+Potential additional provisions:
+- General Clauses Act, 1897 (Section 6 - Effect of repeal)
+Procedural posture:
+- Pre-trial stage / FIR registration phase
+Legal regime: Indian Criminal Jurisprudence (IPC, BNS, BNSS, Constitutional Principles)
+Legal issues:
+- Which substantive penal statute governs an offence committed prior to 1 July 2024 but reported after 1 July 2024?
+- Which procedural code applies to investigation initiated post 1 July 2024 for pre-existing offences?
+Applicable principles:
+- Article 20(1) of the Constitution of India (protection against ex post facto laws)
+- Principle of non-retrospectivity of substantive penal statutes
+- Application of procedural law in force at the time of investigation/proceeding commencement
+Analysis:
+- Substantive Applicability: Under Article 20(1) of the Constitution of India, a person cannot be convicted of an offence except for violation of a law in force at the time of the commission of the act charged. Since Bharatiya Nyaya Sanhita (BNS), 2023 came into force on 1 July 2024, an offence committed on 30 June 2024 is governed by the Indian Penal Code, 1860 (IPC) for substantive liability (Section 302 IPC for murder).
+- Procedural Applicability: Because the FIR was registered on 2 July 2024, after the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 came into effect, the procedural aspects of registration, investigation, and trial are regulated under BNSS provisions (specifically saving clauses such as Section 531 of BNSS).
+Counterpoints:
+- Arguments asserting BNS applicability based purely on FIR registration date fail due to constitutional protections against ex post facto penal legislation under Article 20(1).
+Uncertainties:
+- {"code": "NO_RETRIEVED_EVIDENCE", "message": "No direct judicial precedents or retrieved authorities were provided in the evidence set; analysis relies on statutory interpretation principles.", "severity": "MODERATE", "related_claims": ["c1", "c2"], "related_evidence": []}
+Recommended research questions:
+- How are police officers structuring FIR charge codes when recording pre-July 1 offences under BNSS portals?
+- What procedural directions have High Courts issued regarding saving clauses under Section 531 BNSS for pending investigations?
+Citations: none
+
+#### Answer B
+
+Summary: For an offence committed on 30 June 2024, substantive criminal law under the Indian Penal Code (IPC Section 302/300) applies due to constitutional protections under Article 20(1) against ex post facto penal laws. However, since the FIR was registered on 2 July 2024 (after the commencement of BNSS on 1 July 2024), procedure governing FIR registration and investigation must be conducted under the Bharatiya Nagarik Suraksha Sanhita (BNSS).
+Issue summary: Analysis of the applicability of the Indian Penal Code (IPC) versus the Bharatiya Nyaya Sanhita (BNS) for a murder offence committed on 30 June 2024, where the First Information Report (FIR) was registered on 2 July 2024 during the transition to new criminal laws.
+Material facts from query:
+- Date of alleged commission of offence: 30 June 2024.
+- Date of FIR registration: 2 July 2024.
+- Offence family under consideration: Murder / Homicide.
+Explicit legal provisions:
+- Article 20(1), Constitution of India
+- Section 300, Indian Penal Code, 1860
+- Section 302, Indian Penal Code, 1860
+- Section 358, Bharatiya Nyaya Sanhita, 2023
+- Section 173, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 176, Bharatiya Nagarik Suraksha Sanhita, 2023
+Potential additional provisions:
+- Section 299, Indian Penal Code, 1860
+- Section 304, Indian Penal Code, 1860
+- Section 103, Bharatiya Nyaya Sanhita, 2023
+- Section 531, Bharatiya Nagarik Suraksha Sanhita, 2023
+Procedural posture:
+- Pre-trial stage / Registration of First Information Report and initiation of investigation.
+Legal regime: mixed_or_transition
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 100, "paragraph_end": 111}
+- {"evidence_id": "E2", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 84, "paragraph_end": 99}
+- {"evidence_id": "E3", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 50, "paragraph_end": 67}
+- {"evidence_id": "E4", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 23, "paragraph_end": 35}
+- {"evidence_id": "E5", "case_name": "Nanhak And Ors vs State on 17 May, 2024", "court": {}, "judgment_date": "2024-05-17", "source_url": "https://indiankanoon.org/doc/76377526/", "paragraph_start": 6, "paragraph_end": 6}
+Legal issues:
+- Which substantive penal statute applies to an offence of murder committed on 30 June 2024 when the FIR is lodged on 2 July 2024?
+- Which procedural statute governs the registration of FIR and subsequent investigation initiated on 2 July 2024?
+Applicable principles:
+- Protection against ex post facto penal legislation under Article 20(1) of the Constitution of India mandates that substantive law in force at the time of the commission of the offence applies.
+- For acts committed prior to 1 July 2024, substantive penal charges must be framed under the Indian Penal Code (IPC).
+- Procedural steps (including FIR filing and investigation) initiated on or after 1 July 2024 are governed by the Bharatiya Nagarik Suraksha Sanhita (BNSS).
+Analysis:
+- Substantive Applicability (IPC vs BNS): The date of commission of the alleged offence is 30 June 2024, which falls prior to the effective date of the new criminal codes (1 July 2024). Under Article 20(1) of the Constitution of India and statutory repeal/savings principles under Section 358 of BNS, substantive criminal liability is governed by the penal law in force at the time the act was committed. Consequently, the substantive offence of murder must be charged under Section 302/300 of the IPC rather than Section 103 of the BNS.
+- Procedural Applicability (CrPC vs BNSS): Because the FIR was registered on 2 July 2024 (after the commencement of the new codes on 1 July 2024), procedural requirements for registration and investigation are governed by the Bharatiya Nagarik Suraksha Sanhita (BNSS) rather than the Code of Criminal Procedure, 1973 (CrPC). As held in judicial precedents, an FIR registered on or after 1 July 2024 for an offence committed prior to that date should invoke substantive IPC provisions while following BNSS procedural mechanics (e.g., Section 173 BNSS for registration and Section 176 BNSS for investigation).
+- Interplay of Substantive and Procedural Laws: Registering the FIR citing substantive penal sections of IPC along with procedural invocation under BNSS ensures compliance with constitutional protections against retrospective penal legislation while maintaining valid procedural continuity under the newly enacted procedural framework.
+Counterpoints:
+- Misinvoking CrPC procedural provisions (such as Section 154 CrPC) on or after 1 July 2024 instead of Section 173 BNSS may create procedural irregularities or challenges regarding police authority during investigation.
+- Attempting to register substantive offences under Section 103 BNS for acts committed on 30 June 2024 violates Article 20(1) of the Constitution of India.
+Uncertainties:
+- {"code": "PROCEDURAL_MISTAKE_EFFECT", "message": "Judicial views may vary across High Courts regarding whether mere reference to CrPC Section 154 instead of BNSS Section 173 in an FIR registered after 1 July 2024 constitutes an incurable defect or a quashable irregularity.", "severity": "low", "related_claims": ["claim_2"], "related_evidence": ["E1", "E2"]}
+Recommended research questions:
+- Has the relevant High Court or Supreme Court issued specific administrative circulars or jurisdictional directions regarding defect corrections in FIR formatting during the CrPC/BNSS transition?
+- What procedural remedies apply if an FIR registered post-1 July 2024 mistakenly cites CrPC procedural provisions instead of BNSS?
+Citations:
+- [E1] For the offence committed on or before 30.06.2024, the offence must be registered under the IPC, but FIR must be registered on or after 01.07.2024 only in BNSS.
+- [E2] If an FIR is registered on or after 1.7.2024 for the offence committed prior to 1.07.2024, then FIR would be registered under the provisions of IPC but the investigation will continue as per BNSS.
+- [E3] If any offences committed prior to the commencement of BNS prior to 01.07.2024, the police required to register FIR for the offences under the IPC but not under BNS, in line with Section 358(2) and Article 20(1) of the Constitution.
+- [E5] Culpable homicide is the genus and murder is its species under IPC Sections 299 and 300, requiring proof of requisite mens rea or intention under IPC Section 300.
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q020
 Mode: professional
 Difficulty: hard
 Query: Compare the procedural framing for remand and investigation references under CrPC and BNSS in a post-July 2024 FIR.
 
+#### Answer A
+
+Summary: For an FIR registered on or after July 1, 2024, procedure and investigation are governed by BNSS (Section 173 and 176) rather than CrPC, even if the alleged offence occurred prior to July 1, 2024. CrPC procedural savings under BNSS Section 531(2)(a) apply strictly to investigations pending before July 1, 2024. Registering an FIR under CrPC post-commencement is unsustainable and non-curable.
+Issue summary: Analysis of procedural framing for FIR registration and investigation under the Code of Criminal Procedure, 1973 (CrPC) versus the Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) for offences registered on or after July 1, 2024.
+Material facts from query:
+- The FIR is registered post-July 2024.
+- The inquiry focuses on procedural framing for investigation references and remand under CrPC versus BNSS during the transition period.
+Explicit legal provisions:
+- Section 154, Code of Criminal Procedure, 1973
+- Section 464, Code of Criminal Procedure, 1973
+- Section 465, Code of Criminal Procedure, 1973
+- Section 173, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 176, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 510, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 511, Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 531(2)(a), Bharatiya Nagarik Suraksha Sanhita, 2023
+Potential additional provisions:
+- Section 187, Bharatiya Nagarik Suraksha Sanhita, 2023 (Remand provisions)
+- Section 167, Code of Criminal Procedure, 1973 (Remand provisions)
+Procedural posture:
+- investigation
+Legal regime: mixed_or_transition
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 84, "paragraph_end": 99}
+- {"evidence_id": "E2", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 100, "paragraph_end": 111}
+- {"evidence_id": "E3", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 23, "paragraph_end": 35}
+- {"evidence_id": "E4", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 68, "paragraph_end": 86}
+- {"evidence_id": "E5", "case_name": "Arunkumar vs The State Of Karnataka And Anr on 30 September, 2024", "court": {}, "judgment_date": "2024-09-30", "source_url": "https://indiankanoon.org/doc/47759402/", "paragraph_start": 36, "paragraph_end": 53}
+Legal issues:
+- Whether an FIR registered on or after July 1, 2024, for offences committed prior to July 1, 2024, must be framed under CrPC or BNSS.
+- Whether registering an FIR under Section 154 of CrPC post-July 1, 2024, constitutes a curable procedural defect.
+Applicable principles:
+- Rule of prospective procedural law under statutory transition
+- Savings clause applicability limited strictly to pending proceedings prior to July 1, 2024 under BNSS Section 531(2)(a)
+- Non-curability of fundamental procedural defects in registering FIRs under repealed statutes post-commencement
+Analysis:
+- Where an FIR is registered on or after July 1, 2024, for offences committed prior to July 1, 2024, the substantive offences are governed by the Indian Penal Code (IPC), but procedural aspects including FIR registration and investigation must follow BNSS provisions.
+- Under Section 531(2)(a) of BNSS, only investigations, trials, appeals, applications, or inquiries that were pending immediately prior to July 1, 2024, are saved to continue under the CrPC.
+- If no investigation was pending prior to July 1, 2024, an FIR registered on or after July 1, 2024, must be registered under Section 173 of BNSS (rather than Section 154 CrPC), and the investigation must proceed under Section 176 of BNSS.
+- Registering an FIR under Section 154 of CrPC post-July 1, 2024, for a new investigation is legally unsustainable and is not treated as a curable defect under Sections 464/465 of CrPC or Sections 510/511 of BNSS.
+Counterpoints:
+- State agencies may contend that registering an FIR under Section 154 CrPC instead of Section 173 BNSS is a technical or clerical error caused by administrative delays in updating digital reporting systems, which should be curable.
+- However, judicial authority holds that an invalid procedural base invalidates the foundation of the investigation, preventing switchover to BNSS investigation provisions under an invalid CrPC FIR.
+Recommended research questions:
+- How do High Courts treat remand applications submitted under BNSS for FIRs registered post-July 1, 2024 involving pre-July 2024 IPC offences?
+- What procedural remedies are available to prosecution agencies to rectify FIRs mistakenly registered under CrPC post-July 1, 2024?
+Citations:
+- [E1] If an FIR is registered on or after 1.7.2024 for the offence committed prior to 1.07.2024, then FIR would be registered under the provisions of IPC but the investigation will continue as per BNSS.
+- [E4] Section 531(2)(a) of BNSS clearly defines that any appeal/application/trial/enquiry/investigation, pending on the date prior to commencement of the BNSS, shall be continued in accordance with the Code of Criminal Procedure, 1973.
+- [E2] Registering the FIR in Cr.P.C. and investigation done in BNSS is not a curable defect under Section 464 or 465 of Cr.P.C. / Section 510 or 511 of BNSS; the FIR registered under Section 154 of Cr.P.C. on or after 01.07.2024 is not sustainable.
+
+#### Answer B
+
+Summary: Procedural comparison between CrPC Section 167 and BNSS Section 187 for FIRs registered post-July 1, 2024, highlighting the shift allowing police custody to be granted in parts across initial 40 or 60 day periods under Section 187 BNSS.
+Issue summary: Determining the procedural framework governing police custody remand, extended detention, and investigation references for an FIR registered post-July 1, 2024, comparing Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) against Code of Criminal Procedure, 1973 (CrPC).
+Material facts from query:
+- The FIR was registered post-July 1, 2024.
+- The query asks for a comparative procedural framing of remand and investigation references between CrPC and BNSS.
+Explicit legal provisions:
+- Section 167, Code of Criminal Procedure, 1973 (CrPC)
+- Section 187, Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS)
+- Section 531, Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS)
+Potential additional provisions:
+- Section 482, Code of Criminal Procedure, 1973 / Section 528, Bharatiya Nagarik Suraksha Sanhita, 2023
+Procedural posture:
+- Pre-charge sheet investigation and remand stage following a post-July 1, 2024 FIR.
+Legal regime: Indian Criminal Law: Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) / Code of Criminal Procedure, 1973 (CrPC)
+Legal issues:
+- Applicability of BNSS vs CrPC for offences committed prior to July 1, 2024, but where the FIR is registered after July 1, 2024.
+- Procedural framing and timing limitations for seeking police custody remand under Section 187 BNSS compared to Section 167 CrPC.
+Applicable principles:
+- Prospective operation of BNSS procedural mandates for FIRs registered on or after July 1, 2024 under Section 531 BNSS.
+- Flexibility of police custody distribution across initial 40/60-day windows under Section 187 BNSS.
+- Constitutional safeguard of personal liberty under Article 21 regarding remand and default bail mechanisms.
+Analysis:
+- For FIRs registered on or after July 1, 2024, the governing procedural statute is the Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS). Under Section 531 of BNSS, the Code of Criminal Procedure, 1973 is repealed, saving only pending investigations, trials, appeals, or applications initiated prior to July 1, 2024.
+- Under Section 167 of the CrPC, police custody remand could generally only be authorized during the initial 15 days following arrest and first production before a magistrate.
+- Under Section 187 of the BNSS (the corresponding provision to Section 167 CrPC), police custody up to 15 days can be authorized in whole or in parts at any time during the first 40 days (for offences with imprisonment under 10 years) or first 60 days (for offences punishable with death, life, or 10+ years imprisonment) of total custody.
+- The overall threshold for default bail remains 60 or 90 days depending on the statutory gravity of the offence under both Section 167 CrPC and Section 187 BNSS.
+Counterpoints:
+- Argument may be raised that if the underlying offence was committed prior to July 1, 2024, substantive rights under the old CrPC regime should govern, although procedural steps following a post-July 1, 2024 FIR default to BNSS under Section 531.
+- Courts are currently clarifying the exact scope and judicial discretion regarding staggered police custody under Section 187 BNSS.
+Uncertainties:
+- {"code": "INSUFFICIENT_RETRIEVED_AUTHORITY", "message": "No primary evidence/authority texts were provided in the prompt context to ground citations.", "severity": "MODERATE", "related_claims": ["CLM-001", "CLM-002"], "related_evidence": []}
+Recommended research questions:
+- What contemporary judicial rulings interpret the interspersing of police custody within the 40/60-day windows under Section 187 BNSS?
+- How are High Courts interpreting Section 531 BNSS savings clause when an offence occurred prior to July 1, 2024, but registration of FIR occurred after?
+Citations: none
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q021
 Mode: professional
 Difficulty: hard
 Query: Advise on default bail arguments under Section 167(2) CrPC where the charge sheet deadline is disputed.
+
+#### Answer A
+
+Summary: Analysis of default bail arguments under Section 167(2) CrPC where the charge sheet filing deadline and period computation are disputed.
+Issue summary: Entitlement to default bail under Section 167(2) of the Code of Criminal Procedure, 1973 (CrPC) where the deadline for filing the police report/charge sheet is disputed.
+Material facts from query:
+- Dispute regarding the charge sheet deadline under Section 167(2) CrPC.
+- Seeking arguments for securing default bail.
+Explicit legal provisions:
+- Section 167(2), Code of Criminal Procedure, 1973
+- Section 173(2), Code of Criminal Procedure, 1973
+Potential additional provisions:
+- Article 21, Constitution of India
+Procedural posture:
+- Pre-trial custody and bail proceedings under Section 167(2) CrPC.
+Legal regime: Code of Criminal Procedure, 1973 (CrPC) / Indian Criminal Jurisprudence
+Legal issues:
+- How is the 60 or 90-day period computed under Section 167(2) CrPC when calculating default bail eligibility?
+- Whether filing an incomplete or preliminary charge sheet within the deadline defeats the right to default bail.
+Applicable principles:
+- Indefeasible right to statutory default bail upon expiration of the 60 or 90-day period.
+- Strict enforcement of personal liberty under Article 21 of the Constitution of India.
+- Defective or incomplete charge sheets filed merely to bypass statutory timelines do not fulfill Section 173(2) CrPC requirements.
+Analysis:
+- Under Section 167(2) CrPC, an accused individual in custody is entitled to default (statutory) bail if the investigating agency fails to complete the investigation and file a charge sheet within the prescribed period of 60 or 90 days, depending on the severity of the offence.
+- When the charge sheet deadline is disputed, key arguments revolve around the exact computation of the statutory period, specifically whether the date of initial remand is included or excluded.
+- Another critical line of argument arises when the prosecution files an incomplete charge sheet within the deadline solely to defeat default bail, which may be challenged as non-compliant with Section 173(2) CrPC.
+- Once the statutory period expires and the accused applies for default bail prior to the filing of the charge sheet, the right to default bail becomes indefeasible and cannot be extinguished by a subsequently filed charge sheet.
+Counterpoints:
+- The prosecution may argue that the day of initial remand must be excluded when computing the statutory period.
+- The prosecution may contend that an incomplete charge sheet filed within time satisfies procedural requirements and halts the default bail claim.
+Uncertainties:
+- {"code": "NO_RETRIEVED_EVIDENCE", "message": "No case law or primary authorities were provided in the retrieval set to confirm binding precedents on exact day computation.", "severity": "WARNING", "related_claims": ["claim_1", "claim_2"], "related_evidence": []}
+Recommended research questions:
+- What is the specific precedent applicable regarding inclusion or exclusion of the first day of remand in period computation under Section 167(2) CrPC?
+- Does filing a charge sheet without sanction or key forensic reports constitute a valid police report under Section 173(2) CrPC?
+Citations: none
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q022
 Mode: professional
 Difficulty: hard
 Query: Assess whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST Act allegations are included.
 
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q023
 Mode: professional
 Difficulty: hard
 Query: Analyze search and seizure vulnerabilities in a commercial quantity NDPS prosecution.
+
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q024
 Mode: professional
 Difficulty: moderate
 Query: Frame the main issues in a dowry cruelty complaint involving Section 498A IPC and allegations of demand soon before separation.
 
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q025
 Mode: professional
 Difficulty: moderate
 Query: Assess conspiracy liability where messages show planning but no overt act is clearly proved.
+
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q026
 Mode: professional
 Difficulty: hard
 Query: How should counsel approach an FIR that cites both Section 103 BNS and Section 302 IPC for the same alleged murder?
 
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q027
 Mode: professional
 Difficulty: basic
 Query: Evaluate whether a request for certified copies from a criminal court requires legal advice about the merits of the offence.
+
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
 
 ### ans-q028
 Mode: professional
 Difficulty: hard
 Query: Analyze whether BNSS procedural references should replace CrPC references in a bail application filed after July 2024 for an old IPC offence.
 
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q029
 Mode: professional
 Difficulty: hard
 Query: Assess whether allegations of stalking and repeated obscene messages should be framed under IPC provisions, special child-protection law, or both when the complainant is seventeen.
 
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
 ### ans-q030
 Mode: professional
 Difficulty: basic
 Query: A complaint says only that two former friends argued online and stopped speaking, with no threat or demand. What should a criminal-law answer avoid overclaiming?
+
+#### Answer A
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+#### Answer B
+
+_Answer unavailable (FAILED_PROVIDER)._
+
+| Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
+| --- | --- | --- | --- | --- |
+| Legal Relevance |  |  |  |  |
+| Legal Correctness |  |  |  |  |
+| Grounding / Support |  |  |  |  |
+| Citation Quality |  |  |  |  |
+| Completeness |  |  |  |  |
+| Uncertainty Handling |  |  |  |  |
+| Regime Handling |  |  |  |  |
+| Actionability |  |  |  |  |
+| Hallucination Severity |  |  |  |  |
+
+Overall preference: A / B / Tie
+
+Reviewer confidence: High / Medium / Low
+
