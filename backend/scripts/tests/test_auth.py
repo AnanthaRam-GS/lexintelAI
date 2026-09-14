@@ -18,12 +18,15 @@ if str(REPO_ROOT) not in sys.path:
 
 from backend.app.core.security import (
     COOKIE_NAME,
+    DEFAULT_DEV_SECRET,
     create_access_token,
     decode_access_token,
     get_cookie_options,
+    get_jwt_secret,
     hash_password,
     verify_password,
 )
+from backend.app.core.config import Settings
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
 
@@ -70,6 +73,20 @@ class TestSecurityUnit(unittest.TestCase):
 
         with self.assertRaises(jwt.PyJWTError):
             decode_access_token(tampered)
+
+    def test_development_allows_explicit_dev_jwt_fallback(self) -> None:
+        settings = Settings(app_env="development", jwt_secret_key="")
+        self.assertEqual(get_jwt_secret(settings), DEFAULT_DEV_SECRET)
+
+    def test_production_requires_configured_jwt_secret(self) -> None:
+        settings = Settings(app_env="production", jwt_secret_key="")
+        with self.assertRaisesRegex(RuntimeError, "JWT_SECRET_KEY"):
+            get_jwt_secret(settings)
+
+    def test_production_uses_configured_jwt_secret(self) -> None:
+        configured_key = "configured-production-test-key"
+        settings = Settings(app_env="production", jwt_secret_key=configured_key)
+        self.assertEqual(get_jwt_secret(settings), configured_key)
 
     def test_cookie_options(self) -> None:
         opts = get_cookie_options()
