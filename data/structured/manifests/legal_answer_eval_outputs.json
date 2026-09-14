@@ -17,7 +17,7 @@
     "ordering_strategy": "frozen manifest order; per example LLM_ONLY then GROUNDED_RAG",
     "fallback_provider_enabled": false,
     "started_at": "2026-09-12T18:02:34.406405+00:00",
-    "completed_at": "2026-09-14T18:17:36.040582+00:00",
+    "completed_at": "2026-09-14T19:00:27.911196+00:00",
     "component_hashes": {
       "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
       "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
@@ -4727,23 +4727,175 @@
       "condition": "GROUNDED_RAG",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
-      "generation_status": "FAILED_PROVIDER",
-      "structured_parse_status": "FAILED",
-      "provider_attempt_count": 3,
-      "retry_count": 2,
+      "actual_model": "gemini-3.6-flash",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
+      "provider_attempt_count": 2,
+      "retry_count": 1,
       "retry_reasons": [
-        "HTTP_503",
-        "HTTP_503"
+        "GEMINI_TIMEOUT"
       ],
-      "final_provider_status": "HTTP_503",
+      "final_provider_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
       "repair_reason": null,
-      "answer_structured": null,
-      "summary": "Gemini generation failed before a validated structured answer was produced.",
-      "citation_validation": null,
-      "grounding_status": "UNGROUNDED",
+      "answer_structured": {
+        "issue_summary": "In a dowry cruelty complaint under Section 498A IPC involving allegations of demands made soon before separation, the key legal issues center on the specificity and temporal proximity of the allegations, individual attribution of acts to accused relatives, and the legal distinction between general marital discord and actionable statutory cruelty.",
+        "material_facts_from_query": [
+          "Complaint filed under Section 498A IPC.",
+          "Allegations involve dowry cruelty.",
+          "Allegations specify dowry demands made soon before separation."
+        ],
+        "explicit_legal_provisions": [
+          "Section 498A, Indian Penal Code (IPC)",
+          "Sections 3 and 4, Dowry Prohibition Act"
+        ],
+        "potential_additional_provisions": [
+          "Section 504, Indian Penal Code",
+          "Section 506, Indian Penal Code",
+          "Protection of Women from Domestic Violence Act, 2005"
+        ],
+        "procedural_posture": [
+          "Pre-trial / Framing of Issues / Evaluation of Complaint"
+        ],
+        "legal_regime": "ipc_crpc",
+        "retrieved_authorities": [
+          {
+            "evidence_id": "E1",
+            "case_name": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+            "court": {},
+            "judgment_date": null,
+            "source_url": "https://indiankanoon.org/doc/70774666/",
+            "paragraph_start": 27,
+            "paragraph_end": 27
+          },
+          {
+            "evidence_id": "E2",
+            "case_name": "Eshan Joshi vs Suman on 23 January, 2018",
+            "court": {},
+            "judgment_date": "2018-01-23",
+            "source_url": "https://indiankanoon.org/doc/8854101/",
+            "paragraph_start": 4,
+            "paragraph_end": 5
+          },
+          {
+            "evidence_id": "E3",
+            "case_name": "Smt. Alka vs State Of U.P. And Another on 13 May, 2022",
+            "court": {},
+            "judgment_date": null,
+            "source_url": "https://indiankanoon.org/doc/70774666/",
+            "paragraph_start": 27,
+            "paragraph_end": 27
+          },
+          {
+            "evidence_id": "E4",
+            "case_name": "Charan Singh @ Charanjit Singh vs The State Of Uttarakhand Home ... on 20 April, 2023",
+            "court": {},
+            "judgment_date": null,
+            "source_url": "https://indiankanoon.org/doc/83401027/",
+            "paragraph_start": 14,
+            "paragraph_end": 16
+          },
+          {
+            "evidence_id": "E5",
+            "case_name": "State vs . Noorjahan & Anr. Page No. 23 Of 33 on 13 December, 2021",
+            "court": {},
+            "judgment_date": "2021-12-13",
+            "source_url": "https://indiankanoon.org/doc/40368737/",
+            "paragraph_start": 20,
+            "paragraph_end": 21
+          }
+        ],
+        "legal_issues": [
+          "Whether the allegations in the complaint specify precise dates, times, and particulars of the dowry demands made prior to separation.",
+          "Whether the alleged acts of harassment demonstrate a direct causal and temporal proximity to the separation.",
+          "Whether specific overt acts of cruelty are assigned to each individual accused, avoiding general and omnibus allegations against relatives.",
+          "Whether parallel proceedings under the Dowry Prohibition Act or Domestic Violence Act are maintainable and factually aligned with the Section 498A IPC complaint."
+        ],
+        "applicable_principles": [
+          "Requirement of specific details regarding the time, place, and specific nature of dowry demands.",
+          "Proximity test: Cruelty or harassment must be temporally proximate to the marital breakdown or separation.",
+          "Prohibition of over-implication: General or omnibus allegations against relatives without specific role attribution are liable to be rejected or quashed.",
+          "Common constituent rule: Cruelty or harassment for or in connection with dowry demand is the essential gravamen under dowry-related offenses."
+        ],
+        "analysis": [
+          "To establish an offence under Section 498A IPC, the prosecution or complainant must demonstrate specific acts of cruelty or harassment linked directly to unlawful demands for dowry or valuable security. Vague and generalized allegations lacking specific details as to time, place, and nature of the demand are legally insufficient to sustain prosecution.",
+          "The allegation of dowry demand 'soon before separation' requires establishing a clear temporal nexus and continuous chain of harassment leading up to the separation. Where allegations relate to stale or old demands without proximity to the breakdown of cohabitation, the threshold of statutory cruelty is not satisfied.",
+          "In complaints implicating multiple family members, courts scrutinize whether specific overt acts are attributed to each named relative. Omnibus allegations that broad-brush all in-laws suggest an intention to over-implicate, which fails to furnish a valid basis for criminal proceedings.",
+          "Where parallel remedies under the Dowry Prohibition Act (Sections 3 and 4) or the Protection of Women from Domestic Violence Act are invoked alongside Section 498A IPC, the court must evaluate jurisdictional maintainability and ensure factual consistency across filings."
+        ],
+        "counterpoints": [
+          "The defense may argue that the allegations of demand prior to separation are an afterthought fabricated to gain leverage in matrimonial disputes.",
+          "The prosecution/complainant may contend that domestic cruelty usually occurs behind closed doors, making minute mathematical precision regarding date and time difficult to produce in initial complaints."
+        ],
+        "uncertainties": [
+          {
+            "code": "MISSING_FACTUAL_DETAILS",
+            "message": "The exact timeline of marriage, dates of alleged demands, and specific list of accused relatives are not provided in the query context.",
+            "severity": "low",
+            "related_claims": [
+              "claim_1",
+              "claim_3"
+            ],
+            "related_evidence": []
+          }
+        ],
+        "recommended_research_questions": [
+          "Are there written communications, digital records, or independent witness testimonies verifying the demand made prior to separation?",
+          "What is the exact period of time elapsed between the alleged demand and the actual physical separation of the parties?",
+          "Are distant or non-residing relatives of the husband named as accused without specific acts attributed to them?"
+        ],
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "claim_id": "claim_1",
+            "supported_text": "Insofar as the demand of dowry and the dowry harassment, there are no particulars given as to the time of demand and what was the nature of demand. The averments in the complaint and the evidence is vague and no specific demand is attributed to any of the appellants.",
+            "source_metadata": {},
+            "support_level": "exact"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "claim_1",
+            "supported_text": "Vague and cryptic allegations are found against her with no specific allegation in respect of demand for dowry or harassment in any manner. In the absence of definite evidence against the appellant, the Sessions Court and the High Court are not justified in convicting her even for the offence punishable under Section 498-A IPC.",
+            "source_metadata": {},
+            "support_level": "exact"
+          },
+          {
+            "evidence_id": "E4",
+            "claim_id": "claim_2",
+            "supported_text": "There is nothing in the statement that any such demand was raised immediately before the death as the incidents sought to be referred to are quite old... Even in her statement, there is nothing to suggest that soon before the death, any cruelty or harassment was made to the deceased",
+            "source_metadata": {},
+            "support_level": "exact"
+          },
+          {
+            "evidence_id": "E5",
+            "claim_id": "claim_2",
+            "supported_text": "cruelty or harassment of the lady by her husband or his relative for or in connection with any demand for any property or valuable security as a demand for dowry or in connection therewith is the common constituent of both the offences",
+            "source_metadata": {},
+            "support_level": "exact"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "claim_3",
+            "supported_text": "the bald allegations made against the sister-in-law by the complainant appeared to suggest the anxiety of the informant to rope in as many of the husband's relatives as possible.",
+            "source_metadata": {},
+            "support_level": "exact"
+          },
+          {
+            "evidence_id": "E2",
+            "claim_id": "claim_4",
+            "supported_text": "Under the FIR, the respondent had alleged cruelty on account of demand of dowry, whereas under the DV Act, the relief sought is for maintenance etc.",
+            "source_metadata": {},
+            "support_level": "exact"
+          }
+        ]
+      },
+      "summary": "This legal brief frames the core legal issues in a Section 498A IPC complaint alleging dowry cruelty and demands made soon before separation. The primary issues focus on the requirement of specific allegations regarding time, place, and nature of demands, establishing temporal proximity to the separation, avoiding omnibus allegations against relatives, and evaluating concurrent statutory remedies.",
+      "citation_validation": {
+        "valid": true,
+        "issues": []
+      },
+      "grounding_status": "STRUCTURALLY_GROUNDED",
       "retrieval_count": 5,
       "evidence_ids": [
         "E1",
@@ -4752,25 +4904,21 @@
         "E4",
         "E5"
       ],
-      "evidence_used": [],
-      "evidence_unused": [
+      "evidence_used": [
         "E1",
         "E2",
         "E3",
         "E4",
         "E5"
       ],
-      "warnings": [
-        "GEMINI_PROVIDER_ERROR"
-      ],
-      "errors": [
-        "Gemini request failed with HTTP 503: This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
-      ],
-      "generation_latency_ms": null,
-      "answer_generation_ms": 4680.107,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "evidence_unused": [],
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 108280.177,
+      "answer_generation_ms": 108280.573,
+      "prompt_tokens": 6165,
+      "completion_tokens": 3271,
+      "total_tokens": 10388,
       "fallback_used": false
     },
     {
@@ -5311,38 +5459,87 @@
       "condition": "LLM_ONLY",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
-      "generation_status": "FAILED_PROVIDER",
-      "structured_parse_status": "FAILED",
-      "provider_attempt_count": 3,
-      "retry_count": 2,
-      "retry_reasons": [
-        "HTTP_429",
-        "HTTP_429"
-      ],
-      "final_provider_status": "HTTP_429",
+      "actual_model": "gemini-3.6-flash",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
+      "provider_attempt_count": 1,
+      "retry_count": 0,
+      "retry_reasons": [],
+      "final_provider_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
       "repair_reason": null,
-      "answer_structured": null,
-      "summary": "Gemini generation failed before a validated structured answer was produced.",
-      "citation_validation": null,
+      "answer_structured": {
+        "issue_summary": "Evaluation of whether requesting certified copies of criminal court records constitutes a substantive procedural step requiring legal advice on the merits of the underlying offence.",
+        "material_facts_from_query": [
+          "A request is being considered or made for certified copies from a criminal court.",
+          "The query questions whether this request requires legal advice concerning the merits of the offence."
+        ],
+        "explicit_legal_provisions": [],
+        "potential_additional_provisions": [
+          "Jurisdiction-specific Rules of Criminal Procedure",
+          "Court Copy Rules and Fee Schedules",
+          "Judicial Records Public Access Acts / Freedom of Information Exemption Statutes"
+        ],
+        "procedural_posture": [
+          "Pre-filing / Administrative Inquiry regarding record acquisition."
+        ],
+        "legal_regime": "General Criminal Procedure and Administrative Court Rules (Jurisdiction-Independent)",
+        "retrieved_authorities": [],
+        "legal_issues": [
+          "Does a request for certified copies from a criminal court require an evaluation of or legal advice on the merits of the underlying offence?",
+          "What procedural conditions govern access to certified criminal court records for parties and non-parties?"
+        ],
+        "applicable_principles": [
+          "Separation of Administrative Record Procurement and Substantive Advocacy",
+          "Procedural Right to Access Judicial Records",
+          "Ministerial Nature of Court Registry Applications"
+        ],
+        "analysis": [
+          "The procurement of certified copies from a criminal court is fundamentally an administrative or ministerial process governed by court registry rules and procedural codes.",
+          "Requesting court records or certified copies does not intrinsically require an evaluation of or legal advice regarding the substantive merits of the alleged criminal offence.",
+          "While legal counsel may advise on which specific documents are necessary for substantive defense or appeal strategies, the act of applying for and receiving certified copies is distinct from giving substantive legal advice on the merits.",
+          "Jurisdictional variations may impose standing or legitimate interest requirements (especially for non-parties or third-party applicants), but such administrative prerequisites do not equate to a legal assessment of the merits of the charge."
+        ],
+        "counterpoints": [
+          "In certain circumstances or jurisdictions, third parties applying for confidential or sealed criminal records must demonstrate standing or legal interest, which may require legal reasoning, though still distinct from merits advice."
+        ],
+        "uncertainties": [
+          {
+            "code": "MISSING_JURISDICTION",
+            "message": "The query does not specify the relevant jurisdiction, governing court rules, or procedural code.",
+            "severity": "HIGH",
+            "related_claims": [
+              "c1",
+              "c2"
+            ],
+            "related_evidence": []
+          }
+        ],
+        "recommended_research_questions": [
+          "What specific jurisdictional rules govern applications for certified copies of criminal court records?",
+          "Are there differing standing requirements for parties of record versus non-party applicants in the target jurisdiction?",
+          "Does the target court require specific forms or judicial authorization for inspection and copying of restricted files?"
+        ],
+        "citations": []
+      },
+      "summary": "Requesting certified copies from a criminal court is an administrative procedural step governed by court record rules. It generally does not require legal advice or an evaluation regarding the substantive merits of the criminal offence, although specific jurisdictions may require applicants (particularly non-parties) to satisfy procedural standing requirements.",
+      "citation_validation": {
+        "valid": true,
+        "issues": []
+      },
       "grounding_status": "UNGROUNDED",
       "retrieval_count": 0,
       "evidence_ids": [],
       "evidence_used": [],
       "evidence_unused": [],
-      "warnings": [
-        "GEMINI_RATE_LIMIT"
-      ],
-      "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 35.20189889s."
-      ],
-      "generation_latency_ms": null,
-      "answer_generation_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 10953.655,
+      "answer_generation_ms": 10953.86,
+      "prompt_tokens": 382,
+      "completion_tokens": 743,
+      "total_tokens": 1773,
       "fallback_used": false
     },
     {
@@ -5358,7 +5555,7 @@
       "provider_attempt_count": 3,
       "retry_count": 2,
       "retry_reasons": [
-        "HTTP_429",
+        "HTTP_503",
         "HTTP_429"
       ],
       "final_provider_status": "HTTP_429",
@@ -5389,10 +5586,10 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 17.549005586s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 8.877848326s."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 2502.966,
+      "answer_generation_ms": 6532.077,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
@@ -5430,7 +5627,7 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 7.162445074s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 58.775876601s."
       ],
       "generation_latency_ms": null,
       "answer_generation_ms": null,
@@ -5483,10 +5680,10 @@
         "GEMINI_RATE_LIMIT"
       ],
       "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 49.245033996s."
+        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 40.06708805s."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 2583.185,
+      "answer_generation_ms": 2307.229,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,
