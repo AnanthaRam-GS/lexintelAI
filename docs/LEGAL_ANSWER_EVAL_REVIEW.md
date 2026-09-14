@@ -1906,11 +1906,85 @@ Query: Assess conspiracy liability where messages show planning but no overt act
 
 #### Answer A
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: Assessment of criminal conspiracy liability based on planning communications where no overt act is clearly established.
+Issue summary: Evaluation of whether proof of explicit planning messages, absent a clear subsequent overt act, suffices to establish criminal conspiracy liability.
+Material facts from query:
+- Electronic messages demonstrate planning of an offense.
+- No independent overt act carrying out or furthering the plan has been clearly proven.
+Potential additional provisions:
+- Specific jurisdictional conspiracy statutes (e.g., 18 U.S.C. Section 371 or state criminal codes governing inchoate crimes).
+Procedural posture:
+- Pre-trial evidentiary assessment and evaluation of charge viability.
+Legal regime: General Common Law / Statutory Criminal Law Framework
+Legal issues:
+- Whether an overt act is required as a statutory element of criminal conspiracy in the relevant jurisdiction.
+- Whether text messages demonstrating planning constitute sufficient proof of a completed agreement.
+Applicable principles:
+- Conspiracy as an inchoate offense generally requires an agreement between two or more parties to commit an unlawful act.
+- At common law, the agreement itself completes the offense of conspiracy.
+- In statutory jurisdictions requiring an overt act, the act serves to confirm that the conspiracy has progressed beyond mere intent or discussion.
+Analysis:
+- Under traditional common law principles, the essence of conspiracy is the agreement to commit an unlawful act. The offense is complete upon the formation of the agreement, meaning no overt act in furtherance of the conspiracy is strictly required unless mandated by a specific statute.
+- In statutory regimes that mandate an overt act in furtherance of the agreement, the overt act need not itself be illegal; however, an act beyond mere agreement must be committed by at least one co-conspirator.
+- Where evidence consists entirely of text messages detailing planning, those messages directly evidence the existence and terms of the agreement. If the applicable jurisdiction follows the traditional common law rule, such evidence may be legally sufficient. If the jurisdiction requires an overt act, the absence of proof of an overt act will preclude conviction unless a specific communication itself qualifies as an overt act.
+Counterpoints:
+- Defense counsel may argue that preliminary planning messages reflect mere negotiation or unacted-upon intent rather than a finalized, meeting-of-the-minds agreement.
+- In jurisdictions requiring an overt act, the defense will argue that failure to prove an overt act requires dismissal or acquittal as an essential element is missing.
+Uncertainties:
+- {"code": "NO_JURISDICTION_SPECIFIED", "message": "The legal requirement of an overt act depends on the controlling statutory framework of the specific jurisdiction.", "severity": "HIGH", "related_claims": ["claim_1", "claim_2"], "related_evidence": []}
+Recommended research questions:
+- Does the governing jurisdiction's conspiracy statute explicitly require proof of an overt act?
+- Under local precedent, can actionable planning communications themselves (such as sending funds, purchasing tools, or issuing operational directions) serve as the required overt act?
+Citations: none
 
 #### Answer B
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: Under Indian criminal jurisprudence, criminal conspiracy is complete upon the agreement to commit an offence. Proof of an overt act is not mandatory where messages clearly demonstrate a meeting of minds and agreement to commit a criminal offence.
+Issue summary: Assessment of criminal conspiracy liability where communication records show pre-concerted planning or agreement, but no separate overt act in furtherance of the object has been established.
+Material facts from query:
+- Messages exist showing planning among the parties.
+- No overt act in furtherance of the plan is clearly proved.
+Explicit legal provisions:
+- Section 120A, Indian Penal Code (Definition of Criminal Conspiracy)
+- Section 120B, Indian Penal Code (Punishment of Criminal Conspiracy)
+Potential additional provisions:
+- Section 34, Indian Penal Code (Acts done by several persons in furtherance of common intention)
+- Section 65B, Indian Evidence Act, 1872 (Admissibility of electronic records)
+Procedural posture:
+- Pre-trial or trial evaluation of evidentiary sufficiency for conspiracy charges.
+Legal regime: Indian Penal Code (IPC) / Criminal Law
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Mithilesh vs The State Of M.P. on 25 May, 2018", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E2", "case_name": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E3", "case_name": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E4", "case_name": "Cbi vs Narain Diwakar (Anchal Cghs) on 12 September, 2023", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+- {"evidence_id": "E5", "case_name": "Saifurrehman Ansari S/O Abdul Rehman ... vs State Of Rajasthan on 29 March, 2023", "court": {}, "judgment_date": null, "source_url": null, "paragraph_start": null, "paragraph_end": null}
+Legal issues:
+- Whether proof of an overt act is essential to establish liability for criminal conspiracy when electronic messages prove an agreement to commit an offence.
+- Whether messaging evidencing joint planning satisfies the legal requirement of an agreement under Section 120A IPC.
+Applicable principles:
+- Agreement as Essence: The core ingredient of criminal conspiracy under Section 120A IPC is the agreement to commit an illegal act.
+- Overt Act Exception for Offences: Where the agreement is to commit a substantive criminal offence, proof of an overt act is not required by law.
+- Physical Manifestation of Concurrence: An agreement requires a meeting of minds evidenced by clear conduct, words, or electronic transmission sharing the unlawful design.
+Analysis:
+- Under Section 120A of the Indian Penal Code, the essence of a criminal conspiracy is the agreement between two or more persons to commit an illegal act or a legal act by illegal means.
+- Where the agreement itself is to commit an offence, the statutory proviso to Section 120A IPC confirms that no overt act is required to complete the offence. The criminal combination is complete upon reaching the agreement.
+- As affirmed in S.C. Bahri (cited in CBI v. Narain Diwakar) and Chamanlal v. State of Punjab, proof of an overt act is not mandatory to sustain a conviction for criminal conspiracy under Section 120B IPC when the target of the conspiracy is an offence.
+- While an overt act is not strictly necessary for an agreement to commit an offence, there must be a physical manifestation of agreement or tacit understanding communicating shared unlawful design, as opposed to mere uncommunicated thoughts or idle discussion.
+- Electronic messages establishing clear planning and meeting of minds serve as direct or circumstantial evidence of the concurrence of wills necessary to establish the agreement.
+Counterpoints:
+- If the agreement relates to an act that is not inherently an offence (but merely an illegal act or act done by illegal means), the proviso to Section 120A IPC mandates proof of an overt act in pursuance thereof.
+- Mere innocent, inadvertent, or exploratory discussions without clear commitment or concurrence of intention do not constitute a criminal conspiracy.
+Uncertainties:
+- {"code": "UNC-001", "message": "The exact nature of the offense planned in the messages is unspecified in the query; if the target act is not a criminal offense, proof of an overt act remains required under the Section 120A proviso.", "severity": "MODERATE", "related_claims": ["CLM-001", "CLM-002"], "related_evidence": ["E3", "E4"]}
+Recommended research questions:
+- Does the planned conduct constitute a substantive penal offence or merely an illegal non-criminal act under statutory definitions?
+- Are the electronic messages authenticated and admissible under the applicable rules of evidence for electronic records?
+Citations:
+- [E3] From this, it necessarily follows that unless the statute so requires, no overt act need be done in furtherance of the conspiracy, and that the object of the combination need not be accomplished, in order to constitute an indictable offence.
+- [E4] In a case where the agreement is for accomplishment of an act which by itself constitutes an offence, then in that event no overt act is necessary to be proved by the prosecution because in such a fact-situation criminal conspiracy is established by proving such an agreement.
+- [E2] The ingredients of the offence of criminal conspiracy are that there should be an agreement between the persons who are alleged to conspire and the said agreement should be for doing of an illegal act or for doing, by illegal means, an act which by itself may not be illegal.
+- [E5] The evidence as to transmission of thoughts sharing the unlawful design may be sufficient... it is unnecessary to prove that the parties actually came together and agreed in terms to pursue the unlawful object; there need ever have been an express verbal agreement, it being sufficient that there was a tacit understanding between conspirators as to what should be done.
 
 | Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
 | --- | --- | --- | --- | --- |
@@ -1935,11 +2009,88 @@ Query: How should counsel approach an FIR that cites both Section 103 BNS and Se
 
 #### Answer A
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: Counsel should verify the exact date of the alleged offence to determine whether Section 302 IPC (pre-July 1, 2024) or Section 103 BNS (post-July 1, 2024) applies, and seek formal deletion or rectification of the inapplicable provision.
+Issue summary: Counsel must address an FIR that simultaneously invokes both Section 103 of Bharatiya Nyaya Sanhita (BNS) and Section 302 of Indian Penal Code (IPC) for a single alleged incident of murder. The primary strategy involves determining the exact date of commission to establish which substantive statute governs the offence.
+Material facts from query:
+- An FIR has been registered citing both Section 103 BNS and Section 302 IPC for the same alleged murder.
+Explicit legal provisions:
+- Section 103, Bharatiya Nyaya Sanhita (BNS)
+- Section 302, Indian Penal Code (IPC)
+Potential additional provisions:
+- Section 531, Bharatiya Nagarik Suraksha Sanhita (BNSS)
+- Article 20(1), Constitution of India
+- Section 482, Code of Criminal Procedure (CrPC) / Section 528, BNSS
+Procedural posture:
+- Pre-trial FIR challenge / Preliminary stage of investigation or charge sheet preparation.
+Legal regime: mixed_or_transition
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Nanhak And Ors vs State on 17 May, 2024", "court": {}, "judgment_date": "2024-05-17", "source_url": "https://indiankanoon.org/doc/76377526/", "paragraph_start": 6, "paragraph_end": null}
+- {"evidence_id": "E2", "case_name": "Manvir Singh And Others vs State Of U.P. on 7 February, 2024", "court": {}, "judgment_date": "2024-02-07", "source_url": "https://indiankanoon.org/doc/123692674/", "paragraph_start": 5, "paragraph_end": null}
+- {"evidence_id": "E3", "case_name": "Veerendra vs State Of Madhya Pradesh on 13 May, 2022", "court": {}, "judgment_date": null, "source_url": "https://indiankanoon.org/doc/31029978/", "paragraph_start": 69, "paragraph_end": null}
+- {"evidence_id": "E4", "case_name": "Manoj Pratap Singh vs The State Of Rajasthan on 24 June, 2022", "court": {}, "judgment_date": null, "source_url": "https://indiankanoon.org/doc/179828917/", "paragraph_start": 81, "paragraph_end": null}
+- {"evidence_id": "E5", "case_name": "The State Of Jharkhand vs Mathura Yadav on 29 March, 2019", "court": {}, "judgment_date": "2019-03-29", "source_url": "https://indiankanoon.org/doc/152313551/", "paragraph_start": 29, "paragraph_end": null}
+Legal issues:
+- Whether an FIR citing both Section 302 IPC and Section 103 BNS for the same act is legally valid.
+- Which substantive statute governs the offence when the date of commission dictates the applicable legal regime.
+Applicable principles:
+- Substantive penal law cannot be applied retrospectively (Article 20(1), Constitution of India).
+- Culpable homicide is the genus and murder is its species; prosecution must prove the necessary mens rea and intent to sustain a charge under murder provisions.
+- Simultaneous charging under repealed and newly enacted penal codes for the same act is legally unsustainable and requires procedural rectification.
+Analysis:
+- Substantive criminal law is governed by the date of the alleged commission of the offence pursuant to constitutional protections against retrospective penal law under Article 20(1) of the Constitution of India and repeal/savings provisions under criminal procedure law.
+- If the alleged murder occurred prior to July 1, 2024, Section 302 IPC applies exclusively; if the offence occurred on or after July 1, 2024, Section 103 BNS applies.
+- Dual invocation of Section 302 IPC and Section 103 BNS for the exact same act constitutes improper duplication and statutory ambiguity, which counsel should challenge via an application for correction before the investigating officer, Magistrate, or High Court.
+- Under established jurisprudence governing murder charges, the prosecution must establish specific intent or knowledge under the underlying murder definition clauses, as culpable homicide is the genus and murder is the species.
+Counterpoints:
+- The prosecution may argue that citing both sections is a technical clerical error that causes no prejudice to the accused during the initial investigation stage.
+- Courts may permit formal correction or amendment of charges prior to framing of charge without quashing the FIR in its entirety.
+Uncertainties:
+- {"code": "TRANSITIONAL_STATUTE_PRECEDENT_MISSING", "message": "Retrieved case authorities focus on IPC jurisprudence and do not contain direct judicial rulings addressing dual citation of IPC and BNS sections in a single FIR.", "severity": "moderate", "related_claims": ["claim_3"], "related_evidence": []}
+Recommended research questions:
+- What was the precise date and time of the alleged commission of the offence?
+- Has a charge sheet been filed, and under which substantive penal statute has the investigating officer sought trial?
+Citations:
+- [E1] ‘culpable homicide’ is the genus and ‘murder’ is its species and all ‘murders’ are ‘culpable homicides’ but all ‘culpable homicides’ are not ‘murders’.
+- [E2] the distinction between culpable homicide (Section 299 of the IPC) and murder (Section 300 of the IPC) has always to be carefully borne in mind while dealing with a charge under Section 302 of the IPC.
 
 #### Answer B
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: When an FIR cites both Section 103 BNS and Section 302 IPC for the same alleged act of murder, counsel must determine the exact date of the alleged offense. Offenses committed before July 1, 2024, fall under the IPC, while those on or after July 1, 2024, fall under the BNS. Counsel should challenge the dual citation as a procedural defect or seek appropriate correction/quashing.
+Issue summary: Addressing an First Information Report (FIR) that simultaneously cites Section 103 of Bharatiya Nyaya Sanhita (BNS), 2023, and Section 302 of the Indian Penal Code (IPC), 1860, for the same alleged act of murder.
+Material facts from query:
+- The FIR cites both Section 103 BNS and Section 302 IPC for the same alleged murder.
+Explicit legal provisions:
+- Section 103, Bharatiya Nyaya Sanhita (BNS), 2023
+- Section 302, Indian Penal Code (IPC), 1860
+- Section 531, Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023
+Potential additional provisions:
+- Article 20(1), Constitution of India
+- Section 482, Code of Criminal Procedure, 1973
+- Section 528, Bharatiya Nagarik Suraksha Sanhita, 2023
+Procedural posture:
+- Pre-trial stage / Investigation stage upon registration of FIR.
+Legal regime: Indian Criminal Jurisprudence (IPC 1860 / BNS 2023 / CrPC 1973 / BNSS 2023)
+Legal issues:
+- Which penal provision governs an offense depending on the date of commission (pre or post July 1, 2024)?
+- What is the legal remedy for an FIR that erroneously combines provisions of the repealed IPC and the newly enacted BNS for the same act?
+Applicable principles:
+- Principle of Legality and Non-Retrospectivity of Penal Laws (Article 20(1) of the Constitution of India)
+- Temporal Applicability based on the Date of Offense
+- Repeal and Savings provisions under criminal procedure laws
+Analysis:
+- Section 103 of the BNS, 2023, defines and penalizes murder, replacing Section 302 of the IPC, 1860. The applicable penal statute depends on the exact date and time of the alleged offense.
+- Under general principles of non-retrospectivity and repeal provisions (such as Section 531 of the Bharatiya Nagarik Suraksha Sanhita, 2023), acts committed prior to July 1, 2024, are governed by the IPC, whereas acts committed on or after July 1, 2024, are governed by the BNS.
+- Citing both provisions for a single act committed at a specific point in time constitutes legal redundancy or error of statutory applicability, as both statutes cannot simultaneously apply to the same physical act.
+- Counsel should examine the FIR to determine the alleged date of commission. If the offense was committed before July 1, 2024, Section 302 IPC applies; if on or after July 1, 2024, Section 103 BNS applies.
+- Counsel may raise procedural objections during investigation, seek clarification/rectification before the court, or file a petition under Section 482 of CrPC / Section 528 of BNSS to correct or quash improper invoking of duplicate penal provisions.
+Counterpoints:
+- Prosecution may argue that invoking both sections at the initial FIR stage is a mere typographical or technical defect that does not prejudice the accused and can be cured during charge sheet filing or framing of charges.
+Uncertainties:
+- {"code": "INSUFFICIENT_RETRIEVED_AUTHORITY", "message": "No external case law or authority context was supplied for specific court rulings on dual IPC/BNS FIR challenges.", "severity": "WARNING", "related_claims": ["claim_1", "claim_2"], "related_evidence": []}
+Recommended research questions:
+- Has the High Court or Supreme Court issued specific guidelines regarding the rectification of dual IPC/BNS FIR registration errors during the transition period?
+- What is the procedural impact on bail applications when an FIR contains improper statutory citations from both repealed and current regimes?
+Citations: none
 
 | Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
 | --- | --- | --- | --- | --- |
