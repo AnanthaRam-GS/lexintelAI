@@ -15,10 +15,11 @@ from backend.app.services.query_history import (
     list_query_history,
 )
 
-router = APIRouter(prefix="/query-history", tags=["Query History"])
+router = APIRouter(tags=["Query History"])
 
 
-@router.get("", response_model=list[QueryHistoryItem])
+@router.get("/query/history", response_model=list[QueryHistoryItem], operation_id="get_query_history")
+@router.get("/query-history", response_model=list[QueryHistoryItem], operation_id="get_query_history_legacy")
 def get_query_history(
     limit: int = Query(DEFAULT_HISTORY_LIMIT, ge=1, le=MAX_HISTORY_LIMIT),
     db: Session = Depends(get_db),

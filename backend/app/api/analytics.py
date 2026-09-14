@@ -31,7 +31,8 @@ def _handle_filter_error(exc: AnalyticsFilterError) -> None:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
-@router.get("/offence-frequency", response_model=list[OffenseFrequencyPoint])
+@router.get("/offence-frequency", response_model=list[OffenseFrequencyPoint], operation_id="get_offence_frequency")
+@router.get("/offense-frequency", response_model=list[OffenseFrequencyPoint], operation_id="get_offense_frequency_contract")
 def offence_frequency(
     year: int | None = Query(None),
     section: str | None = Query(None),
@@ -72,7 +73,8 @@ def section_cooccurrence(
         _handle_filter_error(exc)
 
 
-@router.get("/ipc-bns", response_model=list[IpcBnsMappingRow])
+@router.get("/ipc-bns", response_model=list[IpcBnsMappingRow], operation_id="get_ipc_bns_mapping")
+@router.get("/ipc-bns-map", response_model=list[IpcBnsMappingRow], operation_id="get_ipc_bns_map_contract")
 def ipc_bns_mapping(
     ipc_section: str | None = Query(None),
     bns_section: str | None = Query(None),
@@ -92,7 +94,8 @@ def ipc_bns_mapping(
         _handle_filter_error(exc)
 
 
-@router.get("/ncrb", response_model=list[NcrbStatPoint])
+@router.get("/ncrb", response_model=list[NcrbStatPoint], operation_id="get_ncrb_stats")
+@router.get("/ncrb-stats", response_model=list[NcrbStatPoint], operation_id="get_ncrb_stats_contract")
 def ncrb_filtering(
     year: int | None = Query(None),
     state: str | None = Query(None),

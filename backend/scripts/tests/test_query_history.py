@@ -133,9 +133,18 @@ class TestQueryHistoryServiceAndApi(unittest.TestCase):
         )
 
         unauthenticated = TestClient(app)
+        self.assertEqual(unauthenticated.get("/query/history").status_code, 401)
         self.assertEqual(unauthenticated.get("/query-history").status_code, 401)
 
         lawyer_client = self._login("lawyer@legalai.local", "LawyerPassword123!")
+        # Test contract route /query/history
+        contract_resp = lawyer_client.get("/query/history", params={"limit": 20})
+        self.assertEqual(contract_resp.status_code, 200)
+        contract_texts = [row["query_text"] for row in contract_resp.json()]
+        self.assertIn(f"{MARKER} lawyer one", contract_texts)
+        self.assertNotIn(f"{MARKER} lawyer two", contract_texts)
+
+        # Test legacy route /query-history
         lawyer_resp = lawyer_client.get("/query-history", params={"limit": 20})
         self.assertEqual(lawyer_resp.status_code, 200)
         lawyer_texts = [row["query_text"] for row in lawyer_resp.json()]

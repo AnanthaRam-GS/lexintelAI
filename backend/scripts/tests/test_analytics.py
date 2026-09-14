@@ -177,7 +177,13 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
             params={"year": 2020, "section": f"{MARKER}-302"},
         )
         self.assertEqual(freq.status_code, 200)
-        self.assertEqual(freq.json()[0]["count"], 2)
+        # Test contract route /analytics/offense-frequency
+        freq_contract = client.get(
+            "/analytics/offense-frequency",
+            params={"year": 2020, "section": f"{MARKER}-302"},
+        )
+        self.assertEqual(freq_contract.status_code, 200)
+        self.assertEqual(freq_contract.json()[0]["count"], 2)
 
         outcomes = client.get(
             "/analytics/outcome-distribution",
@@ -193,15 +199,23 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         self.assertEqual(cooccur.status_code, 200)
         self.assertTrue(any(row["count"] == 1 for row in cooccur.json()))
 
+        # Test both /analytics/ipc-bns and contract route /analytics/ipc-bns-map
         ipc = client.get("/analytics/ipc-bns", params={"ipc_section": f"{MARKER}-302"})
         self.assertEqual(ipc.status_code, 200)
         self.assertEqual(ipc.json()[0]["change_type"], "DIRECT")
+        ipc_map = client.get("/analytics/ipc-bns-map", params={"ipc_section": f"{MARKER}-302"})
+        self.assertEqual(ipc_map.status_code, 200)
+        self.assertEqual(ipc_map.json()[0]["change_type"], "DIRECT")
 
+        # Test both /analytics/ncrb and contract route /analytics/ncrb-stats
         ncrb = client.get("/analytics/ncrb", params={"state": f"{MARKER} State", "ipc_section": "302"})
         self.assertEqual(ncrb.status_code, 200)
         self.assertEqual(ncrb.json()[0]["offense_category"], f"{MARKER} Murder")
+        ncrb_stats = client.get("/analytics/ncrb-stats", params={"state": f"{MARKER} State", "ipc_section": "302"})
+        self.assertEqual(ncrb_stats.status_code, 200)
+        self.assertEqual(ncrb_stats.json()[0]["offense_category"], f"{MARKER} Murder")
 
-        bad = client.get("/analytics/ipc-bns", params={"change_type": "UNKNOWN"})
+        bad = client.get("/analytics/ipc-bns-map", params={"change_type": "UNKNOWN"})
         self.assertEqual(bad.status_code, 400)
 
 
