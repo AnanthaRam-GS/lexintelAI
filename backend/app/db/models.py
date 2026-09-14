@@ -223,7 +223,7 @@ class IpcBnsMapping(Base):
     __tablename__ = "ipc_bns_mapping"
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    ipc_section = Column(String(50), nullable=False, index=True)
+    ipc_section = Column(String(100), nullable=False, index=True)
     ipc_description = Column(Text, nullable=False)
     bns_section = Column(String(50), nullable=True, index=True)
     bns_description = Column(Text, nullable=True)
@@ -239,7 +239,7 @@ class NcrbStat(Base):
     year = Column(Integer, nullable=False, index=True)
     state = Column(String(100), nullable=False, index=True)
     offense_category = Column(String(150), nullable=False, index=True)
-    ipc_section = Column(String(50), nullable=True, index=True)
+    ipc_section = Column(String(100), nullable=True, index=True)
     case_count = Column(Integer, nullable=False, default=0, server_default="0")
     conviction_count = Column(Integer, nullable=True, default=0, server_default="0")
     acquittal_count = Column(Integer, nullable=True, default=0, server_default="0")
