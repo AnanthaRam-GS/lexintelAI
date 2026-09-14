@@ -1,6 +1,6 @@
 """Professional and public query API contracts for LegalAI."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from backend.app.models.common import SectionReference
 
@@ -13,7 +13,8 @@ class ProfessionalTextQueryRequest(BaseModel):
     not imply persistent corpus ingestion.
     """
 
-    text: str
+    text: str = Field(..., min_length=1, max_length=5000)
+    session_id: str | None = None
 
 
 class ProfessionalPrecedent(BaseModel):
@@ -59,20 +60,28 @@ class PublicTextQueryRequest(BaseModel):
     not imply persistent corpus ingestion.
     """
 
-    text: str
+    text: str = Field(..., min_length=1, max_length=5000)
+
+
+class PublicSection(BaseModel):
+    """Public-facing statutory section reference."""
+
+    title: str
+    explanation: str
+    link: str
 
 
 class PublicSource(BaseModel):
     """Public-facing source reference."""
 
-    label: str
-    type: str
-    source_url: str | None = None
+    title: str
+    link: str
 
 
 class PublicQueryResponse(BaseModel):
     """Public query response contract."""
 
     explanation: str
-    sections_cited: list[SectionReference]
+    sections: list[PublicSection]
     sources: list[PublicSource]
+    nextStepGuidance: str

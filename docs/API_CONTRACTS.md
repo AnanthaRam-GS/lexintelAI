@@ -20,6 +20,16 @@ Professional users may submit either text or a temporary PDF, one input form at
 a time. PDF upload endpoints will use multipart/form-data rather than embedding
 uploaded files in JSON schemas.
 
+`POST /query/professional` accepts authenticated lawyer/admin JSON text
+requests:
+
+```json
+{ "text": "Research anticipatory bail under BNSS", "session_id": "optional-session-id" }
+```
+
+PDF query support remains a separate future multipart/form-data endpoint; it is
+not accepted by this JSON text route.
+
 Professional query uploads are temporary analysis inputs. They are not
 automatically ingested into the global corpus.
 
@@ -38,6 +48,15 @@ LLM-generated citation details.
 Public Mode requires no login. Public users may submit either text or a
 temporary PDF, one input form at a time. PDF upload endpoints will use
 multipart/form-data.
+
+`POST /query/public` accepts anonymous JSON text requests:
+
+```json
+{ "text": "Can the police arrest me without notice?" }
+```
+
+PDF query support remains a separate future multipart/form-data endpoint; it is
+not accepted by this JSON text route.
 
 Public query uploads are temporary analysis inputs and are not automatically
 ingested into the global corpus. Session-local follow-up conversation may be
