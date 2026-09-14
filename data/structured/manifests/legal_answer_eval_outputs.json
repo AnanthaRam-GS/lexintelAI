@@ -17,7 +17,7 @@
     "ordering_strategy": "frozen manifest order; per example LLM_ONLY then GROUNDED_RAG",
     "fallback_provider_enabled": false,
     "started_at": "2026-09-12T18:02:34.406405+00:00",
-    "completed_at": "2026-09-14T06:22:26.898835+00:00",
+    "completed_at": "2026-09-14T08:36:59.264438+00:00",
     "component_hashes": {
       "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
       "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
@@ -3893,23 +3893,146 @@
       "condition": "GROUNDED_RAG",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
-      "generation_status": "FAILED_PROVIDER",
-      "structured_parse_status": "FAILED",
-      "provider_attempt_count": 3,
-      "retry_count": 2,
-      "retry_reasons": [
-        "HTTP_429",
-        "HTTP_429"
-      ],
-      "final_provider_status": "HTTP_429",
+      "actual_model": "gemini-3.6-flash",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
+      "provider_attempt_count": 1,
+      "retry_count": 0,
+      "retry_reasons": [],
+      "final_provider_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
       "repair_reason": null,
-      "answer_structured": null,
-      "summary": "Gemini generation failed before a validated structured answer was produced.",
-      "citation_validation": null,
-      "grounding_status": "UNGROUNDED",
+      "answer_structured": {
+        "issue_summary": "Legal strategy and arguments for seeking default bail under Section 167(2) of the Code of Criminal Procedure, 1973 (CrPC) in cases where the deadline for filing the charge sheet is disputed.",
+        "material_facts_from_query": [
+          "Dispute exists regarding the charge sheet filing deadline.",
+          "Advice requested on default bail arguments under Section 167(2) CrPC."
+        ],
+        "explicit_legal_provisions": [
+          "Section 167(2), Code of Criminal Procedure, 1973",
+          "Section 187(3), Bharatiya Nagarik Suraksha Sanhita, 2023",
+          "Section 439, Code of Criminal Procedure, 1973"
+        ],
+        "potential_additional_provisions": [
+          "Section 21, National Investigation Agency Act, 2008",
+          "Section 36A(4), Narcotic Drugs and Psychotropic Substances Act, 1985",
+          "Section 482, Code of Criminal Procedure, 1973"
+        ],
+        "procedural_posture": [
+          "Charge sheet pending or disputed",
+          "Application for default bail under Section 167(2) CrPC"
+        ],
+        "legal_regime": "ipc_crpc",
+        "retrieved_authorities": [
+          {
+            "evidence_id": "E1",
+            "case_name": "Kumar Vikas vs The State Of U.P. Thru. Prin. Secy. Home ... on 10 September, 2025",
+            "court": {},
+            "judgment_date": "2025-09-10",
+            "source_url": "https://indiankanoon.org/doc/183406121/",
+            "paragraph_start": 8,
+            "paragraph_end": 8
+          },
+          {
+            "evidence_id": "E2",
+            "case_name": "Jinofer Kawasji Bhujwala vs The State Of Gujarat on 19 June, 2020",
+            "court": {},
+            "judgment_date": null,
+            "source_url": "https://indiankanoon.org/doc/111592349/",
+            "paragraph_start": 9,
+            "paragraph_end": 11
+          },
+          {
+            "evidence_id": "E3",
+            "case_name": "Kumar Vikas vs The State Of U.P. Thru. Prin. Secy. Home ... on 10 September, 2025",
+            "court": {},
+            "judgment_date": "2025-09-10",
+            "source_url": "https://indiankanoon.org/doc/183406121/",
+            "paragraph_start": 8,
+            "paragraph_end": 8
+          },
+          {
+            "evidence_id": "E4",
+            "case_name": "Mohd. Hakim vs State on 6 October, 2021",
+            "court": {},
+            "judgment_date": "2021-10-06",
+            "source_url": "https://indiankanoon.org/doc/188935138/",
+            "paragraph_start": 59,
+            "paragraph_end": 61
+          },
+          {
+            "evidence_id": "E5",
+            "case_name": "Satinder Kumar vs State Of Himachal Pradesh on 4 August, 2020",
+            "court": {},
+            "judgment_date": "2020-08-04",
+            "source_url": "https://indiankanoon.org/doc/138227421/",
+            "paragraph_start": 23,
+            "paragraph_end": 24
+          }
+        ],
+        "legal_issues": [
+          "Determination and computation of the exact statutory period for filing the charge sheet under Section 167(2) CrPC.",
+          "Effect of filing a default bail application prior to the actual submission of the charge sheet by the investigating agency.",
+          "Appropriate forum and remedy for challenging orders rejecting default bail under specialized procedural frameworks."
+        ],
+        "applicable_principles": [
+          "Failure to file a charge sheet within the prescribed statutory timeframe confers an indefeasible right to default bail upon the accused.",
+          "If the default bail application is filed prior to the actual filing of the charge sheet, subsequent submission of the charge sheet cannot defeat the accrued statutory right.",
+          "Default bail proceedings are distinct from regular bail under Section 439 CrPC as they are statutory mandates rather than discretionary merit-based adjudications."
+        ],
+        "analysis": [
+          "Section 167(2) CrPC (corresponding to Section 187(3) of the Bharatiya Nagarik Suraksha Sanhita, 2023 / BNSS) provides an indefeasible statutory right to default bail if the investigating agency fails to file the charge sheet or complaint within the prescribed statutory period (60 or 90 days depending on the offence).",
+          "When the deadline is disputed, the primary argument is that the right to default bail accrues automatically upon the expiry of the statutory period and becomes enforceable as soon as the accused applies for bail before the charge sheet is actually submitted.",
+          "An order under Section 167(2) CrPC does not adjudicate the merits of the case, and default bail granted under this provision is deemed to be released under Chapter XXXIII of the CrPC.",
+          "Where special statutes or designated courts (such as NIA Special Courts) are involved, procedural considerations arise regarding whether challenges to default bail rejections should be pursued via statutory appeal (e.g., Section 21 of the NIA Act) or inherent powers under Section 482 CrPC."
+        ],
+        "counterpoints": [
+          "The prosecution may argue that the statutory period has been properly computed by excluding certain days or that an extension of investigation time was validly granted under applicable special statutes.",
+          "State counsel may raise preliminary procedural objections regarding the maintainability of Section 482 petitions where alternative statutory appeal routes exist under special enactments."
+        ],
+        "uncertainties": [
+          {
+            "code": "MISSING_FACTUAL_DETAILS",
+            "message": "Specific details regarding the exact date of first remand, the nature of charges, and whether an extension of time was sought are required to calculate the exact deadline.",
+            "severity": "LOW",
+            "related_claims": [
+              "claim_1",
+              "claim_2"
+            ],
+            "related_evidence": [
+              "E1",
+              "E3"
+            ]
+          }
+        ],
+        "recommended_research_questions": [
+          "Whether the day of first remand is included or excluded when computing the 60/90-day period under Section 167(2) CrPC under relevant jurisdictional precedents.",
+          "Whether the investigating agency filed a timely application for extension of time prior to the expiry of the statutory period under any applicable special statute."
+        ],
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "claim_id": "claim_1",
+            "supported_text": "right upon accused to be released on bail, on non-filing of charge sheet, within the prescribed time period",
+            "source_metadata": {},
+            "support_level": "EXPLICIT_MATCH"
+          },
+          {
+            "evidence_id": "E3",
+            "claim_id": "claim_2",
+            "supported_text": "The provision prescribed under Section 187(3) of BNSS contains the 'statutory bail', which in fact identifies the indefeasible right given to the accused person.",
+            "source_metadata": {},
+            "support_level": "EXPLICIT_MATCH"
+          }
+        ]
+      },
+      "summary": "This legal response outlines key arguments for default bail under Section 167(2) CrPC, emphasizing the indefeasible nature of the statutory right when the charge sheet is not filed within the prescribed period.",
+      "citation_validation": {
+        "valid": true,
+        "issues": []
+      },
+      "grounding_status": "STRUCTURALLY_GROUNDED",
       "retrieval_count": 5,
       "evidence_ids": [
         "E1",
@@ -3918,25 +4041,22 @@
         "E4",
         "E5"
       ],
-      "evidence_used": [],
-      "evidence_unused": [
+      "evidence_used": [
         "E1",
+        "E3"
+      ],
+      "evidence_unused": [
         "E2",
-        "E3",
         "E4",
         "E5"
       ],
-      "warnings": [
-        "GEMINI_RATE_LIMIT"
-      ],
-      "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 51.171303938s."
-      ],
-      "generation_latency_ms": null,
-      "answer_generation_ms": 2220.891,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 22262.452,
+      "answer_generation_ms": 22262.848,
+      "prompt_tokens": 6513,
+      "completion_tokens": 2325,
+      "total_tokens": 10931,
       "fallback_used": false
     },
     {
@@ -3946,38 +4066,86 @@
       "condition": "LLM_ONLY",
       "provider": "gemini",
       "configured_model": "gemini-3.6-flash",
-      "actual_model": null,
-      "generation_status": "FAILED_PROVIDER",
-      "structured_parse_status": "FAILED",
-      "provider_attempt_count": 3,
-      "retry_count": 2,
-      "retry_reasons": [
-        "HTTP_429",
-        "HTTP_429"
-      ],
-      "final_provider_status": "HTTP_429",
+      "actual_model": "gemini-3.6-flash",
+      "generation_status": "SUCCESS",
+      "structured_parse_status": "SUCCESS",
+      "provider_attempt_count": 1,
+      "retry_count": 0,
+      "retry_reasons": [],
+      "final_provider_status": "SUCCESS",
       "repair_attempted": false,
       "repair_succeeded": null,
       "repair_reason": null,
-      "answer_structured": null,
-      "summary": "Gemini generation failed before a validated structured answer was produced.",
-      "citation_validation": null,
+      "answer_structured": {
+        "issue_summary": "Assessment of whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST (Prevention of Atrocities) Act allegations are included.",
+        "material_facts_from_query": [
+          "Query asks whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST Act allegations are present."
+        ],
+        "explicit_legal_provisions": [
+          "Section 438, Code of Criminal Procedure, 1973",
+          "Section 18, Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989",
+          "Section 18A, Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989"
+        ],
+        "potential_additional_provisions": [
+          "Article 21 of the Constitution of India",
+          "Section 482 of the Code of Criminal Procedure, 1973"
+        ],
+        "procedural_posture": [
+          "Legal assessment prepared in response to specific research inquiry regarding statutory bail restrictions."
+        ],
+        "legal_regime": "Indian Criminal Law / Criminal Procedure Code, 1973 (Section 438) and SC/ST (Prevention of Atrocities) Act, 1989 (Section 18 & Section 18A)",
+        "retrieved_authorities": [],
+        "legal_issues": [
+          "Whether Section 18/18A of the SC/ST Act operates as an absolute bar to anticipatory bail under Section 438 CrPC.",
+          "Under what circumstances courts can entertain anticipatory bail despite allegations under the SC/ST Act."
+        ],
+        "applicable_principles": [
+          "Statutory exclusion of anticipatory bail under Section 18 and Section 18A of the SC/ST Act.",
+          "Judicial review exception allowing evaluation of whether a prima facie offense under the SC/ST Act is made out."
+        ],
+        "analysis": [
+          "Section 18 of the SC/ST (Prevention of Atrocities) Act, 1989 explicitly creates a statutory bar against the application of Section 438 of the Code of Criminal Procedure (CrPC) for offenses under the Act.",
+          "Section 18A was added to reinforce that statutory bar and clarify that preliminary inquiries are not mandated prior to registration of an FIR, nor is prior approval required for arrest under the Act.",
+          "Judicial interpretation has established a limited exception: if the allegations in the FIR or complaint do not disclose a prima facie case under the SC/ST Act, the statutory bar under Section 18 does not apply, allowing courts to consider an application under Section 438 CrPC."
+        ],
+        "counterpoints": [
+          "While the statutory prohibition is stringent to prevent intimidation and abuse against protected groups, total exclusion of judicial discretion where complaints are prima facie false or malicious would infringe upon constitutional liberties."
+        ],
+        "uncertainties": [
+          {
+            "code": "NO_RETRIEVED_EVIDENCE",
+            "message": "No retrieved authorities were provided in the prompt context to ground specific case law citations.",
+            "severity": "WARNING",
+            "related_claims": [
+              "CLAIM-001",
+              "CLAIM-002"
+            ],
+            "related_evidence": []
+          }
+        ],
+        "recommended_research_questions": [
+          "What specific Supreme Court precedents define the threshold for determining if a prima facie SC/ST Act case is absent?",
+          "How do procedural safeguards under Section 41A CrPC apply in cases involving SC/ST Act allegations?"
+        ],
+        "citations": []
+      },
+      "summary": "Section 18 and Section 18A of the SC/ST Act generally bar anticipatory bail under Section 438 CrPC. However, courts hold that if the complaint fails to establish a prima facie case under the SC/ST Act, the statutory bar does not apply.",
+      "citation_validation": {
+        "valid": true,
+        "issues": []
+      },
       "grounding_status": "UNGROUNDED",
       "retrieval_count": 0,
       "evidence_ids": [],
       "evidence_used": [],
       "evidence_unused": [],
-      "warnings": [
-        "GEMINI_RATE_LIMIT"
-      ],
-      "errors": [
-        "Gemini request failed with HTTP 429: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 41.084081716s."
-      ],
-      "generation_latency_ms": null,
-      "answer_generation_ms": null,
-      "prompt_tokens": null,
-      "completion_tokens": null,
-      "total_tokens": null,
+      "warnings": [],
+      "errors": [],
+      "generation_latency_ms": 14663.894,
+      "answer_generation_ms": 14664.255,
+      "prompt_tokens": 386,
+      "completion_tokens": 1284,
+      "total_tokens": 3050,
       "fallback_used": false
     },
     {

@@ -1545,7 +1545,53 @@ Citations: none
 
 #### Answer B
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: This legal response outlines key arguments for default bail under Section 167(2) CrPC, emphasizing the indefeasible nature of the statutory right when the charge sheet is not filed within the prescribed period.
+Issue summary: Legal strategy and arguments for seeking default bail under Section 167(2) of the Code of Criminal Procedure, 1973 (CrPC) in cases where the deadline for filing the charge sheet is disputed.
+Material facts from query:
+- Dispute exists regarding the charge sheet filing deadline.
+- Advice requested on default bail arguments under Section 167(2) CrPC.
+Explicit legal provisions:
+- Section 167(2), Code of Criminal Procedure, 1973
+- Section 187(3), Bharatiya Nagarik Suraksha Sanhita, 2023
+- Section 439, Code of Criminal Procedure, 1973
+Potential additional provisions:
+- Section 21, National Investigation Agency Act, 2008
+- Section 36A(4), Narcotic Drugs and Psychotropic Substances Act, 1985
+- Section 482, Code of Criminal Procedure, 1973
+Procedural posture:
+- Charge sheet pending or disputed
+- Application for default bail under Section 167(2) CrPC
+Legal regime: ipc_crpc
+Retrieved authorities:
+- {"evidence_id": "E1", "case_name": "Kumar Vikas vs The State Of U.P. Thru. Prin. Secy. Home ... on 10 September, 2025", "court": {}, "judgment_date": "2025-09-10", "source_url": "https://indiankanoon.org/doc/183406121/", "paragraph_start": 8, "paragraph_end": 8}
+- {"evidence_id": "E2", "case_name": "Jinofer Kawasji Bhujwala vs The State Of Gujarat on 19 June, 2020", "court": {}, "judgment_date": null, "source_url": "https://indiankanoon.org/doc/111592349/", "paragraph_start": 9, "paragraph_end": 11}
+- {"evidence_id": "E3", "case_name": "Kumar Vikas vs The State Of U.P. Thru. Prin. Secy. Home ... on 10 September, 2025", "court": {}, "judgment_date": "2025-09-10", "source_url": "https://indiankanoon.org/doc/183406121/", "paragraph_start": 8, "paragraph_end": 8}
+- {"evidence_id": "E4", "case_name": "Mohd. Hakim vs State on 6 October, 2021", "court": {}, "judgment_date": "2021-10-06", "source_url": "https://indiankanoon.org/doc/188935138/", "paragraph_start": 59, "paragraph_end": 61}
+- {"evidence_id": "E5", "case_name": "Satinder Kumar vs State Of Himachal Pradesh on 4 August, 2020", "court": {}, "judgment_date": "2020-08-04", "source_url": "https://indiankanoon.org/doc/138227421/", "paragraph_start": 23, "paragraph_end": 24}
+Legal issues:
+- Determination and computation of the exact statutory period for filing the charge sheet under Section 167(2) CrPC.
+- Effect of filing a default bail application prior to the actual submission of the charge sheet by the investigating agency.
+- Appropriate forum and remedy for challenging orders rejecting default bail under specialized procedural frameworks.
+Applicable principles:
+- Failure to file a charge sheet within the prescribed statutory timeframe confers an indefeasible right to default bail upon the accused.
+- If the default bail application is filed prior to the actual filing of the charge sheet, subsequent submission of the charge sheet cannot defeat the accrued statutory right.
+- Default bail proceedings are distinct from regular bail under Section 439 CrPC as they are statutory mandates rather than discretionary merit-based adjudications.
+Analysis:
+- Section 167(2) CrPC (corresponding to Section 187(3) of the Bharatiya Nagarik Suraksha Sanhita, 2023 / BNSS) provides an indefeasible statutory right to default bail if the investigating agency fails to file the charge sheet or complaint within the prescribed statutory period (60 or 90 days depending on the offence).
+- When the deadline is disputed, the primary argument is that the right to default bail accrues automatically upon the expiry of the statutory period and becomes enforceable as soon as the accused applies for bail before the charge sheet is actually submitted.
+- An order under Section 167(2) CrPC does not adjudicate the merits of the case, and default bail granted under this provision is deemed to be released under Chapter XXXIII of the CrPC.
+- Where special statutes or designated courts (such as NIA Special Courts) are involved, procedural considerations arise regarding whether challenges to default bail rejections should be pursued via statutory appeal (e.g., Section 21 of the NIA Act) or inherent powers under Section 482 CrPC.
+Counterpoints:
+- The prosecution may argue that the statutory period has been properly computed by excluding certain days or that an extension of investigation time was validly granted under applicable special statutes.
+- State counsel may raise preliminary procedural objections regarding the maintainability of Section 482 petitions where alternative statutory appeal routes exist under special enactments.
+Uncertainties:
+- {"code": "MISSING_FACTUAL_DETAILS", "message": "Specific details regarding the exact date of first remand, the nature of charges, and whether an extension of time was sought are required to calculate the exact deadline.", "severity": "LOW", "related_claims": ["claim_1", "claim_2"], "related_evidence": ["E1", "E3"]}
+Recommended research questions:
+- Whether the day of first remand is included or excluded when computing the 60/90-day period under Section 167(2) CrPC under relevant jurisdictional precedents.
+- Whether the investigating agency filed a timely application for extension of time prior to the expiry of the statutory period under any applicable special statute.
+Citations:
+- [E1] right upon accused to be released on bail, on non-filing of charge sheet, within the prescribed time period
+- [E3] The provision prescribed under Section 187(3) of BNSS contains the 'statutory bail', which in fact identifies the indefeasible right given to the accused person.
 
 | Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
 | --- | --- | --- | --- | --- |
@@ -1574,7 +1620,38 @@ _Answer unavailable (FAILED_PROVIDER)._
 
 #### Answer B
 
-_Answer unavailable (FAILED_PROVIDER)._
+Summary: Section 18 and Section 18A of the SC/ST Act generally bar anticipatory bail under Section 438 CrPC. However, courts hold that if the complaint fails to establish a prima facie case under the SC/ST Act, the statutory bar does not apply.
+Issue summary: Assessment of whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST (Prevention of Atrocities) Act allegations are included.
+Material facts from query:
+- Query asks whether Section 438 CrPC anticipatory bail is barred or limited when SC/ST Act allegations are present.
+Explicit legal provisions:
+- Section 438, Code of Criminal Procedure, 1973
+- Section 18, Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989
+- Section 18A, Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989
+Potential additional provisions:
+- Article 21 of the Constitution of India
+- Section 482 of the Code of Criminal Procedure, 1973
+Procedural posture:
+- Legal assessment prepared in response to specific research inquiry regarding statutory bail restrictions.
+Legal regime: Indian Criminal Law / Criminal Procedure Code, 1973 (Section 438) and SC/ST (Prevention of Atrocities) Act, 1989 (Section 18 & Section 18A)
+Legal issues:
+- Whether Section 18/18A of the SC/ST Act operates as an absolute bar to anticipatory bail under Section 438 CrPC.
+- Under what circumstances courts can entertain anticipatory bail despite allegations under the SC/ST Act.
+Applicable principles:
+- Statutory exclusion of anticipatory bail under Section 18 and Section 18A of the SC/ST Act.
+- Judicial review exception allowing evaluation of whether a prima facie offense under the SC/ST Act is made out.
+Analysis:
+- Section 18 of the SC/ST (Prevention of Atrocities) Act, 1989 explicitly creates a statutory bar against the application of Section 438 of the Code of Criminal Procedure (CrPC) for offenses under the Act.
+- Section 18A was added to reinforce that statutory bar and clarify that preliminary inquiries are not mandated prior to registration of an FIR, nor is prior approval required for arrest under the Act.
+- Judicial interpretation has established a limited exception: if the allegations in the FIR or complaint do not disclose a prima facie case under the SC/ST Act, the statutory bar under Section 18 does not apply, allowing courts to consider an application under Section 438 CrPC.
+Counterpoints:
+- While the statutory prohibition is stringent to prevent intimidation and abuse against protected groups, total exclusion of judicial discretion where complaints are prima facie false or malicious would infringe upon constitutional liberties.
+Uncertainties:
+- {"code": "NO_RETRIEVED_EVIDENCE", "message": "No retrieved authorities were provided in the prompt context to ground specific case law citations.", "severity": "WARNING", "related_claims": ["CLAIM-001", "CLAIM-002"], "related_evidence": []}
+Recommended research questions:
+- What specific Supreme Court precedents define the threshold for determining if a prima facie SC/ST Act case is absent?
+- How do procedural safeguards under Section 41A CrPC apply in cases involving SC/ST Act allegations?
+Citations: none
 
 | Dimension | Answer A Score | Answer A Notes | Answer B Score | Answer B Notes |
 | --- | --- | --- | --- | --- |
