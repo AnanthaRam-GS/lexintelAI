@@ -27,6 +27,8 @@ def get_jwt_secret(settings: Settings | None = None) -> str:
     s = _get_settings(settings)
     if s.jwt_secret_key and len(s.jwt_secret_key.strip()) > 0:
         return s.jwt_secret_key.strip()
+    if s.app_env.casefold() == "production":
+        raise RuntimeError("JWT_SECRET_KEY must be configured in production.")
     return DEFAULT_DEV_SECRET
 
 

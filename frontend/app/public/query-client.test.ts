@@ -1,118 +1,171 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchPublicQuery, type PublicQueryInput } from './query-client';
+import { fetchPublicQuery, type PublicQueryInput, type PublicQueryResponse } from './query-client';
 
-const delayEnvironmentKey = 'NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_DELAY_MS';
-const failureEnvironmentKey = 'NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_FAILURE';
-const originalDelay = process.env[delayEnvironmentKey];
-const originalFailure = process.env[failureEnvironmentKey];
+const originalApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 afterEach(() => {
-  vi.useRealTimers();
   vi.restoreAllMocks();
 
-  if (originalDelay === undefined) {
-    delete process.env[delayEnvironmentKey];
+  if (originalApiBaseUrl === undefined) {
+    delete process.env.NEXT_PUBLIC_API_BASE_URL;
   } else {
-    process.env[delayEnvironmentKey] = originalDelay;
-  }
-
-  if (originalFailure === undefined) {
-    delete process.env[failureEnvironmentKey];
-  } else {
-    process.env[failureEnvironmentKey] = originalFailure;
+    process.env.NEXT_PUBLIC_API_BASE_URL = originalApiBaseUrl;
   }
 });
 
 describe('fetchPublicQuery', () => {
-  it('keeps the import boundary response limited to public fields', async () => {
-    process.env[delayEnvironmentKey] = '0';
+  it('posts a text query to the public backend endpoint without authorization', async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = 'https://api.legalai.test/';
+    const fetchMock = mockFetch(okResponse(responseFixture()));
 
     const response = await fetchPublicQuery({
       kind: 'text',
-      content: 'Help me understand my notice',
+      content: '  Can the police arrest me without notice?  ',
     });
 
+    expect(response).toEqual(responseFixture());
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const firstCall = fetchMock.mock.calls[0];
+    const url = firstCall?.[0];
+    const init = firstCall?.[1];
+    expect(url).toBe('https://api.legalai.test/query/public');
+    expect(init).toMatchObject({
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({ text: 'Can the police arrest me without notice?' }),
+    });
+    expect(headers(init)).toMatchObject({ 'Content-Type': 'application/json' });
+    expect(headers(init)).not.toHaveProperty('Authorization');
+  });
+
+  it('uses the development backend URL when no public base URL is configured', async () => {
+    delete process.env.NEXT_PUBLIC_API_BASE_URL;
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+
+    await fetchPublicQuery({ kind: 'text', content: 'Help me' });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('http://127.0.0.1:8000/query/public');
+  });
+
+  it('parses the exact public response contract', async () => {
+    const expected = responseFixture();
+    mockFetch(okResponse(expected));
+
+    const response = await fetchPublicQuery({ kind: 'text', content: 'Help me' });
+
     expect(response).toEqual({
-      explanation: expect.any(String),
-      sections: [
-        {
-          title: expect.any(String),
-          explanation: expect.any(String),
-          link: expect.stringMatching(/^https:\/\//),
-        },
-      ],
-      sources: [{ title: expect.any(String), link: expect.stringMatching(/^https:\/\//) }],
-      nextStepGuidance: expect.any(String),
+      explanation: expected.explanation,
+      sections: expected.sections,
+      sources: expected.sources,
+      nextStepGuidance: expected.nextStepGuidance,
     });
     expect(response).not.toHaveProperty('confidence');
     expect(response).not.toHaveProperty('metadata');
   });
 
-  it('honors the configured mock delay without changing the one-input request shape', async () => {
-    vi.useFakeTimers();
-    process.env[delayEnvironmentKey] = '800';
-
-    const request = fetchPublicQuery({ kind: 'file', file: new File(['pdf'], 'notice.pdf') });
-    let settled = false;
-    void request.then(() => {
-      settled = true;
-    });
-
-    await vi.advanceTimersByTimeAsync(799);
-    expect(settled).toBe(false);
-
-    await vi.advanceTimersByTimeAsync(1);
-    await expect(request).resolves.toEqual(
-      expect.objectContaining({ explanation: expect.stringContaining('PDF') }),
+  it('rejects network errors through the safe public UI path', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockRejectedValue(new Error('/private/path timeout')),
     );
-  });
-
-  it('rejects an invalid discriminant before waiting for configured latency', async () => {
-    vi.useFakeTimers();
-    process.env[delayEnvironmentKey] = '800';
-
-    const request = fetchPublicQuery({ kind: 'unsupported' } as unknown as PublicQueryInput);
-
-    await expect(request).rejects.toThrow('Public query input must have a text or file kind.');
-  }, 100);
-
-  it('keeps default mock latency within the 800–1500ms public range', async () => {
-    vi.useFakeTimers();
-    delete process.env[delayEnvironmentKey];
-    const random = vi.spyOn(Math, 'random');
-
-    random.mockReturnValue(0);
-    const shortestRequest = fetchPublicQuery({ kind: 'text', content: 'Help me' });
-    let shortestRequestSettled = false;
-    void shortestRequest.then(() => {
-      shortestRequestSettled = true;
-    });
-
-    await vi.advanceTimersByTimeAsync(799);
-    expect(shortestRequestSettled).toBe(false);
-    await vi.advanceTimersByTimeAsync(1);
-    await expect(shortestRequest).resolves.toEqual(expect.any(Object));
-
-    random.mockReturnValue(0.999999);
-    const longestRequest = fetchPublicQuery({ kind: 'text', content: 'Help me' });
-    let longestRequestSettled = false;
-    void longestRequest.then(() => {
-      longestRequestSettled = true;
-    });
-
-    await vi.advanceTimersByTimeAsync(1499);
-    expect(longestRequestSettled).toBe(false);
-    await vi.advanceTimersByTimeAsync(1);
-    await expect(longestRequest).resolves.toEqual(expect.any(Object));
-  });
-
-  it('rejects through the configured public mock failure input', async () => {
-    process.env[delayEnvironmentKey] = '0';
-    process.env[failureEnvironmentKey] = 'true';
 
     await expect(fetchPublicQuery({ kind: 'text', content: 'Help me' })).rejects.toThrow(
-      'Public query mock failed',
+      '/private/path timeout',
     );
   });
+
+  it('maps backend validation errors without requiring provider internals', async () => {
+    mockFetch({
+      ok: false,
+      status: 422,
+      json: async () => ({
+        detail: {
+          code: 'INVALID_QUERY_REQUEST',
+          message: 'The request could not be completed.',
+        },
+      }),
+    } as Response);
+
+    await expect(fetchPublicQuery({ kind: 'text', content: 'Help me' })).rejects.toThrow(
+      'The request could not be completed.',
+    );
+  });
+
+  it('maps backend/provider failures to safe errors', async () => {
+    mockFetch({
+      ok: false,
+      status: 503,
+      json: async () => ({
+        detail: {
+          code: 'MODEL_UNAVAILABLE',
+          message: 'The legal answer model is temporarily unavailable.',
+        },
+      }),
+    } as Response);
+
+    await expect(fetchPublicQuery({ kind: 'text', content: 'Help me' })).rejects.toThrow(
+      'The legal answer model is temporarily unavailable.',
+    );
+  });
+
+  it('does not send empty queries', async () => {
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+
+    await expect(fetchPublicQuery({ kind: 'text', content: '   ' })).rejects.toThrow(
+      'Public query text must not be empty.',
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('keeps unsupported PDF input off the JSON text route', async () => {
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+
+    await expect(
+      fetchPublicQuery({ kind: 'file', file: new File(['pdf'], 'notice.pdf') }),
+    ).rejects.toThrow('Public PDF query is not available yet.');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid discriminant before fetch', async () => {
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+
+    await expect(
+      fetchPublicQuery({ kind: 'unsupported' } as unknown as PublicQueryInput),
+    ).rejects.toThrow('Public query input must have a text or file kind.');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
+
+function responseFixture(): PublicQueryResponse {
+  return {
+    explanation: 'This is general legal information.',
+    sections: [
+      {
+        title: 'BNSS section 35',
+        explanation: 'Applicability depends on the facts.',
+        link: 'https://www.indiacode.nic.in/',
+      },
+    ],
+    sources: [{ title: 'Example v State', link: 'https://example.test/judgment' }],
+    nextStepGuidance: 'Keep copies of relevant documents.',
+  };
+}
+
+function okResponse(body: PublicQueryResponse): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => body,
+  } as Response;
+}
+
+function mockFetch(response: Response) {
+  const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(response);
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
+}
+
+function headers(init: RequestInit | undefined): Record<string, string> {
+  return init?.headers as Record<string, string>;
+}

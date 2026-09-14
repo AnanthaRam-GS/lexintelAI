@@ -2,6 +2,14 @@ pymupdf
 chromadb
 FlagEmbedding
 torch
+fastapi>=0.115,<0.116
+uvicorn
+sqlalchemy
+alembic
+pydantic
+pydantic-settings
 pyjwt
 bcrypt
 python-multipart
+pandas
+psycopg2-binary
