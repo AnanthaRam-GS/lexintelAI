@@ -6,40 +6,40 @@
   "provider": "gemini",
   "configured_model": "gemini-3.6-flash",
   "started_at": "2026-09-12T18:02:34.406405+00:00",
-  "completed_at": "2026-09-14T08:36:59.264438+00:00",
+  "completed_at": "2026-09-14T17:30:17.569081+00:00",
   "planned_outputs": 60,
   "attempted_outputs": 60,
-  "successful_outputs": 43,
-  "failed_outputs": 17,
+  "successful_outputs": 45,
+  "failed_outputs": 15,
   "LLM_ONLY": {
     "attempted": 30,
-    "generated": 22,
-    "parse_success": 22,
-    "failed": 8
+    "generated": 23,
+    "parse_success": 23,
+    "failed": 7
   },
   "GROUNDED_RAG": {
     "attempted": 30,
-    "generated": 21,
-    "parse_success": 21,
-    "failed": 9,
-    "citation_valid_outputs": 21,
+    "generated": 22,
+    "parse_success": 22,
+    "failed": 8,
+    "citation_valid_outputs": 22,
     "grounding_status_counts": {
       "PARTIALLY_GROUNDED": 1,
-      "STRUCTURALLY_GROUNDED": 18,
+      "STRUCTURALLY_GROUNDED": 19,
       "UNGROUNDED": 2
     }
   },
-  "provider_attempts": 94,
-  "retry_count": 34,
+  "provider_attempts": 90,
+  "retry_count": 30,
   "repair_count": 0,
   "fallback_used_count": 0,
   "token_totals": {
-    "prompt_tokens": 140284,
-    "completion_tokens": 54646,
-    "total_tokens": 264588
+    "prompt_tokens": 147354,
+    "completion_tokens": 58556,
+    "total_tokens": 279255
   },
   "latency_summary_ms": {
-    "sum_generation_latency": 792475.385,
-    "sum_answer_generation_ms": 838376.412
+    "sum_generation_latency": 833142.006,
+    "sum_answer_generation_ms": 876617.383
   }
 }
