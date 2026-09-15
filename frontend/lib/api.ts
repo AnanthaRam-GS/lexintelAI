@@ -1,3 +1,14 @@
+import type {
+  AuthenticatedUser,
+  IpcBnsMappingRow,
+  NcrbStatPoint,
+  OffenseFrequencyPoint,
+  OutcomeDistributionPoint,
+  ProfessionalQueryResponse,
+  QueryHistoryItem,
+  SectionCooccurrencePoint,
+} from './types/api';
+
 const defaultApiBaseUrl = 'http://127.0.0.1:8000';
 
 export class ApiClientError extends Error {
@@ -15,13 +26,15 @@ export async function apiFetch<TResponse>(
   path: string,
   init: RequestInit = {},
 ): Promise<TResponse> {
+  const headers = new Headers(init.headers);
+  if (init.body != null && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...init.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -30,6 +43,56 @@ export async function apiFetch<TResponse>(
 
   return (await response.json()) as TResponse;
 }
+
+export const authApi = {
+  login(email: string, password: string) {
+    return apiFetch<{ user: AuthenticatedUser; message: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  },
+  logout() {
+    return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
+  },
+  me() {
+    return apiFetch<AuthenticatedUser>('/auth/me');
+  },
+};
+
+export const queryApi = {
+  submitText(text: string) {
+    return apiFetch<ProfessionalQueryResponse>('/query/professional', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    });
+  },
+  submitPdf(file: File) {
+    const body = new FormData();
+    body.set('file', file);
+    body.set('query', 'Analyze this legal document.');
+    return apiFetch<ProfessionalQueryResponse>('/query/professional/pdf', {
+      method: 'POST',
+      body,
+    });
+  },
+};
+
+export const historyApi = {
+  getQueryHistory(limit = 50) {
+    const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+    return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${safeLimit}`);
+  },
+};
+
+export const analyticsApi = {
+  getOffenseFrequency: () => apiFetch<OffenseFrequencyPoint[]>('/analytics/offense-frequency'),
+  getOutcomeDistribution: () =>
+    apiFetch<OutcomeDistributionPoint[]>('/analytics/outcome-distribution'),
+  getSectionCooccurrence: () =>
+    apiFetch<SectionCooccurrencePoint[]>('/analytics/section-cooccurrence'),
+  getIpcBnsMap: () => apiFetch<IpcBnsMappingRow[]>('/analytics/ipc-bns-map'),
+  getNcrbStats: () => apiFetch<NcrbStatPoint[]>('/analytics/ncrb-stats'),
+};
 
 function apiBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_API_BASE_URL || defaultApiBaseUrl).replace(/\/+$/, '');
