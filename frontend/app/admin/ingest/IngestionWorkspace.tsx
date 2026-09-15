@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { IngestionProgress, type IngestionJob } from '../../../components/shared/IngestionProgress';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 import {
@@ -22,6 +23,18 @@ import {
   replaceJobById,
   type IngestionDraft,
 } from './ingestion-model';
+import {
+  classifyRequestFailure,
+  errorCopy,
+  toAdminFileFailure,
+  type AdminFileFailure,
+  type AdminRequestFailure,
+} from '../../public/error-copy';
+
+const ADMIN_JOB_TIMEOUT_MS = 15_000;
+const ADMIN_SUBMIT_TIMEOUT_MS = 10_000;
+
+class AdminSubmitTimeoutError extends Error {}
 
 // TODO(contract): confirm doc_type values with Ananthu/Roshinee before treating
 // judgment | statute | other as the live documents-table contract.
@@ -56,10 +69,13 @@ export function IngestionWorkspace() {
   const [drafts, setDrafts] = useState<IngestionDraft[]>([]);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmitError, setHasSubmitError] = useState(false);
+  const [submitFailure, setSubmitFailure] = useState<AdminRequestFailure | null>(null);
   const [jobs, setJobs] = useState<IngestionJob[]>([]);
+  const [fileFailures, setFileFailures] = useState<Record<string, AdminFileFailure>>({});
+  const [pollingFailures, setPollingFailures] = useState<Record<string, AdminRequestFailure>>({});
   const [uploadKey, setUploadKey] = useState(0);
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const deadlineTimersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const pollingRef = useRef(new Map<string, symbol>());
   const aliveRef = useRef(true);
   const incompleteNames = drafts
@@ -71,11 +87,22 @@ export function IngestionWorkspace() {
   const exceedsActiveJobCapacity = excessFileCount > 0;
   const canSubmit = canSubmitBatch(drafts, isConfirmed, isSubmitting) && !exceedsActiveJobCapacity;
   const orderedJobs = jobs;
+  const activePollingFailure = Object.values(pollingFailures).includes('network')
+    ? 'network'
+    : Object.keys(pollingFailures).length > 0
+      ? 'service'
+      : null;
+  const failureContentByJobId = Object.fromEntries(
+    Object.entries(fileFailures).map(([jobId, reason]) => [jobId, errorCopy.admin.file[reason]]),
+  );
 
   const stopPolling = useCallback((jobId: string) => {
     const timer = timersRef.current.get(jobId);
     if (timer) clearTimeout(timer);
+    const deadlineTimer = deadlineTimersRef.current.get(jobId);
+    if (deadlineTimer) clearTimeout(deadlineTimer);
     timersRef.current.delete(jobId);
+    deadlineTimersRef.current.delete(jobId);
     pollingRef.current.delete(jobId);
   }, []);
 
@@ -86,25 +113,51 @@ export function IngestionWorkspace() {
       pollingRef.current.set(jobId, generation);
 
       const isCurrentPoll = () => aliveRef.current && pollingRef.current.get(jobId) === generation;
+      const deadlineTimer = setTimeout(() => {
+        if (!isCurrentPoll()) return;
+        setJobs((current) => markJobFailedSafely(current, jobId));
+        setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
+        setPollingFailures((current) => {
+          const next = { ...current };
+          delete next[jobId];
+          return next;
+        });
+        removePersistedJob(jobId);
+        stopPolling(jobId);
+      }, ADMIN_JOB_TIMEOUT_MS);
+      deadlineTimersRef.current.set(jobId, deadlineTimer);
 
       const poll = async (): Promise<void> => {
         if (!isCurrentPoll()) return;
         try {
           const live = await pollIngestionStatusMock(jobId);
           if (!isCurrentPoll()) return;
-          setJobs((current) => replaceJobById(current, live));
+          const safeLive = { ...live, error: undefined };
+          setJobs((current) => replaceJobById(current, safeLive));
+          setPollingFailures((current) => {
+            if (!(jobId in current)) return current;
+            const next = { ...current };
+            delete next[jobId];
+            return next;
+          });
+          if (live.stage === 'FAILED') {
+            setFileFailures((current) => ({
+              ...current,
+              [jobId]: toAdminFileFailure(live.error),
+            }));
+          }
           if (isTerminal(live.stage)) {
             removePersistedJob(jobId);
             stopPolling(jobId);
             return;
           }
           persistActiveJob(live);
-        } catch {
+        } catch (caught) {
           if (!isCurrentPoll()) return;
-          setJobs((current) => markJobFailedSafely(current, jobId));
-          removePersistedJob(jobId);
-          stopPolling(jobId);
-          return;
+          setPollingFailures((current) => ({
+            ...current,
+            [jobId]: classifyRequestFailure(caught),
+          }));
         }
 
         const timer = setTimeout(() => void poll(), 2_500);
@@ -118,6 +171,7 @@ export function IngestionWorkspace() {
 
   useEffect(() => {
     const timers = timersRef.current;
+    const deadlineTimers = deadlineTimersRef.current;
     const polling = pollingRef.current;
     aliveRef.current = true;
     const restored = readPersistedIngestionJobs().map((record): IngestionJob => ({
@@ -125,14 +179,15 @@ export function IngestionWorkspace() {
       progress: progressForStage(record.stage),
     }));
     // Rehydration is an intentional client-only external-store synchronization.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setJobs(restored);
     restored.filter((job) => !isTerminal(job.stage)).forEach(({ id }) => startPolling(id));
 
     return () => {
       aliveRef.current = false;
       timers.forEach(clearTimeout);
+      deadlineTimers.forEach(clearTimeout);
       timers.clear();
+      deadlineTimers.clear();
       polling.clear();
     };
   }, [startPolling]);
@@ -159,7 +214,9 @@ export function IngestionWorkspace() {
   const submitBatch = async () => {
     if (!canSubmitBatch(drafts, isConfirmed, isSubmitting) || exceedsActiveJobCapacity) return;
     setIsSubmitting(true);
-    setHasSubmitError(false);
+    setSubmitFailure(null);
+
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
     try {
       const files = drafts.map(({ file }) => file);
@@ -167,7 +224,15 @@ export function IngestionWorkspace() {
         documentType: documentType as DocumentType,
         note: note.trim() || undefined,
       }));
-      const { jobIds } = await submitIngestionMock(files, metadata);
+      const { jobIds } = await Promise.race([
+        submitIngestionMock(files, metadata),
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(
+            () => reject(new AdminSubmitTimeoutError()),
+            ADMIN_SUBMIT_TIMEOUT_MS,
+          );
+        }),
+      ]);
       const existingJobIds = new Set(jobs.map(({ id }) => id));
       const uniqueResponseIds = new Set(jobIds);
       if (
@@ -190,9 +255,12 @@ export function IngestionWorkspace() {
       setIsConfirmed(false);
       setUploadKey((current) => current + 1);
       queued.forEach(({ id }) => startPolling(id));
-    } catch {
-      setHasSubmitError(true);
+    } catch (caught) {
+      setSubmitFailure(
+        caught instanceof AdminSubmitTimeoutError ? 'timeout' : classifyRequestFailure(caught),
+      );
     } finally {
+      if (timeout) clearTimeout(timeout);
       setIsSubmitting(false);
     }
   };
@@ -332,10 +400,12 @@ export function IngestionWorkspace() {
               </p>
             ) : null}
 
-            {hasSubmitError ? (
-              <p className="text-type-body-sm text-[var(--color-error-foreground)]" role="alert">
-                This ingestion batch could not be started. Review the files and try again.
-              </p>
+            {submitFailure ? (
+              <ErrorMessage
+                message={errorCopy.admin.submit[submitFailure].message}
+                title={errorCopy.admin.submit[submitFailure].title}
+                variant="banner"
+              />
             ) : null}
 
             <section
@@ -386,6 +456,15 @@ export function IngestionWorkspace() {
             >
               Ingestion jobs
             </h2>
+            {activePollingFailure ? (
+              <div className="mb-4">
+                <ErrorMessage
+                  message={errorCopy.admin.polling[activePollingFailure].message}
+                  title={errorCopy.admin.polling[activePollingFailure].title}
+                  variant="banner"
+                />
+              </div>
+            ) : null}
             <div
               aria-atomic="false"
               aria-label="Ingestion job updates"
@@ -394,7 +473,7 @@ export function IngestionWorkspace() {
               className="[&>p]:text-[var(--color-body)]"
               role="log"
             >
-              <IngestionProgress jobs={orderedJobs} />
+              <IngestionProgress failureContentByJobId={failureContentByJobId} jobs={orderedJobs} />
             </div>
           </section>
         </div>

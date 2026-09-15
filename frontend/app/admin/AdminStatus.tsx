@@ -19,6 +19,11 @@ import {
   type ServiceHealth,
   type ServiceStatus,
 } from '../../lib/mocks/adminIngestion';
+import { classifyRequestFailure, errorCopy, type AdminRequestFailure } from '../public/error-copy';
+
+const ADMIN_STATUS_TIMEOUT_MS = 10_000;
+
+class AdminStatusTimeoutError extends Error {}
 
 const healthView: Record<ServiceHealth, { label: string; Icon: LucideIcon; className: string }> = {
   healthy: {
@@ -76,9 +81,9 @@ function ServiceHealthRegion({
             {name}
           </h2>
           <p className={`text-type-body mt-1 font-semibold ${className}`}>{label}</p>
-          {service.detail ? (
-            <p className="text-type-body-sm mt-1 text-[var(--color-muted)]">{service.detail}</p>
-          ) : null}
+          <p className="text-type-body-sm mt-1 text-[var(--color-muted)]">
+            {errorCopy.admin.serviceHealth[service.status]}
+          </p>
         </div>
       </div>
     </section>
@@ -178,36 +183,84 @@ function StatusRegions({ stats }: { stats: CorpusStats }) {
   );
 }
 
+function StatusLoadingRegions() {
+  return (
+    <div className="grid gap-5 lg:grid-cols-12" aria-label="Loading system status">
+      {[
+        { label: 'Loading Corpus status', className: 'lg:col-span-7' },
+        { label: 'Loading ChromaDB status', className: 'lg:col-span-5' },
+        { label: 'Loading PostgreSQL status', className: 'lg:col-span-5 lg:col-start-8' },
+      ].map(({ className, label }) => (
+        <section
+          className={`flex min-h-40 items-center justify-center rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-component)] ${className}`}
+          key={label}
+        >
+          <LoadingSpinner label={label} size="sm" />
+        </section>
+      ))}
+    </div>
+  );
+}
+
 export function AdminStatus() {
   const [stats, setStats] = useState<CorpusStats | null>(null);
   const [pending, setPending] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<AdminRequestFailure | null>(null);
   const isLoadingRef = useRef(false);
+  const isMountedRef = useRef(true);
+  const requestSequenceRef = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadStatus = useCallback(async () => {
     if (isLoadingRef.current) return;
 
+    const requestSequence = requestSequenceRef.current + 1;
+    requestSequenceRef.current = requestSequence;
     isLoadingRef.current = true;
     setPending(true);
-    setError(false);
+    setError(null);
 
     try {
-      setStats(await fetchCorpusStatsMock());
-    } catch {
-      setError(true);
+      const nextStats = await Promise.race([
+        fetchCorpusStatsMock(),
+        new Promise<never>((_, reject) => {
+          timeoutRef.current = setTimeout(
+            () => reject(new AdminStatusTimeoutError()),
+            ADMIN_STATUS_TIMEOUT_MS,
+          );
+        }),
+      ]);
+      if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
+        setStats(nextStats);
+      }
+    } catch (caught) {
+      if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
+        setError(
+          caught instanceof AdminStatusTimeoutError ? 'timeout' : classifyRequestFailure(caught),
+        );
+      }
     } finally {
-      isLoadingRef.current = false;
-      setPending(false);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
+        isLoadingRef.current = false;
+        setPending(false);
+      }
     }
   }, []);
 
   useEffect(() => {
+    isMountedRef.current = true;
     void Promise.resolve().then(loadStatus);
-  }, [loadStatus]);
 
-  if (pending && !stats) {
-    return <LoadingSpinner fullScreen label="Loading system status" />;
-  }
+    return () => {
+      isMountedRef.current = false;
+      requestSequenceRef.current += 1;
+      isLoadingRef.current = false;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    };
+  }, [loadStatus]);
 
   return (
     <main className="min-h-screen bg-[var(--color-canvas)] px-4 py-8 sm:px-6 lg:px-8">
@@ -239,13 +292,13 @@ export function AdminStatus() {
         <div className="mt-6 space-y-6">
           {error ? (
             <ErrorMessage
-              message="System status could not be loaded. Try again."
+              message={errorCopy.admin.status[error].message}
               onRetry={() => void loadStatus()}
-              title="Unable to load system status"
+              title={errorCopy.admin.status[error].title}
               variant="banner"
             />
           ) : null}
-          {stats ? <StatusRegions stats={stats} /> : null}
+          {stats ? <StatusRegions stats={stats} /> : pending ? <StatusLoadingRegions /> : null}
         </div>
       </div>
     </main>

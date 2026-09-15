@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -36,16 +36,17 @@ describe('AdminStatus', () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
   });
 
   it('renders four status regions with corpus detail and icon-and-text service health', async () => {
     fetchCorpusStatsMock.mockResolvedValue(healthyStats);
     render(<AdminStatus />);
 
-    expect(screen.getByLabelText('Loading system status')).toHaveAttribute(
-      'data-full-screen',
-      'true',
-    );
+    expect(screen.getByLabelText('Loading system status')).toBeInTheDocument();
+    expect(screen.getByLabelText('Loading Corpus status')).toBeInTheDocument();
+    expect(screen.getByLabelText('Loading ChromaDB status')).toBeInTheDocument();
+    expect(screen.getByLabelText('Loading PostgreSQL status')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Corpus' })).toBeInTheDocument();
     expect(screen.getByText('42 documents')).toBeInTheDocument();
     expect(screen.getByText('Judgments: 20')).toBeInTheDocument();
@@ -77,7 +78,7 @@ describe('AdminStatus', () => {
     fetchCorpusStatsMock.mockResolvedValue({
       ...healthyStats,
       chromaDb: { status: 'degraded', detail: 'Reduced availability' },
-      postgresql: { status: 'down', detail: 'Unavailable' },
+      postgresql: { status: 'down', detail: 'postgresql://private-host/internal-stack' },
     });
     render(<AdminStatus />);
 
@@ -86,6 +87,8 @@ describe('AdminStatus', () => {
     expect(chroma.querySelector('svg')).not.toBeNull();
     const postgres = screen.getByRole('region', { name: 'PostgreSQL status' });
     expect(within(postgres).getByText('Down')).toBeInTheDocument();
+    expect(within(postgres).getByText('Currently unavailable')).toBeInTheDocument();
+    expect(postgres).not.toHaveTextContent('private-host');
     expect(postgres.querySelector('svg')).not.toBeNull();
   });
 
@@ -98,7 +101,8 @@ describe('AdminStatus', () => {
     render(<AdminStatus />);
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('System status could not be loaded. Try again.');
+    expect(alert).toHaveTextContent('System status is currently unavailable');
+    expect(alert).toHaveTextContent('The status service could not be reached.');
     expect(alert).not.toHaveTextContent('private-host');
     expect(alert).not.toHaveTextContent('private schema');
     expect(screen.queryByText('Technical details')).not.toBeInTheDocument();
@@ -121,5 +125,30 @@ describe('AdminStatus', () => {
     expect(fetchCorpusStatsMock).toHaveBeenCalledTimes(2);
     refresh.resolve(healthyStats);
     await waitFor(() => expect(button).toBeEnabled());
+  });
+
+  it('distinguishes an offline failure from service failure with safe copy', async () => {
+    fetchCorpusStatsMock.mockRejectedValueOnce(
+      new TypeError('Failed to fetch https://private-host/status'),
+    );
+    render(<AdminStatus />);
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Check your connection');
+    expect(alert).toHaveTextContent('Reconnect, then try again.');
+    expect(alert).not.toHaveTextContent('private-host');
+  });
+
+  it('ends an unbounded initial load with a distinct timeout and Retry', async () => {
+    vi.useFakeTimers();
+    fetchCorpusStatsMock.mockReturnValue(new Promise(() => undefined));
+    render(<AdminStatus />);
+    await act(async () => Promise.resolve());
+
+    await act(async () => vi.advanceTimersByTimeAsync(10_000));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('System status is taking too long');
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Loading system status')).not.toBeInTheDocument();
   });
 });
