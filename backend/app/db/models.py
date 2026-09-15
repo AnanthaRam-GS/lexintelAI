@@ -25,8 +25,8 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     func,
+    JSON,
 )
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from backend.app.db.base import Base
@@ -161,7 +161,7 @@ class QueryHistory(Base):
     session_id = Column(String(100), nullable=True, index=True)
     mode = Column(String(50), nullable=False)
     query_text = Column(Text, nullable=False)
-    response_json = Column(JSONB, nullable=True)
+    response_json = Column(JSON, nullable=True)
     generation_backend = Column(String(100), nullable=True)
     created_at = Column(
         DateTime(timezone=True),
