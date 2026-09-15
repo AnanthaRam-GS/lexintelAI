@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Scale } from 'lucide-react';
+import { useOptionalAuth } from '../lib/auth/AuthContext';
 import type { AuthenticatedUser } from '../lib/types/api';
 
 export interface NavbarProps {
@@ -21,6 +22,8 @@ const NAV_ITEMS = [
 
 export function Navbar({ user, onLogout }: NavbarProps) {
   const pathname = usePathname();
+  const auth = useOptionalAuth();
+  const activeUser = user ?? auth?.user ?? null;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -30,6 +33,8 @@ export function Navbar({ user, onLogout }: NavbarProps) {
     try {
       if (onLogout) {
         await onLogout();
+      } else if (auth) {
+        await auth.logout();
       }
     } finally {
       setIsLoggingOut(false);
@@ -91,14 +96,17 @@ export function Navbar({ user, onLogout }: NavbarProps) {
 
         {/* Right Area: User Profile & Logout */}
         <div className="hidden items-center gap-3 md:flex">
-          {user ? (
+          {activeUser ? (
             <div className="flex items-center gap-2.5 border-l border-[var(--color-border)] pl-3 text-xs">
               <div className="text-right">
-                <p className="max-w-[140px] truncate font-medium text-[var(--color-ink)]" title={user.email}>
-                  {user.email}
+                <p
+                  className="max-w-[140px] truncate font-medium text-[var(--color-ink)]"
+                  title={activeUser.email}
+                >
+                  {activeUser.email}
                 </p>
                 <span className="inline-block rounded-xs bg-[var(--color-brass)]/15 px-1.5 py-0.2 font-semibold uppercase text-[var(--color-brass-hover)]">
-                  {user.role}
+                  {activeUser.role}
                 </span>
               </div>
               <button
@@ -124,9 +132,19 @@ export function Navbar({ user, onLogout }: NavbarProps) {
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
@@ -161,13 +179,15 @@ export function Navbar({ user, onLogout }: NavbarProps) {
             })}
           </div>
 
-          {user && (
+          {activeUser && (
             <div className="mt-4 border-t border-[var(--color-border)] pt-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-[var(--color-ink)]">{user.email}</p>
+                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                    {activeUser.email}
+                  </p>
                   <span className="text-[0.6875rem] font-bold uppercase text-[var(--color-brass)]">
-                    Role: {user.role}
+                    Role: {activeUser.role}
                   </span>
                 </div>
                 <button

@@ -1,21 +1,21 @@
 # Phase 1 E2E / UAT Readiness
 
 This guide prepares the shared Phase 1 branch for first integration smoke checks
-and supervised UAT. It does not add missing teammate-owned screens, perform live
-Gemini calls, mutate production indexes, or touch benchmark artifacts.
+and supervised UAT. It does not perform live Gemini calls, mutate production
+indexes, or touch benchmark artifacts.
 
 ## Readiness Matrix
 
 | Area | Backend status | Frontend status | UAT readiness |
 | --- | --- | --- | --- |
 | Backend boot and health | `/health` is registered and accepts `ok` or `degraded` database state | N/A | Ready for smoke validation |
-| Auth | `/auth/login`, `/auth/logout`, and `/auth/me` are registered; auth uses HttpOnly cookies with bearer fallback for API clients/tests | No dedicated professional login UI in this task | Backend contract ready; UI dependency remains |
+| Auth | `/auth/login`, `/auth/logout`, and `/auth/me` are registered; auth uses HttpOnly cookies with bearer fallback for API clients/tests | `/login` uses backend-derived roles, cookie credentials, `/auth/me` refresh, and no client-side JWT storage | Code-complete; needs live DB/session validation |
 | Public query | `/query/public` accepts anonymous text requests through the frozen retrieval/generation path | `/public` posts text queries to `/query/public` through `apiFetch` | Ready when API keys/indexes are configured |
-| Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history | Professional dashboard/text form is not implemented in this task | Backend contract ready; UI dependency remains |
-| Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context | Professional PDF upload UI is not implemented in this task | Backend contract ready; UI dependency remains |
+| Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history | `/professional/query` posts `{ text, session_id? }` through the shared cookie-based API client and renders structured briefs | Code-complete; needs live RAG/provider validation |
+| Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context | `/professional/upload` sends private multipart `query`, `file`, and optional `session_id`; it does not call ingestion | Code-complete; needs live PDF/provider validation |
 | Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` are registered; ingestion updates vector and BM25 stores after validation | Current admin UI remains mock-backed | Backend contract ready; live admin wiring dependency remains |
-| Analytics | analytics route family is registered behind lawyer/admin auth | Analytics frontend is not implemented in this task | Backend contract ready; UI dependency remains |
-| Query history | `/query/history` and legacy `/query-history` are registered behind lawyer/admin auth | History frontend is not implemented in this task | Backend contract ready; UI dependency remains |
+| Analytics | analytics route family is registered behind lawyer/admin auth | `/professional/analytics` calls the protected analytics endpoints and renders Recharts visualizations/tables | Code-complete; needs live DB-backed validation |
+| Query history | `/query/history` and legacy `/query-history` are registered behind lawyer/admin auth | `/professional/history` calls `/query/history?limit=` and renders user-scoped stored briefs | Code-complete; needs live DB-backed validation |
 
 ## Startup Procedure
 
@@ -83,32 +83,33 @@ Use a controlled local database and non-production indexes.
 
 1. Confirm `/health` returns HTTP 200 and record whether status is `ok` or
    `degraded`.
-2. Log in as a lawyer/admin through API tooling until the professional UI is
-   available; confirm the response sets an HttpOnly session cookie.
+2. Log in through `/login` as a lawyer/admin; confirm the response sets an
+   HttpOnly session cookie and `/auth/me` derives the role from the backend.
 3. Submit a public text query from `/public`; confirm the UI sends cookies and no
    bearer token, and the response does not expose professional-only fields.
-4. Submit a professional text query through API tooling; confirm lawyer/admin
-   auth is required and sanitized history is written.
-5. Submit a professional PDF query through API tooling; confirm invalid file
-   types are rejected and private PDF text is not stored in history.
+4. Submit a professional text query through `/professional/query`; confirm
+   lawyer/admin auth is required and sanitized history is written.
+5. Submit a professional PDF query through `/professional/upload`; confirm
+   invalid file types are rejected and private PDF text is not stored in
+   history.
 6. Upload a trusted-corpus document through admin ingestion API tooling; confirm
    job status reaches `COMPLETED` only after vector and BM25 updates succeed.
-7. Call analytics endpoints as lawyer/admin and as an unauthenticated client;
-   confirm protected routes reject unauthenticated access.
-8. Call `/query/history` and legacy `/query-history`; confirm pagination and
-   role protection.
+7. Open `/professional/analytics` as lawyer/admin and as an unauthenticated
+   client; confirm protected routes reject unauthenticated access.
+8. Open `/professional/history` and call legacy `/query-history`; confirm
+   pagination and role protection.
 9. Review browser console and backend logs for stack traces, secret leakage, or
    unexpected provider calls.
 
 ## Known Blockers
 
-- Professional login, dashboard, text-query form, PDF-upload UI, analytics UI,
-  and history UI are teammate-owned and intentionally not implemented here.
 - Admin ingestion frontend currently remains mock-backed.
 - Full authenticated UAT requires a reachable PostgreSQL database with seeded
   test users and role assignments.
 - Live answer generation requires a valid Gemini configuration and available
   quota. The smoke checks in this task do not call Gemini.
+- Professional, history, and analytics frontends are compile-clean but not yet
+  live-validated against a running backend, database, and provider quota.
 - The frozen benchmark generation/review artifacts are out of scope for this
   readiness task.
 
@@ -120,7 +121,7 @@ If shared UAT cannot run end-to-end, use this reduced demo path:
    `.venv/bin/python backend/scripts/run_integration_smoke.py`.
 2. Demonstrate the public frontend against mocked or quota-available backend
    responses.
-3. Demonstrate professional text/PDF, ingestion, analytics, and history contracts
-   through API tooling with seeded local users.
-4. Clearly label teammate-owned frontend gaps as pending integration work, not
-   backend contract failures.
+3. Demonstrate `/login`, professional text/PDF, analytics, and history with
+   seeded local users if PostgreSQL and Gemini quota are available.
+4. Demonstrate admin ingestion through API tooling until live admin frontend
+   wiring is complete.

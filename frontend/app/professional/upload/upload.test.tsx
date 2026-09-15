@@ -14,13 +14,19 @@ describe('Professional Upload Page', () => {
   it('renders confidential document heading, dropzone, and privacy assurance banner', () => {
     render(<ProfessionalUploadPage />);
 
-    expect(screen.getByRole('heading', { name: /Private Case File & Brief Analysis/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Private Case File & Brief Analysis/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Privileged Legal Document Safeguard/i)).toBeInTheDocument();
-    expect(screen.getByText(/never indexed, stored, or added to the global corpus/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/never indexed, stored, or added to the global corpus/i),
+    ).toBeInTheDocument();
   });
 
   it('selects PDF file and submits to queryApi.submitPdf without calling ingestion', async () => {
-    const submitPdfSpy = vi.spyOn(queryApi, 'submitPdf').mockResolvedValue(mockProfessionalQueryResponse);
+    const submitPdfSpy = vi
+      .spyOn(queryApi, 'submitPdf')
+      .mockResolvedValue(mockProfessionalQueryResponse);
 
     render(<ProfessionalUploadPage />);
 

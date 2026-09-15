@@ -1,3 +1,14 @@
+export type UserRole = 'lawyer' | 'admin';
+
+export interface AuthenticatedUser {
+  id: number | string;
+  email: string;
+  role: UserRole;
+}
+
+export interface LoginResponse {
+  user: AuthenticatedUser;
+  message: string;
 export interface AuthenticatedUser {
   id: number | string;
   email: string;
@@ -7,6 +18,7 @@ export interface AuthenticatedUser {
 export interface SectionReference {
   statute: string;
   section: string;
+  confidence?: number;
   confidence?: number | null;
   context?: string | null;
 }
@@ -44,6 +56,8 @@ export interface QueryHistoryItem {
   id: number;
   mode: string;
   query_text: string;
+  response_json: ProfessionalQueryResponse | Record<string, unknown> | null;
+  generation_backend?: string | null;
   response_json: ProfessionalQueryResponse | null;
   generation_backend: string | null;
   created_at: string;
@@ -73,6 +87,8 @@ export interface SectionCooccurrencePoint {
 export interface IpcBnsMappingRow {
   ipc_section: string;
   ipc_description: string;
+  bns_section?: string | null;
+  bns_description?: string | null;
   bns_section: string | null;
   bns_description: string | null;
   change_type: string;
@@ -82,6 +98,10 @@ export interface NcrbStatPoint {
   year: number;
   state: string;
   offense_category: string;
+  ipc_section?: string | null;
+  case_count: number;
+  conviction_count?: number | null;
+  acquittal_count?: number | null;
   ipc_section: string | null;
   case_count: number;
   conviction_count: number | null;
