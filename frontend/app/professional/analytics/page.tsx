@@ -23,14 +23,35 @@ import type {
   SectionCooccurrencePoint,
 } from '../../../lib/types/api';
 
-type AnalyticsTab = 'offense-trends' | 'outcome-distribution' | 'section-cooccurrence' | 'ipc-bns' | 'ncrb-stats';
+type AnalyticsTab =
+  'offense-trends' | 'outcome-distribution' | 'section-cooccurrence' | 'ipc-bns' | 'ncrb-stats';
 
 const TABS: { id: AnalyticsTab; label: string; description: string }[] = [
-  { id: 'offense-trends', label: 'Offense Trends', description: 'Statutory frequency by section and year' },
-  { id: 'outcome-distribution', label: 'Outcome Distribution', description: 'Trial and appellate conviction outcomes' },
-  { id: 'section-cooccurrence', label: 'Section Co-occurrence', description: 'Joint charges and co-filed penal provisions' },
-  { id: 'ipc-bns', label: 'IPC-BNS Map', description: 'Penal code transition crosswalk and revisions' },
-  { id: 'ncrb-stats', label: 'NCRB Statistics', description: 'State-level crime data and conviction figures' },
+  {
+    id: 'offense-trends',
+    label: 'Offense Trends',
+    description: 'Statutory frequency by section and year',
+  },
+  {
+    id: 'outcome-distribution',
+    label: 'Outcome Distribution',
+    description: 'Trial and appellate conviction outcomes',
+  },
+  {
+    id: 'section-cooccurrence',
+    label: 'Section Co-occurrence',
+    description: 'Joint charges and co-filed penal provisions',
+  },
+  {
+    id: 'ipc-bns',
+    label: 'IPC-BNS Map',
+    description: 'Penal code transition crosswalk and revisions',
+  },
+  {
+    id: 'ncrb-stats',
+    label: 'NCRB Statistics',
+    description: 'State-level crime data and conviction figures',
+  },
 ];
 
 export default function ProfessionalAnalyticsPage() {
@@ -122,7 +143,7 @@ export default function ProfessionalAnalyticsPage() {
         row.ipc_description.toLowerCase().includes(term) ||
         (row.bns_section && row.bns_section.toLowerCase().includes(term)) ||
         (row.bns_description && row.bns_description.toLowerCase().includes(term)) ||
-        row.change_type.toLowerCase().includes(term)
+        row.change_type.toLowerCase().includes(term),
     );
   }, [ipcBnsData, bnsSearchTerm]);
 
@@ -147,7 +168,9 @@ export default function ProfessionalAnalyticsPage() {
           Empirical Legal Intelligence Dashboard
         </h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          Interactive metrics covering offense trends across penal sections, conviction and appeal outcome distributions, statutory co-occurrences, IPC-BNS crosswalks, and NCRB crime statistics.
+          Interactive metrics covering offense trends across penal sections, conviction and appeal
+          outcome distributions, statutory co-occurrences, IPC-BNS crosswalks, and NCRB crime
+          statistics.
         </p>
       </div>
 
@@ -210,7 +233,10 @@ export default function ProfessionalAnalyticsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label htmlFor="section-filter" className="text-xs font-semibold text-[var(--color-body)]">
+                  <label
+                    htmlFor="section-filter"
+                    className="text-xs font-semibold text-[var(--color-body)]"
+                  >
                     Filter Section:
                   </label>
                   <select
@@ -221,7 +247,9 @@ export default function ProfessionalAnalyticsPage() {
                   >
                     <option value="All">All Sections</option>
                     {uniqueSections.map((sec) => (
-                      <option key={sec} value={sec}>{sec}</option>
+                      <option key={sec} value={sec}>
+                        {sec}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -231,7 +259,10 @@ export default function ProfessionalAnalyticsPage() {
               <div className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs">
                 <div className="h-80 w-full" data-testid="offense-chart-container">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={trendChartData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                    <LineChart
+                      data={trendChartData}
+                      margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2ddd5" />
                       <XAxis dataKey="year" stroke="#606c7c" />
                       <YAxis stroke="#606c7c" />
@@ -243,10 +274,34 @@ export default function ProfessionalAnalyticsPage() {
                         }}
                       />
                       <Legend />
-                      <Line type="monotone" dataKey="IPC 302" stroke="#a06824" strokeWidth={2} name="IPC 302 (Murder)" />
-                      <Line type="monotone" dataKey="IPC 420" stroke="#1f67b1" strokeWidth={2} name="IPC 420 (Cheating)" />
-                      <Line type="monotone" dataKey="IPC 376" stroke="#ad4339" strokeWidth={2} name="IPC 376 (Sexual Offence)" />
-                      <Line type="monotone" dataKey="IPC 307" stroke="#237b53" strokeWidth={2} name="IPC 307 (Attempt to Murder)" />
+                      <Line
+                        type="monotone"
+                        dataKey="IPC 302"
+                        stroke="#a06824"
+                        strokeWidth={2}
+                        name="IPC 302 (Murder)"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="IPC 420"
+                        stroke="#1f67b1"
+                        strokeWidth={2}
+                        name="IPC 420 (Cheating)"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="IPC 376"
+                        stroke="#ad4339"
+                        strokeWidth={2}
+                        name="IPC 376 (Sexual Offence)"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="IPC 307"
+                        stroke="#237b53"
+                        strokeWidth={2}
+                        name="IPC 307 (Attempt to Murder)"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -268,7 +323,10 @@ export default function ProfessionalAnalyticsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label htmlFor="court-filter" className="text-xs font-semibold text-[var(--color-body)]">
+                  <label
+                    htmlFor="court-filter"
+                    className="text-xs font-semibold text-[var(--color-body)]"
+                  >
                     Court Level:
                   </label>
                   <select
@@ -300,9 +358,18 @@ export default function ProfessionalAnalyticsPage() {
                       margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2ddd5" />
-                      <XAxis dataKey="label" angle={-15} textAnchor="end" height={60} stroke="#606c7c" tick={{ fontSize: 11 }} />
+                      <XAxis
+                        dataKey="label"
+                        angle={-15}
+                        textAnchor="end"
+                        height={60}
+                        stroke="#606c7c"
+                        tick={{ fontSize: 11 }}
+                      />
                       <YAxis stroke="#606c7c" />
-                      <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#d7d0c2' }} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#ffffff', borderColor: '#d7d0c2' }}
+                      />
                       <Legend verticalAlign="top" />
                       <Bar dataKey="Convicted" fill="#237b53" />
                       <Bar dataKey="Acquitted" fill="#ad4339" />
@@ -343,7 +410,10 @@ export default function ProfessionalAnalyticsPage() {
                       </span>
                     </div>
 
-                    <p className="mt-3 text-xs text-[var(--color-muted)] truncate" title={pair.section_b}>
+                    <p
+                      className="mt-3 text-xs text-[var(--color-muted)] truncate"
+                      title={pair.section_b}
+                    >
                       {pair.section_b}
                     </p>
 
@@ -368,7 +438,8 @@ export default function ProfessionalAnalyticsPage() {
                     IPC (1860) to BNS (2023) Statutory Crosswalk
                   </h2>
                   <p className="text-xs text-[var(--color-muted)]">
-                    Comparative mapping of classic Indian Penal Code provisions to the Bharatiya Nyaya Sanhita.
+                    Comparative mapping of classic Indian Penal Code provisions to the Bharatiya
+                    Nyaya Sanhita.
                   </p>
                 </div>
 
@@ -437,7 +508,10 @@ export default function ProfessionalAnalyticsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label htmlFor="state-filter" className="text-xs font-semibold text-[var(--color-body)]">
+                  <label
+                    htmlFor="state-filter"
+                    className="text-xs font-semibold text-[var(--color-body)]"
+                  >
                     Filter State:
                   </label>
                   <select
@@ -448,7 +522,9 @@ export default function ProfessionalAnalyticsPage() {
                   >
                     <option value="All">All States</option>
                     {uniqueStates.map((st) => (
-                      <option key={st} value={st}>{st}</option>
+                      <option key={st} value={st}>
+                        {st}
+                      </option>
                     ))}
                   </select>
                 </div>

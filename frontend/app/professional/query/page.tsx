@@ -24,7 +24,11 @@ const EXAMPLE_QUERIES = [
 export default function ProfessionalQueryPage() {
   const [queryText, setQueryText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errorState, setErrorState] = useState<{ title: string; message: string; detail?: string } | null>(null);
+  const [errorState, setErrorState] = useState<{
+    title: string;
+    message: string;
+    detail?: string;
+  } | null>(null);
   const [result, setResult] = useState<ProfessionalQueryResponse | null>(null);
   const [submittedQuery, setSubmittedQuery] = useState('');
 
@@ -33,7 +37,8 @@ export default function ProfessionalQueryPage() {
     if (!trimmed) {
       setErrorState({
         title: 'Empty Query',
-        message: 'Please enter a legal query, factual background, or statutory question to begin analysis.',
+        message:
+          'Please enter a legal query, factual background, or statutory question to begin analysis.',
       });
       return;
     }
@@ -86,7 +91,8 @@ export default function ProfessionalQueryPage() {
           Statutory &amp; Precedent Text Query
         </h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          Submit fact patterns, legal propositions, or questions to extract relevant IPC/BNS provisions, retrieved Supreme Court precedents, and a complete structured case brief.
+          Submit fact patterns, legal propositions, or questions to extract relevant IPC/BNS
+          provisions, retrieved Supreme Court precedents, and a complete structured case brief.
         </p>
       </div>
 
@@ -126,7 +132,11 @@ export default function ProfessionalQueryPage() {
                     Enter Legal Proposition or Fact Pattern
                   </label>
                   <span className="text-xs text-[var(--color-muted)]">
-                    Press <kbd className="rounded border border-black/20 bg-black/5 px-1 font-mono text-[0.6875rem]">⌘+Enter</kbd> to submit
+                    Press{' '}
+                    <kbd className="rounded border border-black/20 bg-black/5 px-1 font-mono text-[0.6875rem]">
+                      ⌘+Enter
+                    </kbd>{' '}
+                    to submit
                   </span>
                 </div>
 
@@ -160,8 +170,18 @@ export default function ProfessionalQueryPage() {
                   ) : (
                     <>
                       <span>Execute Legal Research</span>
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
                       </svg>
                     </>
                   )}
