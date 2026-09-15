@@ -1,13 +1,7 @@
 import { apiFetch } from '../../lib/api';
+import type { PublicQueryInput, PublicQueryResponse } from './query-contract';
 
-export type PublicQueryInput = { kind: 'text'; content: string } | { kind: 'file'; file: File };
-
-export interface PublicQueryResponse {
-  explanation: string;
-  sections: Array<{ title: string; explanation: string; link: string }>;
-  sources: Array<{ title: string; link: string }>;
-  nextStepGuidance: string;
-}
+export type { PublicQueryInput, PublicQueryResponse } from './query-contract';
 
 interface PublicQueryRequest {
   text: string;

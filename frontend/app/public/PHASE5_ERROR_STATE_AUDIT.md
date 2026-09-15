@@ -1,6 +1,6 @@
 # Phase 5 — Public/Admin Error-State Audit
 
-Baseline: `cd3fd2a05821e33f4be2def6084e53d0504a8c2b` (latest `main` when the Phase 5 branch was created).
+Verified base: `92e31ba54e4e4062a225973305ce15bb4ed4b56a` (latest `main` after the pre-PR resync).
 
 Final verification: all applicable cells pass. Evidence below references the
 Phase 5 candidate source and focused regression tests.
