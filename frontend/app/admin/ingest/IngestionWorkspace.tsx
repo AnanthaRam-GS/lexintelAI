@@ -6,6 +6,7 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { IngestionProgress, type IngestionJob } from '../../../components/shared/IngestionProgress';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 import {
+  cancelIngestionJobMock,
   MAX_ACTIVE_INGESTION_JOBS,
   pollIngestionStatusMock,
   progressForStage,
@@ -35,6 +36,7 @@ const ADMIN_JOB_TIMEOUT_MS = 15_000;
 const ADMIN_SUBMIT_TIMEOUT_MS = 10_000;
 
 class AdminSubmitTimeoutError extends Error {}
+class AdminJobTimeoutError extends Error {}
 
 // TODO(contract): confirm doc_type values with Ananthu/Roshinee before treating
 // judgment | statute | other as the live documents-table contract.
@@ -77,6 +79,8 @@ export function IngestionWorkspace() {
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const deadlineTimersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const pollingRef = useRef(new Map<string, symbol>());
+  const pollControllersRef = useRef(new Map<string, AbortController>());
+  const submitControllerRef = useRef<AbortController | null>(null);
   const aliveRef = useRef(true);
   const incompleteNames = drafts
     .filter((draft) => draft.documentType === '')
@@ -101,8 +105,10 @@ export function IngestionWorkspace() {
     if (timer) clearTimeout(timer);
     const deadlineTimer = deadlineTimersRef.current.get(jobId);
     if (deadlineTimer) clearTimeout(deadlineTimer);
+    pollControllersRef.current.get(jobId)?.abort();
     timersRef.current.delete(jobId);
     deadlineTimersRef.current.delete(jobId);
+    pollControllersRef.current.delete(jobId);
     pollingRef.current.delete(jobId);
   }, []);
 
@@ -115,22 +121,38 @@ export function IngestionWorkspace() {
       const isCurrentPoll = () => aliveRef.current && pollingRef.current.get(jobId) === generation;
       const deadlineTimer = setTimeout(() => {
         if (!isCurrentPoll()) return;
-        setJobs((current) => markJobFailedSafely(current, jobId));
-        setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
-        setPollingFailures((current) => {
-          const next = { ...current };
-          delete next[jobId];
-          return next;
-        });
-        removePersistedJob(jobId);
-        stopPolling(jobId);
+        pollingRef.current.delete(jobId);
+        pollControllersRef.current.get(jobId)?.abort(new AdminJobTimeoutError());
+
+        void cancelIngestionJobMock(jobId)
+          .then(() => {
+            if (!aliveRef.current) return;
+            setJobs((current) => markJobFailedSafely(current, jobId));
+            setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
+            setPollingFailures((current) => {
+              const next = { ...current };
+              delete next[jobId];
+              return next;
+            });
+            removePersistedJob(jobId);
+          })
+          .catch((caught) => {
+            if (!aliveRef.current) return;
+            setPollingFailures((current) => ({
+              ...current,
+              [jobId]: classifyRequestFailure(caught),
+            }));
+          })
+          .finally(() => stopPolling(jobId));
       }, ADMIN_JOB_TIMEOUT_MS);
       deadlineTimersRef.current.set(jobId, deadlineTimer);
 
       const poll = async (): Promise<void> => {
         if (!isCurrentPoll()) return;
+        const pollController = new AbortController();
+        pollControllersRef.current.set(jobId, pollController);
         try {
-          const live = await pollIngestionStatusMock(jobId);
+          const live = await pollIngestionStatusMock(jobId, { signal: pollController.signal });
           if (!isCurrentPoll()) return;
           const safeLive = { ...live, error: undefined };
           setJobs((current) => replaceJobById(current, safeLive));
@@ -158,6 +180,10 @@ export function IngestionWorkspace() {
             ...current,
             [jobId]: classifyRequestFailure(caught),
           }));
+        } finally {
+          if (pollControllersRef.current.get(jobId) === pollController) {
+            pollControllersRef.current.delete(jobId);
+          }
         }
 
         const timer = setTimeout(() => void poll(), 2_500);
@@ -173,6 +199,7 @@ export function IngestionWorkspace() {
     const timers = timersRef.current;
     const deadlineTimers = deadlineTimersRef.current;
     const polling = pollingRef.current;
+    const pollControllers = pollControllersRef.current;
     aliveRef.current = true;
     const restored = readPersistedIngestionJobs().map((record): IngestionJob => ({
       ...record,
@@ -184,10 +211,14 @@ export function IngestionWorkspace() {
 
     return () => {
       aliveRef.current = false;
+      submitControllerRef.current?.abort();
+      submitControllerRef.current = null;
+      pollControllers.forEach((controller) => controller.abort());
       timers.forEach(clearTimeout);
       deadlineTimers.forEach(clearTimeout);
       timers.clear();
       deadlineTimers.clear();
+      pollControllers.clear();
       polling.clear();
     };
   }, [startPolling]);
@@ -217,6 +248,8 @@ export function IngestionWorkspace() {
     setSubmitFailure(null);
 
     let timeout: ReturnType<typeof setTimeout> | undefined;
+    const submitController = new AbortController();
+    submitControllerRef.current = submitController;
 
     try {
       const files = drafts.map(({ file }) => file);
@@ -225,12 +258,13 @@ export function IngestionWorkspace() {
         note: note.trim() || undefined,
       }));
       const { jobIds } = await Promise.race([
-        submitIngestionMock(files, metadata),
+        submitIngestionMock(files, metadata, { signal: submitController.signal }),
         new Promise<never>((_, reject) => {
-          timeout = setTimeout(
-            () => reject(new AdminSubmitTimeoutError()),
-            ADMIN_SUBMIT_TIMEOUT_MS,
-          );
+          timeout = setTimeout(() => {
+            const timeoutError = new AdminSubmitTimeoutError();
+            submitController.abort(timeoutError);
+            reject(timeoutError);
+          }, ADMIN_SUBMIT_TIMEOUT_MS);
         }),
       ]);
       const existingJobIds = new Set(jobs.map(({ id }) => id));
@@ -256,12 +290,18 @@ export function IngestionWorkspace() {
       setUploadKey((current) => current + 1);
       queued.forEach(({ id }) => startPolling(id));
     } catch (caught) {
-      setSubmitFailure(
-        caught instanceof AdminSubmitTimeoutError ? 'timeout' : classifyRequestFailure(caught),
-      );
+      if (aliveRef.current) {
+        const timedOut =
+          caught instanceof AdminSubmitTimeoutError ||
+          submitController.signal.reason instanceof AdminSubmitTimeoutError;
+        setSubmitFailure(timedOut ? 'timeout' : classifyRequestFailure(caught));
+      }
     } finally {
       if (timeout) clearTimeout(timeout);
-      setIsSubmitting(false);
+      if (submitControllerRef.current === submitController) {
+        submitControllerRef.current = null;
+      }
+      if (aliveRef.current) setIsSubmitting(false);
     }
   };
 

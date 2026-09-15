@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { IngestionStage } from '../../components/shared';
 import {
   STORAGE_KEY,
+  cancelIngestionJobMock,
   configureAdminIngestionMockForTests,
   fetchCorpusStatsMock,
   pollIngestionStatusMock,
@@ -208,6 +209,31 @@ describe('admin ingestion mock boundary', () => {
     await expect(fetchCorpusStatsMock()).resolves.toMatchObject({
       chromaDb: { status: 'degraded' },
       postgresql: { status: 'down' },
+    });
+  });
+
+  it('stops delayed mock work when its request signal is aborted', async () => {
+    configureAdminIngestionMockForTests({ delayMs: 1_000 });
+    const controller = new AbortController();
+    const submission = submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }], {
+      signal: controller.signal,
+    });
+
+    controller.abort();
+
+    await expect(submission).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({ stage: 'FAILED' });
+  });
+
+  it('removes a cancelled job from the mock service before it can be retried as a duplicate', async () => {
+    await submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }]);
+
+    await cancelIngestionJobMock('job-1');
+
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      id: 'job-1',
+      stage: 'FAILED',
+      filename: 'Unknown document',
     });
   });
 

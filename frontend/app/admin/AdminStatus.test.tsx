@@ -145,8 +145,13 @@ describe('AdminStatus', () => {
     render(<AdminStatus />);
     await act(async () => Promise.resolve());
 
+    const signal = fetchCorpusStatsMock.mock.calls[0]?.[0]?.signal as AbortSignal | undefined;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+
     await act(async () => vi.advanceTimersByTimeAsync(10_000));
 
+    expect(signal?.aborted).toBe(true);
     expect(screen.getByRole('alert')).toHaveTextContent('System status is taking too long');
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
     expect(screen.queryByLabelText('Loading system status')).not.toBeInTheDocument();

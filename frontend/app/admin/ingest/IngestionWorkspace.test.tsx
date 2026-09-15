@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { IngestionJob } from '../../../components/shared';
 import {
+  cancelIngestionJobMock,
   pollIngestionStatusMock,
   readPersistedIngestionJobs,
   submitIngestionMock,
@@ -15,6 +16,7 @@ vi.mock('../../../lib/mocks/adminIngestion', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../../lib/mocks/adminIngestion')>();
   return {
     ...actual,
+    cancelIngestionJobMock: vi.fn(),
     pollIngestionStatusMock: vi.fn(),
     submitIngestionMock: vi.fn(),
   };
@@ -45,6 +47,8 @@ describe('IngestionWorkspace', () => {
   beforeEach(() => {
     sessionStorage.clear();
     vi.mocked(pollIngestionStatusMock).mockReset();
+    vi.mocked(cancelIngestionJobMock).mockReset();
+    vi.mocked(cancelIngestionJobMock).mockResolvedValue(undefined);
     vi.mocked(submitIngestionMock).mockReset();
   });
 
@@ -208,18 +212,26 @@ describe('IngestionWorkspace', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(submitIngestionMock).toHaveBeenCalledWith(files, [
-      { documentType: 'judgment', note: undefined },
-      { documentType: 'statute', note: 'Second item' },
-    ]);
+    expect(submitIngestionMock).toHaveBeenCalledWith(
+      files,
+      [
+        { documentType: 'judgment', note: undefined },
+        { documentType: 'statute', note: 'Second item' },
+      ],
+      { signal: expect.any(AbortSignal) },
+    );
     expect(await screen.findByText('a.pdf')).toBeInTheDocument();
     expect(screen.queryByLabelText('Document type for a.pdf')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Remove a.pdf' })).not.toBeInTheDocument();
     const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
     expect(rows[0]).toHaveTextContent('b.pdf');
     expect(rows[1]).toHaveTextContent('a.pdf');
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-a');
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-b');
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-a', {
+      signal: expect.any(AbortSignal),
+    });
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-b', {
+      signal: expect.any(AbortSignal),
+    });
 
     const storageKey = sessionStorage.key(0);
     expect(storageKey).not.toBeNull();
@@ -248,6 +260,28 @@ describe('IngestionWorkspace', () => {
 
     pending.reject(new Error('end pending request'));
     expect(await screen.findByRole('alert')).toHaveTextContent('was not started');
+  });
+
+  it('aborts a submission that exceeds the start deadline and retains the batch', async () => {
+    const user = userEvent.setup();
+    vi.mocked(submitIngestionMock).mockReturnValue(new Promise(() => undefined));
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('slow-submit.pdf'));
+
+    vi.useFakeTimers();
+    screen.getByRole('button', { name: 'Start ingestion' }).click();
+    await act(async () => Promise.resolve());
+
+    const signal = vi.mocked(submitIngestionMock).mock.calls[0]?.[2]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+
+    await act(async () => vi.advanceTimersByTimeAsync(10_000));
+
+    expect(signal?.aborted).toBe(true);
+    expect(screen.getByRole('alert')).toHaveTextContent('taking too long to start');
+    expect(screen.getByLabelText('Document type for slow-submit.pdf')).toBeInTheDocument();
+    expect(screen.queryByTestId('ingestion-jobs')).not.toBeInTheDocument();
   });
 
   it('retains the batch and hides private rejection details after submit failure', async () => {
@@ -403,8 +437,12 @@ describe('IngestionWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1');
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-2');
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+      signal: expect.any(AbortSignal),
+    });
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-2', {
+      signal: expect.any(AbortSignal),
+    });
     const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
     expect(rows).toHaveLength(2);
     expect(rows[0]).toHaveTextContent('new.pdf');
@@ -460,7 +498,10 @@ describe('IngestionWorkspace', () => {
 
     await act(async () => vi.advanceTimersByTimeAsync(2_500));
     expect(pollIngestionStatusMock).toHaveBeenCalledTimes(3);
-    expect(vi.mocked(pollIngestionStatusMock).mock.calls[2]).toEqual(['job-b']);
+    expect(vi.mocked(pollIngestionStatusMock).mock.calls[2]?.[0]).toBe('job-b');
+    expect(vi.mocked(pollIngestionStatusMock).mock.calls[2]?.[1]?.signal).toBeInstanceOf(
+      AbortSignal,
+    );
     await act(async () => vi.advanceTimersByTimeAsync(5_000));
     expect(pollIngestionStatusMock).toHaveBeenCalledTimes(3);
     expect(readPersistedIngestionJobs()).toEqual([]);
@@ -545,7 +586,9 @@ describe('IngestionWorkspace', () => {
     const live = deferred<IngestionJob>();
     vi.mocked(pollIngestionStatusMock).mockReturnValue(live.promise);
     const view = render(<IngestionWorkspace />);
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1');
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+      signal: expect.any(AbortSignal),
+    });
 
     view.unmount();
     live.resolve({
@@ -607,7 +650,9 @@ describe('IngestionWorkspace', () => {
       'aria-valuenow',
       '40',
     );
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1');
+    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+      signal: expect.any(AbortSignal),
+    });
     const storageKey = sessionStorage.key(0);
     expect(storageKey).not.toBeNull();
     const serialized = sessionStorage.getItem(storageKey!);
@@ -661,8 +706,13 @@ describe('IngestionWorkspace', () => {
     vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
 
     render(<IngestionWorkspace />);
+    const signal = vi.mocked(pollIngestionStatusMock).mock.calls[0]?.[1]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
     await act(async () => vi.advanceTimersByTimeAsync(15_000));
 
+    expect(signal?.aborted).toBe(true);
+    expect(cancelIngestionJobMock).toHaveBeenCalledWith('job-1');
     expect(screen.getByText('FAILED')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('Processing took too long.');
     expect(screen.getByRole('alert')).toHaveTextContent('add it again in a new batch');

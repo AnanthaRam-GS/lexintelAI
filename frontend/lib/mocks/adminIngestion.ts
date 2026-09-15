@@ -29,6 +29,10 @@ export interface PersistedIngestionJob {
   stage: IngestionStage;
 }
 
+export interface AdminMockRequestOptions {
+  signal?: AbortSignal;
+}
+
 export interface AdminIngestionMockTestConfig {
   delayMs?: number;
   failCorpusRequests?: number;
@@ -126,9 +130,24 @@ let submitFailureCount = 0;
 let nextJobNumber = 1;
 const jobs = new Map<string, JobState>();
 
-const wait = async (delayMs: number) => {
+const abortReason = (signal: AbortSignal) =>
+  signal.reason instanceof Error ? signal.reason : new DOMException('Aborted', 'AbortError');
+
+const wait = async (delayMs: number, signal?: AbortSignal) => {
+  if (signal?.aborted) throw abortReason(signal);
   if (delayMs <= 0) return;
-  await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+
+  await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      signal?.removeEventListener('abort', handleAbort);
+      resolve();
+    }, delayMs);
+    const handleAbort = () => {
+      clearTimeout(timeout);
+      reject(abortReason(signal!));
+    };
+    signal?.addEventListener('abort', handleAbort, { once: true });
+  });
 };
 
 /** Build-time-only browser audit switch; never used by live endpoint logic. */
@@ -205,8 +224,10 @@ export function progressForStage(stage: IngestionStage): number {
 // TODO(contract): replace these three mock endpoint functions with
 // frontend/lib/api.ts calls when the live 1.R.2 endpoints exist; keep route
 // callers on this single boundary until then.
-export async function fetchCorpusStatsMock(): Promise<CorpusStats> {
-  await wait(config.delayMs);
+export async function fetchCorpusStatsMock(
+  options: AdminMockRequestOptions = {},
+): Promise<CorpusStats> {
+  await wait(config.delayMs, options.signal);
   if (corpusFailureCount < config.failCorpusRequests) {
     corpusFailureCount += 1;
     throw new Error('Unable to load system status.');
@@ -233,8 +254,9 @@ export async function fetchCorpusStatsMock(): Promise<CorpusStats> {
 export async function submitIngestionMock(
   files: File[],
   metadata: IngestionMetadata[],
+  options: AdminMockRequestOptions = {},
 ): Promise<{ jobIds: string[] }> {
-  await wait(config.delayMs);
+  await wait(config.delayMs, options.signal);
   if (submitFailureCount < config.failSubmitRequests) {
     submitFailureCount += 1;
     throw new Error(SAFE_SUBMIT_FAILURE_TEXT);
@@ -266,8 +288,11 @@ export async function submitIngestionMock(
   };
 }
 
-export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJob> {
-  await wait(config.delayMs);
+export async function pollIngestionStatusMock(
+  jobId: string,
+  options: AdminMockRequestOptions = {},
+): Promise<IngestionJob> {
+  await wait(config.delayMs, options.signal);
   if (pollFailureCount < config.failPollRequests) {
     pollFailureCount += 1;
     if (config.pollFailureMode === 'network') {
@@ -329,6 +354,18 @@ export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJ
     stage,
     progress: progressForStage(stage),
   };
+}
+
+/**
+ * Mock-only authoritative cancellation. The live ingestion API must expose an
+ * equivalent cancel/idempotency boundary before replacing this implementation.
+ */
+export async function cancelIngestionJobMock(
+  jobId: string,
+  options: AdminMockRequestOptions = {},
+): Promise<void> {
+  await wait(config.delayMs, options.signal);
+  jobs.delete(jobId);
 }
 
 // TODO(contract): mock-phase sessionStorage rehydration stand-in. Delete this
