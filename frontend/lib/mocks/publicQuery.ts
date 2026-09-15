@@ -7,6 +7,15 @@ export interface PublicQueryResponse {
   nextStepGuidance: string;
 }
 
+export interface PublicQueryMockTestConfig {
+  delayMs?: number;
+  failRequests?: number;
+  failureMode?: 'network' | 'service';
+}
+
+let testConfig: PublicQueryMockTestConfig | null = null;
+let failedRequestCount = 0;
+
 const publicSources = [
   {
     title: 'India Code',
@@ -24,6 +33,7 @@ const publicSections = [
 ];
 
 function getMockDelay(): number {
+  if (testConfig?.delayMs !== undefined) return Math.max(0, testConfig.delayMs);
   const configuredDelay = Number(process.env.NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_DELAY_MS);
 
   if (Number.isFinite(configuredDelay) && configuredDelay >= 0) {
@@ -57,6 +67,14 @@ export async function fetchPublicQueryMock(input: PublicQueryInput): Promise<Pub
   assertPublicQueryInput(input);
   await wait(getMockDelay());
 
+  if ((testConfig?.failRequests ?? 0) > failedRequestCount) {
+    failedRequestCount += 1;
+    if (testConfig?.failureMode === 'network') {
+      throw new TypeError('Mock network request failed.');
+    }
+    throw new Error('Public query mock failed.');
+  }
+
   if (process.env.NEXT_PUBLIC_LEGALAI_PUBLIC_QUERY_MOCK_FAILURE === 'true') {
     throw new Error('Public query mock failed.');
   }
@@ -71,4 +89,15 @@ export async function fetchPublicQueryMock(input: PublicQueryInput): Promise<Pub
     nextStepGuidance:
       'Keep copies of the relevant documents and consider speaking with a qualified legal professional about your situation.',
   };
+}
+
+/** Test-only controls used to exercise Phase 5 loading and failure states. */
+export function configurePublicQueryMockForTests(config: PublicQueryMockTestConfig): void {
+  testConfig = { ...config };
+  failedRequestCount = 0;
+}
+
+export function resetPublicQueryMockForTests(): void {
+  testConfig = null;
+  failedRequestCount = 0;
 }

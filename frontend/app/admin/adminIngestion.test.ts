@@ -160,10 +160,55 @@ describe('admin ingestion mock boundary', () => {
       filename: 'secret.pdf',
       stage: 'FAILED',
       progress: 100,
-      error: 'This file could not be processed. Review the file and try again.',
+      error: 'processing',
     });
     expect(JSON.stringify(failed)).not.toContain('private');
     expect(JSON.stringify(failed)).not.toContain('secret.pdf-private-content');
+  });
+
+  it('supports a mixed batch with one reason-coded failure and one completion', async () => {
+    await submitIngestionMock(
+      [pdf('good.pdf'), pdf('damaged.pdf')],
+      [{ documentType: 'judgment' }, { documentType: 'statute' }],
+    );
+    configureAdminIngestionMockForTests({
+      fileFailureReasons: { 'damaged.pdf': 'corrupted' },
+    });
+
+    await expect(pollIngestionStatusMock('job-2')).resolves.toMatchObject({
+      filename: 'damaged.pdf',
+      stage: 'FAILED',
+      error: 'corrupted',
+    });
+    for (let index = 0; index < 5; index += 1) {
+      await pollIngestionStatusMock('job-1');
+    }
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      filename: 'good.pdf',
+      stage: 'COMPLETED',
+    });
+  });
+
+  it('can distinguish a bounded network poll failure and then recover', async () => {
+    await submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }]);
+    configureAdminIngestionMockForTests({ failPollRequests: 1, pollFailureMode: 'network' });
+
+    await expect(pollIngestionStatusMock('job-1')).rejects.toBeInstanceOf(TypeError);
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      stage: 'EXTRACTING',
+      progress: 20,
+    });
+  });
+
+  it('can expose deterministic degraded/down service states for status-card testing', async () => {
+    configureAdminIngestionMockForTests({
+      corpusServiceHealth: { chromaDb: 'degraded', postgresql: 'down' },
+    });
+
+    await expect(fetchCorpusStatsMock()).resolves.toMatchObject({
+      chromaDb: { status: 'degraded' },
+      postgresql: { status: 'down' },
+    });
   });
 
   it('normalizes malformed storage to minimal active records and removes terminal records', () => {
