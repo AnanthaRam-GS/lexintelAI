@@ -170,6 +170,7 @@ describe('PublicAsk', () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
 
     if (originalMatchMediaDescriptor) {
       Object.defineProperty(window, 'matchMedia', originalMatchMediaDescriptor);
@@ -358,8 +359,8 @@ describe('PublicAsk', () => {
     await submitText(user, 'What can I do?');
 
     const error = await screen.findByRole('alert');
-    expect(error).toHaveTextContent("We couldn't answer that just now.");
-    expect(error).toHaveTextContent('Your question is still here—please try again.');
+    expect(error).toHaveTextContent("Couldn't get an answer right now");
+    expect(error).toHaveTextContent('Your question is still here. Please try again in a moment.');
     expect(document.body).not.toHaveTextContent(privateFailure);
     expect(
       Array.from(document.querySelectorAll('*')).some((element) =>
@@ -368,6 +369,76 @@ describe('PublicAsk', () => {
         ),
       ),
     ).toBe(false);
+  });
+
+  it('distinguishes a network failure with fixed connection guidance', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockRejectedValueOnce(
+      new TypeError('Failed to fetch https://private-host/query'),
+    );
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Check your connection');
+    expect(alert).toHaveTextContent('Reconnect, then try your question again.');
+    expect(alert).not.toHaveTextContent('private-host');
+  });
+
+  it('changes from fast to slow and then offers keep-waiting or cancel controls', async () => {
+    vi.useFakeTimers();
+    const request = createDeferred<PublicQueryResponse>();
+    fetchPublicQuery.mockReturnValueOnce(request.promise);
+    renderAsk();
+
+    fireEvent.change(screen.getByLabelText('Your question'), {
+      target: { value: 'Please explain this notice' },
+    });
+    fireEvent.submit(screen.getByRole('button', { name: 'Send' }).closest('form')!);
+
+    expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeInTheDocument();
+    await act(async () => vi.advanceTimersByTimeAsync(4_000));
+    expect(
+      screen.getByRole('status', { name: 'Still working on your answer' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Still working on your answer…')).toBeInTheDocument();
+
+    await act(async () => vi.advanceTimersByTimeAsync(5_000));
+    expect(
+      screen.getByRole('heading', { name: 'Taking longer than expected' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Keep waiting' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel request' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Keep waiting' }));
+    expect(screen.getByText(/Still working\. You can cancel at any time/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Keep waiting' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel request' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('We stopped waiting');
+    expect(screen.getByText('Please explain this notice')).toBeInTheDocument();
+
+    await act(async () => request.resolve(responseFixture));
+    expect(screen.queryByText(responseFixture.explanation)).not.toBeInTheDocument();
+  });
+
+  it('keeps an older failed turn visible when a later turn recovers', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery
+      .mockRejectedValueOnce(new Error('provider failed'))
+      .mockResolvedValueOnce(responseFixture);
+    renderAsk();
+
+    await submitText(user, 'First question');
+    const oldFailure = await screen.findByRole('alert');
+    await submitText(user, 'Second question');
+    await screen.findByRole('article', { name: 'Plain-language legal information' });
+
+    expect(oldFailure).toBeInTheDocument();
+    expect(screen.getByText('First question')).toBeInTheDocument();
+    expect(screen.getByText('Second question')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
   });
 
   it('retries the exact failed text turn without duplicating its user message', async () => {

@@ -1,10 +1,11 @@
 import type { PublicQueryResponse } from '../query-client';
+import type { PublicAnswerFailure } from '../error-copy';
 
 export type ChatMessage =
   | { role: 'user'; kind: 'text'; content: string }
   | { role: 'user'; kind: 'file'; fileName: string }
   | { role: 'assistant'; response: PublicQueryResponse }
-  | { role: 'assistant'; kind: 'error'; error: string };
+  | { role: 'assistant'; kind: 'error'; failure: PublicAnswerFailure };
 
 export interface ChatEntry {
   id: string;

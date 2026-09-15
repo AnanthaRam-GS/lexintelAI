@@ -18,6 +18,7 @@ import { ResponseCard } from '../../../components/shared/ResponseCard';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 
 import { usePublicSession } from '../PublicSessionProvider';
+import { classifyPublicAnswerFailure, errorCopy, type PublicAnswerFailure } from '../error-copy';
 import { fetchPublicQuery, type PublicQueryInput } from '../query-client';
 import { toPublicResponseCardProps } from '../response-adapter';
 
@@ -31,11 +32,12 @@ const emptyStateExamples = [
 
 const controlFocusClass =
   'focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]';
-const safeErrorTitle = "We couldn't answer that just now.";
-const safeErrorMessage = 'Your question is still here—please try again.';
+const PUBLIC_SLOW_CUE_DELAY_MS = 4_000;
+const PUBLIC_TIMEOUT_CUE_DELAY_MS = 9_000;
 
 type ActiveInputMode = 'text' | 'file' | 'none';
 type RequestStatus = 'idle' | 'loading' | 'error';
+type LoadingStage = 'fast' | 'slow' | 'timeout';
 
 export interface PublicAskProps {
   /**
@@ -63,9 +65,11 @@ function ChatThreadEntry({
   entry,
   entryRef,
   onRetry,
+  retryAvailable,
 }: {
   entry: ChatEntry;
   entryRef?: Ref<HTMLLIElement>;
+  retryAvailable: boolean;
   onRetry: (entry: ChatEntry) => void;
 }) {
   const { message } = entry;
@@ -105,12 +109,14 @@ function ChatThreadEntry({
     );
   }
 
+  const failure = errorCopy.public.answer[message.failure];
+
   return (
     <li ref={entryRef}>
       <ErrorMessage
-        message={safeErrorMessage}
-        onRetry={() => onRetry(entry)}
-        title={safeErrorTitle}
+        message={failure.message}
+        onRetry={retryAvailable ? () => onRetry(entry) : undefined}
+        title={failure.title}
         variant="inline"
       />
     </li>
@@ -131,9 +137,11 @@ export function PublicAsk({
   const [uploadKey, setUploadKey] = useState(0);
   const [isConfirmingNewConversation, setIsConfirmingNewConversation] = useState(false);
   const [requestStatus, setRequestStatus] = useState<RequestStatus>('idle');
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>('fast');
+  const [continuedWaiting, setContinuedWaiting] = useState(false);
   const entrySequence = useRef(0);
   const confirmationRef = useRef<HTMLElement>(null);
-  const failedErrorEntryRef = useRef<string | null>(null);
+  const failedInputsRef = useRef(new Map<string, PublicQueryInput>());
   const isMountedRef = useRef(true);
   const isRequestInFlightRef = useRef(false);
   const latestEntryRef = useRef<HTMLLIElement>(null);
@@ -141,17 +149,27 @@ export function PublicAsk({
   const newConversationButtonRef = useRef<HTMLButtonElement>(null);
   const requestGenerationRef = useRef(0);
   const requestRef = useRef<PublicQueryInput | null>(null);
+  const slowCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeMode: ActiveInputMode = selectedFile ? 'file' : draft.trim() ? 'text' : 'none';
   const isAnyRequestPending = isRequestPending || requestStatus === 'loading';
+
+  const clearRequestTimers = useCallback(() => {
+    if (slowCueTimerRef.current) clearTimeout(slowCueTimerRef.current);
+    if (timeoutCueTimerRef.current) clearTimeout(timeoutCueTimerRef.current);
+    slowCueTimerRef.current = null;
+    timeoutCueTimerRef.current = null;
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
 
     return () => {
       isMountedRef.current = false;
+      clearRequestTimers();
     };
-  }, []);
+  }, [clearRequestTimers]);
 
   useEffect(() => {
     const latestEntry = latestEntryRef.current;
@@ -213,17 +231,26 @@ export function PublicAsk({
         return false;
       }
 
-      if (appendUser) {
-        if (failedErrorEntryRef.current) {
-          dispatch({ type: 'remove-error', id: failedErrorEntryRef.current });
-          failedErrorEntryRef.current = null;
-        }
-      }
-
       const requestGeneration = requestGenerationRef.current;
       requestRef.current = input;
       isRequestInFlightRef.current = true;
       setRequestStatus('loading');
+      setLoadingStage('fast');
+      setContinuedWaiting(false);
+      clearRequestTimers();
+
+      const requestIsCurrent = () =>
+        isMountedRef.current &&
+        requestGeneration === requestGenerationRef.current &&
+        requestRef.current === input &&
+        isRequestInFlightRef.current;
+
+      slowCueTimerRef.current = setTimeout(() => {
+        if (requestIsCurrent()) setLoadingStage('slow');
+      }, PUBLIC_SLOW_CUE_DELAY_MS);
+      timeoutCueTimerRef.current = setTimeout(() => {
+        if (requestIsCurrent()) setLoadingStage('timeout');
+      }, PUBLIC_TIMEOUT_CUE_DELAY_MS);
 
       if (appendUser) {
         appendInput(input);
@@ -251,10 +278,11 @@ export function PublicAsk({
           };
 
           dispatch({ type: 'append-assistant', entry });
+          clearRequestTimers();
           requestRef.current = null;
           isRequestInFlightRef.current = false;
           setRequestStatus('idle');
-        } catch {
+        } catch (error) {
           if (
             !isMountedRef.current ||
             requestGeneration !== requestGenerationRef.current ||
@@ -272,12 +300,14 @@ export function PublicAsk({
             message: {
               role: 'assistant',
               kind: 'error',
-              error: `${safeErrorTitle} ${safeErrorMessage}`,
+              failure: classifyPublicAnswerFailure(error),
             },
           };
 
           dispatch({ type: 'append-assistant', entry });
-          failedErrorEntryRef.current = entry.id;
+          failedInputsRef.current.set(entry.id, input);
+          clearRequestTimers();
+          requestRef.current = null;
           isRequestInFlightRef.current = false;
           setRequestStatus('error');
         }
@@ -285,7 +315,7 @@ export function PublicAsk({
 
       return true;
     },
-    [appendInput, isRequestPending],
+    [appendInput, clearRequestTimers, isRequestPending],
   );
 
   useEffect(() => {
@@ -377,8 +407,9 @@ export function PublicAsk({
 
   const clearConversation = useCallback(() => {
     requestGenerationRef.current += 1;
+    clearRequestTimers();
     requestRef.current = null;
-    failedErrorEntryRef.current = null;
+    failedInputsRef.current.clear();
     isRequestInFlightRef.current = false;
     setRequestStatus('idle');
     dispatch({ type: 'clear' });
@@ -386,7 +417,7 @@ export function PublicAsk({
     setIsConfirmingNewConversation(false);
     onNewConversation?.();
     queueMicrotask(() => textInputRef.current?.focus());
-  }, [onNewConversation, resetComposer]);
+  }, [clearRequestTimers, onNewConversation, resetComposer]);
 
   const requestNewConversation = () => {
     if (state.entries.length >= 2) {
@@ -404,14 +435,9 @@ export function PublicAsk({
 
   const retryEntry = useCallback(
     (entry: ChatEntry) => {
-      const retainedInput = requestRef.current;
+      const retainedInput = failedInputsRef.current.get(entry.id);
 
-      if (
-        isAnyRequestPending ||
-        requestStatus !== 'error' ||
-        failedErrorEntryRef.current !== entry.id ||
-        !retainedInput
-      ) {
+      if (isAnyRequestPending || !retainedInput) {
         return;
       }
 
@@ -420,11 +446,33 @@ export function PublicAsk({
       }
 
       dispatch({ type: 'remove-error', id: entry.id });
-      failedErrorEntryRef.current = null;
+      failedInputsRef.current.delete(entry.id);
       onRetry?.(entry);
     },
-    [isAnyRequestPending, onRetry, requestStatus, submitInput],
+    [isAnyRequestPending, onRetry, submitInput],
   );
+
+  const cancelSlowRequest = useCallback(() => {
+    const retainedInput = requestRef.current;
+    if (!retainedInput || !isRequestInFlightRef.current) return;
+
+    requestGenerationRef.current += 1;
+    clearRequestTimers();
+    requestRef.current = null;
+    isRequestInFlightRef.current = false;
+    entrySequence.current += 1;
+    const entry: ChatEntry & {
+      message: { role: 'assistant'; kind: 'error'; failure: PublicAnswerFailure };
+    } = {
+      id: `public-turn-${entrySequence.current}-assistant`,
+      message: { role: 'assistant', kind: 'error', failure: 'cancelled' },
+    };
+    failedInputsRef.current.set(entry.id, retainedInput);
+    dispatch({ type: 'append-assistant', entry });
+    setRequestStatus('error');
+    setLoadingStage('fast');
+    setContinuedWaiting(false);
+  }, [clearRequestTimers]);
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-5 py-6 sm:px-8 sm:py-10 lg:grid lg:h-dvh lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)_auto] lg:overflow-hidden">
@@ -532,14 +580,62 @@ export function PublicAsk({
                 }
                 key={entry.id}
                 onRetry={retryEntry}
+                retryAvailable={!isAnyRequestPending}
               />
             ))}
             {requestStatus === 'loading' ? (
               <li ref={latestEntryRef}>
-                <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
-                  <LoadingSpinner label="Finding a clear answer" size="sm" />
-                  <span className="text-type-body-sm">Finding a clear answer…</span>
-                </div>
+                {loadingStage === 'timeout' ? (
+                  <section className="max-w-xl rounded-[var(--radius-standard)] border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] p-4 text-[var(--color-warning-foreground)]">
+                    <div className="flex items-start gap-3">
+                      <LoadingSpinner label="Still working on your answer" size="sm" />
+                      <div>
+                        <h2 className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]">
+                          {errorCopy.public.loading.timeoutTitle}
+                        </h2>
+                        <p className="text-type-body-sm-relaxed mt-1">
+                          {continuedWaiting
+                            ? errorCopy.public.loading.continued
+                            : errorCopy.public.loading.timeoutMessage}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                      {!continuedWaiting ? (
+                        <button
+                          className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-warning-foreground)] px-4 font-semibold ${controlFocusClass}`}
+                          onClick={() => setContinuedWaiting(true)}
+                          type="button"
+                        >
+                          Keep waiting
+                        </button>
+                      ) : null}
+                      <button
+                        className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 font-semibold text-[var(--color-body)] ${controlFocusClass}`}
+                        onClick={cancelSlowRequest}
+                        type="button"
+                      >
+                        Cancel request
+                      </button>
+                    </div>
+                  </section>
+                ) : (
+                  <div className="inline-flex items-center gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-muted)]">
+                    <LoadingSpinner
+                      label={
+                        loadingStage === 'slow'
+                          ? 'Still working on your answer'
+                          : 'Finding a clear answer'
+                      }
+                      size="sm"
+                    />
+                    <span className="text-type-body-sm">
+                      {loadingStage === 'slow'
+                        ? errorCopy.public.loading.slow
+                        : errorCopy.public.loading.fast}
+                    </span>
+                  </div>
+                )}
               </li>
             ) : null}
           </ol>
