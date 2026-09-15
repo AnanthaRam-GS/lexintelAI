@@ -17,7 +17,7 @@ to expose the token.
 ## Professional Query
 
 Professional users may submit either text or a temporary PDF, one input form at
-a time. PDF upload endpoints will use multipart/form-data rather than embedding
+a time. PDF upload endpoints use multipart/form-data rather than embedding
 uploaded files in JSON schemas.
 
 `POST /query/professional` accepts authenticated lawyer/admin JSON text
@@ -27,11 +27,32 @@ requests:
 { "text": "Research anticipatory bail under BNSS", "session_id": "optional-session-id" }
 ```
 
-PDF query support remains a separate future multipart/form-data endpoint; it is
-not accepted by this JSON text route.
+`POST /query/professional/pdf` accepts authenticated lawyer/admin
+multipart/form-data requests:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `query` | string | yes | Original professional legal query, max 5000 characters. |
+| `file` | PDF upload | yes | One temporary private PDF. |
+| `session_id` | string | no | Optional history session id. |
+
+The PDF route returns the same `ProfessionalQueryResponse` shape as the JSON
+text route. The uploaded PDF is parsed and chunked locally for that request,
+then a deterministic bounded private context is supplied to the professional
+answer prompt. The PDF remains factual query context only; cited authorities
+must come from retrieved trusted-corpus evidence.
 
 Professional query uploads are temporary analysis inputs. They are not
-automatically ingested into the global corpus.
+automatically ingested into the global corpus. They do not create ingestion
+jobs, Chroma upserts, or BM25 index writes. Successful history saves may record
+the authenticated user, original query, session id, answer metadata, and
+response JSON, but must not persist PDF bytes, full extracted text, temporary
+chunks, or server temp paths.
+
+PDF upload errors use safe HTTP responses for unsupported extension/MIME,
+invalid PDF header, empty upload, configured size limit, parse failures, and
+chunking failures. Error payloads must not leak local paths, stack traces, or
+provider secrets.
 
 The professional response is structured into:
 
