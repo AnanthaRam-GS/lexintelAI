@@ -84,6 +84,10 @@ def get_retrieval_service():
     return _cached_retrieval_service()
 
 
+def clear_retrieval_service_cache() -> None:
+    _cached_retrieval_service.cache_clear()
+
+
 def get_answer_adapter(settings: Settings = Depends(get_settings)):
     provider = settings.legalai_llm_provider.strip().lower()
     if provider == "gemini":

@@ -139,6 +139,7 @@ class TestIngestionUnitAndState(unittest.TestCase):
                 collection_name="test_collection",
                 collection_metadata={"index_version": INDEX_VERSION},
             )
+            bm25_updates = []
 
             process_ingestion_job(
                 job_id=job.id,
@@ -153,6 +154,8 @@ class TestIngestionUnitAndState(unittest.TestCase):
                 chunker_func=mock_chunker,
                 embedding_provider=embedder,
                 vector_store=vector_store,
+                bm25_update_func=lambda chunks: bm25_updates.append(chunks) or {"indexed_chunks": len(chunks)},
+                retrieval_cache_invalidator=lambda: None,
             )
 
             self.db.expire_all()
@@ -180,6 +183,45 @@ class TestIngestionUnitAndState(unittest.TestCase):
 
             # Verify Vector Store records
             self.assertEqual(vector_store.count(), 2)
+            self.assertEqual(len(bm25_updates), 1)
+            self.assertEqual([chunk["chunk_id"] for chunk in bm25_updates[0]], [f"doc:{doc.id}:chunk:0000", f"doc:{doc.id}:chunk:0001"])
+            self.assertEqual(bm25_updates[0][0]["chunk_text"], "First chunk discussing facts and section 302")
+
+    def test_bm25_failure_prevents_completed_job(self) -> None:
+        job = create_ingestion_job(self.db)
+
+        def mock_parser(file_path: str) -> dict:
+            return {"text": "Criminal judgment text section 302 IPC", "page_count": 1}
+
+        def mock_chunker(extracted: dict) -> list[dict]:
+            return [{"text": "Trusted chunk section 302", "chunk_index": 0}]
+
+        def failing_bm25_update(chunks: list[dict]) -> dict:
+            raise RuntimeError("BM25 lexical indexing unavailable")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            vector_store = JsonVectorStore(
+                persist_dir=Path(tmpdir),
+                collection_name="test_collection",
+                collection_metadata={"index_version": INDEX_VERSION},
+            )
+            process_ingestion_job(
+                job_id=job.id,
+                file_path="test_judgment.pdf",
+                doc_type="judgment",
+                parser_func=mock_parser,
+                chunker_func=mock_chunker,
+                embedding_provider=DeterministicMockEmbeddingProvider(),
+                vector_store=vector_store,
+                bm25_update_func=failing_bm25_update,
+                retrieval_cache_invalidator=lambda: None,
+            )
+
+        self.db.expire_all()
+        refreshed = get_ingestion_job(self.db, job.id)
+        self.assertEqual(refreshed.status, IngestionStatus.FAILED.value)
+        self.assertIn("BM25 lexical indexing unavailable", refreshed.error_message)
+        self.assertNotEqual(refreshed.status, IngestionStatus.COMPLETED.value)
 
 
 class TestIngestionEndpoints(unittest.TestCase):
