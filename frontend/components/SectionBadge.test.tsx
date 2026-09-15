@@ -14,7 +14,7 @@ describe('SectionBadge Component', () => {
           confidence: 0.95,
           context: 'Punishment for murder',
         }}
-      />
+      />,
     );
 
     expect(screen.getByText('IPC')).toBeInTheDocument();
@@ -31,10 +31,12 @@ describe('SectionBadge Component', () => {
           confidence: 0.92,
           context: 'Offence of murder maintaining requirement of bodily injury intention.',
         }}
-      />
+      />,
     );
 
-    const toggleButton = screen.getByRole('button', { name: /Toggle description for Section 103\(1\)/i });
+    const toggleButton = screen.getByRole('button', {
+      name: /Toggle description for Section 103\(1\)/i,
+    });
     expect(screen.queryByText(/Offence of murder/i)).not.toBeInTheDocument();
 
     fireEvent.click(toggleButton);
@@ -51,7 +53,7 @@ describe('SectionBadge Component', () => {
           statute: 'Code of Criminal Procedure, 1973',
           section: 'Section 437',
         }}
-      />
+      />,
     );
     expect(screen.getByText('CrPC')).toBeInTheDocument();
 
@@ -61,7 +63,7 @@ describe('SectionBadge Component', () => {
           statute: 'Bharatiya Nagarik Suraksha Sanhita, 2023',
           section: 'Section 480',
         }}
-      />
+      />,
     );
     expect(screen.getByText('BNSS')).toBeInTheDocument();
   });

@@ -32,7 +32,7 @@ describe('ProfessionalResultsView Component', () => {
 
     // Precedent items are now visible
     expect(
-      screen.getByRole('heading', { name: 'Sharad Birdhichand Sarda v. State of Maharashtra' })
+      screen.getByRole('heading', { name: 'Sharad Birdhichand Sarda v. State of Maharashtra' }),
     ).toBeInTheDocument();
   });
 

@@ -34,9 +34,7 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--color-muted)]">
             {precedent.court && (
-              <span className="font-medium text-[var(--color-body)]">
-                {precedent.court}
-              </span>
+              <span className="font-medium text-[var(--color-body)]">{precedent.court}</span>
             )}
             {precedent.court && precedent.year && <span aria-hidden="true">·</span>}
             {precedent.year && <span className="font-semibold">{precedent.year}</span>}
@@ -59,9 +57,7 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
               style={{ width: `${relevancePct}%` }}
             />
           </div>
-          <span className="font-semibold text-[var(--color-ink)]">
-            {relevancePct}%
-          </span>
+          <span className="font-semibold text-[var(--color-ink)]">{relevancePct}%</span>
           <span className="text-[0.6875rem] text-[var(--color-muted)] uppercase tracking-wider">
             Match
           </span>
