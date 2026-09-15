@@ -762,6 +762,29 @@ describe('IngestionWorkspace', () => {
     expect(cancelIngestionJobMock).not.toHaveBeenCalled();
   });
 
+  it('uses the first live poll as truth when restored placeholder progress is ahead', async () => {
+    vi.useFakeTimers();
+    const stages: IngestionJob[] = [
+      { id: 'job-1', filename: 'restored.pdf', stage: 'EXTRACTING', progress: 20 },
+      { id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING', progress: 40 },
+      { id: 'job-1', filename: 'restored.pdf', stage: 'EMBEDDING', progress: 60 },
+      { id: 'job-1', filename: 'restored.pdf', stage: 'INDEXING', progress: 80 },
+      { id: 'job-1', filename: 'restored.pdf', stage: 'COMPLETED', progress: 100 },
+    ];
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'INDEXING' }]);
+    vi.mocked(pollIngestionStatusMock).mockImplementation(async () => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
+      return stages.shift()!;
+    });
+
+    render(<IngestionWorkspace />);
+    await act(async () => vi.advanceTimersByTimeAsync(21_000));
+
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(cancelIngestionJobMock).not.toHaveBeenCalled();
+    expect(readPersistedIngestionJobs()).toEqual([]);
+  });
+
   it('keeps two completed files clear when one file in a submitted batch of three fails', async () => {
     const user = userEvent.setup();
     const files = [pdfFile('first.pdf'), pdfFile('damaged.pdf'), pdfFile('third.pdf')];

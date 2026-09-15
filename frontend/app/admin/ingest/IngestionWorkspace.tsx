@@ -167,9 +167,14 @@ export function IngestionWorkspace() {
         try {
           const live = await pollIngestionStatusMock(jobId, { signal: pollController.signal });
           if (!isCurrentPoll()) return;
-          const previousProgress = lastProgressRef.current.get(jobId) ?? 0;
-          const madeProgress = live.progress > previousProgress;
-          lastProgressRef.current.set(jobId, Math.max(previousProgress, live.progress));
+          const previousProgress = lastProgressRef.current.get(jobId);
+          const madeProgress = previousProgress === undefined || live.progress > previousProgress;
+          lastProgressRef.current.set(
+            jobId,
+            previousProgress === undefined
+              ? live.progress
+              : Math.max(previousProgress, live.progress),
+          );
           const safeLive = { ...live, error: undefined };
           setJobs((current) => replaceJobById(current, safeLive));
           setPollingFailures((current) => {
@@ -225,7 +230,8 @@ export function IngestionWorkspace() {
     }));
     // Rehydration is an intentional client-only external-store synchronization.
     setJobs(restored);
-    restored.forEach((job) => lastProgress.set(job.id, job.progress));
+    // Session values are display placeholders only; the first live poll sets
+    // the progress baseline and restarts the inactivity window.
     restored.filter((job) => !isTerminal(job.stage)).forEach(({ id }) => startPolling(id));
 
     return () => {

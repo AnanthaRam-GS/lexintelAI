@@ -36,7 +36,9 @@ No shared error component was changed.
 - An offline/rejected ingestion poll keeps the job active and visible while
   automatic polling continues; only an explicit FAILED status or 15 seconds
   without increased live progress makes it terminal. The inactivity window is
-  reset only when a successful poll reports a higher progress value.
+  reset when the first authoritative live poll arrives and thereafter only when
+  a successful poll reports a higher progress value; persisted stage-derived
+  progress remains an initial-render placeholder and never becomes the baseline.
 - Public Cancel, Admin status timeout, Admin submit timeout, route unmount, and
   active-job shutdown now abort the underlying request rather than only hiding
   its eventual result.
@@ -55,7 +57,7 @@ No shared error component was changed.
 - Clean install: Node `v25.6.0`, npm `11.8.0`, `npm ci` completed with zero
   vulnerabilities. npm reported the repository-pinned ESLint 9 release as
   deprecated.
-- `npm run test:run`: 32 files, 219 tests passed.
+- `npm run test:run`: 32 files, 220 tests passed.
 - `npm run lint`: zero warnings/errors.
 - `npm run format:check`: pass.
 - `npm run build`: warning-free compile/type-check with all 13 application routes
