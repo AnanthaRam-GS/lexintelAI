@@ -96,6 +96,15 @@ Ingestion is asynchronous and persistent. Upload acceptance returns a job id and
 initial status. Status endpoints report job progress, document id, chunk count,
 and any failure message.
 
+Successful admin ingestion updates both retrieval stores before the job is
+marked complete: dense chunks are upserted into Chroma/vector storage and the
+same trusted chunks are upserted into the BM25 lexical index using the frozen
+`legalai-bm25-index-v1` / `legalai-legal-tokenizer-v1` configuration. BM25
+persistence uses a temp-write, validate, atomic-replace pattern guarded by a
+process-local lock. If BM25 maintenance fails after dense indexing, the job is
+marked `FAILED` rather than falsely `COMPLETED`; the previous BM25 artifact is
+left in place. Multi-process deployments may need a stronger shared file lock.
+
 Frozen ingestion states:
 
 - `QUEUED`

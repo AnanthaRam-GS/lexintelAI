@@ -7,8 +7,10 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
+import tempfile
 import unicodedata
 from typing import Any
 
@@ -112,6 +114,43 @@ class Bm25LexicalIndex:
             "duplicate_chunk_ids": duplicate_ids,
         }
 
+    def upsert_chunks(self, chunks: list[dict[str, Any]]) -> dict[str, Any]:
+        """Insert or replace trusted chunks while preserving frozen BM25 semantics."""
+        if self.path.exists():
+            self.load()
+        inserted = 0
+        updated = 0
+        skipped = 0
+        empty_tokenized_docs = 0
+        seen_ids: set[str] = set()
+        for chunk in chunks:
+            record = self.record_for_chunk(chunk)
+            chunk_id = record["chunk_id"]
+            if chunk_id in seen_ids:
+                raise ValueError(f"duplicate chunk ID in update batch: {chunk_id}")
+            seen_ids.add(chunk_id)
+            existing = self.records.get(chunk_id)
+            if existing == record:
+                skipped += 1
+            elif existing:
+                self.records[chunk_id] = record
+                updated += 1
+            else:
+                self.records[chunk_id] = record
+                inserted += 1
+            if record["length"] == 0:
+                empty_tokenized_docs += 1
+        self.recompute_statistics()
+        self.metadata = self.index_metadata_from_records(empty_tokenized_docs)
+        self.persist()
+        return {
+            "inserted": inserted,
+            "updated": updated,
+            "skipped_unchanged": skipped,
+            "indexed_chunks": self.count(),
+            "empty_tokenized_docs": empty_tokenized_docs,
+        }
+
     def load(self) -> None:
         payload = json.loads(self.path.read_text(encoding="utf-8"))
         metadata = payload["metadata"]
@@ -130,7 +169,19 @@ class Bm25LexicalIndex:
             "avg_doc_length": self.avg_doc_length,
             "records": list(self.records.values()),
         }
-        self.path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        serialized = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=self.persist_dir, delete=False) as handle:
+            temp_name = handle.name
+            handle.write(serialized)
+            handle.flush()
+            os.fsync(handle.fileno())
+        try:
+            json.loads(Path(temp_name).read_text(encoding="utf-8"))
+            os.replace(temp_name, self.path)
+        finally:
+            temp_path = Path(temp_name)
+            if temp_path.exists():
+                temp_path.unlink()
 
     def reset(self) -> None:
         self.records = {}
@@ -167,6 +218,41 @@ class Bm25LexicalIndex:
             "chunk_processing_versions": processing_versions,
             "empty_tokenized_docs": empty_tokenized_docs,
         }
+
+    def record_for_chunk(self, chunk: dict[str, Any]) -> dict[str, Any]:
+        chunk_id = str(chunk["chunk_id"])
+        document_id = str(chunk["document_id"])
+        text = str(chunk.get("chunk_text") or chunk.get("text") or "")
+        normalized = {**chunk, "chunk_id": chunk_id, "document_id": document_id, "chunk_text": text}
+        tokens = tokenize_legal_text(text)
+        return {
+            "chunk_id": chunk_id,
+            "document_id": document_id,
+            "text": text,
+            "metadata": metadata_for_chroma(normalized, ""),
+            "term_freqs": dict(Counter(tokens)),
+            "length": len(tokens),
+        }
+
+    def recompute_statistics(self) -> None:
+        doc_freq_counter: Counter[str] = Counter()
+        for record in self.records.values():
+            doc_freq_counter.update(record["term_freqs"].keys())
+        self.doc_freqs = dict(doc_freq_counter)
+        self.avg_doc_length = sum(record["length"] for record in self.records.values()) / max(len(self.records), 1)
+
+    def index_metadata_from_records(self, empty_tokenized_docs: int = 0) -> dict[str, Any]:
+        chunks = [
+            {
+                "chunk_id": record["chunk_id"],
+                "document_id": record["document_id"],
+                "chunk_text": record["text"],
+                "normalizer_version": record["metadata"].get("normalizer_version"),
+                "chunker_version": record["metadata"].get("chunker_version"),
+            }
+            for record in self.records.values()
+        ]
+        return self.index_metadata(chunks, empty_tokenized_docs=empty_tokenized_docs)
 
     def query(self, query: str, top_k: int = 5, filters: dict[str, Any] | None = None) -> list[RetrievalResult]:
         query_terms = tokenize_legal_text(query)

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import threading
 from typing import Any, Callable
 import uuid
 
@@ -24,6 +25,8 @@ from backend.app.models.ingest import (
     IngestionStatus,
     IngestionStatusResponse,
 )
+
+_BM25_INDEX_LOCK = threading.Lock()
 
 
 def get_vector_store_status(settings: Settings | None = None) -> str:
@@ -103,6 +106,8 @@ def process_ingestion_job(
     chunker_func: Callable[[dict[str, Any]], list[dict[str, Any]]] | None = None,
     embedding_provider: Any = None,
     vector_store: Any = None,
+    bm25_update_func: Callable[[list[dict[str, Any]]], dict[str, Any]] | None = None,
+    retrieval_cache_invalidator: Callable[[], None] | None = None,
 ) -> None:
     """Execute the ingestion state machine and persist output.
 
@@ -243,6 +248,15 @@ def process_ingestion_job(
         if not upsert_res:
             raise RuntimeError("Vector store indexing produced no result.")
 
+        lexical_chunks = trusted_bm25_chunks(doc, chunks_data, chroma_ids)
+        with _BM25_INDEX_LOCK:
+            update_bm25 = bm25_update_func or update_trusted_bm25_index
+            bm25_result = update_bm25(lexical_chunks)
+        if not bm25_result or bm25_result.get("indexed_chunks", 0) < len(lexical_chunks):
+            raise RuntimeError("BM25 lexical indexing produced no result.")
+        invalidate = retrieval_cache_invalidator or invalidate_retrieval_cache
+        invalidate()
+
         # 5. COMPLETED - reached only after successful vector indexing
         job.status = IngestionStatus.COMPLETED.value
         job.progress = 100
@@ -260,3 +274,50 @@ def process_ingestion_job(
             db.commit()
     finally:
         db.close()
+
+
+def trusted_bm25_chunks(doc: Document, chunks_data: list[dict[str, Any]], chroma_ids: list[str]) -> list[dict[str, Any]]:
+    chunks: list[dict[str, Any]] = []
+    for idx, chunk_item in enumerate(chunks_data):
+        chunks.append(
+            {
+                "chunk_id": chroma_ids[idx],
+                "document_id": str(doc.id),
+                "chunk_text": chunk_item["text"],
+                "provider": "admin_upload",
+                "source_document_id": str(doc.id),
+                "source_url": doc.source_url,
+                "case_title": doc.case_name,
+                "court": {"level": doc.court_level} if doc.court_level else {},
+                "decision_date": None,
+                "decision_year": doc.year,
+                "effective_offence_family": None,
+                "effective_legal_regime": None,
+                "chunk_index": chunk_item.get("chunk_index", idx),
+                "paragraph_start": chunk_item.get("paragraph_start") or 0,
+                "paragraph_end": chunk_item.get("paragraph_end") or 0,
+                "page_start": chunk_item.get("page_start"),
+                "page_end": chunk_item.get("page_end"),
+                "text_source_type": "pdf_native",
+                "raw_sha256": doc.checksum,
+                "normalizer_version": chunk_item.get("normalizer_version"),
+                "chunker_version": chunk_item.get("chunker_version"),
+            }
+        )
+    return chunks
+
+
+def update_trusted_bm25_index(chunks: list[dict[str, Any]]) -> dict[str, Any]:
+    from backend.app.services.retrieval.bm25 import Bm25Config, Bm25LexicalIndex, DEFAULT_B, DEFAULT_INDEX_NAME, DEFAULT_K1
+    from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR
+
+    index = Bm25LexicalIndex(DEFAULT_PERSIST_DIR, DEFAULT_INDEX_NAME, Bm25Config(k1=DEFAULT_K1, b=DEFAULT_B))
+    return index.upsert_chunks(chunks)
+
+
+def invalidate_retrieval_cache() -> None:
+    try:
+        from backend.app.api.query import clear_retrieval_service_cache
+    except Exception:
+        return
+    clear_retrieval_service_cache()
