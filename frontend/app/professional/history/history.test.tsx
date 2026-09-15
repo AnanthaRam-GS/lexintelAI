@@ -1,10 +1,13 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfessionalHistoryPage from './page';
+import { historyApi } from '../../../lib/api';
+import { mockQueryHistoryData } from '../../../lib/mocks/professionalMocks';
 
 describe('Professional Query History Page', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(historyApi, 'getQueryHistory').mockResolvedValue(mockQueryHistoryData);
   });
 
   afterEach(cleanup);
@@ -31,7 +34,9 @@ describe('Professional Query History Page', () => {
     const searchInput = screen.getByPlaceholderText(/Search past queries or models/i);
     fireEvent.change(searchInput, { target: { value: 'commercial dispute' } });
 
-    expect(screen.getByText(/Quashing petition under Section 482 CrPC for commercial dispute/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Quashing petition under Section 482 CrPC for commercial dispute/i),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/Circumstantial evidence murder case/i)).not.toBeInTheDocument();
   });
 

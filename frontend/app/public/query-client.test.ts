@@ -35,8 +35,8 @@ describe('fetchPublicQuery', () => {
       credentials: 'include',
       body: JSON.stringify({ text: 'Can the police arrest me without notice?' }),
     });
-    expect(headers(init)).toMatchObject({ 'Content-Type': 'application/json' });
-    expect(headers(init)).not.toHaveProperty('Authorization');
+    expect(headers(init)).toMatchObject({ 'content-type': 'application/json' });
+    expect(headers(init)).not.toHaveProperty('authorization');
   });
 
   it('uses the development backend URL when no public base URL is configured', async () => {
@@ -46,6 +46,15 @@ describe('fetchPublicQuery', () => {
     await fetchPublicQuery({ kind: 'text', content: 'Help me' });
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('http://127.0.0.1:8000/query/public');
+  });
+
+  it('forwards an AbortSignal so a cancelled public request stops at the network boundary', async () => {
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+    const controller = new AbortController();
+
+    await fetchPublicQuery({ kind: 'text', content: 'Help me' }, { signal: controller.signal });
+
+    expect(fetchMock.mock.calls[0]?.[1]?.signal).toBe(controller.signal);
   });
 
   it('parses the exact public response contract', async () => {
@@ -167,5 +176,5 @@ function mockFetch(response: Response) {
 }
 
 function headers(init: RequestInit | undefined): Record<string, string> {
-  return init?.headers as Record<string, string>;
+  return Object.fromEntries(new Headers(init?.headers).entries());
 }

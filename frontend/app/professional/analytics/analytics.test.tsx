@@ -1,6 +1,14 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfessionalAnalyticsPage from './page';
+import { analyticsApi } from '../../../lib/api';
+import {
+  mockIpcBnsMappingData,
+  mockNcrbStatData,
+  mockOffenseFrequencyData,
+  mockOutcomeDistributionData,
+  mockSectionCooccurrenceData,
+} from '../../../lib/mocks/professionalMocks';
 
 vi.mock('recharts', async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
@@ -15,6 +23,11 @@ vi.mock('recharts', async (importOriginal) => {
 describe('Professional Analytics Dashboard', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(analyticsApi, 'getOffenseFrequency').mockResolvedValue(mockOffenseFrequencyData);
+    vi.spyOn(analyticsApi, 'getOutcomeDistribution').mockResolvedValue(mockOutcomeDistributionData);
+    vi.spyOn(analyticsApi, 'getSectionCooccurrence').mockResolvedValue(mockSectionCooccurrenceData);
+    vi.spyOn(analyticsApi, 'getIpcBnsMap').mockResolvedValue(mockIpcBnsMappingData);
+    vi.spyOn(analyticsApi, 'getNcrbStats').mockResolvedValue(mockNcrbStatData);
   });
 
   afterEach(cleanup);

@@ -29,6 +29,10 @@ export interface PersistedIngestionJob {
   stage: IngestionStage;
 }
 
+export interface AdminMockRequestOptions {
+  signal?: AbortSignal;
+}
+
 export interface AdminIngestionMockTestConfig {
   delayMs?: number;
   failCorpusRequests?: number;
@@ -126,18 +130,70 @@ let submitFailureCount = 0;
 let nextJobNumber = 1;
 const jobs = new Map<string, JobState>();
 
-const wait = async (delayMs: number) => {
+const abortReason = (signal: AbortSignal) =>
+  signal.reason instanceof Error ? signal.reason : new DOMException('Aborted', 'AbortError');
+
+const wait = async (delayMs: number, signal?: AbortSignal) => {
+  if (signal?.aborted) throw abortReason(signal);
   if (delayMs <= 0) return;
-  await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+
+  await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      signal?.removeEventListener('abort', handleAbort);
+      resolve();
+    }, delayMs);
+    const handleAbort = () => {
+      clearTimeout(timeout);
+      reject(abortReason(signal!));
+    };
+    signal?.addEventListener('abort', handleAbort, { once: true });
+  });
 };
 
+type BrowserAuditScenario =
+  | 'none'
+  | 'partial-failure'
+  | 'service-down'
+  | 'stall'
+  | 'status-slow'
+  | 'status-timeout'
+  | 'status-service-error'
+  | 'status-network'
+  | 'submit-timeout'
+  | 'submit-service-error'
+  | 'submit-network'
+  | 'poll-service-recovery'
+  | 'poll-network-recovery';
+
+const BROWSER_AUDIT_SCENARIOS: readonly BrowserAuditScenario[] = [
+  'partial-failure',
+  'service-down',
+  'stall',
+  'status-slow',
+  'status-timeout',
+  'status-service-error',
+  'status-network',
+  'submit-timeout',
+  'submit-service-error',
+  'submit-network',
+  'poll-service-recovery',
+  'poll-network-recovery',
+];
+
 /** Build-time-only browser audit switch; never used by live endpoint logic. */
-function browserAuditScenario(): 'none' | 'partial-failure' | 'service-down' | 'stall' {
+function browserAuditScenario(): BrowserAuditScenario {
   const scenario = process.env.NEXT_PUBLIC_LEGALAI_ADMIN_MOCK_SCENARIO;
-  return scenario === 'partial-failure' || scenario === 'service-down' || scenario === 'stall'
-    ? scenario
+  return BROWSER_AUDIT_SCENARIOS.includes(scenario as BrowserAuditScenario)
+    ? (scenario as BrowserAuditScenario)
     : 'none';
 }
+
+const auditDelayMs = (scenario: BrowserAuditScenario, request: 'status' | 'submit' | 'poll') => {
+  if (request === 'status' && scenario === 'status-slow') return 4_500;
+  if (request === 'status' && scenario === 'status-timeout') return 11_000;
+  if (request === 'submit' && scenario === 'submit-timeout') return 11_000;
+  return config.delayMs;
+};
 
 const isIngestionStage = (value: unknown): value is IngestionStage =>
   typeof value === 'string' && STAGES.includes(value as IngestionStage);
@@ -202,16 +258,28 @@ export function progressForStage(stage: IngestionStage): number {
   return PROGRESS_BY_STAGE[stage];
 }
 
-// TODO(contract): replace these three mock endpoint functions with
+// TODO(contract): replace these four mock endpoint functions with
 // frontend/lib/api.ts calls when the live 1.R.2 endpoints exist; keep route
 // callers on this single boundary until then.
-export async function fetchCorpusStatsMock(): Promise<CorpusStats> {
-  await wait(config.delayMs);
+export async function fetchCorpusStatsMock(
+  options: AdminMockRequestOptions = {},
+): Promise<CorpusStats> {
+  const auditScenario = browserAuditScenario();
+  await wait(auditDelayMs(auditScenario, 'status'), options.signal);
+  if (
+    (auditScenario === 'status-service-error' || auditScenario === 'status-network') &&
+    corpusFailureCount < 1
+  ) {
+    corpusFailureCount += 1;
+    if (auditScenario === 'status-network') {
+      throw new TypeError('Mock status network request failed.');
+    }
+    throw new Error('Mock status service request failed.');
+  }
   if (corpusFailureCount < config.failCorpusRequests) {
     corpusFailureCount += 1;
     throw new Error('Unable to load system status.');
   }
-  const auditScenario = browserAuditScenario();
   return {
     ...corpusStats,
     breakdown: { ...corpusStats.breakdown },
@@ -233,8 +301,20 @@ export async function fetchCorpusStatsMock(): Promise<CorpusStats> {
 export async function submitIngestionMock(
   files: File[],
   metadata: IngestionMetadata[],
+  options: AdminMockRequestOptions = {},
 ): Promise<{ jobIds: string[] }> {
-  await wait(config.delayMs);
+  const auditScenario = browserAuditScenario();
+  await wait(auditDelayMs(auditScenario, 'submit'), options.signal);
+  if (
+    (auditScenario === 'submit-service-error' || auditScenario === 'submit-network') &&
+    submitFailureCount < 1
+  ) {
+    submitFailureCount += 1;
+    if (auditScenario === 'submit-network') {
+      throw new TypeError('Mock submission network request failed.');
+    }
+    throw new Error(SAFE_SUBMIT_FAILURE_TEXT);
+  }
   if (submitFailureCount < config.failSubmitRequests) {
     submitFailureCount += 1;
     throw new Error(SAFE_SUBMIT_FAILURE_TEXT);
@@ -266,8 +346,22 @@ export async function submitIngestionMock(
   };
 }
 
-export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJob> {
-  await wait(config.delayMs);
+export async function pollIngestionStatusMock(
+  jobId: string,
+  options: AdminMockRequestOptions = {},
+): Promise<IngestionJob> {
+  const auditScenario = browserAuditScenario();
+  await wait(auditDelayMs(auditScenario, 'poll'), options.signal);
+  if (
+    (auditScenario === 'poll-service-recovery' || auditScenario === 'poll-network-recovery') &&
+    pollFailureCount < 1
+  ) {
+    pollFailureCount += 1;
+    if (auditScenario === 'poll-network-recovery') {
+      throw new TypeError('Mock polling network request failed.');
+    }
+    throw new Error('Mock ingestion status request failed.');
+  }
   if (pollFailureCount < config.failPollRequests) {
     pollFailureCount += 1;
     if (config.pollFailureMode === 'network') {
@@ -296,7 +390,6 @@ export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJ
     };
   }
 
-  const auditScenario = browserAuditScenario();
   const configuredFailure =
     config.fileFailureReasons[state.filename] ??
     (auditScenario === 'partial-failure' && state.filename.includes('damaged')
@@ -329,6 +422,18 @@ export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJ
     stage,
     progress: progressForStage(stage),
   };
+}
+
+/**
+ * Mock-only authoritative cancellation. The live ingestion API must expose an
+ * equivalent cancel/idempotency boundary before replacing this implementation.
+ */
+export async function cancelIngestionJobMock(
+  jobId: string,
+  options: AdminMockRequestOptions = {},
+): Promise<void> {
+  await wait(config.delayMs, options.signal);
+  jobs.delete(jobId);
 }
 
 // TODO(contract): mock-phase sessionStorage rehydration stand-in. Delete this
