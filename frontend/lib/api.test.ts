@@ -39,13 +39,9 @@ describe('frontend API adapters', () => {
     await queryApi.submitPdf(file);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('http://127.0.0.1:8000/query/professional');
-    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
-      JSON.stringify({ text: 'Explain section 35' }),
-    );
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(JSON.stringify({ text: 'Explain section 35' }));
     const pdfRequest = fetchMock.mock.calls[1]?.[1];
-    expect(fetchMock.mock.calls[1]?.[0]).toBe(
-      'http://127.0.0.1:8000/query/professional/pdf',
-    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('http://127.0.0.1:8000/query/professional/pdf');
     expect(pdfRequest?.body).toBeInstanceOf(FormData);
     expect((pdfRequest?.body as FormData).get('file')).toBe(file);
     expect((pdfRequest?.body as FormData).get('query')).toBe('Analyze this legal document.');
