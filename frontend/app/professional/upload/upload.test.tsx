@@ -18,6 +18,7 @@ describe('Professional Upload Page', () => {
       screen.getByRole('heading', { name: /Private Case File & Brief Analysis/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Privileged Legal Document Safeguard/i)).toBeInTheDocument();
+    expect(screen.getByText('/query/professional/pdf')).toBeInTheDocument();
     expect(
       screen.getByText(/never indexed, stored, or added to the global corpus/i),
     ).toBeInTheDocument();

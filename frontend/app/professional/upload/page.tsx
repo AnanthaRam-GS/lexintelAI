@@ -36,7 +36,7 @@ export default function ProfessionalUploadPage() {
     setErrorState(null);
 
     try {
-      // CRITICAL CONTRACT: Sends directly to /query/professional via multipart/form-data.
+      // CRITICAL CONTRACT: Sends directly to /query/professional/pdf via multipart/form-data.
       // Must NOT call corpus ingestion.
       const response = await queryApi.submitPdf(selectedFile);
       setResult(response);
@@ -101,8 +101,8 @@ export default function ProfessionalUploadPage() {
                 </p>
                 <p className="mt-0.5">
                   Uploaded files are submitted directly to the ephemeral query pipeline (
-                  <code>/query/professional</code>). They are processed exclusively in-memory for
-                  your session and are{' '}
+                  <code>/query/professional/pdf</code>). They are processed exclusively in-memory
+                  for your session and are{' '}
                   <strong>never indexed, stored, or added to the global corpus</strong>.
                 </p>
               </div>
