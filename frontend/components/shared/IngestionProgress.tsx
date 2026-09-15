@@ -18,6 +18,11 @@ export interface IngestionJob {
 
 export interface IngestionProgressProps {
   jobs: IngestionJob[];
+  /**
+   * Optional caller-owned, pre-sanitized copy. Raw job.error values remain
+   * deliberately unrendered so existing consumers keep the safe default.
+   */
+  failureContentByJobId?: Readonly<Record<string, { title: string; message: string }>>;
 }
 
 const clampProgress = (progress: number) =>
@@ -82,7 +87,7 @@ function progressClass(stage: IngestionStage) {
   return 'bg-[var(--color-info)]';
 }
 
-export function IngestionProgress({ jobs }: IngestionProgressProps) {
+export function IngestionProgress({ failureContentByJobId, jobs }: IngestionProgressProps) {
   if (jobs.length === 0) {
     return (
       <p className="text-type-body-sm rounded-[var(--radius-standard)] bg-[var(--color-surface-subtle)] p-4 text-[var(--color-muted)]">
@@ -96,6 +101,10 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
       {jobs.map((job) => {
         const progress = clampProgress(job.progress);
         const isFailed = job.stage === 'FAILED';
+        const failureContent = failureContentByJobId?.[job.id] ?? {
+          title: fallbackFailureTitle,
+          message: fallbackFailureMessage,
+        };
         const rowBorder = isFailed
           ? 'border-[var(--color-error-border)]'
           : job.stage === 'COMPLETED'
@@ -137,8 +146,8 @@ export function IngestionProgress({ jobs }: IngestionProgressProps) {
               {isFailed ? (
                 <div className="w-full">
                   <ErrorMessage
-                    message={fallbackFailureMessage}
-                    title={fallbackFailureTitle}
+                    message={failureContent.message}
+                    title={failureContent.title}
                     variant="inline"
                   />
                 </div>

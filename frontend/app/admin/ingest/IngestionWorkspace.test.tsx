@@ -247,7 +247,7 @@ describe('IngestionWorkspace', () => {
     expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeDisabled();
 
     pending.reject(new Error('end pending request'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('could not be started');
+    expect(await screen.findByRole('alert')).toHaveTextContent('was not started');
   });
 
   it('retains the batch and hides private rejection details after submit failure', async () => {
@@ -260,7 +260,7 @@ describe('IngestionWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('could not be started');
+    expect(await screen.findByRole('alert')).toHaveTextContent('was not started');
     expect(screen.getByLabelText('Document type for retry.pdf')).toBeInTheDocument();
     expect(document.body).not.toHaveTextContent('private-bucket');
   });
@@ -273,7 +273,7 @@ describe('IngestionWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('could not be started');
+    expect(await screen.findByRole('alert')).toHaveTextContent('was not started');
     expect(screen.getByLabelText('Document type for unaligned.pdf')).toBeInTheDocument();
     expect(screen.queryByTestId('ingestion-jobs')).not.toBeInTheDocument();
   });
@@ -382,7 +382,7 @@ describe('IngestionWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('could not be started');
+    expect(await screen.findByRole('alert')).toHaveTextContent('was not started');
     expect(screen.getByLabelText('Document type for new.pdf')).toBeInTheDocument();
     const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
     expect(rows).toHaveLength(1);
@@ -531,7 +531,7 @@ describe('IngestionWorkspace', () => {
     });
     const view = render(<IngestionWorkspace />);
     await act(async () => Promise.resolve());
-    expect(vi.getTimerCount()).toBe(1);
+    expect(vi.getTimerCount()).toBe(2);
 
     view.unmount();
     expect(vi.getTimerCount()).toBe(0);
@@ -628,16 +628,78 @@ describe('IngestionWorkspace', () => {
     expect(screen.queryByText('lease.pdf')).not.toBeInTheDocument();
   });
 
-  it('shows a fixed safe failure when polling rejects and forgets the active record', async () => {
+  it('keeps an active job visible and retries after network loss without leaking details', async () => {
+    vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'INDEXING' }]);
-    vi.mocked(pollIngestionStatusMock).mockRejectedValue(
-      new Error('s3://private-bucket/internal-stack'),
-    );
+    vi.mocked(pollIngestionStatusMock)
+      .mockRejectedValueOnce(new TypeError('s3://private-bucket/internal-stack'))
+      .mockResolvedValueOnce({
+        id: 'job-1',
+        filename: 'lease.pdf',
+        stage: 'COMPLETED',
+        progress: 100,
+      });
     render(<IngestionWorkspace />);
+    await act(async () => Promise.resolve());
 
-    expect(await screen.findByText('FAILED')).toBeInTheDocument();
-    expect(screen.getByText('Retry this document.')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Check your connection');
+    expect(screen.getByText('INDEXING')).toBeInTheDocument();
     expect(document.body).not.toHaveTextContent('private-bucket');
+    expect(readPersistedIngestionJobs()).toEqual([
+      { id: 'job-1', filename: 'lease.pdf', stage: 'INDEXING' },
+    ]);
+
+    await act(async () => vi.advanceTimersByTimeAsync(2_500));
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(readPersistedIngestionJobs()).toEqual([]);
+  });
+
+  it('fails only a stalled job at the bounded deadline with actionable timeout copy', async () => {
+    vi.useFakeTimers();
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'EXTRACTING' }]);
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+
+    render(<IngestionWorkspace />);
+    await act(async () => vi.advanceTimersByTimeAsync(15_000));
+
+    expect(screen.getByText('FAILED')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Processing took too long.');
+    expect(screen.getByRole('alert')).toHaveTextContent('add it again in a new batch');
+    expect(readPersistedIngestionJobs()).toEqual([]);
+  });
+
+  it('keeps two completed files clear when one file in a submitted batch of three fails', async () => {
+    const user = userEvent.setup();
+    const files = [pdfFile('first.pdf'), pdfFile('damaged.pdf'), pdfFile('third.pdf')];
+    vi.mocked(submitIngestionMock).mockResolvedValue({
+      jobIds: ['job-first', 'job-damaged', 'job-third'],
+    });
+    vi.mocked(pollIngestionStatusMock).mockImplementation(async (id) => {
+      const filename =
+        id === 'job-first' ? 'first.pdf' : id === 'job-third' ? 'third.pdf' : 'damaged.pdf';
+      return id === 'job-damaged'
+        ? { id, filename, stage: 'FAILED', progress: 100, error: 'corrupted' }
+        : { id, filename, stage: 'COMPLETED', progress: 100 };
+    });
+
+    render(<IngestionWorkspace />);
+    await user.upload(screen.getByLabelText('Choose PDF files'), files);
+    for (const file of files) {
+      await user.selectOptions(screen.getByLabelText(`Document type for ${file.name}`), 'judgment');
+    }
+    await user.click(
+      screen.getByRole('checkbox', { name: 'I understand this is a permanent corpus update' }),
+    );
+    await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
+
+    expect(await screen.findAllByText('COMPLETED')).toHaveLength(2);
+    expect(screen.getByText('FAILED')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('The PDF may be damaged.');
+    expect(screen.getByRole('alert')).toHaveTextContent('add a working copy');
+    expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(screen.getByText('first.pdf')).toBeInTheDocument();
+    expect(screen.getByText('third.pdf')).toBeInTheDocument();
   });
 });

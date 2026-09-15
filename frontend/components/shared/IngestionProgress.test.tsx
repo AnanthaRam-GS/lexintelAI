@@ -126,6 +126,34 @@ describe('IngestionProgress', () => {
     });
   });
 
+  it('accepts caller-owned safe failure copy without rendering the raw job error', () => {
+    render(
+      <IngestionProgress
+        failureContentByJobId={{
+          failed: {
+            title: "This file couldn't be processed",
+            message: 'The PDF may be damaged. Open it to check it, then add a working copy.',
+          },
+        }}
+        jobs={[
+          {
+            id: 'failed',
+            filename: 'failed.pdf',
+            stage: 'FAILED',
+            progress: 100,
+            error: 'RuntimeError at /srv/private/indexer.py:42',
+          },
+        ]}
+      />,
+    );
+
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent("This file couldn't be processed");
+    expect(alert).toHaveTextContent('The PDF may be damaged.');
+    expect(alert).not.toHaveTextContent('RuntimeError');
+    expect(alert).not.toHaveTextContent('/srv/private');
+  });
+
   it('renders a quiet empty state when there are no jobs', () => {
     render(<IngestionProgress jobs={[]} />);
 

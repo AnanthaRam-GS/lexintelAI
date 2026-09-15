@@ -32,8 +32,15 @@ export interface PersistedIngestionJob {
 export interface AdminIngestionMockTestConfig {
   delayMs?: number;
   failCorpusRequests?: number;
+  corpusServiceHealth?: Partial<Record<'chromaDb' | 'postgresql', ServiceHealth>>;
+  fileFailureReasons?: Partial<
+    Record<string, 'corrupted' | 'processing' | 'too-large' | 'unsupported'>
+  >;
+  failPollRequests?: number;
+  pollFailureMode?: 'network' | 'service';
   failSubmitRequests?: number;
   failFilenames?: string[];
+  stallFilenames?: string[];
 }
 
 export const STORAGE_KEY = 'legalai-admin-ingestion-jobs';
@@ -86,13 +93,35 @@ interface JobState {
   pollCount: number;
 }
 
-let config: Required<AdminIngestionMockTestConfig> = {
+interface NormalizedAdminIngestionMockConfig {
+  delayMs: number;
+  failCorpusRequests: number;
+  corpusServiceHealth: Partial<Record<'chromaDb' | 'postgresql', ServiceHealth>>;
+  fileFailureReasons: Partial<
+    Record<string, 'corrupted' | 'processing' | 'too-large' | 'unsupported'>
+  >;
+  failPollRequests: number;
+  pollFailureMode: 'network' | 'service';
+  failSubmitRequests: number;
+  failFilenames: string[];
+  stallFilenames: string[];
+}
+
+const defaultConfig = (): NormalizedAdminIngestionMockConfig => ({
   delayMs: 0,
   failCorpusRequests: 0,
+  corpusServiceHealth: {},
+  fileFailureReasons: {},
+  failPollRequests: 0,
+  pollFailureMode: 'service',
   failSubmitRequests: 0,
   failFilenames: [],
-};
+  stallFilenames: [],
+});
+
+let config = defaultConfig();
 let corpusFailureCount = 0;
+let pollFailureCount = 0;
 let submitFailureCount = 0;
 let nextJobNumber = 1;
 const jobs = new Map<string, JobState>();
@@ -101,6 +130,14 @@ const wait = async (delayMs: number) => {
   if (delayMs <= 0) return;
   await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
 };
+
+/** Build-time-only browser audit switch; never used by live endpoint logic. */
+function browserAuditScenario(): 'none' | 'partial-failure' | 'service-down' | 'stall' {
+  const scenario = process.env.NEXT_PUBLIC_LEGALAI_ADMIN_MOCK_SCENARIO;
+  return scenario === 'partial-failure' || scenario === 'service-down' || scenario === 'stall'
+    ? scenario
+    : 'none';
+}
 
 const isIngestionStage = (value: unknown): value is IngestionStage =>
   typeof value === 'string' && STAGES.includes(value as IngestionStage);
@@ -174,11 +211,22 @@ export async function fetchCorpusStatsMock(): Promise<CorpusStats> {
     corpusFailureCount += 1;
     throw new Error('Unable to load system status.');
   }
+  const auditScenario = browserAuditScenario();
   return {
     ...corpusStats,
     breakdown: { ...corpusStats.breakdown },
-    chromaDb: { ...corpusStats.chromaDb },
-    postgresql: { ...corpusStats.postgresql },
+    chromaDb: {
+      ...corpusStats.chromaDb,
+      status:
+        config.corpusServiceHealth.chromaDb ??
+        (auditScenario === 'service-down' ? 'down' : corpusStats.chromaDb.status),
+    },
+    postgresql: {
+      ...corpusStats.postgresql,
+      status:
+        config.corpusServiceHealth.postgresql ??
+        (auditScenario === 'service-down' ? 'down' : corpusStats.postgresql.status),
+    },
   };
 }
 
@@ -220,6 +268,13 @@ export async function submitIngestionMock(
 
 export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJob> {
   await wait(config.delayMs);
+  if (pollFailureCount < config.failPollRequests) {
+    pollFailureCount += 1;
+    if (config.pollFailureMode === 'network') {
+      throw new TypeError('Mock network request failed.');
+    }
+    throw new Error('Mock ingestion status request failed.');
+  }
   let state = jobs.get(jobId);
   if (!state) {
     const restored = readPersistedIngestionJobs().find((record) => record.id === jobId);
@@ -241,13 +296,28 @@ export async function pollIngestionStatusMock(jobId: string): Promise<IngestionJ
     };
   }
 
-  if (config.failFilenames.includes(state.filename)) {
+  const auditScenario = browserAuditScenario();
+  const configuredFailure =
+    config.fileFailureReasons[state.filename] ??
+    (auditScenario === 'partial-failure' && state.filename.includes('damaged')
+      ? 'corrupted'
+      : undefined);
+  if (configuredFailure || config.failFilenames.includes(state.filename)) {
     return {
       id: jobId,
       filename: state.filename,
       stage: 'FAILED',
       progress: progressForStage('FAILED'),
-      error: SAFE_FAILURE_TEXT,
+      error: configuredFailure ?? 'processing',
+    };
+  }
+
+  if (config.stallFilenames.includes(state.filename) || auditScenario === 'stall') {
+    return {
+      id: jobId,
+      filename: state.filename,
+      stage: 'EXTRACTING',
+      progress: progressForStage('EXTRACTING'),
     };
   }
 
@@ -294,19 +364,22 @@ export function configureAdminIngestionMockForTests(
   nextConfig: AdminIngestionMockTestConfig,
 ): void {
   config = {
-    delayMs: 0,
-    failCorpusRequests: 0,
-    failSubmitRequests: 0,
+    ...defaultConfig(),
     ...nextConfig,
+    corpusServiceHealth: { ...nextConfig.corpusServiceHealth },
+    fileFailureReasons: { ...nextConfig.fileFailureReasons },
     failFilenames: nextConfig.failFilenames ? [...nextConfig.failFilenames] : [],
+    stallFilenames: nextConfig.stallFilenames ? [...nextConfig.stallFilenames] : [],
   };
   corpusFailureCount = 0;
+  pollFailureCount = 0;
   submitFailureCount = 0;
 }
 
 export function resetAdminIngestionMockForTests(): void {
-  config = { delayMs: 0, failCorpusRequests: 0, failSubmitRequests: 0, failFilenames: [] };
+  config = defaultConfig();
   corpusFailureCount = 0;
+  pollFailureCount = 0;
   submitFailureCount = 0;
   nextJobNumber = 1;
   jobs.clear();

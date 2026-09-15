@@ -29,11 +29,19 @@ describe('chatReducer', () => {
         },
         {
           id: 'turn-1-error',
-          message: { role: 'assistant' as const, kind: 'error' as const, error: 'Safe copy' },
+          message: {
+            role: 'assistant' as const,
+            kind: 'error' as const,
+            failure: 'service' as const,
+          },
         },
         {
           id: 'turn-2-error',
-          message: { role: 'assistant' as const, kind: 'error' as const, error: 'Safe copy' },
+          message: {
+            role: 'assistant' as const,
+            kind: 'error' as const,
+            failure: 'network' as const,
+          },
         },
       ],
     };
