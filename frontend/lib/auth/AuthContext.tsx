@@ -1,6 +1,15 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+
 import { authApi } from '../api';
 import type { AuthenticatedUser, UserRole } from '../types/api';
 
@@ -19,9 +28,30 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthenticatedUser | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
+
+  useEffect(() => {
+    let active = true;
+
+    void authApi
+      .me()
+      .then((authenticatedUser) => {
+        if (!active) return;
+        setUser(authenticatedUser);
+        setStatus('authenticated');
+      })
+      .catch(() => {
+        if (!active) return;
+        setUser(null);
+        setStatus('unauthenticated');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const refreshSession = useCallback(async () => {
     try {
@@ -36,32 +66,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  useEffect(() => {
-    const task = window.setTimeout(() => {
-      void refreshSession();
-    }, 0);
-    return () => window.clearTimeout(task);
-  }, [refreshSession]);
-
-  const login = useCallback(
-    async (email: string, password: string) => {
-      await authApi.login(email, password);
-      const currentUser = await refreshSession();
-      if (!currentUser) {
-        throw new Error('Login succeeded, but the session could not be verified.');
-      }
-      return currentUser;
-    },
-    [refreshSession],
-  );
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await authApi.login(email, password);
+    setUser(response.user);
+    setStatus('authenticated');
+    try {
+      const verifiedUser = await authApi.me();
+      setUser(verifiedUser);
+      return verifiedUser;
+    } catch {
+      return response.user;
+    }
+  }, []);
 
   const logout = useCallback(async () => {
-    try {
-      await authApi.logout();
-    } finally {
-      setUser(null);
-      setStatus('unauthenticated');
-    }
+    await authApi.logout();
+    setUser(null);
+    setStatus('unauthenticated');
   }, []);
 
   const value = useMemo<AuthContextValue>(
@@ -83,9 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);
-  if (!value) {
-    throw new Error('useAuth must be used inside AuthProvider');
-  }
+  if (!value) throw new Error('useAuth must be used within AuthProvider.');
   return value;
 }
 

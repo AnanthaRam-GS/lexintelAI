@@ -96,7 +96,7 @@ describe('professional API contracts', () => {
 
     expect(vi.mocked(fetch).mock.calls.map(([url]) => url)).toEqual([
       'http://api.test/query/history?limit=25',
-      'http://api.test/analytics/offence-frequency',
+      'http://api.test/analytics/offense-frequency',
       'http://api.test/analytics/outcome-distribution',
       'http://api.test/analytics/section-cooccurrence',
       'http://api.test/analytics/ipc-bns-map',

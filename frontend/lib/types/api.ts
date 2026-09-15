@@ -1,4 +1,4 @@
-export type UserRole = 'lawyer' | 'admin';
+export type UserRole = 'admin' | 'lawyer';
 
 export interface AuthenticatedUser {
   id: number | string;
@@ -14,7 +14,7 @@ export interface LoginResponse {
 export interface SectionReference {
   statute: string;
   section: string;
-  confidence?: number;
+  confidence?: number | null;
   context?: string | null;
 }
 

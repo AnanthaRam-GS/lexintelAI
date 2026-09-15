@@ -148,6 +148,7 @@ export function PublicAsk({
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const newConversationButtonRef = useRef<HTMLButtonElement>(null);
   const requestGenerationRef = useRef(0);
+  const requestAbortControllerRef = useRef<AbortController | null>(null);
   const requestRef = useRef<PublicQueryInput | null>(null);
   const slowCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timeoutCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -167,6 +168,8 @@ export function PublicAsk({
 
     return () => {
       isMountedRef.current = false;
+      requestAbortControllerRef.current?.abort();
+      requestAbortControllerRef.current = null;
       clearRequestTimers();
     };
   }, [clearRequestTimers]);
@@ -232,6 +235,8 @@ export function PublicAsk({
       }
 
       const requestGeneration = requestGenerationRef.current;
+      const requestAbortController = new AbortController();
+      requestAbortControllerRef.current = requestAbortController;
       requestRef.current = input;
       isRequestInFlightRef.current = true;
       setRequestStatus('loading');
@@ -258,7 +263,9 @@ export function PublicAsk({
 
       void (async () => {
         try {
-          const response = await fetchPublicQuery(input);
+          const response = await fetchPublicQuery(input, {
+            signal: requestAbortController.signal,
+          });
 
           if (
             !isMountedRef.current ||
@@ -279,6 +286,7 @@ export function PublicAsk({
 
           dispatch({ type: 'append-assistant', entry });
           clearRequestTimers();
+          requestAbortControllerRef.current = null;
           requestRef.current = null;
           isRequestInFlightRef.current = false;
           setRequestStatus('idle');
@@ -307,6 +315,7 @@ export function PublicAsk({
           dispatch({ type: 'append-assistant', entry });
           failedInputsRef.current.set(entry.id, input);
           clearRequestTimers();
+          requestAbortControllerRef.current = null;
           requestRef.current = null;
           isRequestInFlightRef.current = false;
           setRequestStatus('error');
@@ -407,6 +416,8 @@ export function PublicAsk({
 
   const clearConversation = useCallback(() => {
     requestGenerationRef.current += 1;
+    requestAbortControllerRef.current?.abort();
+    requestAbortControllerRef.current = null;
     clearRequestTimers();
     requestRef.current = null;
     failedInputsRef.current.clear();
@@ -457,6 +468,8 @@ export function PublicAsk({
     if (!retainedInput || !isRequestInFlightRef.current) return;
 
     requestGenerationRef.current += 1;
+    requestAbortControllerRef.current?.abort();
+    requestAbortControllerRef.current = null;
     clearRequestTimers();
     requestRef.current = null;
     isRequestInFlightRef.current = false;

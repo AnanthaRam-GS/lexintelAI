@@ -27,11 +27,10 @@ export async function apiFetch<TResponse>(
   path: string,
   init: RequestInit = {},
 ): Promise<TResponse> {
-  const headers = requestHeaders(init);
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
-    headers,
+    headers: requestHeaders(init),
   });
 
   if (!response.ok) {
@@ -86,13 +85,14 @@ export const queryApi = {
 
 export const historyApi = {
   getQueryHistory(limit = 50): Promise<QueryHistoryItem[]> {
-    return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${encodeURIComponent(limit)}`);
+    const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+    return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${safeLimit}`);
   },
 };
 
 export const analyticsApi = {
   getOffenseFrequency(): Promise<OffenseFrequencyPoint[]> {
-    return apiFetch<OffenseFrequencyPoint[]>('/analytics/offence-frequency');
+    return apiFetch<OffenseFrequencyPoint[]>('/analytics/offense-frequency');
   },
 
   getOutcomeDistribution(): Promise<OutcomeDistributionPoint[]> {
@@ -118,6 +118,9 @@ function apiBaseUrl(): string {
 
 function requestHeaders(init: RequestInit): HeadersInit | undefined {
   if (init.body instanceof FormData) {
+    return init.headers;
+  }
+  if (init.body == null) {
     return init.headers;
   }
   const headers = headerRecord(init.headers);

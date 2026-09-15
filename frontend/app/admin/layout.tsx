@@ -4,14 +4,14 @@ import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import { AuthProvider } from '../../lib/auth/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Admin Portal — LegalAI',
+  title: 'Admin Portal - LegalAI',
   description: 'LegalAI Administrative and Corpus Ingestion Management',
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ProtectedRoute requiredRole="admin">{children}</ProtectedRoute>
+      <ProtectedRoute allowedRoles={['admin']}>{children}</ProtectedRoute>
     </AuthProvider>
   );
 }

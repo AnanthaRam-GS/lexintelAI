@@ -209,6 +209,7 @@ export function AdminStatus() {
   const isLoadingRef = useRef(false);
   const isMountedRef = useRef(true);
   const requestSequenceRef = useRef(0);
+  const requestControllerRef = useRef<AbortController | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadStatus = useCallback(async () => {
@@ -219,15 +220,18 @@ export function AdminStatus() {
     isLoadingRef.current = true;
     setPending(true);
     setError(null);
+    const requestController = new AbortController();
+    requestControllerRef.current = requestController;
 
     try {
       const nextStats = await Promise.race([
-        fetchCorpusStatsMock(),
+        fetchCorpusStatsMock({ signal: requestController.signal }),
         new Promise<never>((_, reject) => {
-          timeoutRef.current = setTimeout(
-            () => reject(new AdminStatusTimeoutError()),
-            ADMIN_STATUS_TIMEOUT_MS,
-          );
+          timeoutRef.current = setTimeout(() => {
+            const timeoutError = new AdminStatusTimeoutError();
+            requestController.abort(timeoutError);
+            reject(timeoutError);
+          }, ADMIN_STATUS_TIMEOUT_MS);
         }),
       ]);
       if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
@@ -235,13 +239,18 @@ export function AdminStatus() {
       }
     } catch (caught) {
       if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
-        setError(
-          caught instanceof AdminStatusTimeoutError ? 'timeout' : classifyRequestFailure(caught),
-        );
+        setStats(null);
+        const timedOut =
+          caught instanceof AdminStatusTimeoutError ||
+          requestController.signal.reason instanceof AdminStatusTimeoutError;
+        setError(timedOut ? 'timeout' : classifyRequestFailure(caught));
       }
     } finally {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
+      if (requestControllerRef.current === requestController) {
+        requestControllerRef.current = null;
+      }
       if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
         isLoadingRef.current = false;
         setPending(false);
@@ -257,6 +266,8 @@ export function AdminStatus() {
       isMountedRef.current = false;
       requestSequenceRef.current += 1;
       isLoadingRef.current = false;
+      requestControllerRef.current?.abort();
+      requestControllerRef.current = null;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     };
