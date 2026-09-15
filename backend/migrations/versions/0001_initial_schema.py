@@ -113,7 +113,7 @@ def upgrade() -> None:
         sa.Column("session_id", sa.String(length=100), nullable=True),
         sa.Column("mode", sa.String(length=50), nullable=False),
         sa.Column("query_text", sa.Text(), nullable=False),
-        sa.Column("response_json", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("response_json", sa.JSON(), nullable=True),
         sa.Column("generation_backend", sa.String(length=100), nullable=True),
         sa.Column(
             "created_at",
