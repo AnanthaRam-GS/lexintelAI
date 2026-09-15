@@ -7,7 +7,14 @@ interface PublicQueryRequest {
   text: string;
 }
 
-export async function fetchPublicQuery(input: PublicQueryInput): Promise<PublicQueryResponse> {
+interface PublicQueryOptions {
+  signal?: AbortSignal;
+}
+
+export async function fetchPublicQuery(
+  input: PublicQueryInput,
+  options: PublicQueryOptions = {},
+): Promise<PublicQueryResponse> {
   assertPublicQueryInput(input);
 
   if (input.kind === 'file') {
@@ -22,6 +29,7 @@ export async function fetchPublicQuery(input: PublicQueryInput): Promise<PublicQ
   return apiFetch<PublicQueryResponse>('/query/public', {
     method: 'POST',
     body: JSON.stringify({ text } satisfies PublicQueryRequest),
+    signal: options.signal,
   });
 }
 
