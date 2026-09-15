@@ -42,13 +42,19 @@ describe('AuthenticatedNavbar', () => {
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
   });
 
-  it('still returns to login when the logout request cannot reach the server', async () => {
+  it('keeps the session visible and offers retry when logout cannot reach the server', async () => {
     logout.mockRejectedValue(new TypeError('Failed to fetch'));
     const user = userEvent.setup();
     render(<AuthenticatedNavbar />);
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
 
+    expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't sign out");
+    expect(screen.getByRole('alert')).toHaveTextContent('Your session is still active');
+    expect(replace).not.toHaveBeenCalled();
+
+    logout.mockResolvedValue();
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
   });
 });

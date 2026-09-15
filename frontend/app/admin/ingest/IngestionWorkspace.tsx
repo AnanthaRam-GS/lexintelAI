@@ -78,6 +78,7 @@ export function IngestionWorkspace() {
   const [uploadKey, setUploadKey] = useState(0);
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const deadlineTimersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const lastProgressRef = useRef(new Map<string, number>());
   const pollingRef = useRef(new Map<string, symbol>());
   const pollControllersRef = useRef(new Map<string, AbortController>());
   const submitControllerRef = useRef<AbortController | null>(null);
@@ -108,6 +109,7 @@ export function IngestionWorkspace() {
     pollControllersRef.current.get(jobId)?.abort();
     timersRef.current.delete(jobId);
     deadlineTimersRef.current.delete(jobId);
+    lastProgressRef.current.delete(jobId);
     pollControllersRef.current.delete(jobId);
     pollingRef.current.delete(jobId);
   }, []);
@@ -119,13 +121,15 @@ export function IngestionWorkspace() {
       pollingRef.current.set(jobId, generation);
 
       const isCurrentPoll = () => aliveRef.current && pollingRef.current.get(jobId) === generation;
-      const deadlineTimer = setTimeout(() => {
+
+      const handleInactivityDeadline = () => {
         if (!isCurrentPoll()) return;
         pollingRef.current.delete(jobId);
         pollControllersRef.current.get(jobId)?.abort(new AdminJobTimeoutError());
 
         void cancelIngestionJobMock(jobId)
           .then(() => {
+            removePersistedJob(jobId);
             if (!aliveRef.current) return;
             setJobs((current) => markJobFailedSafely(current, jobId));
             setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
@@ -134,7 +138,6 @@ export function IngestionWorkspace() {
               delete next[jobId];
               return next;
             });
-            removePersistedJob(jobId);
           })
           .catch((caught) => {
             if (!aliveRef.current) return;
@@ -144,8 +147,18 @@ export function IngestionWorkspace() {
             }));
           })
           .finally(() => stopPolling(jobId));
-      }, ADMIN_JOB_TIMEOUT_MS);
-      deadlineTimersRef.current.set(jobId, deadlineTimer);
+      };
+
+      const resetInactivityDeadline = () => {
+        const currentDeadline = deadlineTimersRef.current.get(jobId);
+        if (currentDeadline) clearTimeout(currentDeadline);
+        deadlineTimersRef.current.set(
+          jobId,
+          setTimeout(handleInactivityDeadline, ADMIN_JOB_TIMEOUT_MS),
+        );
+      };
+
+      resetInactivityDeadline();
 
       const poll = async (): Promise<void> => {
         if (!isCurrentPoll()) return;
@@ -154,6 +167,9 @@ export function IngestionWorkspace() {
         try {
           const live = await pollIngestionStatusMock(jobId, { signal: pollController.signal });
           if (!isCurrentPoll()) return;
+          const previousProgress = lastProgressRef.current.get(jobId) ?? 0;
+          const madeProgress = live.progress > previousProgress;
+          lastProgressRef.current.set(jobId, Math.max(previousProgress, live.progress));
           const safeLive = { ...live, error: undefined };
           setJobs((current) => replaceJobById(current, safeLive));
           setPollingFailures((current) => {
@@ -174,6 +190,7 @@ export function IngestionWorkspace() {
             return;
           }
           persistActiveJob(live);
+          if (madeProgress) resetInactivityDeadline();
         } catch (caught) {
           if (!isCurrentPoll()) return;
           setPollingFailures((current) => ({
@@ -198,6 +215,7 @@ export function IngestionWorkspace() {
   useEffect(() => {
     const timers = timersRef.current;
     const deadlineTimers = deadlineTimersRef.current;
+    const lastProgress = lastProgressRef.current;
     const polling = pollingRef.current;
     const pollControllers = pollControllersRef.current;
     aliveRef.current = true;
@@ -207,6 +225,7 @@ export function IngestionWorkspace() {
     }));
     // Rehydration is an intentional client-only external-store synchronization.
     setJobs(restored);
+    restored.forEach((job) => lastProgress.set(job.id, job.progress));
     restored.filter((job) => !isTerminal(job.stage)).forEach(({ id }) => startPolling(id));
 
     return () => {
@@ -218,6 +237,7 @@ export function IngestionWorkspace() {
       deadlineTimers.forEach(clearTimeout);
       timers.clear();
       deadlineTimers.clear();
+      lastProgress.clear();
       pollControllers.clear();
       polling.clear();
     };
@@ -285,6 +305,7 @@ export function IngestionWorkspace() {
       }));
       setJobs((current) => [...[...queued].reverse(), ...current]);
       queued.forEach(persistActiveJob);
+      queued.forEach((job) => lastProgressRef.current.set(job.id, job.progress));
       setDrafts([]);
       setIsConfirmed(false);
       setUploadKey((current) => current + 1);

@@ -239,6 +239,7 @@ export function AdminStatus() {
       }
     } catch (caught) {
       if (isMountedRef.current && requestSequence === requestSequenceRef.current) {
+        setStats(null);
         const timedOut =
           caught instanceof AdminStatusTimeoutError ||
           requestController.signal.reason instanceof AdminStatusTimeoutError;

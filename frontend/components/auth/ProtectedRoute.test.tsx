@@ -27,7 +27,7 @@ describe('ProtectedRoute', () => {
 
     render(
       <AuthProvider>
-        <ProtectedRoute requiredRole="admin">
+        <ProtectedRoute allowedRoles={['admin']}>
           <p>Protected admin content</p>
         </ProtectedRoute>
       </AuthProvider>,
@@ -42,7 +42,7 @@ describe('ProtectedRoute', () => {
 
     render(
       <AuthProvider>
-        <ProtectedRoute requiredRole="admin">
+        <ProtectedRoute allowedRoles={['admin']}>
           <p>Protected admin content</p>
         </ProtectedRoute>
       </AuthProvider>,
@@ -61,7 +61,7 @@ describe('ProtectedRoute', () => {
 
     render(
       <AuthProvider>
-        <ProtectedRoute requiredRole="admin">
+        <ProtectedRoute allowedRoles={['admin']}>
           <p>Protected admin content</p>
         </ProtectedRoute>
       </AuthProvider>,
@@ -69,5 +69,24 @@ describe('ProtectedRoute', () => {
 
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/professional'));
     expect(screen.queryByText('Protected admin content')).not.toBeInTheDocument();
+  });
+
+  it('allows an admin into Professional Mode when both authenticated roles are permitted', async () => {
+    vi.spyOn(authApi, 'me').mockResolvedValue({
+      id: 1,
+      email: 'admin@legalai.test',
+      role: 'admin',
+    });
+
+    render(
+      <AuthProvider>
+        <ProtectedRoute allowedRoles={['lawyer', 'admin']}>
+          <p>Professional content</p>
+        </ProtectedRoute>
+      </AuthProvider>,
+    );
+
+    expect(await screen.findByText('Professional content')).toBeInTheDocument();
+    expect(replace).not.toHaveBeenCalled();
   });
 });

@@ -4,18 +4,19 @@ import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAuth } from '../../lib/auth/AuthContext';
+import type { AuthenticatedUser } from '../../lib/types/api';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 
 export function ProtectedRoute({
+  allowedRoles,
   children,
-  requiredRole,
 }: {
+  allowedRoles: readonly AuthenticatedUser['role'][];
   children: ReactNode;
-  requiredRole: 'admin' | 'lawyer';
 }) {
   const router = useRouter();
   const { isLoading, user } = useAuth();
-  const isAuthorized = user?.role === requiredRole;
+  const isAuthorized = user ? allowedRoles.includes(user.role) : false;
 
   useEffect(() => {
     if (isLoading || isAuthorized) return;

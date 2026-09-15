@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ProfessionalLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ProtectedRoute requiredRole="lawyer">
+      <ProtectedRoute allowedRoles={['lawyer', 'admin']}>
         <div className="flex min-h-screen flex-col bg-[var(--color-canvas)] text-[var(--color-body)]">
           <AuthenticatedNavbar />
           <main className="flex-1">

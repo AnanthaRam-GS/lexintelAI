@@ -221,7 +221,7 @@ export function progressForStage(stage: IngestionStage): number {
   return PROGRESS_BY_STAGE[stage];
 }
 
-// TODO(contract): replace these three mock endpoint functions with
+// TODO(contract): replace these four mock endpoint functions with
 // frontend/lib/api.ts calls when the live 1.R.2 endpoints exist; keep route
 // callers on this single boundary until then.
 export async function fetchCorpusStatsMock(

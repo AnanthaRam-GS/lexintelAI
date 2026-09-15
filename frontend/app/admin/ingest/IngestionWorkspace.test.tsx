@@ -719,6 +719,49 @@ describe('IngestionWorkspace', () => {
     expect(readPersistedIngestionJobs()).toEqual([]);
   });
 
+  it('removes acknowledged cancellation persistence even when the route unmounts first', async () => {
+    vi.useFakeTimers();
+    const cancellation = deferred<void>();
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'EXTRACTING' }]);
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(cancelIngestionJobMock).mockReturnValue(cancellation.promise);
+    const view = render(<IngestionWorkspace />);
+
+    await act(async () => vi.advanceTimersByTimeAsync(15_000));
+    expect(cancelIngestionJobMock).toHaveBeenCalledWith('job-1');
+    view.unmount();
+    cancellation.resolve();
+    await act(async () => Promise.resolve());
+
+    expect(readPersistedIngestionJobs()).toEqual([]);
+    vi.mocked(pollIngestionStatusMock).mockReset();
+    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    render(<IngestionWorkspace />);
+    expect(pollIngestionStatusMock).not.toHaveBeenCalled();
+  });
+
+  it('uses progress inactivity rather than total elapsed time as the job deadline', async () => {
+    vi.useFakeTimers();
+    const stages: IngestionJob[] = [
+      { id: 'job-1', filename: 'slow.pdf', stage: 'EXTRACTING', progress: 20 },
+      { id: 'job-1', filename: 'slow.pdf', stage: 'CHUNKING', progress: 40 },
+      { id: 'job-1', filename: 'slow.pdf', stage: 'EMBEDDING', progress: 60 },
+      { id: 'job-1', filename: 'slow.pdf', stage: 'INDEXING', progress: 80 },
+      { id: 'job-1', filename: 'slow.pdf', stage: 'COMPLETED', progress: 100 },
+    ];
+    writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'QUEUED' }]);
+    vi.mocked(pollIngestionStatusMock).mockImplementation(async () => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
+      return stages.shift()!;
+    });
+
+    render(<IngestionWorkspace />);
+    await act(async () => vi.advanceTimersByTimeAsync(21_000));
+
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(cancelIngestionJobMock).not.toHaveBeenCalled();
+  });
+
   it('keeps two completed files clear when one file in a submitted batch of three fails', async () => {
     const user = userEvent.setup();
     const files = [pdfFile('first.pdf'), pdfFile('damaged.pdf'), pdfFile('third.pdf')];

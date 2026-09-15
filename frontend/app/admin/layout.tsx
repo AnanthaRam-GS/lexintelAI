@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ProtectedRoute requiredRole="admin">{children}</ProtectedRoute>
+      <ProtectedRoute allowedRoles={['admin']}>{children}</ProtectedRoute>
     </AuthProvider>
   );
 }

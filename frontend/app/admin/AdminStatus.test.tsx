@@ -111,6 +111,23 @@ describe('AdminStatus', () => {
     expect(await screen.findByRole('heading', { name: 'Corpus' })).toBeInTheDocument();
   });
 
+  it('removes previously healthy cards when a later refresh cannot establish current status', async () => {
+    const user = userEvent.setup();
+    fetchCorpusStatsMock
+      .mockResolvedValueOnce(healthyStats)
+      .mockRejectedValueOnce(new Error('status unavailable'));
+    render(<AdminStatus />);
+
+    await screen.findByRole('heading', { name: 'Corpus' });
+    await user.click(screen.getByRole('button', { name: 'Refresh status' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'System status is currently unavailable',
+    );
+    expect(screen.queryByRole('region', { name: 'Corpus' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'ChromaDB status' })).not.toBeInTheDocument();
+  });
+
   it('does not overlap refresh requests', async () => {
     const user = userEvent.setup();
     const refresh = deferred<CorpusStats>();
