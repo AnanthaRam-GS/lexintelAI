@@ -5,6 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ErrorMessage, LoadingSpinner } from '../../components/shared';
 import { AuthProvider, useAuth } from '../../lib/auth/AuthContext';
 import type { UserRole } from '../../lib/types/api';
+import type { Metadata } from 'next';
+
+import { AuthProvider } from '../../lib/auth/AuthContext';
+import { LoginForm } from './LoginForm';
+
+export const metadata: Metadata = {
+  title: 'Sign in | LegalAI',
+  description: 'Sign in to a protected LegalAI workspace.',
+};
 
 export default function LoginPage() {
   return (
@@ -149,4 +158,8 @@ function isAllowedDestination(role: UserRole, path: string): boolean {
     return role === 'lawyer' || role === 'admin';
   }
   return false;
+}
+      <LoginForm />
+    </AuthProvider>
+  );
 }

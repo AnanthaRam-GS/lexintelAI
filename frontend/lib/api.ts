@@ -28,6 +28,11 @@ export async function apiFetch<TResponse>(
   init: RequestInit = {},
 ): Promise<TResponse> {
   const headers = requestHeaders(init);
+  const headers = new Headers(init.headers);
+  if (init.body != null && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
@@ -44,6 +49,8 @@ export async function apiFetch<TResponse>(
 export const authApi = {
   login(email: string, password: string): Promise<LoginResponse> {
     return apiFetch<LoginResponse>('/auth/login', {
+  login(email: string, password: string) {
+    return apiFetch<{ user: AuthenticatedUser; message: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -77,6 +84,25 @@ export const queryApi = {
     if (sessionId) {
       body.append('session_id', sessionId);
     }
+  logout() {
+    return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
+  },
+  me() {
+    return apiFetch<AuthenticatedUser>('/auth/me');
+  },
+};
+
+export const queryApi = {
+  submitText(text: string) {
+    return apiFetch<ProfessionalQueryResponse>('/query/professional', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    });
+  },
+  submitPdf(file: File) {
+    const body = new FormData();
+    body.set('file', file);
+    body.set('query', 'Analyze this legal document.');
     return apiFetch<ProfessionalQueryResponse>('/query/professional/pdf', {
       method: 'POST',
       body,
@@ -87,6 +113,9 @@ export const queryApi = {
 export const historyApi = {
   getQueryHistory(limit = 50): Promise<QueryHistoryItem[]> {
     return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${encodeURIComponent(limit)}`);
+  getQueryHistory(limit = 50) {
+    const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+    return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${safeLimit}`);
   },
 };
 
@@ -110,6 +139,13 @@ export const analyticsApi = {
   getNcrbStats(): Promise<NcrbStatPoint[]> {
     return apiFetch<NcrbStatPoint[]>('/analytics/ncrb-stats');
   },
+  getOffenseFrequency: () => apiFetch<OffenseFrequencyPoint[]>('/analytics/offense-frequency'),
+  getOutcomeDistribution: () =>
+    apiFetch<OutcomeDistributionPoint[]>('/analytics/outcome-distribution'),
+  getSectionCooccurrence: () =>
+    apiFetch<SectionCooccurrencePoint[]>('/analytics/section-cooccurrence'),
+  getIpcBnsMap: () => apiFetch<IpcBnsMappingRow[]>('/analytics/ipc-bns-map'),
+  getNcrbStats: () => apiFetch<NcrbStatPoint[]>('/analytics/ncrb-stats'),
 };
 
 function apiBaseUrl(): string {

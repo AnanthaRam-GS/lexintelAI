@@ -10,7 +10,10 @@ import { PublicAsk, type PublicAskProps } from './PublicAsk';
 import type { ChatEntry } from './chat-model';
 
 const { fetchPublicQuery } = vi.hoisted(() => ({
-  fetchPublicQuery: vi.fn<(input: PublicQueryInput) => Promise<PublicQueryResponse>>(),
+  fetchPublicQuery:
+    vi.fn<
+      (input: PublicQueryInput, options?: { signal?: AbortSignal }) => Promise<PublicQueryResponse>
+    >(),
 }));
 
 vi.mock('../query-client', async (importOriginal) => {
@@ -397,6 +400,10 @@ describe('PublicAsk', () => {
     });
     fireEvent.submit(screen.getByRole('button', { name: 'Send' }).closest('form')!);
 
+    const requestSignal = fetchPublicQuery.mock.calls[0]?.[1]?.signal;
+    expect(requestSignal).toBeInstanceOf(AbortSignal);
+    expect(requestSignal?.aborted).toBe(false);
+
     expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeInTheDocument();
     await act(async () => vi.advanceTimersByTimeAsync(4_000));
     expect(
@@ -416,6 +423,7 @@ describe('PublicAsk', () => {
     expect(screen.queryByRole('button', { name: 'Keep waiting' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel request' }));
+    expect(requestSignal?.aborted).toBe(true);
     expect(screen.getByRole('alert')).toHaveTextContent('We stopped waiting');
     expect(screen.getByText('Please explain this notice')).toBeInTheDocument();
 
@@ -453,10 +461,14 @@ describe('PublicAsk', () => {
     await screen.findByRole('alert');
     await user.click(screen.getByRole('button', { name: 'Retry' }));
 
-    expect(fetchPublicQuery).toHaveBeenNthCalledWith(2, {
-      kind: 'text',
-      content: 'What can I do?',
-    });
+    expect(fetchPublicQuery).toHaveBeenNthCalledWith(
+      2,
+      {
+        kind: 'text',
+        content: 'What can I do?',
+      },
+      { signal: expect.any(AbortSignal) },
+    );
     expect(screen.getAllByText('What can I do?')).toHaveLength(1);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeVisible();
@@ -727,10 +739,13 @@ describe('PublicAsk', () => {
     expect(await screen.findByText('I received a court notice')).toBeVisible();
     expect(submitted).toHaveBeenCalledTimes(1);
     expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
-    expect(fetchPublicQuery).toHaveBeenCalledWith({
-      kind: 'text',
-      content: 'I received a court notice',
-    });
+    expect(fetchPublicQuery).toHaveBeenCalledWith(
+      {
+        kind: 'text',
+        content: 'I received a court notice',
+      },
+      { signal: expect.any(AbortSignal) },
+    );
   });
 
   it('consumes a file landing handoff once with the original File object', async () => {

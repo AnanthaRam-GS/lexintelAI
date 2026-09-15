@@ -111,6 +111,23 @@ describe('AdminStatus', () => {
     expect(await screen.findByRole('heading', { name: 'Corpus' })).toBeInTheDocument();
   });
 
+  it('removes previously healthy cards when a later refresh cannot establish current status', async () => {
+    const user = userEvent.setup();
+    fetchCorpusStatsMock
+      .mockResolvedValueOnce(healthyStats)
+      .mockRejectedValueOnce(new Error('status unavailable'));
+    render(<AdminStatus />);
+
+    await screen.findByRole('heading', { name: 'Corpus' });
+    await user.click(screen.getByRole('button', { name: 'Refresh status' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'System status is currently unavailable',
+    );
+    expect(screen.queryByRole('region', { name: 'Corpus' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'ChromaDB status' })).not.toBeInTheDocument();
+  });
+
   it('does not overlap refresh requests', async () => {
     const user = userEvent.setup();
     const refresh = deferred<CorpusStats>();
@@ -145,8 +162,13 @@ describe('AdminStatus', () => {
     render(<AdminStatus />);
     await act(async () => Promise.resolve());
 
+    const signal = fetchCorpusStatsMock.mock.calls[0]?.[0]?.signal as AbortSignal | undefined;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+
     await act(async () => vi.advanceTimersByTimeAsync(10_000));
 
+    expect(signal?.aborted).toBe(true);
     expect(screen.getByRole('alert')).toHaveTextContent('System status is taking too long');
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
     expect(screen.queryByLabelText('Loading system status')).not.toBeInTheDocument();

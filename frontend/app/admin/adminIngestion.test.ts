@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { IngestionStage } from '../../components/shared';
 import {
   STORAGE_KEY,
+  cancelIngestionJobMock,
   configureAdminIngestionMockForTests,
   fetchCorpusStatsMock,
   pollIngestionStatusMock,
@@ -26,13 +27,23 @@ const stages: IngestionStage[] = [
 const pdf = (name: string) =>
   new File([`${name}-private-content`], name, { type: 'application/pdf' });
 
+const ADMIN_AUDIT_SCENARIO_ENV = 'NEXT_PUBLIC_LEGALAI_ADMIN_MOCK_SCENARIO';
+const originalAdminAuditScenario = process.env[ADMIN_AUDIT_SCENARIO_ENV];
+
 describe('admin ingestion mock boundary', () => {
   beforeEach(() => {
+    delete process.env[ADMIN_AUDIT_SCENARIO_ENV];
     sessionStorage.clear();
     resetAdminIngestionMockForTests();
   });
 
   afterEach(() => {
+    vi.useRealTimers();
+    if (originalAdminAuditScenario === undefined) {
+      delete process.env[ADMIN_AUDIT_SCENARIO_ENV];
+    } else {
+      process.env[ADMIN_AUDIT_SCENARIO_ENV] = originalAdminAuditScenario;
+    }
     sessionStorage.clear();
     resetAdminIngestionMockForTests();
   });
@@ -200,6 +211,82 @@ describe('admin ingestion mock boundary', () => {
     });
   });
 
+  it.each([
+    ['status-service-error', Error],
+    ['status-network', TypeError],
+  ] as const)('exposes the %s browser audit once and then recovers', async (scenario, kind) => {
+    process.env[ADMIN_AUDIT_SCENARIO_ENV] = scenario;
+
+    await expect(fetchCorpusStatsMock()).rejects.toBeInstanceOf(kind);
+    await expect(fetchCorpusStatsMock()).resolves.toMatchObject({ totalDocuments: 42 });
+  });
+
+  it('exposes deterministic slow and timeout status requests for browser verification', async () => {
+    vi.useFakeTimers();
+    process.env[ADMIN_AUDIT_SCENARIO_ENV] = 'status-slow';
+    const slowRequest = fetchCorpusStatsMock();
+    let slowSettled = false;
+    void slowRequest.finally(() => {
+      slowSettled = true;
+    });
+
+    await vi.advanceTimersByTimeAsync(4_499);
+    expect(slowSettled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(slowRequest).resolves.toMatchObject({ totalDocuments: 42 });
+
+    process.env[ADMIN_AUDIT_SCENARIO_ENV] = 'status-timeout';
+    const controller = new AbortController();
+    const timeoutRequest = fetchCorpusStatsMock({ signal: controller.signal });
+    await vi.advanceTimersByTimeAsync(10_000);
+    controller.abort();
+    await expect(timeoutRequest).rejects.toMatchObject({ name: 'AbortError' });
+  });
+
+  it.each([
+    ['submit-service-error', Error],
+    ['submit-network', TypeError],
+  ] as const)(
+    'exposes the %s browser audit and preserves retry semantics',
+    async (scenario, kind) => {
+      process.env[ADMIN_AUDIT_SCENARIO_ENV] = scenario;
+      const files = [pdf('lease.pdf')];
+      const metadata = [{ documentType: 'judgment' as const }];
+
+      await expect(submitIngestionMock(files, metadata)).rejects.toBeInstanceOf(kind);
+      await expect(submitIngestionMock(files, metadata)).resolves.toEqual({
+        jobIds: [expect.stringMatching(/^job-/)],
+      });
+    },
+  );
+
+  it('exposes an abortable submit timeout for browser verification', async () => {
+    vi.useFakeTimers();
+    process.env[ADMIN_AUDIT_SCENARIO_ENV] = 'submit-timeout';
+    const controller = new AbortController();
+    const request = submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }], {
+      signal: controller.signal,
+    });
+
+    await vi.advanceTimersByTimeAsync(10_000);
+    controller.abort();
+    await expect(request).rejects.toMatchObject({ name: 'AbortError' });
+  });
+
+  it.each([
+    ['poll-service-recovery', Error],
+    ['poll-network-recovery', TypeError],
+  ] as const)('exposes the %s browser audit without losing the job', async (scenario, kind) => {
+    await submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }]);
+    process.env[ADMIN_AUDIT_SCENARIO_ENV] = scenario;
+
+    await expect(pollIngestionStatusMock('job-1')).rejects.toBeInstanceOf(kind);
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      filename: 'lease.pdf',
+      stage: 'EXTRACTING',
+    });
+  });
+
   it('can expose deterministic degraded/down service states for status-card testing', async () => {
     configureAdminIngestionMockForTests({
       corpusServiceHealth: { chromaDb: 'degraded', postgresql: 'down' },
@@ -208,6 +295,31 @@ describe('admin ingestion mock boundary', () => {
     await expect(fetchCorpusStatsMock()).resolves.toMatchObject({
       chromaDb: { status: 'degraded' },
       postgresql: { status: 'down' },
+    });
+  });
+
+  it('stops delayed mock work when its request signal is aborted', async () => {
+    configureAdminIngestionMockForTests({ delayMs: 1_000 });
+    const controller = new AbortController();
+    const submission = submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }], {
+      signal: controller.signal,
+    });
+
+    controller.abort();
+
+    await expect(submission).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({ stage: 'FAILED' });
+  });
+
+  it('removes a cancelled job from the mock service before it can be retried as a duplicate', async () => {
+    await submitIngestionMock([pdf('lease.pdf')], [{ documentType: 'judgment' }]);
+
+    await cancelIngestionJobMock('job-1');
+
+    await expect(pollIngestionStatusMock('job-1')).resolves.toMatchObject({
+      id: 'job-1',
+      stage: 'FAILED',
+      filename: 'Unknown document',
     });
   });
 
