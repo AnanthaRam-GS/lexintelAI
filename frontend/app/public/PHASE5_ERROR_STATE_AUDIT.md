@@ -48,6 +48,11 @@ No shared error component was changed.
   even if the page unmounts before the UI update. The mock boundary documents
   that a real cancel/idempotency endpoint is required before swapping in live
   ingestion APIs.
+- Admin browser verification can deterministically select slow/timeout status,
+  one-shot status service/network failures, one-shot submission service/network
+  failures, submission timeout, and one-shot poll service/network failures with
+  recovery through `NEXT_PUBLIC_LEGALAI_ADMIN_MOCK_SCENARIO`. These switches are
+  confined to the mock boundary and disappear with the future live API swap.
 - Because the current ingestion boundary exposes no single-file retry endpoint,
   a failed row tells the admin to correct and re-add that file in a new batch;
   it does not pretend to resubmit the whole batch or provide a misleading Retry.
@@ -57,9 +62,11 @@ No shared error component was changed.
 - Clean install: Node `v25.6.0`, npm `11.8.0`, `npm ci` completed with zero
   vulnerabilities. npm reported the repository-pinned ESLint 9 release as
   deprecated.
-- `npm run test:run`: 32 files, 220 tests passed.
+- `npm run test:run`: 32 files, 228 tests passed.
 - `npm run lint`: zero warnings/errors.
-- `npm run format:check`: pass.
+- Phase-owned and branch-added files pass targeted Prettier checks. The Phase 5
+  prompt does not require a repository-wide formatting gate; unchanged merged
+  Professional files remain outside this phase and are not reformatted here.
 - `npm run build`: warning-free compile/type-check with all 13 application routes
   generated, including restored `/login`, `/admin`, and Professional routes.
 - Live Chrome: `/public`, `/public/ask`, `/admin`, `/admin/ingest`, `/login`, and
