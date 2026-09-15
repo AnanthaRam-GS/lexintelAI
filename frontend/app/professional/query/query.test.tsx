@@ -14,20 +14,14 @@ describe('Professional Query Page', () => {
   it('renders input area, example queries, and submit button', () => {
     render(<ProfessionalQueryPage />);
 
-    expect(
-      screen.getByRole('heading', { name: /Statutory & Precedent Text Query/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(/Accused charged under Section 302 IPC/i),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Statutory & Precedent Text Query/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Accused charged under Section 302 IPC/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Execute Legal Research/i })).toBeInTheDocument();
     expect(screen.getByText(/Circumstantial Evidence & Murder/i)).toBeInTheDocument();
   });
 
   it('submits text query to queryApi.submitText and displays structured results', async () => {
-    const submitSpy = vi
-      .spyOn(queryApi, 'submitText')
-      .mockResolvedValue(mockProfessionalQueryResponse);
+    const submitSpy = vi.spyOn(queryApi, 'submitText').mockResolvedValue(mockProfessionalQueryResponse);
 
     render(<ProfessionalQueryPage />);
 
@@ -40,18 +34,14 @@ describe('Professional Query Page', () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(submitSpy).toHaveBeenCalledWith(
-        'Bail under Section 437 CrPC based on medical records.',
-      );
+      expect(submitSpy).toHaveBeenCalledWith('Bail under Section 437 CrPC based on medical records.');
       expect(screen.getByTestId('professional-results-view')).toBeInTheDocument();
       expect(screen.getByText('1. Executive Summary')).toBeInTheDocument();
     });
   });
 
   it('populates query from example prompt click and submits', async () => {
-    const submitSpy = vi
-      .spyOn(queryApi, 'submitText')
-      .mockResolvedValue(mockProfessionalQueryResponse);
+    const submitSpy = vi.spyOn(queryApi, 'submitText').mockResolvedValue(mockProfessionalQueryResponse);
 
     render(<ProfessionalQueryPage />);
 

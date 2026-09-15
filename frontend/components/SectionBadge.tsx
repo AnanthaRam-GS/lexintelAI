@@ -52,11 +52,7 @@ function getStatuteStyle(statute: string): {
       prefix: 'CrPC',
     };
   }
-  if (
-    normalized.includes('evidence') ||
-    normalized.includes('sakshya') ||
-    normalized.includes('bsa')
-  ) {
+  if (normalized.includes('evidence') || normalized.includes('sakshya') || normalized.includes('bsa')) {
     return {
       bg: 'bg-[#fdf4e8]',
       text: 'text-[#8b591f]',
@@ -82,7 +78,9 @@ export function SectionBadge({
   const style = getStatuteStyle(section.statute);
 
   const confidencePct =
-    typeof section.confidence === 'number' ? Math.round(section.confidence * 100) : null;
+    typeof section.confidence === 'number'
+      ? Math.round(section.confidence * 100)
+      : null;
 
   return (
     <div
@@ -97,7 +95,9 @@ export function SectionBadge({
           {style.prefix}
         </span>
 
-        <span className="font-semibold text-[var(--color-ink)]">{section.section}</span>
+        <span className="font-semibold text-[var(--color-ink)]">
+          {section.section}
+        </span>
 
         {confidencePct !== null && (
           <span
@@ -123,12 +123,7 @@ export function SectionBadge({
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
         )}

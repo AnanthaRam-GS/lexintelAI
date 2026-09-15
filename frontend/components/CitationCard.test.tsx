@@ -24,7 +24,7 @@ describe('CitationCard Component', () => {
     render(<CitationCard precedent={mockPrecedent} />);
 
     expect(
-      screen.getByRole('heading', { name: 'Sharad Birdhichand Sarda v. State of Maharashtra' }),
+      screen.getByRole('heading', { name: 'Sharad Birdhichand Sarda v. State of Maharashtra' })
     ).toBeInTheDocument();
     expect(screen.getByText('Supreme Court of India')).toBeInTheDocument();
     expect(screen.getByText('1984')).toBeInTheDocument();

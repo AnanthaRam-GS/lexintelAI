@@ -94,10 +94,7 @@ export function Navbar({ user, onLogout }: NavbarProps) {
           {user ? (
             <div className="flex items-center gap-2.5 border-l border-[var(--color-border)] pl-3 text-xs">
               <div className="text-right">
-                <p
-                  className="max-w-[140px] truncate font-medium text-[var(--color-ink)]"
-                  title={user.email}
-                >
+                <p className="max-w-[140px] truncate font-medium text-[var(--color-ink)]" title={user.email}>
                   {user.email}
                 </p>
                 <span className="inline-block rounded-xs bg-[var(--color-brass)]/15 px-1.5 py-0.2 font-semibold uppercase text-[var(--color-brass-hover)]">
@@ -127,19 +124,9 @@ export function Navbar({ user, onLogout }: NavbarProps) {
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>

@@ -27,29 +27,25 @@ export const mockProfessionalQueryResponse: ProfessionalQueryResponse = {
       statute: 'Indian Penal Code, 1860',
       section: 'Section 302',
       confidence: 0.96,
-      context:
-        'Punishment for murder; requires clear establishment of mens rea and fatal injury intention.',
+      context: 'Punishment for murder; requires clear establishment of mens rea and fatal injury intention.',
     },
     {
       statute: 'Bharatiya Nyaya Sanhita, 2023',
       section: 'Section 103(1)',
       confidence: 0.94,
-      context:
-        'Corresponding provision under the new penal code for murder, maintaining requisite intention threshold.',
+      context: 'Corresponding provision under the new penal code for murder, maintaining requisite intention threshold.',
     },
     {
       statute: 'Code of Criminal Procedure, 1973',
       section: 'Section 437',
       confidence: 0.88,
-      context:
-        'When bail may be taken in cases of non-bailable offences, with special provisos for health and infirmity.',
+      context: 'When bail may be taken in cases of non-bailable offences, with special provisos for health and infirmity.',
     },
     {
       statute: 'Bharatiya Nagarik Suraksha Sanhita, 2023',
       section: 'Section 480',
       confidence: 0.85,
-      context:
-        'Corresponding regular bail provisions in non-bailable cases under the procedural enactment.',
+      context: 'Corresponding regular bail provisions in non-bailable cases under the procedural enactment.',
     },
   ],
   precedents: [
@@ -219,8 +215,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     ipc_section: 'Section 302',
     ipc_description: 'Punishment for murder (death or life imprisonment)',
     bns_section: 'Section 103(1)',
-    bns_description:
-      'Murder punished with death or imprisonment for life; Section 103(2) covers mob lynching',
+    bns_description: 'Murder punished with death or imprisonment for life; Section 103(2) covers mob lynching',
     change_type: 'Substantive Expansion',
   },
   {
@@ -234,32 +229,28 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     ipc_section: 'Section 124A',
     ipc_description: 'Sedition (bringing hatred or disaffection towards government)',
     bns_section: 'Section 152',
-    bns_description:
-      'Act endangering sovereignty, unity and integrity of India (omits sedition terminology)',
+    bns_description: 'Act endangering sovereignty, unity and integrity of India (omits sedition terminology)',
     change_type: 'Substantive Replacement',
   },
   {
     ipc_section: 'Section 376',
     ipc_description: 'Punishment for rape and aggravated forms',
     bns_section: 'Section 64',
-    bns_description:
-      'Consolidated under Offences Against Women and Children with enhanced minimum penalties',
+    bns_description: 'Consolidated under Offences Against Women and Children with enhanced minimum penalties',
     change_type: 'Substantive Modification',
   },
   {
     ipc_section: 'Section 304A',
     ipc_description: 'Causing death by rash or negligent act',
     bns_section: 'Section 106(1)',
-    bns_description:
-      'Negligent acts causing death; 106(2) provides severe penalty for hit-and-run without reporting',
+    bns_description: 'Negligent acts causing death; 106(2) provides severe penalty for hit-and-run without reporting',
     change_type: 'Substantive Expansion',
   },
   {
     ipc_section: 'Section 498A',
     ipc_description: 'Husband or relative of husband subjecting woman to cruelty',
     bns_section: 'Section 85 / 86',
-    bns_description:
-      'Cruelty defined separately with objective mental and physical distress criteria',
+    bns_description: 'Cruelty defined separately with objective mental and physical distress criteria',
     change_type: 'Bifurcated & Clarified',
   },
 ];

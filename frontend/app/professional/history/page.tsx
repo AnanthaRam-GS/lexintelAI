@@ -46,8 +46,7 @@ export default function ProfessionalHistoryPage() {
       const matchesSearch =
         !searchTerm.trim() ||
         item.query_text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.generation_backend &&
-          item.generation_backend.toLowerCase().includes(searchTerm.toLowerCase()));
+        (item.generation_backend && item.generation_backend.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesMode =
         selectedMode === 'all' || item.mode.toLowerCase() === selectedMode.toLowerCase();
@@ -95,8 +94,7 @@ export default function ProfessionalHistoryPage() {
           Query &amp; Document History
         </h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          Historical record of authenticated professional research queries, uploaded brief analyses,
-          and preserved AI case briefs.
+          Historical record of authenticated professional research queries, uploaded brief analyses, and preserved AI case briefs.
         </p>
       </div>
 
@@ -161,9 +159,7 @@ export default function ProfessionalHistoryPage() {
             No query history entries found
           </p>
           <p className="mt-1 text-xs text-[var(--color-muted)]">
-            {searchTerm
-              ? 'Try adjusting your search keywords or filters.'
-              : 'Submit a text query or upload a brief to create your first analysis.'}
+            {searchTerm ? 'Try adjusting your search keywords or filters.' : 'Submit a text query or upload a brief to create your first analysis.'}
           </p>
         </div>
       )}
@@ -187,37 +183,19 @@ export default function ProfessionalHistoryPage() {
                       {/* Mode Icon */}
                       <div
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-compact)] ${
-                          isPdf ? 'bg-[#fae9e7] text-[#7c2e28]' : 'bg-[#e8f1fa] text-[#174d85]'
+                          isPdf
+                            ? 'bg-[#fae9e7] text-[#7c2e28]'
+                            : 'bg-[#e8f1fa] text-[#174d85]'
                         }`}
                         title={`Mode: ${item.mode.toUpperCase()}`}
                       >
                         {isPdf ? (
-                          <svg
-                            className="h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                            />
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                           </svg>
                         ) : (
-                          <svg
-                            className="h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         )}
                       </div>
@@ -263,12 +241,7 @@ export default function ProfessionalHistoryPage() {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </button>
                     </div>
@@ -298,9 +271,7 @@ export default function ProfessionalHistoryPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-4">
               <span className="text-xs text-[var(--color-muted)]">
-                Showing Page <strong className="text-[var(--color-ink)]">{currentPage}</strong> of{' '}
-                <strong className="text-[var(--color-ink)]">{totalPages}</strong> (
-                {filteredItems.length} total entries)
+                Showing Page <strong className="text-[var(--color-ink)]">{currentPage}</strong> of <strong className="text-[var(--color-ink)]">{totalPages}</strong> ({filteredItems.length} total entries)
               </span>
 
               <div className="flex items-center gap-2">
