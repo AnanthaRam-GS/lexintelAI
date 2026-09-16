@@ -13,12 +13,8 @@ import {
 
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
-import {
-  fetchCorpusStatsMock,
-  type CorpusStats,
-  type ServiceHealth,
-  type ServiceStatus,
-} from '../../lib/mocks/adminIngestion';
+import { adminIngestionApi } from '../../lib/api';
+import type { CorpusStats, ServiceHealth, ServiceStatus } from '../../lib/types/api';
 import { classifyRequestFailure, errorCopy, type AdminRequestFailure } from '../public/error-copy';
 
 const ADMIN_STATUS_TIMEOUT_MS = 10_000;
@@ -225,7 +221,7 @@ export function AdminStatus() {
 
     try {
       const nextStats = await Promise.race([
-        fetchCorpusStatsMock({ signal: requestController.signal }),
+        adminIngestionApi.getCorpusStats({ signal: requestController.signal }),
         new Promise<never>((_, reject) => {
           timeoutRef.current = setTimeout(() => {
             const timeoutError = new AdminStatusTimeoutError();

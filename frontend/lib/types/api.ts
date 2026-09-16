@@ -94,3 +94,52 @@ export interface NcrbStatPoint {
   conviction_count?: number | null;
   acquittal_count?: number | null;
 }
+
+export type AdminDocumentType = 'judgment' | 'statute' | 'other';
+export type AdminIngestionStatus =
+  'QUEUED' | 'EXTRACTING' | 'CHUNKING' | 'EMBEDDING' | 'INDEXING' | 'COMPLETED' | 'FAILED';
+export type ServiceHealth = 'healthy' | 'degraded' | 'down';
+
+export interface ServiceStatus {
+  status: ServiceHealth;
+  detail?: string;
+}
+
+export interface CorpusStats {
+  totalDocuments: number;
+  lastUpdatedTimestamp: string;
+  lastIngestionDate: string;
+  breakdown: Record<AdminDocumentType, number>;
+  chromaDb: ServiceStatus;
+  postgresql: ServiceStatus;
+}
+
+export interface AdminIngestionMetadata {
+  documentType: AdminDocumentType;
+  courtLevel?: string;
+  year?: number;
+  sourceUrl?: string;
+  caseName?: string;
+}
+
+export interface AdminIngestionUploadResponse {
+  job_id: string;
+  status: AdminIngestionStatus;
+}
+
+export interface AdminIngestionStatusResponse {
+  job_id: string;
+  status: AdminIngestionStatus;
+  progress: number;
+  document_id?: number | string | null;
+  chunk_count?: number | null;
+  error?: string | null;
+}
+
+export interface CorpusStatsResponse {
+  total_documents: number;
+  last_updated: string | null;
+  by_type: Array<{ doc_type: string; count: number }>;
+  postgres_status: string;
+  chroma_status: string;
+}

@@ -13,7 +13,7 @@ indexes, or touch benchmark artifacts.
 | Public query | `/query/public` accepts anonymous text requests through the frozen retrieval/generation path | `/public` posts text queries to `/query/public` through `apiFetch` | Ready when API keys/indexes are configured |
 | Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history | `/professional/query` posts `{ text, session_id? }` through the shared cookie-based API client and renders structured briefs | Code-complete; needs live RAG/provider validation |
 | Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context | `/professional/upload` sends private multipart `query`, `file`, and optional `session_id`; it does not call ingestion | Code-complete; needs live PDF/provider validation |
-| Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` are registered; ingestion updates vector and BM25 stores after validation | Current admin UI remains mock-backed | Backend contract ready; live admin wiring dependency remains |
+| Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` are registered; ingestion updates vector and BM25 stores after validation | `/admin` and `/admin/ingest` call the live cookie-auth ingestion API through the shared frontend client | Code-complete; live DB validation pending |
 | Analytics | analytics route family is registered behind lawyer/admin auth | `/professional/analytics` calls the protected analytics endpoints and renders Recharts visualizations/tables | Code-complete; needs live DB-backed validation |
 | Query history | `/query/history` and legacy `/query-history` are registered behind lawyer/admin auth | `/professional/history` calls `/query/history?limit=` and renders user-scoped stored briefs | Code-complete; needs live DB-backed validation |
 
@@ -103,7 +103,7 @@ Use a controlled local database and non-production indexes.
 
 ## Known Blockers
 
-- Admin ingestion frontend currently remains mock-backed.
+- Admin ingestion frontend is code-complete against the live API; validation still needs a live admin session plus PostgreSQL/Chroma/BM25-backed ingestion run.
 - Full authenticated UAT requires a reachable PostgreSQL database with seeded
   test users and role assignments.
 - Live answer generation requires a valid Gemini configuration and available
@@ -123,5 +123,5 @@ If shared UAT cannot run end-to-end, use this reduced demo path:
    responses.
 3. Demonstrate `/login`, professional text/PDF, analytics, and history with
    seeded local users if PostgreSQL and Gemini quota are available.
-4. Demonstrate admin ingestion through API tooling until live admin frontend
-   wiring is complete.
+4. Demonstrate admin ingestion through the live admin frontend with real storage
+   services available.
