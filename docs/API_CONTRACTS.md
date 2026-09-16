@@ -14,6 +14,39 @@ stored user data; clients must not send a role selector. Authentication will use
 a secure HttpOnly cookie for the JWT, so the login JSON response does not need
 to expose the token.
 
+Registration is public and creates `public` users only:
+
+```json
+{ "email": "user@example.com", "password": "minimum-length-password", "full_name": "Optional Name" }
+```
+
+`POST /auth/register` returns the created public user and, only when explicitly
+enabled for local development/test, an email verification token. Role injection
+from the client is ignored. Email verification uses hashed, expiring, single-use
+tokens via `POST /auth/verify-email`; `POST /auth/resend-verification` issues a
+fresh token without exposing stored hashes or previous raw tokens.
+
+Lawyer access is granted only through credential review. Authenticated,
+email-verified public users may submit one active application through
+`POST /lawyer-applications` with multipart/form-data fields for bar council,
+enrollment number, enrollment year, jurisdiction, optional organization, and a
+PDF/JPEG/PNG proof document. Proof uploads are private verification material:
+they are not corpus ingestion inputs, are not indexed in BM25 or Chroma, and
+are not supplied to public/professional RAG queries.
+
+Applicants can read their current state from `GET /lawyer-applications/me`.
+Admins review applications through:
+
+- `GET /admin/lawyer-applications`
+- `GET /admin/lawyer-applications/{application_id}`
+- `POST /admin/lawyer-applications/{application_id}/approve`
+- `POST /admin/lawyer-applications/{application_id}/reject`
+- `POST /admin/lawyer-applications/{application_id}/request-resubmission`
+
+Only admin approval promotes the associated account to the `lawyer` role.
+Pending, rejected, and resubmission-requested applicants remain `public` users
+and must be denied professional-only APIs by backend authorization.
+
 ## Professional Query
 
 Professional users may submit either text or a temporary PDF, one input form at
