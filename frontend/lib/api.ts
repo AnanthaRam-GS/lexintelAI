@@ -1,5 +1,7 @@
 import type {
   AuthenticatedUser,
+  AdminLawyerApplication,
+  AdminLawyerApplicationList,
   AdminIngestionMetadata,
   AdminIngestionStatusResponse,
   AdminIngestionUploadResponse,
@@ -7,11 +9,15 @@ import type {
   CorpusStatsResponse,
   IpcBnsMappingRow,
   LoginResponse,
+  LawyerApplication,
+  LawyerApplicationEnvelope,
   NcrbStatPoint,
   OffenseFrequencyPoint,
   OutcomeDistributionPoint,
   ProfessionalQueryResponse,
   QueryHistoryItem,
+  RegistrationResponse,
+  EmailVerificationResponse,
   SectionCooccurrencePoint,
 } from './types/api';
 
@@ -46,6 +52,13 @@ export async function apiFetch<TResponse>(
 }
 
 export const authApi = {
+  register(fullName: string, email: string, password: string): Promise<RegistrationResponse> {
+    return apiFetch<RegistrationResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ full_name: fullName, email, password }),
+    });
+  },
+
   login(email: string, password: string): Promise<LoginResponse> {
     return apiFetch<LoginResponse>('/auth/login', {
       method: 'POST',
@@ -59,6 +72,72 @@ export const authApi = {
 
   logout(): Promise<{ message: string }> {
     return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
+  },
+
+  verifyEmail(token: string): Promise<EmailVerificationResponse> {
+    return apiFetch<EmailVerificationResponse>('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    });
+  },
+
+  resendVerification(): Promise<EmailVerificationResponse> {
+    return apiFetch<EmailVerificationResponse>('/auth/resend-verification', { method: 'POST' });
+  },
+};
+
+export const lawyerApplicationApi = {
+  getMine(): Promise<LawyerApplicationEnvelope> {
+    return apiFetch<LawyerApplicationEnvelope>('/lawyer-applications/me');
+  },
+
+  submit(input: {
+    barCouncil: string;
+    enrollmentNumber: string;
+    enrollmentYear: number;
+    jurisdiction: string;
+    organization?: string;
+    proof: File;
+  }): Promise<LawyerApplication> {
+    const body = new FormData();
+    body.append('bar_council', input.barCouncil);
+    body.append('enrollment_number', input.enrollmentNumber);
+    body.append('enrollment_year', String(input.enrollmentYear));
+    body.append('jurisdiction', input.jurisdiction);
+    appendOptionalFormValue(body, 'organization', input.organization);
+    body.append('proof', input.proof);
+    return apiFetch<LawyerApplication>('/lawyer-applications', { method: 'POST', body });
+  },
+};
+
+export const adminLawyerVerificationApi = {
+  list(statusFilter?: string): Promise<AdminLawyerApplicationList> {
+    const query = statusFilter ? `?status_filter=${encodeURIComponent(statusFilter)}` : '';
+    return apiFetch<AdminLawyerApplicationList>(`/admin/lawyer-applications${query}`);
+  },
+
+  get(id: number): Promise<AdminLawyerApplication> {
+    return apiFetch<AdminLawyerApplication>(`/admin/lawyer-applications/${id}`);
+  },
+
+  approve(id: number): Promise<AdminLawyerApplication> {
+    return apiFetch<AdminLawyerApplication>(`/admin/lawyer-applications/${id}/approve`, {
+      method: 'POST',
+    });
+  },
+
+  reject(id: number, reason: string): Promise<AdminLawyerApplication> {
+    return apiFetch<AdminLawyerApplication>(`/admin/lawyer-applications/${id}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  requestResubmission(id: number, reason: string): Promise<AdminLawyerApplication> {
+    return apiFetch<AdminLawyerApplication>(
+      `/admin/lawyer-applications/${id}/request-resubmission`,
+      { method: 'POST', body: JSON.stringify({ reason }) },
+    );
   },
 };
 

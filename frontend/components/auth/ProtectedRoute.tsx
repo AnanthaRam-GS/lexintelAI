@@ -41,7 +41,9 @@ function allowedRolesFor(requiredRole: UserRole): readonly UserRole[] {
 }
 
 function workspaceFor(role: UserRole): string {
-  return role === 'admin' ? '/admin' : '/professional';
+  if (role === 'admin') return '/admin';
+  if (role === 'lawyer') return '/professional';
+  return '/lawyer/apply';
 }
 
 function loginPath(pathname: string | null): string {
