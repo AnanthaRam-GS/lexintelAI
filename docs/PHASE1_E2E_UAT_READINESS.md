@@ -8,14 +8,14 @@ indexes, or touch benchmark artifacts.
 
 | Area | Backend status | Frontend status | UAT readiness |
 | --- | --- | --- | --- |
-| Backend boot and health | `/health` is registered and accepts `ok` or `degraded` database state | N/A | Ready for smoke validation |
-| Auth | `/auth/login`, `/auth/logout`, and `/auth/me` are registered; auth uses HttpOnly cookies with bearer fallback for API clients/tests | `/login` uses backend-derived roles, cookie credentials, `/auth/me` refresh, and no client-side JWT storage | Code-complete; needs live DB/session validation |
-| Public query | `/query/public` accepts anonymous text requests through the frozen retrieval/generation path | `/public` posts text queries to `/query/public` through `apiFetch` | Ready when API keys/indexes are configured |
-| Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history | `/professional/query` posts `{ text, session_id? }` through the shared cookie-based API client and renders structured briefs | Code-complete; needs live RAG/provider validation |
-| Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context | `/professional/upload` sends private multipart `query`, `file`, and optional `session_id`; it does not call ingestion | Code-complete; needs live PDF/provider validation |
-| Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` are registered; ingestion updates vector and BM25 stores after validation | `/admin` and `/admin/ingest` call the live cookie-auth ingestion API through the shared frontend client | Code-complete; live DB validation pending |
-| Analytics | analytics route family is registered behind lawyer/admin auth | `/professional/analytics` calls the protected analytics endpoints and renders Recharts visualizations/tables | Code-complete; needs live DB-backed validation |
-| Query history | `/query/history` and legacy `/query-history` are registered behind lawyer/admin auth | `/professional/history` calls `/query/history?limit=` and renders user-scoped stored briefs | Code-complete; needs live DB-backed validation |
+| Backend boot and health | `/health` is registered and accepts `ok` or `degraded` database state | N/A | PARTIAL: route smoke works; live DB health is BLOCKED |
+| Auth | `/auth/login`, `/auth/logout`, and `/auth/me` are registered; auth uses HttpOnly cookies with bearer fallback for API clients/tests | `/login` uses backend-derived roles, cookie credentials, `/auth/me` refresh, and no client-side JWT storage | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
+| Public query | `/query/public` accepts anonymous text requests through the frozen retrieval/generation path | `/public` posts text queries to `/query/public` through `apiFetch` | CODE-COMPLETE / NOT LIVE-VALIDATED: provider/index validation still required |
+| Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history | `/professional/query` posts `{ text, session_id? }` through the shared cookie-based API client and renders structured briefs | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
+| Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context | `/professional/upload` sends private multipart `query`, `file`, and optional `session_id`; it does not call ingestion | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
+| Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` are registered; ingestion updates vector and BM25 stores after validation | `/admin` and `/admin/ingest` call the live cookie-auth ingestion API through the shared frontend client | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
+| Analytics | analytics route family is registered behind lawyer/admin auth | `/professional/analytics` calls the protected analytics endpoints and renders Recharts visualizations/tables | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
+| Query history | `/query/history` and legacy `/query-history` are registered behind lawyer/admin auth | `/professional/history` calls `/query/history?limit=` and renders user-scoped stored briefs | CODE-COMPLETE / NOT LIVE-VALIDATED: PostgreSQL unavailable |
 
 ## Startup Procedure
 
@@ -103,6 +103,10 @@ Use a controlled local database and non-production indexes.
 
 ## Known Blockers
 
+- Live PostgreSQL validation on September 16, 2026 is BLOCKED locally: the
+  configured `DATABASE_URL` targets `localhost:5432`, but no PostgreSQL server,
+  `psql`/`pg_isready`, or Docker runtime is available in the current
+  environment.
 - Admin ingestion frontend is code-complete against the live API; validation still needs a live admin session plus PostgreSQL/Chroma/BM25-backed ingestion run.
 - Full authenticated UAT requires a reachable PostgreSQL database with seeded
   test users and role assignments.
