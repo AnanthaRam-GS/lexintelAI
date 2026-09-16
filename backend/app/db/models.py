@@ -125,7 +125,7 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = (
         CheckConstraint(
-            "role IN ('lawyer', 'admin')",
+            "role IN ('public', 'lawyer', 'admin')",
             name="check_user_role",
         ),
         UniqueConstraint("email", name="uq_users_email"),
@@ -134,16 +134,88 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     email = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=True)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False)
+    email_verified = Column(Integer, nullable=False, default=0, server_default="0")
+    is_active = Column(Integer, nullable=False, default=1, server_default="1")
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
 
     # Relationships
     query_history = relationship("QueryHistory", back_populates="user")
+    email_verification_tokens = relationship(
+        "EmailVerificationToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    lawyer_applications = relationship(
+        "LawyerVerificationApplication",
+        back_populates="user",
+        foreign_keys="LawyerVerificationApplication.user_id",
+    )
+    reviewed_lawyer_applications = relationship(
+        "LawyerVerificationApplication",
+        foreign_keys="LawyerVerificationApplication.reviewed_by",
+    )
+
+
+class EmailVerificationToken(Base):
+    """Single-use email verification token metadata with hashed token storage."""
+
+    __tablename__ = "email_verification_tokens"
+
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    token_hash = Column(String(64), nullable=False, unique=True, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    used_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    user = relationship("User", back_populates="email_verification_tokens")
+
+
+class LawyerVerificationApplication(Base):
+    """Credential-review workflow for promoting registered public users to lawyer role."""
+
+    __tablename__ = "lawyer_verification_applications"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('PENDING', 'UNDER_REVIEW', 'VERIFIED', 'REJECTED', 'RESUBMISSION_REQUIRED', 'SUSPENDED')",
+            name="check_lawyer_application_status",
+        ),
+        Index("ix_lawyer_applications_user_status", "user_id", "status"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    bar_council = Column(String(255), nullable=False)
+    enrollment_number = Column(String(100), nullable=False, index=True)
+    enrollment_year = Column(Integer, nullable=False)
+    jurisdiction = Column(String(150), nullable=False)
+    organization = Column(String(255), nullable=True)
+    proof_file_name = Column(String(255), nullable=False)
+    proof_content_type = Column(String(100), nullable=False)
+    proof_storage_key = Column(String(500), nullable=False)
+    status = Column(String(50), nullable=False, default="PENDING", server_default="PENDING", index=True)
+    submitted_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    reviewed_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    review_note = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    user = relationship("User", back_populates="lawyer_applications", foreign_keys=[user_id])
+    reviewer = relationship("User", foreign_keys=[reviewed_by], overlaps="reviewed_lawyer_applications")
 
 
 class QueryHistory(Base):

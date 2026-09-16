@@ -25,11 +25,13 @@ SEED_USERS = [
         "email": "lawyer@legalai.local",
         "password": "LawyerPassword123!",
         "role": "lawyer",
+        "full_name": "LegalAI Development Lawyer",
     },
     {
         "email": "admin@legalai.local",
         "password": "AdminPassword123!",
         "role": "admin",
+        "full_name": "LegalAI Development Admin",
     },
 ]
 
@@ -48,14 +50,18 @@ def seed_development_users() -> list[dict[str, str]]:
             if user is None:
                 user = User(
                     email=email,
+                    full_name=user_data["full_name"],
                     hashed_password=hash_password(plain_pwd),
                     role=role,
+                    email_verified=1,
                 )
                 db.add(user)
                 action = "Created"
             else:
                 user.hashed_password = hash_password(plain_pwd)
+                user.full_name = user_data["full_name"]
                 user.role = role
+                user.email_verified = 1
                 action = "Updated"
 
             db.commit()

@@ -61,6 +61,9 @@ class Settings(BaseSettings):
 
     max_upload_size_mb: int = 10
     max_query_length: int = 5000
+    verification_document_dir: str = "./data/private/lawyer_verification"
+    email_verification_token_minutes: int = 1440
+    expose_dev_verification_tokens: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env",
