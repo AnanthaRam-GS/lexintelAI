@@ -1,5 +1,10 @@
 import type {
   AuthenticatedUser,
+  AdminIngestionMetadata,
+  AdminIngestionStatusResponse,
+  AdminIngestionUploadResponse,
+  CorpusStats,
+  CorpusStatsResponse,
   IpcBnsMappingRow,
   LoginResponse,
   NcrbStatPoint,
@@ -27,16 +32,10 @@ export async function apiFetch<TResponse>(
   path: string,
   init: RequestInit = {},
 ): Promise<TResponse> {
-  const headers = requestHeaders(init);
-  const headers = new Headers(init.headers);
-  if (init.body != null && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
-    headers,
+    headers: requestHeaders(init),
   });
 
   if (!response.ok) {
@@ -49,8 +48,6 @@ export async function apiFetch<TResponse>(
 export const authApi = {
   login(email: string, password: string): Promise<LoginResponse> {
     return apiFetch<LoginResponse>('/auth/login', {
-  login(email: string, password: string) {
-    return apiFetch<{ user: AuthenticatedUser; message: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -84,25 +81,6 @@ export const queryApi = {
     if (sessionId) {
       body.append('session_id', sessionId);
     }
-  logout() {
-    return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
-  },
-  me() {
-    return apiFetch<AuthenticatedUser>('/auth/me');
-  },
-};
-
-export const queryApi = {
-  submitText(text: string) {
-    return apiFetch<ProfessionalQueryResponse>('/query/professional', {
-      method: 'POST',
-      body: JSON.stringify({ text }),
-    });
-  },
-  submitPdf(file: File) {
-    const body = new FormData();
-    body.set('file', file);
-    body.set('query', 'Analyze this legal document.');
     return apiFetch<ProfessionalQueryResponse>('/query/professional/pdf', {
       method: 'POST',
       body,
@@ -112,8 +90,6 @@ export const queryApi = {
 
 export const historyApi = {
   getQueryHistory(limit = 50): Promise<QueryHistoryItem[]> {
-    return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${encodeURIComponent(limit)}`);
-  getQueryHistory(limit = 50) {
     const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
     return apiFetch<QueryHistoryItem[]>(`/query/history?limit=${safeLimit}`);
   },
@@ -121,7 +97,7 @@ export const historyApi = {
 
 export const analyticsApi = {
   getOffenseFrequency(): Promise<OffenseFrequencyPoint[]> {
-    return apiFetch<OffenseFrequencyPoint[]>('/analytics/offence-frequency');
+    return apiFetch<OffenseFrequencyPoint[]>('/analytics/offense-frequency');
   },
 
   getOutcomeDistribution(): Promise<OutcomeDistributionPoint[]> {
@@ -139,13 +115,46 @@ export const analyticsApi = {
   getNcrbStats(): Promise<NcrbStatPoint[]> {
     return apiFetch<NcrbStatPoint[]>('/analytics/ncrb-stats');
   },
-  getOffenseFrequency: () => apiFetch<OffenseFrequencyPoint[]>('/analytics/offense-frequency'),
-  getOutcomeDistribution: () =>
-    apiFetch<OutcomeDistributionPoint[]>('/analytics/outcome-distribution'),
-  getSectionCooccurrence: () =>
-    apiFetch<SectionCooccurrencePoint[]>('/analytics/section-cooccurrence'),
-  getIpcBnsMap: () => apiFetch<IpcBnsMappingRow[]>('/analytics/ipc-bns-map'),
-  getNcrbStats: () => apiFetch<NcrbStatPoint[]>('/analytics/ncrb-stats'),
+};
+
+export const adminIngestionApi = {
+  uploadDocument(
+    file: File,
+    metadata: AdminIngestionMetadata,
+    options: { signal?: AbortSignal } = {},
+  ): Promise<AdminIngestionUploadResponse> {
+    const body = new FormData();
+    body.append('file', file);
+    body.append('doc_type', metadata.documentType);
+    appendOptionalFormValue(body, 'court_level', metadata.courtLevel);
+    if (typeof metadata.year === 'number' && Number.isFinite(metadata.year)) {
+      body.append('year', String(Math.trunc(metadata.year)));
+    }
+    appendOptionalFormValue(body, 'source_url', metadata.sourceUrl);
+    appendOptionalFormValue(body, 'case_name', metadata.caseName);
+
+    return apiFetch<AdminIngestionUploadResponse>('/ingest/upload', {
+      method: 'POST',
+      body,
+      signal: options.signal,
+    });
+  },
+
+  getStatus(
+    jobId: string,
+    options: { signal?: AbortSignal } = {},
+  ): Promise<AdminIngestionStatusResponse> {
+    return apiFetch<AdminIngestionStatusResponse>(`/ingest/status/${encodeURIComponent(jobId)}`, {
+      signal: options.signal,
+    });
+  },
+
+  async getCorpusStats(options: { signal?: AbortSignal } = {}): Promise<CorpusStats> {
+    const stats = await apiFetch<CorpusStatsResponse>('/ingest/corpus/stats', {
+      signal: options.signal,
+    });
+    return toCorpusStats(stats);
+  },
 };
 
 function apiBaseUrl(): string {
@@ -154,6 +163,9 @@ function apiBaseUrl(): string {
 
 function requestHeaders(init: RequestInit): HeadersInit | undefined {
   if (init.body instanceof FormData) {
+    return init.headers;
+  }
+  if (init.body == null) {
     return init.headers;
   }
   const headers = headerRecord(init.headers);
@@ -180,6 +192,39 @@ function hasHeader(headers: Record<string, string>, name: string): boolean {
   return Object.keys(headers).some((key) => key.toLowerCase() === name.toLowerCase());
 }
 
+function appendOptionalFormValue(body: FormData, name: string, value: string | undefined): void {
+  const normalized = value?.trim();
+  if (normalized) {
+    body.append(name, normalized);
+  }
+}
+
+function toCorpusStats(response: CorpusStatsResponse): CorpusStats {
+  const breakdown: CorpusStats['breakdown'] = { judgment: 0, statute: 0, other: 0 };
+  for (const item of response.by_type) {
+    if (item.doc_type === 'judgment' || item.doc_type === 'statute' || item.doc_type === 'other') {
+      breakdown[item.doc_type] = item.count;
+    }
+  }
+
+  const timestamp = response.last_updated ?? '';
+  return {
+    totalDocuments: response.total_documents,
+    lastUpdatedTimestamp: timestamp,
+    lastIngestionDate: timestamp,
+    breakdown,
+    chromaDb: { status: serviceHealth(response.chroma_status) },
+    postgresql: { status: serviceHealth(response.postgres_status) },
+  };
+}
+
+function serviceHealth(value: string): CorpusStats['chromaDb']['status'] {
+  const normalized = value.toLowerCase();
+  if (normalized === 'healthy') return 'healthy';
+  if (normalized === 'degraded') return 'degraded';
+  return 'down';
+}
+
 async function apiError(response: Response): Promise<ApiClientError> {
   const fallback =
     response.status >= 500
@@ -190,10 +235,22 @@ async function apiError(response: Response): Promise<ApiClientError> {
     if (isBackendError(body)) {
       return new ApiClientError(body.detail.message, response.status, body.detail.code);
     }
+    if (isBackendStringError(body)) {
+      return new ApiClientError(body.detail, response.status);
+    }
   } catch {
     return new ApiClientError(fallback, response.status);
   }
   return new ApiClientError(fallback, response.status);
+}
+
+function isBackendStringError(value: unknown): value is { detail: string } {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'detail' in value &&
+    typeof (value as { detail?: unknown }).detail === 'string'
+  );
 }
 
 function isBackendError(value: unknown): value is { detail: { code: string; message: string } } {

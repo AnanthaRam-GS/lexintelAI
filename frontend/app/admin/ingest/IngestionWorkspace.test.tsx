@@ -4,21 +4,52 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { IngestionJob } from '../../../components/shared';
 import {
-  cancelIngestionJobMock,
-  pollIngestionStatusMock,
   readPersistedIngestionJobs,
-  submitIngestionMock,
   writePersistedIngestionJobs,
-} from '../../../lib/mocks/adminIngestion';
+} from '../../../lib/adminIngestion';
 import { IngestionWorkspace } from './IngestionWorkspace';
 
-vi.mock('../../../lib/mocks/adminIngestion', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../../lib/mocks/adminIngestion')>();
+const { getStatusMock, uploadDocumentMock } = vi.hoisted(() => ({
+  getStatusMock: vi.fn(),
+  uploadDocumentMock: vi.fn(),
+}));
+
+let queuedUploadIds: string[] = [];
+
+vi.mock('../../../lib/api', () => ({
+  adminIngestionApi: {
+    getStatus: async (...args: Parameters<typeof getStatusMock>) => {
+      const status = await getStatusMock(...args);
+      if (status && typeof status === 'object' && 'stage' in status) {
+        return {
+          job_id: status.id,
+          status: status.stage,
+          progress: status.progress,
+          error: status.error,
+        };
+      }
+      return status;
+    },
+    uploadDocument: async (...args: Parameters<typeof uploadDocumentMock>) => {
+      const responsePromise = uploadDocumentMock(...args);
+      if (queuedUploadIds.length > 0) {
+        void responsePromise;
+        return { job_id: queuedUploadIds.shift(), status: 'QUEUED' };
+      }
+      const response = await responsePromise;
+      if (response && typeof response === 'object' && 'jobIds' in response) {
+        queuedUploadIds = [...response.jobIds];
+        return { job_id: queuedUploadIds.shift(), status: 'QUEUED' };
+      }
+      return response;
+    },
+  },
+}));
+
+vi.mock('../../../lib/adminIngestion', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../lib/adminIngestion')>();
   return {
     ...actual,
-    cancelIngestionJobMock: vi.fn(),
-    pollIngestionStatusMock: vi.fn(),
-    submitIngestionMock: vi.fn(),
   };
 });
 
@@ -46,10 +77,9 @@ async function configureValidBatch(user: ReturnType<typeof userEvent.setup>, fil
 describe('IngestionWorkspace', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    vi.mocked(pollIngestionStatusMock).mockReset();
-    vi.mocked(cancelIngestionJobMock).mockReset();
-    vi.mocked(cancelIngestionJobMock).mockResolvedValue(undefined);
-    vi.mocked(submitIngestionMock).mockReset();
+    queuedUploadIds = [];
+    vi.mocked(getStatusMock).mockReset();
+    vi.mocked(uploadDocumentMock).mockReset();
   });
 
   afterEach(() => {
@@ -190,8 +220,8 @@ describe('IngestionWorkspace', () => {
 
   it('submits aligned files and metadata, inserts newest first, and clears only after success', async () => {
     const user = userEvent.setup();
-    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-a', 'job-b'] });
-    vi.mocked(pollIngestionStatusMock).mockImplementation(async (id) => ({
+    vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: ['job-a', 'job-b'] });
+    vi.mocked(getStatusMock).mockImplementation(async (id) => ({
       id,
       filename: id === 'job-a' ? 'a.pdf' : 'b.pdf',
       stage: 'QUEUED',
@@ -212,12 +242,16 @@ describe('IngestionWorkspace', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(submitIngestionMock).toHaveBeenCalledWith(
-      files,
-      [
-        { documentType: 'judgment', note: undefined },
-        { documentType: 'statute', note: 'Second item' },
-      ],
+    expect(uploadDocumentMock).toHaveBeenNthCalledWith(
+      1,
+      files[0],
+      { documentType: 'judgment' },
+      { signal: expect.any(AbortSignal) },
+    );
+    expect(uploadDocumentMock).toHaveBeenNthCalledWith(
+      2,
+      files[1],
+      { documentType: 'statute' },
       { signal: expect.any(AbortSignal) },
     );
     expect(await screen.findByText('a.pdf')).toBeInTheDocument();
@@ -226,10 +260,10 @@ describe('IngestionWorkspace', () => {
     const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
     expect(rows[0]).toHaveTextContent('b.pdf');
     expect(rows[1]).toHaveTextContent('a.pdf');
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-a', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-a', {
       signal: expect.any(AbortSignal),
     });
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-b', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-b', {
       signal: expect.any(AbortSignal),
     });
 
@@ -244,7 +278,7 @@ describe('IngestionWorkspace', () => {
   it('disables batch controls while a submission is pending', async () => {
     const user = userEvent.setup();
     const pending = deferred<{ jobIds: string[] }>();
-    vi.mocked(submitIngestionMock).mockReturnValue(pending.promise);
+    vi.mocked(uploadDocumentMock).mockReturnValue(pending.promise);
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('pending.pdf'));
 
@@ -264,7 +298,7 @@ describe('IngestionWorkspace', () => {
 
   it('aborts a submission that exceeds the start deadline and retains the batch', async () => {
     const user = userEvent.setup();
-    vi.mocked(submitIngestionMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(uploadDocumentMock).mockReturnValue(new Promise(() => undefined));
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('slow-submit.pdf'));
 
@@ -272,7 +306,7 @@ describe('IngestionWorkspace', () => {
     screen.getByRole('button', { name: 'Start ingestion' }).click();
     await act(async () => Promise.resolve());
 
-    const signal = vi.mocked(submitIngestionMock).mock.calls[0]?.[2]?.signal;
+    const signal = vi.mocked(uploadDocumentMock).mock.calls[0]?.[2]?.signal;
     expect(signal).toBeInstanceOf(AbortSignal);
     expect(signal?.aborted).toBe(false);
 
@@ -286,9 +320,7 @@ describe('IngestionWorkspace', () => {
 
   it('retains the batch and hides private rejection details after submit failure', async () => {
     const user = userEvent.setup();
-    vi.mocked(submitIngestionMock).mockRejectedValue(
-      new Error('s3://private-bucket/backend-stack'),
-    );
+    vi.mocked(uploadDocumentMock).mockRejectedValue(new Error('s3://private-bucket/backend-stack'));
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('retry.pdf'));
 
@@ -301,7 +333,7 @@ describe('IngestionWorkspace', () => {
 
   it('retains the batch when the submission response is not aligned', async () => {
     const user = userEvent.setup();
-    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: [] });
+    vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: [] });
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('unaligned.pdf'));
 
@@ -325,7 +357,7 @@ describe('IngestionWorkspace', () => {
       ),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeDisabled();
-    expect(submitIngestionMock).not.toHaveBeenCalled();
+    expect(uploadDocumentMock).not.toHaveBeenCalled();
   });
 
   it('counts restored active jobs when deciding whether a complete batch can start', async () => {
@@ -337,7 +369,7 @@ describe('IngestionWorkspace', () => {
         stage: 'CHUNKING' as const,
       })),
     );
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
     render(<IngestionWorkspace />);
     const files = [pdfFile('new-a.pdf'), pdfFile('new-b.pdf')];
 
@@ -354,7 +386,7 @@ describe('IngestionWorkspace', () => {
       ),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: 'Start ingestion' })).toBeDisabled();
-    expect(submitIngestionMock).not.toHaveBeenCalled();
+    expect(uploadDocumentMock).not.toHaveBeenCalled();
   });
 
   it('persists every accepted job when a batch exactly fills the remaining capacity', async () => {
@@ -366,8 +398,8 @@ describe('IngestionWorkspace', () => {
         stage: 'CHUNKING' as const,
       })),
     );
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
-    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-25'] });
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: ['job-25'] });
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('new.pdf'));
 
@@ -391,7 +423,7 @@ describe('IngestionWorkspace', () => {
         stage: 'INDEXING' as const,
       })),
     );
-    vi.mocked(pollIngestionStatusMock).mockImplementation(async (id) => ({
+    vi.mocked(getStatusMock).mockImplementation(async (id) => ({
       id,
       filename: `finished-${id.slice(4)}.pdf`,
       stage: 'COMPLETED',
@@ -409,8 +441,8 @@ describe('IngestionWorkspace', () => {
   it('rejects a submission response whose job ID collides with a restored job', async () => {
     const user = userEvent.setup();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
-    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-1'] });
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: ['job-1'] });
     render(<IngestionWorkspace />);
     await configureValidBatch(user, pdfFile('new.pdf'));
 
@@ -428,8 +460,8 @@ describe('IngestionWorkspace', () => {
     const restoredPoll = deferred<IngestionJob>();
     const newPoll = deferred<IngestionJob>();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'CHUNKING' }]);
-    vi.mocked(submitIngestionMock).mockResolvedValue({ jobIds: ['job-2'] });
-    vi.mocked(pollIngestionStatusMock).mockImplementation((id) =>
+    vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: ['job-2'] });
+    vi.mocked(getStatusMock).mockImplementation((id) =>
       id === 'job-1' ? restoredPoll.promise : newPoll.promise,
     );
     render(<IngestionWorkspace />);
@@ -437,10 +469,10 @@ describe('IngestionWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
 
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-1', {
       signal: expect.any(AbortSignal),
     });
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-2', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-2', {
       signal: expect.any(AbortSignal),
     });
     const rows = within(screen.getByTestId('ingestion-jobs')).getAllByRole('listitem');
@@ -472,7 +504,7 @@ describe('IngestionWorkspace', () => {
       { id: 'job-a', filename: 'a.pdf', stage: 'QUEUED' },
       { id: 'job-b', filename: 'b.pdf', stage: 'EXTRACTING' },
     ]);
-    vi.mocked(pollIngestionStatusMock)
+    vi.mocked(getStatusMock)
       .mockResolvedValueOnce({
         id: 'job-a',
         filename: 'a.pdf',
@@ -494,16 +526,14 @@ describe('IngestionWorkspace', () => {
 
     render(<IngestionWorkspace />);
     await act(async () => Promise.resolve());
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(2);
+    expect(getStatusMock).toHaveBeenCalledTimes(2);
 
     await act(async () => vi.advanceTimersByTimeAsync(2_500));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(3);
-    expect(vi.mocked(pollIngestionStatusMock).mock.calls[2]?.[0]).toBe('job-b');
-    expect(vi.mocked(pollIngestionStatusMock).mock.calls[2]?.[1]?.signal).toBeInstanceOf(
-      AbortSignal,
-    );
+    expect(getStatusMock).toHaveBeenCalledTimes(3);
+    expect(vi.mocked(getStatusMock).mock.calls[2]?.[0]).toBe('job-b');
+    expect(vi.mocked(getStatusMock).mock.calls[2]?.[1]?.signal).toBeInstanceOf(AbortSignal);
     await act(async () => vi.advanceTimersByTimeAsync(5_000));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(3);
+    expect(getStatusMock).toHaveBeenCalledTimes(3);
     expect(readPersistedIngestionJobs()).toEqual([]);
   });
 
@@ -520,12 +550,12 @@ describe('IngestionWorkspace', () => {
         { id: 'job-oversized-name', filename: `${'x'.repeat(300)}.pdf`, stage: 'QUEUED' },
       ]),
     );
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
 
     render(<IngestionWorkspace />);
 
-    await waitFor(() => expect(pollIngestionStatusMock).toHaveBeenCalledTimes(25));
-    expect(vi.mocked(pollIngestionStatusMock).mock.calls.map(([id]) => id)).toEqual(
+    await waitFor(() => expect(getStatusMock).toHaveBeenCalledTimes(25));
+    expect(vi.mocked(getStatusMock).mock.calls.map(([id]) => id)).toEqual(
       Array.from({ length: 25 }, (_, index) => `job-${index + 1}`),
     );
     expect(JSON.parse(sessionStorage.getItem('legalai-admin-ingestion-jobs')!)).toHaveLength(25);
@@ -535,18 +565,16 @@ describe('IngestionWorkspace', () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'QUEUED' }]);
     const firstPoll = deferred<IngestionJob>();
-    vi.mocked(pollIngestionStatusMock)
-      .mockReturnValueOnce(firstPoll.promise)
-      .mockResolvedValueOnce({
-        id: 'job-1',
-        filename: 'lease.pdf',
-        stage: 'CHUNKING',
-        progress: 40,
-      });
+    vi.mocked(getStatusMock).mockReturnValueOnce(firstPoll.promise).mockResolvedValueOnce({
+      id: 'job-1',
+      filename: 'lease.pdf',
+      stage: 'CHUNKING',
+      progress: 40,
+    });
     render(<IngestionWorkspace />);
 
     await act(async () => vi.advanceTimersByTimeAsync(10_000));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(1);
+    expect(getStatusMock).toHaveBeenCalledTimes(1);
 
     firstPoll.resolve({
       id: 'job-1',
@@ -556,15 +584,15 @@ describe('IngestionWorkspace', () => {
     });
     await act(async () => Promise.resolve());
     await act(async () => vi.advanceTimersByTimeAsync(2_499));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(1);
+    expect(getStatusMock).toHaveBeenCalledTimes(1);
     await act(async () => vi.advanceTimersByTimeAsync(1));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(2);
+    expect(getStatusMock).toHaveBeenCalledTimes(2);
   });
 
   it('clears a scheduled poll timer on unmount', async () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'QUEUED' }]);
-    vi.mocked(pollIngestionStatusMock).mockResolvedValue({
+    vi.mocked(getStatusMock).mockResolvedValue({
       id: 'job-1',
       filename: 'lease.pdf',
       stage: 'EXTRACTING',
@@ -577,16 +605,16 @@ describe('IngestionWorkspace', () => {
     view.unmount();
     expect(vi.getTimerCount()).toBe(0);
     await act(async () => vi.advanceTimersByTimeAsync(5_000));
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(1);
+    expect(getStatusMock).toHaveBeenCalledTimes(1);
   });
 
   it('does not apply or reschedule a poll that settles after unmount', async () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'CHUNKING' }]);
     const live = deferred<IngestionJob>();
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(live.promise);
+    vi.mocked(getStatusMock).mockReturnValue(live.promise);
     const view = render(<IngestionWorkspace />);
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-1', {
       signal: expect.any(AbortSignal),
     });
 
@@ -600,7 +628,7 @@ describe('IngestionWorkspace', () => {
     await act(async () => Promise.resolve());
     await act(async () => vi.advanceTimersByTimeAsync(5_000));
 
-    expect(pollIngestionStatusMock).toHaveBeenCalledTimes(1);
+    expect(getStatusMock).toHaveBeenCalledTimes(1);
     expect(vi.getTimerCount()).toBe(0);
     expect(readPersistedIngestionJobs()).toEqual([
       { id: 'job-1', filename: 'lease.pdf', stage: 'CHUNKING' },
@@ -614,7 +642,7 @@ describe('IngestionWorkspace', () => {
     ]);
     const newest = deferred<IngestionJob>();
     const oldest = deferred<IngestionJob>();
-    vi.mocked(pollIngestionStatusMock).mockImplementation((id) =>
+    vi.mocked(getStatusMock).mockImplementation((id) =>
       id === 'job-new' ? newest.promise : oldest.promise,
     );
     render(<IngestionWorkspace />);
@@ -642,7 +670,7 @@ describe('IngestionWorkspace', () => {
   it('renders a minimal placeholder, immediately refreshes truth, and forgets terminal storage', async () => {
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'CHUNKING' }]);
     const live = deferred<IngestionJob>();
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(live.promise);
+    vi.mocked(getStatusMock).mockReturnValue(live.promise);
 
     const view = render(<IngestionWorkspace />);
     expect(screen.getByText('lease.pdf')).toBeInTheDocument();
@@ -650,7 +678,7 @@ describe('IngestionWorkspace', () => {
       'aria-valuenow',
       '40',
     );
-    expect(pollIngestionStatusMock).toHaveBeenCalledWith('job-1', {
+    expect(getStatusMock).toHaveBeenCalledWith('job-1', {
       signal: expect.any(AbortSignal),
     });
     const storageKey = sessionStorage.key(0);
@@ -668,7 +696,7 @@ describe('IngestionWorkspace', () => {
     expect(screen.getByText('lease.pdf')).toBeInTheDocument();
 
     view.unmount();
-    vi.mocked(pollIngestionStatusMock).mockReset();
+    vi.mocked(getStatusMock).mockReset();
     render(<IngestionWorkspace />);
     expect(screen.queryByText('lease.pdf')).not.toBeInTheDocument();
   });
@@ -676,7 +704,7 @@ describe('IngestionWorkspace', () => {
   it('keeps an active job visible and retries after network loss without leaking details', async () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'lease.pdf', stage: 'INDEXING' }]);
-    vi.mocked(pollIngestionStatusMock)
+    vi.mocked(getStatusMock)
       .mockRejectedValueOnce(new TypeError('s3://private-bucket/internal-stack'))
       .mockResolvedValueOnce({
         id: 'job-1',
@@ -703,41 +731,36 @@ describe('IngestionWorkspace', () => {
   it('fails only a stalled job at the bounded deadline with actionable timeout copy', async () => {
     vi.useFakeTimers();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'EXTRACTING' }]);
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
 
     render(<IngestionWorkspace />);
-    const signal = vi.mocked(pollIngestionStatusMock).mock.calls[0]?.[1]?.signal;
+    const signal = vi.mocked(getStatusMock).mock.calls[0]?.[1]?.signal;
     expect(signal).toBeInstanceOf(AbortSignal);
     expect(signal?.aborted).toBe(false);
     await act(async () => vi.advanceTimersByTimeAsync(15_000));
 
     expect(signal?.aborted).toBe(true);
-    expect(cancelIngestionJobMock).toHaveBeenCalledWith('job-1');
     expect(screen.getByText('FAILED')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('Processing took too long.');
     expect(screen.getByRole('alert')).toHaveTextContent('add it again in a new batch');
     expect(readPersistedIngestionJobs()).toEqual([]);
   });
 
-  it('removes acknowledged cancellation persistence even when the route unmounts first', async () => {
+  it('removes timed-out persistence even when the route unmounts first', async () => {
     vi.useFakeTimers();
-    const cancellation = deferred<void>();
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'EXTRACTING' }]);
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
-    vi.mocked(cancelIngestionJobMock).mockReturnValue(cancellation.promise);
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
     const view = render(<IngestionWorkspace />);
 
     await act(async () => vi.advanceTimersByTimeAsync(15_000));
-    expect(cancelIngestionJobMock).toHaveBeenCalledWith('job-1');
     view.unmount();
-    cancellation.resolve();
     await act(async () => Promise.resolve());
 
     expect(readPersistedIngestionJobs()).toEqual([]);
-    vi.mocked(pollIngestionStatusMock).mockReset();
-    vi.mocked(pollIngestionStatusMock).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(getStatusMock).mockReset();
+    vi.mocked(getStatusMock).mockReturnValue(new Promise(() => undefined));
     render(<IngestionWorkspace />);
-    expect(pollIngestionStatusMock).not.toHaveBeenCalled();
+    expect(getStatusMock).not.toHaveBeenCalled();
   });
 
   it('uses progress inactivity rather than total elapsed time as the job deadline', async () => {
@@ -750,7 +773,7 @@ describe('IngestionWorkspace', () => {
       { id: 'job-1', filename: 'slow.pdf', stage: 'COMPLETED', progress: 100 },
     ];
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'slow.pdf', stage: 'QUEUED' }]);
-    vi.mocked(pollIngestionStatusMock).mockImplementation(async () => {
+    vi.mocked(getStatusMock).mockImplementation(async () => {
       await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
       return stages.shift()!;
     });
@@ -759,7 +782,6 @@ describe('IngestionWorkspace', () => {
     await act(async () => vi.advanceTimersByTimeAsync(21_000));
 
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(cancelIngestionJobMock).not.toHaveBeenCalled();
   });
 
   it('uses the first live poll as truth when restored placeholder progress is ahead', async () => {
@@ -772,7 +794,7 @@ describe('IngestionWorkspace', () => {
       { id: 'job-1', filename: 'restored.pdf', stage: 'COMPLETED', progress: 100 },
     ];
     writePersistedIngestionJobs([{ id: 'job-1', filename: 'restored.pdf', stage: 'INDEXING' }]);
-    vi.mocked(pollIngestionStatusMock).mockImplementation(async () => {
+    vi.mocked(getStatusMock).mockImplementation(async () => {
       await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
       return stages.shift()!;
     });
@@ -781,17 +803,16 @@ describe('IngestionWorkspace', () => {
     await act(async () => vi.advanceTimersByTimeAsync(21_000));
 
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(cancelIngestionJobMock).not.toHaveBeenCalled();
     expect(readPersistedIngestionJobs()).toEqual([]);
   });
 
   it('keeps two completed files clear when one file in a submitted batch of three fails', async () => {
     const user = userEvent.setup();
     const files = [pdfFile('first.pdf'), pdfFile('damaged.pdf'), pdfFile('third.pdf')];
-    vi.mocked(submitIngestionMock).mockResolvedValue({
+    vi.mocked(uploadDocumentMock).mockResolvedValue({
       jobIds: ['job-first', 'job-damaged', 'job-third'],
     });
-    vi.mocked(pollIngestionStatusMock).mockImplementation(async (id) => {
+    vi.mocked(getStatusMock).mockImplementation(async (id) => {
       const filename =
         id === 'job-first' ? 'first.pdf' : id === 'job-third' ? 'third.pdf' : 'damaged.pdf';
       return id === 'job-damaged'

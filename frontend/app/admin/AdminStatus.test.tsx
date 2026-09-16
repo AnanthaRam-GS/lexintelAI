@@ -2,13 +2,17 @@ import { act, cleanup, render, screen, waitFor, within } from '@testing-library/
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fetchCorpusStatsMock } = vi.hoisted(() => ({
-  fetchCorpusStatsMock: vi.fn(),
+const { getCorpusStatsMock } = vi.hoisted(() => ({
+  getCorpusStatsMock: vi.fn(),
 }));
 
-vi.mock('../../lib/mocks/adminIngestion', () => ({ fetchCorpusStatsMock }));
+vi.mock('../../lib/api', () => ({
+  adminIngestionApi: {
+    getCorpusStats: getCorpusStatsMock,
+  },
+}));
 
-import type { CorpusStats } from '../../lib/mocks/adminIngestion';
+import type { CorpusStats } from '../../lib/types/api';
 
 import { AdminStatus } from './AdminStatus';
 
@@ -31,7 +35,7 @@ function deferred<T>() {
 
 describe('AdminStatus', () => {
   beforeEach(() => {
-    fetchCorpusStatsMock.mockReset();
+    getCorpusStatsMock.mockReset();
   });
 
   afterEach(() => {
@@ -40,7 +44,7 @@ describe('AdminStatus', () => {
   });
 
   it('renders four status regions with corpus detail and icon-and-text service health', async () => {
-    fetchCorpusStatsMock.mockResolvedValue(healthyStats);
+    getCorpusStatsMock.mockResolvedValue(healthyStats);
     render(<AdminStatus />);
 
     expect(screen.getByLabelText('Loading system status')).toBeInTheDocument();
@@ -75,7 +79,7 @@ describe('AdminStatus', () => {
   });
 
   it('uses written labels and icons for degraded and down services', async () => {
-    fetchCorpusStatsMock.mockResolvedValue({
+    getCorpusStatsMock.mockResolvedValue({
       ...healthyStats,
       chromaDb: { status: 'degraded', detail: 'Reduced availability' },
       postgresql: { status: 'down', detail: 'postgresql://private-host/internal-stack' },
@@ -97,7 +101,7 @@ describe('AdminStatus', () => {
     const error = Object.assign(new Error('postgresql://private-host secret-stack'), {
       technicalDetail: 'private schema, credentials, and stack trace',
     });
-    fetchCorpusStatsMock.mockRejectedValueOnce(error).mockResolvedValueOnce(healthyStats);
+    getCorpusStatsMock.mockRejectedValueOnce(error).mockResolvedValueOnce(healthyStats);
     render(<AdminStatus />);
 
     const alert = await screen.findByRole('alert');
@@ -113,7 +117,7 @@ describe('AdminStatus', () => {
 
   it('removes previously healthy cards when a later refresh cannot establish current status', async () => {
     const user = userEvent.setup();
-    fetchCorpusStatsMock
+    getCorpusStatsMock
       .mockResolvedValueOnce(healthyStats)
       .mockRejectedValueOnce(new Error('status unavailable'));
     render(<AdminStatus />);
@@ -131,7 +135,7 @@ describe('AdminStatus', () => {
   it('does not overlap refresh requests', async () => {
     const user = userEvent.setup();
     const refresh = deferred<CorpusStats>();
-    fetchCorpusStatsMock.mockResolvedValueOnce(healthyStats).mockReturnValueOnce(refresh.promise);
+    getCorpusStatsMock.mockResolvedValueOnce(healthyStats).mockReturnValueOnce(refresh.promise);
     render(<AdminStatus />);
 
     await screen.findByRole('heading', { name: 'Corpus' });
@@ -139,13 +143,13 @@ describe('AdminStatus', () => {
     await user.click(button);
     expect(button).toBeDisabled();
     await user.click(button);
-    expect(fetchCorpusStatsMock).toHaveBeenCalledTimes(2);
+    expect(getCorpusStatsMock).toHaveBeenCalledTimes(2);
     refresh.resolve(healthyStats);
     await waitFor(() => expect(button).toBeEnabled());
   });
 
   it('distinguishes an offline failure from service failure with safe copy', async () => {
-    fetchCorpusStatsMock.mockRejectedValueOnce(
+    getCorpusStatsMock.mockRejectedValueOnce(
       new TypeError('Failed to fetch https://private-host/status'),
     );
     render(<AdminStatus />);
@@ -158,11 +162,11 @@ describe('AdminStatus', () => {
 
   it('ends an unbounded initial load with a distinct timeout and Retry', async () => {
     vi.useFakeTimers();
-    fetchCorpusStatsMock.mockReturnValue(new Promise(() => undefined));
+    getCorpusStatsMock.mockReturnValue(new Promise(() => undefined));
     render(<AdminStatus />);
     await act(async () => Promise.resolve());
 
-    const signal = fetchCorpusStatsMock.mock.calls[0]?.[0]?.signal as AbortSignal | undefined;
+    const signal = getCorpusStatsMock.mock.calls[0]?.[0]?.signal as AbortSignal | undefined;
     expect(signal).toBeInstanceOf(AbortSignal);
     expect(signal?.aborted).toBe(false);
 

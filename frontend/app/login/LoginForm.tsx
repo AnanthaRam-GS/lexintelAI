@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
 import { useAuth } from '../../lib/auth/AuthContext';
+import type { UserRole } from '../../lib/types/api';
 
 const LOGIN_ERROR_MESSAGE = 'We could not sign you in. Check your details and try again.';
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +26,7 @@ export function LoginForm() {
     setHasError(false);
     try {
       const user = await login(email.trim(), password);
-      router.replace(user.role === 'admin' ? '/admin' : '/professional');
+      router.replace(destinationFor(user.role, searchParams.get('next')));
     } catch {
       setHasError(true);
     } finally {
@@ -100,4 +102,24 @@ export function LoginForm() {
       </div>
     </main>
   );
+}
+
+function destinationFor(role: UserRole, requestedPath: string | null): string {
+  if (requestedPath && isAllowedDestination(role, requestedPath)) {
+    return requestedPath;
+  }
+  return role === 'admin' ? '/admin' : '/professional';
+}
+
+function isAllowedDestination(role: UserRole, path: string): boolean {
+  if (!path.startsWith('/') || path.startsWith('//') || path.startsWith('/login')) {
+    return false;
+  }
+  if (path.startsWith('/admin')) {
+    return role === 'admin';
+  }
+  if (path.startsWith('/professional')) {
+    return role === 'lawyer' || role === 'admin';
+  }
+  return false;
 }

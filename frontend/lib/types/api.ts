@@ -1,4 +1,4 @@
-export type UserRole = 'lawyer' | 'admin';
+export type UserRole = 'admin' | 'lawyer';
 
 export interface AuthenticatedUser {
   id: number | string;
@@ -9,16 +9,11 @@ export interface AuthenticatedUser {
 export interface LoginResponse {
   user: AuthenticatedUser;
   message: string;
-export interface AuthenticatedUser {
-  id: number | string;
-  email: string;
-  role: 'admin' | 'lawyer';
 }
 
 export interface SectionReference {
   statute: string;
   section: string;
-  confidence?: number;
   confidence?: number | null;
   context?: string | null;
 }
@@ -58,8 +53,6 @@ export interface QueryHistoryItem {
   query_text: string;
   response_json: ProfessionalQueryResponse | Record<string, unknown> | null;
   generation_backend?: string | null;
-  response_json: ProfessionalQueryResponse | null;
-  generation_backend: string | null;
   created_at: string;
 }
 
@@ -89,8 +82,6 @@ export interface IpcBnsMappingRow {
   ipc_description: string;
   bns_section?: string | null;
   bns_description?: string | null;
-  bns_section: string | null;
-  bns_description: string | null;
   change_type: string;
 }
 
@@ -102,8 +93,53 @@ export interface NcrbStatPoint {
   case_count: number;
   conviction_count?: number | null;
   acquittal_count?: number | null;
-  ipc_section: string | null;
-  case_count: number;
-  conviction_count: number | null;
-  acquittal_count: number | null;
+}
+
+export type AdminDocumentType = 'judgment' | 'statute' | 'other';
+export type AdminIngestionStatus =
+  'QUEUED' | 'EXTRACTING' | 'CHUNKING' | 'EMBEDDING' | 'INDEXING' | 'COMPLETED' | 'FAILED';
+export type ServiceHealth = 'healthy' | 'degraded' | 'down';
+
+export interface ServiceStatus {
+  status: ServiceHealth;
+  detail?: string;
+}
+
+export interface CorpusStats {
+  totalDocuments: number;
+  lastUpdatedTimestamp: string;
+  lastIngestionDate: string;
+  breakdown: Record<AdminDocumentType, number>;
+  chromaDb: ServiceStatus;
+  postgresql: ServiceStatus;
+}
+
+export interface AdminIngestionMetadata {
+  documentType: AdminDocumentType;
+  courtLevel?: string;
+  year?: number;
+  sourceUrl?: string;
+  caseName?: string;
+}
+
+export interface AdminIngestionUploadResponse {
+  job_id: string;
+  status: AdminIngestionStatus;
+}
+
+export interface AdminIngestionStatusResponse {
+  job_id: string;
+  status: AdminIngestionStatus;
+  progress: number;
+  document_id?: number | string | null;
+  chunk_count?: number | null;
+  error?: string | null;
+}
+
+export interface CorpusStatsResponse {
+  total_documents: number;
+  last_updated: string | null;
+  by_type: Array<{ doc_type: string; count: number }>;
+  postgres_status: string;
+  chroma_status: string;
 }

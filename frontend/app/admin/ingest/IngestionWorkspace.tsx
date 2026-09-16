@@ -5,17 +5,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { IngestionProgress, type IngestionJob } from '../../../components/shared/IngestionProgress';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
+import { adminIngestionApi } from '../../../lib/api';
 import {
-  cancelIngestionJobMock,
   MAX_ACTIVE_INGESTION_JOBS,
-  pollIngestionStatusMock,
   progressForStage,
   readPersistedIngestionJobs,
-  submitIngestionMock,
   writePersistedIngestionJobs,
   type DocumentType,
   type PersistedIngestionJob,
-} from '../../../lib/mocks/adminIngestion';
+} from '../../../lib/adminIngestion';
 import {
   canSubmitBatch,
   isTerminal,
@@ -65,6 +63,35 @@ function persistActiveJob(job: IngestionJob) {
 
 function removePersistedJob(jobId: string) {
   writePersistedIngestionJobs(readPersistedIngestionJobs().filter(({ id }) => id !== jobId));
+}
+
+function liveStatusToJob(
+  live: Awaited<ReturnType<typeof adminIngestionApi.getStatus>>,
+  filename: string,
+): IngestionJob {
+  return {
+    id: live.job_id,
+    filename,
+    stage: live.status,
+    progress: Math.max(0, Math.min(100, live.progress)),
+    error: live.error ?? undefined,
+  };
+}
+
+async function uploadDrafts(drafts: IngestionDraft[], signal: AbortSignal) {
+  const responses = [];
+  for (const draft of drafts) {
+    responses.push(
+      await adminIngestionApi.uploadDocument(
+        draft.file,
+        {
+          documentType: draft.documentType as DocumentType,
+        },
+        { signal },
+      ),
+    );
+  }
+  return responses;
 }
 
 export function IngestionWorkspace() {
@@ -126,27 +153,17 @@ export function IngestionWorkspace() {
         if (!isCurrentPoll()) return;
         pollingRef.current.delete(jobId);
         pollControllersRef.current.get(jobId)?.abort(new AdminJobTimeoutError());
-
-        void cancelIngestionJobMock(jobId)
-          .then(() => {
-            removePersistedJob(jobId);
-            if (!aliveRef.current) return;
-            setJobs((current) => markJobFailedSafely(current, jobId));
-            setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
-            setPollingFailures((current) => {
-              const next = { ...current };
-              delete next[jobId];
-              return next;
-            });
-          })
-          .catch((caught) => {
-            if (!aliveRef.current) return;
-            setPollingFailures((current) => ({
-              ...current,
-              [jobId]: classifyRequestFailure(caught),
-            }));
-          })
-          .finally(() => stopPolling(jobId));
+        removePersistedJob(jobId);
+        if (aliveRef.current) {
+          setJobs((current) => markJobFailedSafely(current, jobId));
+          setFileFailures((current) => ({ ...current, [jobId]: 'timeout' }));
+          setPollingFailures((current) => {
+            const next = { ...current };
+            delete next[jobId];
+            return next;
+          });
+        }
+        stopPolling(jobId);
       };
 
       const resetInactivityDeadline = () => {
@@ -165,8 +182,14 @@ export function IngestionWorkspace() {
         const pollController = new AbortController();
         pollControllersRef.current.set(jobId, pollController);
         try {
-          const live = await pollIngestionStatusMock(jobId, { signal: pollController.signal });
+          const liveResponse = await adminIngestionApi.getStatus(jobId, {
+            signal: pollController.signal,
+          });
           if (!isCurrentPoll()) return;
+          const fallbackFilename =
+            readPersistedIngestionJobs().find((record) => record.id === jobId)?.filename ??
+            'Unknown document';
+          const live = liveStatusToJob(liveResponse, fallbackFilename);
           const previousProgress = lastProgressRef.current.get(jobId);
           const madeProgress = previousProgress === undefined || live.progress > previousProgress;
           lastProgressRef.current.set(
@@ -278,13 +301,8 @@ export function IngestionWorkspace() {
     submitControllerRef.current = submitController;
 
     try {
-      const files = drafts.map(({ file }) => file);
-      const metadata = drafts.map(({ documentType, note }) => ({
-        documentType: documentType as DocumentType,
-        note: note.trim() || undefined,
-      }));
-      const { jobIds } = await Promise.race([
-        submitIngestionMock(files, metadata, { signal: submitController.signal }),
+      const uploadResponses = await Promise.race([
+        uploadDrafts(drafts, submitController.signal),
         new Promise<never>((_, reject) => {
           timeout = setTimeout(() => {
             const timeoutError = new AdminSubmitTimeoutError();
@@ -294,6 +312,7 @@ export function IngestionWorkspace() {
         }),
       ]);
       const existingJobIds = new Set(jobs.map(({ id }) => id));
+      const jobIds = uploadResponses.map(({ job_id }) => job_id);
       const uniqueResponseIds = new Set(jobIds);
       if (
         jobIds.length !== drafts.length ||
@@ -303,11 +322,11 @@ export function IngestionWorkspace() {
         throw new Error('Unexpected ingestion response');
       }
 
-      const queued = jobIds.map((id, index): IngestionJob => ({
-        id,
+      const queued = uploadResponses.map((response, index): IngestionJob => ({
+        id: response.job_id,
         filename: drafts[index].file.name,
-        stage: 'QUEUED',
-        progress: progressForStage('QUEUED'),
+        stage: response.status,
+        progress: progressForStage(response.status),
       }));
       setJobs((current) => [...[...queued].reverse(), ...current]);
       queued.forEach(persistActiveJob);

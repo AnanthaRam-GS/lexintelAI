@@ -32,6 +32,13 @@ from backend.main import app
 from backend.scripts.seed_users import seed_development_users
 
 
+class FailingVectorStore:
+    """Test double that exercises the vector-indexing failure branch."""
+
+    def upsert_chunks(self, **kwargs) -> dict:
+        raise RuntimeError("Vector store indexing is unavailable")
+
+
 class TestIngestionUnitAndState(unittest.TestCase):
     """Unit tests for ingestion helpers, state machine, and persistence."""
 
@@ -51,16 +58,21 @@ class TestIngestionUnitAndState(unittest.TestCase):
         self.assertIsNotNone(fetched)
         self.assertEqual(fetched.id, job.id)
 
-    def test_missing_dependency_fails_gracefully(self) -> None:
-        """When Ananthu's document_parser is missing, the job must transition to FAILED."""
+    def test_parser_dependency_failure_fails_gracefully(self) -> None:
+        """When parsing is unavailable, the job must transition to FAILED."""
         job = create_ingestion_job(self.db)
         self.assertEqual(job.status, "QUEUED")
 
-        # Process with no parser provided (will fail on missing document_parser import)
+        def missing_parser(file_path: str) -> dict:
+            raise RuntimeError(
+                "Ingestion blocked: shared document_parser service is unavailable."
+            )
+
         process_ingestion_job(
             job_id=job.id,
             file_path="dummy.pdf",
             doc_type="judgment",
+            parser_func=missing_parser,
         )
 
         self.db.expire_all()
@@ -81,7 +93,6 @@ class TestIngestionUnitAndState(unittest.TestCase):
 
         embedder = DeterministicMockEmbeddingProvider()
 
-        # Chroma is not installed in .venv, so vector_store=None will fail at the indexing step
         process_ingestion_job(
             job_id=job.id,
             file_path="test.pdf",
@@ -89,7 +100,7 @@ class TestIngestionUnitAndState(unittest.TestCase):
             parser_func=mock_parser,
             chunker_func=mock_chunker,
             embedding_provider=embedder,
-            vector_store=None,
+            vector_store=FailingVectorStore(),
         )
 
         self.db.expire_all()

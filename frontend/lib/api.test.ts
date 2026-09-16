@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { analyticsApi, authApi, historyApi, queryApi } from './api';
+import { adminIngestionApi, analyticsApi, authApi, historyApi, queryApi } from './api';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -78,6 +78,61 @@ describe('frontend API adapters', () => {
       'http://127.0.0.1:8000/analytics/ipc-bns-map',
       'http://127.0.0.1:8000/analytics/ncrb-stats',
     ]);
+  });
+
+  it('uses live admin ingestion endpoints with cookie auth and multipart metadata', async () => {
+    const fetchMock = mockFetch([
+      { job_id: 'job-1', status: 'QUEUED' },
+      { job_id: 'job-1', status: 'INDEXING', progress: 80 },
+      {
+        total_documents: 7,
+        last_updated: '2026-09-08T09:00:00.000Z',
+        by_type: [
+          { doc_type: 'judgment', count: 3 },
+          { doc_type: 'statute', count: 2 },
+          { doc_type: 'other', count: 1 },
+          { doc_type: 'ignored', count: 99 },
+        ],
+        postgres_status: 'healthy',
+        chroma_status: 'degraded',
+      },
+    ]);
+    const file = new File(['%PDF-1.7'], 'judgment.pdf', { type: 'application/pdf' });
+
+    await adminIngestionApi.uploadDocument(file, {
+      documentType: 'judgment',
+      courtLevel: 'High Court',
+      year: 2026,
+      sourceUrl: 'https://example.test/case.pdf',
+      caseName: 'State v Example',
+    });
+    await adminIngestionApi.getStatus('job/1');
+    const stats = await adminIngestionApi.getCorpusStats();
+
+    const upload = fetchMock.mock.calls[0]?.[1];
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      'http://127.0.0.1:8000/ingest/upload',
+      'http://127.0.0.1:8000/ingest/status/job%2F1',
+      'http://127.0.0.1:8000/ingest/corpus/stats',
+    ]);
+    expect(upload).toMatchObject({ method: 'POST', credentials: 'include' });
+    expect(upload?.body).toBeInstanceOf(FormData);
+    const body = upload?.body as FormData;
+    expect(body.get('file')).toBe(file);
+    expect(body.get('doc_type')).toBe('judgment');
+    expect(body.get('court_level')).toBe('High Court');
+    expect(body.get('year')).toBe('2026');
+    expect(body.get('source_url')).toBe('https://example.test/case.pdf');
+    expect(body.get('case_name')).toBe('State v Example');
+    const headers = new Headers(upload?.headers);
+    expect(headers.has('Content-Type')).toBe(false);
+    expect(headers.has('Authorization')).toBe(false);
+    expect(stats).toMatchObject({
+      totalDocuments: 7,
+      breakdown: { judgment: 3, statute: 2, other: 1 },
+      chromaDb: { status: 'degraded' },
+      postgresql: { status: 'healthy' },
+    });
   });
 });
 

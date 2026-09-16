@@ -1,63 +1,29 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { LoadingSpinner } from '../shared';
+
 import { useAuth } from '../../lib/auth/AuthContext';
 import type { UserRole } from '../../lib/types/api';
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  requiredRole?: UserRole;
-  allowedRoles?: UserRole[];
-}
-
-export function ProtectedRoute({ children, requiredRole, allowedRoles }: ProtectedRouteProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { isAuthenticated, isLoading, role } = useAuth();
-  const roles = allowedRoles ?? (requiredRole ? allowedRolesFor(requiredRole) : undefined);
-  const isAllowed = !roles || (role ? roles.includes(role) : false);
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (!isAuthenticated) {
-      router.replace(`/login?next=${encodeURIComponent(pathname || '/')}`);
-      return;
-    }
-    if (!isAllowed) {
-      router.replace(role === 'admin' ? '/admin' : '/professional');
-    }
-  }, [isAllowed, isAuthenticated, isLoading, pathname, role, router]);
-
-  if (isLoading || !isAuthenticated || !isAllowed) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--color-canvas)]">
-        <LoadingSpinner size="lg" label="Checking secure session" />
-import { useEffect, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-
-import { useAuth } from '../../lib/auth/AuthContext';
-import type { AuthenticatedUser } from '../../lib/types/api';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 
-export function ProtectedRoute({
-  allowedRoles,
-  children,
-}: {
-  allowedRoles: readonly AuthenticatedUser['role'][];
+interface ProtectedRouteProps {
+  allowedRoles?: readonly UserRole[];
+  requiredRole?: UserRole;
   children: ReactNode;
-}) {
+}
+
+export function ProtectedRoute({ allowedRoles, requiredRole, children }: ProtectedRouteProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoading, user } = useAuth();
-  const isAuthorized = user ? allowedRoles.includes(user.role) : false;
+  const effectiveRoles = allowedRoles ?? (requiredRole ? allowedRolesFor(requiredRole) : undefined);
+  const isAuthorized = user && effectiveRoles ? effectiveRoles.includes(user.role) : false;
 
   useEffect(() => {
     if (isLoading || isAuthorized) return;
-    router.replace(
-      user?.role === 'admin' ? '/admin' : user?.role === 'lawyer' ? '/professional' : '/login',
-    );
-  }, [isAuthorized, isLoading, router, user?.role]);
+    router.replace(user ? workspaceFor(user.role) : loginPath(pathname));
+  }, [isAuthorized, isLoading, pathname, router, user]);
 
   if (isLoading) {
     return (
@@ -67,13 +33,20 @@ export function ProtectedRoute({
     );
   }
 
-  return <>{children}</>;
+  return isAuthorized ? children : null;
 }
 
-function allowedRolesFor(requiredRole: UserRole): UserRole[] {
-  if (requiredRole === 'lawyer') {
-    return ['lawyer', 'admin'];
+function allowedRolesFor(requiredRole: UserRole): readonly UserRole[] {
+  return requiredRole === 'lawyer' ? ['lawyer', 'admin'] : ['admin'];
+}
+
+function workspaceFor(role: UserRole): string {
+  return role === 'admin' ? '/admin' : '/professional';
+}
+
+function loginPath(pathname: string | null): string {
+  if (!pathname || pathname === '/' || pathname.startsWith('/login')) {
+    return '/login';
   }
-  return [requiredRole];
-  return isAuthorized ? children : null;
+  return `/login?next=${encodeURIComponent(pathname)}`;
 }

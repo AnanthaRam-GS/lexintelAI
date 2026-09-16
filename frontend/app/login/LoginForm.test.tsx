@@ -10,6 +10,9 @@ const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace }),
+  useSearchParams: () => ({
+    get: () => null,
+  }),
 }));
 
 describe('LoginForm', () => {

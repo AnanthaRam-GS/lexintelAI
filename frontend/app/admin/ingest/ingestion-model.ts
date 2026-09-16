@@ -1,5 +1,5 @@
-import type { DocumentType, IngestionMetadata } from '../../../lib/mocks/adminIngestion';
 import type { IngestionJob, IngestionStage } from '../../../components/shared';
+import type { DocumentType, IngestionMetadata } from '../../../lib/adminIngestion';
 
 export interface IngestionDraft extends Omit<IngestionMetadata, 'documentType'> {
   id: string;
