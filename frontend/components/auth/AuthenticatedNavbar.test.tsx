@@ -21,6 +21,7 @@ vi.mock('../../lib/auth/AuthContext', () => ({
     login: vi.fn(),
     logout,
   }),
+  useOptionalAuth: () => null,
 }));
 
 describe('AuthenticatedNavbar', () => {

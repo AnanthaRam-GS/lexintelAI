@@ -1,4 +1,4 @@
-export type UserRole = 'lawyer' | 'admin';
+export type UserRole = 'admin' | 'lawyer';
 
 export interface AuthenticatedUser {
   id: number | string;
@@ -9,16 +9,11 @@ export interface AuthenticatedUser {
 export interface LoginResponse {
   user: AuthenticatedUser;
   message: string;
-export interface AuthenticatedUser {
-  id: number | string;
-  email: string;
-  role: 'admin' | 'lawyer';
 }
 
 export interface SectionReference {
   statute: string;
   section: string;
-  confidence?: number;
   confidence?: number | null;
   context?: string | null;
 }
@@ -58,8 +53,6 @@ export interface QueryHistoryItem {
   query_text: string;
   response_json: ProfessionalQueryResponse | Record<string, unknown> | null;
   generation_backend?: string | null;
-  response_json: ProfessionalQueryResponse | null;
-  generation_backend: string | null;
   created_at: string;
 }
 
@@ -89,8 +82,6 @@ export interface IpcBnsMappingRow {
   ipc_description: string;
   bns_section?: string | null;
   bns_description?: string | null;
-  bns_section: string | null;
-  bns_description: string | null;
   change_type: string;
 }
 
@@ -102,8 +93,4 @@ export interface NcrbStatPoint {
   case_count: number;
   conviction_count?: number | null;
   acquittal_count?: number | null;
-  ipc_section: string | null;
-  case_count: number;
-  conviction_count: number | null;
-  acquittal_count: number | null;
 }
