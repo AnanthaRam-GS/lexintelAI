@@ -14,17 +14,26 @@ stored user data; clients must not send a role selector. Authentication will use
 a secure HttpOnly cookie for the JWT, so the login JSON response does not need
 to expose the token.
 
+The root route sends users to `/login`. Public use remains available through an
+explicit "Continue as guest" action that opens `/public`.
+
 Registration is public and creates `public` users only:
 
 ```json
 { "email": "user@example.com", "password": "minimum-length-password", "full_name": "Optional Name" }
 ```
 
-`POST /auth/register` returns the created public user and, only when explicitly
-enabled for local development/test, an email verification token. Role injection
-from the client is ignored. Email verification uses hashed, expiring, single-use
-tokens via `POST /auth/verify-email`; `POST /auth/resend-verification` issues a
-fresh token without exposing stored hashes or previous raw tokens.
+`POST /auth/register` returns the created public user and sends a six-digit
+email verification OTP. Role injection from the client is ignored. OTPs are
+hashed before persistence, expire after the configured window, are single-use,
+and are attempt-limited. `POST /auth/verify-email` accepts `{ "email": "...",
+"otp": "123456" }`; `POST /auth/resend-verification` accepts `{ "email": "..."
+}` and supersedes previous active OTPs after the configured cooldown.
+
+Email delivery is abstracted behind `EMAIL_DELIVERY_MODE`. `smtp` uses
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`,
+and `SMTP_USE_TLS`. `console` is for local development/test only and is disabled
+in production.
 
 Lawyer access is granted only through credential review. Authenticated,
 email-verified public users may submit one active application through
@@ -109,12 +118,19 @@ multipart/form-data.
 { "text": "Can the police arrest me without notice?" }
 ```
 
-PDF query support remains a separate future multipart/form-data endpoint; it is
-not accepted by this JSON text route.
+`POST /query/public/pdf` accepts anonymous multipart/form-data requests:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `query` | string | yes | Public legal question or document explanation request. |
+| `file` | PDF upload | yes | One temporary private PDF. |
 
 Public query uploads are temporary analysis inputs and are not automatically
-ingested into the global corpus. Session-local follow-up conversation may be
-managed by the frontend.
+ingested into the global corpus. Public PDFs are parsed and chunked in a
+temporary directory for the request only; they do not create ingestion jobs,
+Chroma writes, BM25 writes, or trusted-corpus documents. Uploaded text is
+treated as untrusted user-provided facts, not legal authority, and legal
+citations remain restricted to trusted-corpus evidence.
 
 The public response contains a plain-language explanation, cited statutory
 sections, and public-facing sources.

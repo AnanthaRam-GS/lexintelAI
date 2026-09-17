@@ -140,6 +140,8 @@ describe('PublicLanding', () => {
     renderLanding();
 
     await user.tab();
+    await user.tab();
+    await user.tab();
 
     const question = screen.getByLabelText('Your question');
     expect(question).toHaveFocus();

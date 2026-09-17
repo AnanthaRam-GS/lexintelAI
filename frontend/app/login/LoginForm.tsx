@@ -27,6 +27,10 @@ export function LoginForm() {
     setHasError(false);
     try {
       const user = await login(email.trim(), password);
+      if (!user.email_verified) {
+        router.replace(`/verify-email?email=${encodeURIComponent(user.email)}`);
+        return;
+      }
       router.replace(destinationFor(user.role, searchParams.get('next')));
     } catch {
       setHasError(true);
@@ -108,6 +112,12 @@ export function LoginForm() {
               Register
             </Link>
           </p>
+          <Link
+            className="text-type-control flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] border border-[var(--color-border)] font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-subtle)]"
+            href="/public"
+          >
+            Continue as guest
+          </Link>
         </form>
       </div>
     </main>

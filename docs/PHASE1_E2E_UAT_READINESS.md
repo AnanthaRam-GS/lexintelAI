@@ -9,8 +9,8 @@ indexes, or touch benchmark artifacts.
 | Area | Backend status | Frontend status | UAT readiness |
 | --- | --- | --- | --- |
 | Backend boot and health | `/health` is registered and returned `ok` with local PostgreSQL 18.6 reachable | N/A | WORKING |
-| Auth | `/auth/login`, `/auth/logout`, and `/auth/me` are covered by PostgreSQL-backed tests; auth uses HttpOnly cookies with bearer fallback for API clients/tests | `/login` uses backend-derived roles, cookie credentials, `/auth/me` refresh, and no client-side JWT storage | WORKING |
-| Public query | `/query/public` accepts anonymous text requests through the frozen retrieval/generation path | `/public` posts text queries to `/query/public` through `apiFetch` | PARTIAL: contract covered; live provider quota still separate |
+| Auth | `/auth/register`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/logout`, and `/auth/me` are covered by PostgreSQL-backed tests; auth uses HttpOnly cookies with bearer fallback for API clients/tests | `/` routes to `/login`; `/login`, `/register`, and `/verify-email` support onboarding, OTP verification, and explicit guest access with no client-side JWT storage | WORKING |
+| Public query | `/query/public` and `/query/public/pdf` accept anonymous requests through the frozen retrieval/generation path; public PDFs are temporary query context only | `/public` posts text queries to `/query/public` and one-PDF uploads to `/query/public/pdf` through `apiFetch` | PARTIAL: contract covered; live provider quota still separate |
 | Professional text query | `/query/professional` requires lawyer/admin auth and saves sanitized history in PostgreSQL-backed tests | `/professional/query` posts `{ text, session_id? }` through the shared cookie-based API client and renders structured briefs | WORKING |
 | Professional PDF query | `/query/professional/pdf` requires lawyer/admin auth and accepts temporary private PDF context without ingestion mutation in tests | `/professional/upload` sends private multipart `query`, `file`, and optional `session_id`; it does not call ingestion | WORKING |
 | Admin ingestion | `/ingest/upload`, `/ingest/status/{job_id}`, and `/ingest/corpus/stats` pass PostgreSQL-backed ingestion tests; vector and BM25 failure paths are covered | `/admin` and `/admin/ingest` call the live cookie-auth ingestion API through the shared frontend client | WORKING |
@@ -36,6 +36,9 @@ indexes, or touch benchmark artifacts.
    - `GEMINI_MODEL`
    - `LEGALAI_LLM_PROVIDER=gemini`
    - `FRONTEND_ORIGIN=http://127.0.0.1:3000`
+   - `EMAIL_DELIVERY_MODE=console` for local tests, or `smtp` for real email UAT
+   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
+     `SMTP_FROM_EMAIL`, `SMTP_USE_TLS` when using SMTP
 
    Do not print or commit real secret values. In production-like runs,
    `JWT_SECRET_KEY` must be explicitly set.
@@ -85,37 +88,48 @@ Use a controlled local database and non-production indexes.
 
 1. Confirm `/health` returns HTTP 200 and record whether status is `ok` or
    `degraded`.
-2. Log in through `/login` as a lawyer/admin; confirm the response sets an
+2. Open `/`; confirm it routes to `/login` and exposes login, create-account,
+   and continue-as-guest choices.
+3. Register a public account; confirm the user is routed to `/verify-email`,
+   receives a six-digit OTP through the configured delivery mode, and remains
+   `public` after verification.
+4. Log in through `/login` as a lawyer/admin; confirm the response sets an
    HttpOnly session cookie and `/auth/me` derives the role from the backend.
-3. Submit a public text query from `/public`; confirm the UI sends cookies and no
+5. Submit a public text query from `/public`; confirm the UI sends cookies and no
    bearer token, and the response does not expose professional-only fields.
-4. Submit a professional text query through `/professional/query`; confirm
+6. Submit one public PDF query; confirm it calls `/query/public/pdf`, rejects
+   invalid PDFs safely, and does not create ingestion jobs or corpus/index
+   writes.
+7. Submit a professional text query through `/professional/query`; confirm
    lawyer/admin auth is required and sanitized history is written.
-5. Submit a professional PDF query through `/professional/upload`; confirm
+8. Submit a professional PDF query through `/professional/upload`; confirm
    invalid file types are rejected and private PDF text is not stored in
    history.
-6. Upload a trusted-corpus document through admin ingestion API tooling; confirm
+9. Upload a trusted-corpus document through admin ingestion API tooling; confirm
    job status reaches `COMPLETED` only after vector and BM25 updates succeed.
-7. Open `/professional/analytics` as lawyer/admin and as an unauthenticated
+10. Open `/professional/analytics` as lawyer/admin and as an unauthenticated
    client; confirm protected routes reject unauthenticated access.
-8. Open `/professional/history` and call legacy `/query-history`; confirm
+11. Open `/professional/history` and call legacy `/query-history`; confirm
    pagination and role protection.
-9. Review browser console and backend logs for stack traces, secret leakage, or
+12. Review browser console and backend logs for stack traces, secret leakage, or
    unexpected provider calls.
 
 ## Registration And Lawyer Verification
 
 - `/auth/register` creates ordinary `public` users only; role promotion is never
   accepted from client payloads.
-- Email verification is modeled with hashed, single-use tokens. Local
-  development can expose a test token only when explicitly enabled through
-  settings; production email delivery provider integration remains future work.
+- Email verification uses hashed, six-digit, single-use OTPs with expiry,
+  cooldown, and attempt limits. `EMAIL_DELIVERY_MODE=smtp` sends real mail;
+  `console` is for local development/test and is disabled in production.
 - `/lawyer/apply` stores credential proof files in private verification storage.
   These files are identity evidence only and must not enter Chroma, BM25, corpus
   ingestion, or legal RAG retrieval.
 - `/admin/lawyer-verification` is the admin review queue. Only admin approval
   changes `users.role` to `lawyer`; rejected and pending applicants remain
   denied by the backend professional RBAC boundary.
+- `/query/public/pdf` treats uploaded PDFs as temporary, untrusted query facts.
+  Public PDFs are not inserted into PostgreSQL trusted documents, Chroma, BM25,
+  or ingestion jobs, and trusted legal citations still come only from the corpus.
 
 ## Known Blockers
 

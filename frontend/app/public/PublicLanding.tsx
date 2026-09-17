@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent, type KeyboardEvent } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { UploadDropzone } from '../../components/shared';
@@ -57,7 +58,21 @@ export function PublicLanding() {
         <p className="font-display text-type-heading-md font-bold text-[var(--color-ink)]">
           LegalAI
         </p>
-        <p className="text-type-caption text-[var(--color-muted)]">No login needed</p>
+        <nav className="flex items-center gap-3 text-type-caption text-[var(--color-muted)]">
+          <span>Guest mode</span>
+          <Link
+            className="font-semibold text-[var(--color-brass-hover)] hover:underline"
+            href="/login"
+          >
+            Sign in
+          </Link>
+          <Link
+            className="font-semibold text-[var(--color-brass-hover)] hover:underline"
+            href="/register"
+          >
+            Create account
+          </Link>
+        </nav>
       </header>
 
       <section className="mx-auto mt-16 max-w-3xl" aria-labelledby="public-landing-title">

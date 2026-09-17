@@ -1,4 +1,4 @@
-import { apiFetch } from '../../lib/api';
+import { apiFetch, publicQueryApi } from '../../lib/api';
 import type { PublicQueryInput, PublicQueryResponse } from './query-contract';
 
 export type { PublicQueryInput, PublicQueryResponse } from './query-contract';
@@ -18,7 +18,8 @@ export async function fetchPublicQuery(
   assertPublicQueryInput(input);
 
   if (input.kind === 'file') {
-    throw new Error('Public PDF query is not available yet.');
+    const query = 'Explain the key legal information in this document';
+    return publicQueryApi.submitPdf(input.file, query);
   }
 
   const text = input.content.trim();

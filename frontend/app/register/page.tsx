@@ -31,9 +31,12 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     setError('');
     try {
-      await authApi.register(fullName.trim(), email.trim(), password);
-      await authApi.login(email.trim(), password);
-      router.replace(applyAsLawyer ? '/lawyer/apply' : '/public');
+      const response = await authApi.register(fullName.trim(), email.trim(), password);
+      const params = new URLSearchParams({ email: response.user.email });
+      if (applyAsLawyer) {
+        params.set('next', '/lawyer/apply');
+      }
+      router.replace(`/verify-email?${params.toString()}`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Registration failed.');
     } finally {

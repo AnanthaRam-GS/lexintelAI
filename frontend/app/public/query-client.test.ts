@@ -127,13 +127,21 @@ describe('fetchPublicQuery', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('keeps unsupported PDF input off the JSON text route', async () => {
+  it('sends PDF input to the public multipart endpoint', async () => {
     const fetchMock = mockFetch(okResponse(responseFixture()));
+    const file = new File(['%PDF-1.4'], 'notice.pdf', { type: 'application/pdf' });
 
-    await expect(
-      fetchPublicQuery({ kind: 'file', file: new File(['pdf'], 'notice.pdf') }),
-    ).rejects.toThrow('Public PDF query is not available yet.');
-    expect(fetchMock).not.toHaveBeenCalled();
+    await fetchPublicQuery({ kind: 'file', file });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('http://127.0.0.1:8000/query/public/pdf');
+    const request = fetchMock.mock.calls[0]?.[1];
+    expect(request?.body).toBeInstanceOf(FormData);
+    expect((request?.body as FormData).get('file')).toBe(file);
+    expect((request?.body as FormData).get('query')).toBe(
+      'Explain the key legal information in this document',
+    );
+    expect(new Headers(request?.headers).has('Content-Type')).toBe(false);
   });
 
   it('rejects an invalid discriminant before fetch', async () => {

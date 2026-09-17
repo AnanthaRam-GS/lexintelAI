@@ -17,13 +17,13 @@ export interface RegistrationResponse {
   user: AuthenticatedUser;
   message: string;
   email_verification_required: boolean;
-  dev_verification_token?: string | null;
+  dev_verification_otp?: string | null;
 }
 
 export interface EmailVerificationResponse {
   email_verified: boolean;
   message: string;
-  dev_verification_token?: string | null;
+  dev_verification_otp?: string | null;
   expires_at?: string | null;
 }
 
@@ -61,6 +61,13 @@ export interface ProfessionalQueryResponse {
   identified_sections: SectionReference[];
   precedents: ProfessionalPrecedent[];
   case_brief: ProfessionalCaseBrief;
+}
+
+export interface PublicQueryResponse {
+  explanation: string;
+  sections: Array<{ title: string; explanation: string; link: string }>;
+  sources: Array<{ title: string; link: string }>;
+  nextStepGuidance: string;
 }
 
 export interface QueryHistoryItem {

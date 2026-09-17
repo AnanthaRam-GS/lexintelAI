@@ -45,13 +45,13 @@ class IntegrationReadinessSmokeTests(unittest.TestCase):
         self.assertIn("credentials: 'include'", api_client)
         self.assertNotIn("Authorization", api_client)
 
-    def test_public_frontend_is_wired_to_live_public_query_api_only(self) -> None:
+    def test_public_frontend_is_wired_to_live_public_query_api_and_onboarding(self) -> None:
         query_client = (REPO_ROOT / "frontend/app/public/query-client.ts").read_text(encoding="utf-8")
         landing_page = (REPO_ROOT / "frontend/app/page.tsx").read_text(encoding="utf-8")
 
         self.assertIn("apiFetch<PublicQueryResponse>('/query/public'", query_client)
-        self.assertIn("Public PDF query is not available yet.", query_client)
-        self.assertIn("redirect('/public')", landing_page)
+        self.assertIn("publicQueryApi.submitPdf", query_client)
+        self.assertIn("redirect('/login')", landing_page)
 
 
 if __name__ == "__main__":

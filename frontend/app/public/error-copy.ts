@@ -1,4 +1,13 @@
-export type PublicAnswerFailure = 'cancelled' | 'network' | 'service';
+import { ApiClientError } from '../../lib/api';
+
+export type PublicAnswerFailure =
+  | 'cancelled'
+  | 'network'
+  | 'service'
+  | 'invalid-pdf'
+  | 'pdf-too-large'
+  | 'pdf-empty'
+  | 'model-unavailable';
 export type AdminRequestFailure = 'network' | 'service' | 'timeout';
 export type AdminFileFailure = 'corrupted' | 'processing' | 'timeout' | 'too-large' | 'unsupported';
 
@@ -21,6 +30,22 @@ export const errorCopy = {
       cancelled: {
         title: 'We stopped waiting',
         message: 'Your question is still here. Retry whenever you are ready.',
+      },
+      'invalid-pdf': {
+        title: "This PDF couldn't be read",
+        message: 'Use a standard, readable PDF and try again.',
+      },
+      'pdf-too-large': {
+        title: 'This PDF is too large',
+        message: 'Use a smaller PDF and try again.',
+      },
+      'pdf-empty': {
+        title: 'No readable text found',
+        message: 'This PDF does not appear to contain readable text.',
+      },
+      'model-unavailable': {
+        title: 'Answer service unavailable',
+        message: 'The legal answer model is temporarily unavailable. Try again later.',
       },
     } satisfies Record<PublicAnswerFailure, ErrorCopy>,
     loading: {
@@ -111,6 +136,19 @@ export function classifyRequestFailure(error: unknown): AdminRequestFailure {
 }
 
 export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure {
+  if (error instanceof ApiClientError) {
+    if (error.code === 'PDF_TOO_LARGE') return 'pdf-too-large';
+    if (
+      error.code === 'INVALID_PDF_EXTENSION' ||
+      error.code === 'INVALID_PDF_MIME_TYPE' ||
+      error.code === 'INVALID_PDF_HEADER'
+    )
+      return 'invalid-pdf';
+    if (error.code === 'PDF_PARSE_FAILED' || error.code === 'PDF_CHUNKING_FAILED')
+      return 'pdf-empty';
+    if (error.code === 'MODEL_UNAVAILABLE' || error.code === 'MODEL_PROVIDER_ERROR')
+      return 'model-unavailable';
+  }
   return classifyRequestFailure(error) === 'network' ? 'network' : 'service';
 }
 

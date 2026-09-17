@@ -20,7 +20,7 @@ from backend.app.core.security import (
     hash_password,
     verify_password,
 )
-from backend.app.db.models import EmailVerificationToken, User
+from backend.app.db.models import EmailVerificationOtp, User
 from backend.app.db.session import get_db
 from backend.app.models.auth import (
     AuthenticatedUser,
@@ -29,8 +29,10 @@ from backend.app.models.auth import (
     LoginResponse,
     RegisterRequest,
     RegistrationResponse,
+    ResendVerificationRequest,
     VerifyEmailRequest,
 )
+from backend.app.services.email_delivery import EmailDeliveryError, get_email_delivery_service
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -70,24 +72,51 @@ def token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def create_email_verification_token(db: Session, user: User, settings: Settings) -> tuple[str, EmailVerificationToken]:
-    db.query(EmailVerificationToken).filter(
-        EmailVerificationToken.user_id == user.id,
-        EmailVerificationToken.used_at.is_(None),
-    ).delete(synchronize_session=False)
-    raw_token = secrets.token_urlsafe(32)
-    row = EmailVerificationToken(
+def generate_email_otp() -> str:
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def create_email_verification_otp(db: Session, user: User, settings: Settings) -> tuple[str, EmailVerificationOtp]:
+    now = datetime.now(UTC)
+    db.query(EmailVerificationOtp).filter(
+        EmailVerificationOtp.user_id == user.id,
+        EmailVerificationOtp.consumed_at.is_(None),
+    ).update({"consumed_at": now}, synchronize_session=False)
+    raw_otp = generate_email_otp()
+    row = EmailVerificationOtp(
         user_id=user.id,
-        token_hash=token_hash(raw_token),
-        expires_at=datetime.now(UTC) + timedelta(minutes=settings.email_verification_token_minutes),
+        otp_hash=token_hash(raw_otp),
+        expires_at=now + timedelta(minutes=settings.email_otp_expiry_minutes),
+        attempts=0,
     )
     db.add(row)
     db.flush()
-    return raw_token, row
+    return raw_otp, row
 
 
-def dev_token(raw_token: str, settings: Settings) -> str | None:
-    return raw_token if settings.app_env in {"development", "test"} and settings.expose_dev_verification_tokens else None
+def dev_otp(raw_otp: str, settings: Settings) -> str | None:
+    return raw_otp if settings.app_env in {"development", "test"} and settings.expose_dev_verification_tokens else None
+
+
+def send_verification_otp(email: str, raw_otp: str, settings: Settings) -> None:
+    get_email_delivery_service(settings).send_email_verification_otp(
+        email,
+        raw_otp,
+        settings.email_otp_expiry_minutes,
+    )
+
+
+def latest_active_otp(db: Session, user: User) -> EmailVerificationOtp | None:
+    return (
+        db.query(EmailVerificationOtp)
+        .filter(EmailVerificationOtp.user_id == user.id, EmailVerificationOtp.consumed_at.is_(None))
+        .order_by(EmailVerificationOtp.created_at.desc(), EmailVerificationOtp.id.desc())
+        .first()
+    )
+
+
+def as_utc(value: datetime) -> datetime:
+    return value if value.tzinfo else value.replace(tzinfo=UTC)
 
 
 @router.post("/register", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
@@ -111,7 +140,8 @@ def register(
     db.add(user)
     try:
         db.flush()
-        raw_token, _ = create_email_verification_token(db, user, settings)
+        raw_otp, _ = create_email_verification_otp(db, user, settings)
+        send_verification_otp(user.email, raw_otp, settings)
         db.commit()
     except IntegrityError as exc:
         db.rollback()
@@ -119,11 +149,17 @@ def register(
             status_code=status.HTTP_409_CONFLICT,
             detail={"code": "EMAIL_ALREADY_REGISTERED", "message": "An account already exists for this email."},
         ) from exc
+    except EmailDeliveryError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "EMAIL_DELIVERY_FAILED", "message": "Verification email could not be sent. Try again later."},
+        ) from exc
     db.refresh(user)
     return RegistrationResponse(
         user=user_response(user),
-        message="Registration successful. Verify your email before applying for lawyer access.",
-        dev_verification_token=dev_token(raw_token, settings),
+        message="Registration successful. Enter the 6-digit code sent to your email.",
+        dev_verification_otp=dev_otp(raw_otp, settings),
     )
 
 
@@ -168,42 +204,87 @@ def login(
 
 @router.post("/verify-email", response_model=EmailVerificationResponse)
 def verify_email(request: VerifyEmailRequest, db: Session = Depends(get_db)) -> EmailVerificationResponse:
-    """Consume a single-use email verification token."""
-    row = (
-        db.query(EmailVerificationToken)
-        .filter(EmailVerificationToken.token_hash == token_hash(request.token), EmailVerificationToken.used_at.is_(None))
-        .first()
-    )
+    """Consume a single-use email verification OTP."""
     now = datetime.now(UTC)
-    if row is None or row.expires_at < now:
+    normalized_email = normalize_email(request.email)
+    validate_email_format(normalized_email)
+    if not request.otp.isdigit():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"code": "INVALID_OTP", "message": "Enter the 6-digit verification code."},
+        )
+    user = db.query(User).filter(User.email == normalized_email).first()
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"code": "INVALID_OR_EXPIRED_TOKEN", "message": "The verification link is invalid or expired."},
+            detail={"code": "INVALID_OTP", "message": "Invalid or expired verification code."},
         )
-    user = db.query(User).filter(User.id == row.user_id).first()
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"code": "INVALID_TOKEN", "message": "Invalid verification token."})
+    row = latest_active_otp(db, user)
+    if row is None or as_utc(row.expires_at) < now:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": "INVALID_OR_EXPIRED_OTP", "message": "Invalid or expired verification code."},
+        )
+    if row.attempts >= Settings().email_otp_max_attempts:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={"code": "OTP_ATTEMPTS_EXCEEDED", "message": "Too many verification attempts. Request a new code."},
+        )
+    row.attempts += 1
+    if row.otp_hash != token_hash(request.otp):
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": "INVALID_OTP", "message": "Invalid or expired verification code."},
+        )
     user.email_verified = 1
-    row.used_at = now
+    row.consumed_at = now
     db.commit()
     return EmailVerificationResponse(email_verified=True, message="Email verified successfully.")
 
 
 @router.post("/resend-verification", response_model=EmailVerificationResponse)
 def resend_verification(
+    request: ResendVerificationRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ) -> EmailVerificationResponse:
-    """Replace any active verification token for the authenticated account."""
-    if current_user.email_verified:
+    """Replace any active verification OTP for the account, subject to cooldown."""
+    normalized_email = normalize_email(request.email)
+    validate_email_format(normalized_email)
+    user = db.query(User).filter(User.email == normalized_email).first()
+    if user is None:
+        return EmailVerificationResponse(
+            email_verified=False,
+            message="If the account exists, a new verification code will be sent.",
+        )
+    if user.email_verified:
         return EmailVerificationResponse(email_verified=True, message="Email already verified.")
     settings = Settings()
-    raw_token, row = create_email_verification_token(db, current_user, settings)
-    db.commit()
+    now = datetime.now(UTC)
+    existing = latest_active_otp(db, user)
+    if (
+        existing
+        and existing.created_at
+        and (now - as_utc(existing.created_at)).total_seconds() < settings.email_otp_resend_cooldown_seconds
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={"code": "OTP_RESEND_COOLDOWN", "message": "Please wait before requesting another code."},
+        )
+    raw_otp, row = create_email_verification_otp(db, user, settings)
+    try:
+        send_verification_otp(user.email, raw_otp, settings)
+        db.commit()
+    except EmailDeliveryError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "EMAIL_DELIVERY_FAILED", "message": "Verification email could not be sent. Try again later."},
+        ) from exc
     return EmailVerificationResponse(
         email_verified=False,
-        message="Verification token refreshed. Email delivery integration is future production work.",
-        dev_verification_token=dev_token(raw_token, settings),
+        message="A new verification code has been sent.",
+        dev_verification_otp=dev_otp(raw_otp, settings),
         expires_at=row.expires_at,
     )
 
