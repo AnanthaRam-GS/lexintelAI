@@ -17,7 +17,7 @@
     "ordering_strategy": "frozen manifest order; per example LLM_ONLY then GROUNDED_RAG",
     "fallback_provider_enabled": false,
     "started_at": "2026-09-12T18:02:34.406405+00:00",
-    "completed_at": "2026-09-17T06:44:29.497198+00:00",
+    "completed_at": "2026-09-17T09:11:50.068983+00:00",
     "component_hashes": {
       "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
       "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
@@ -6285,7 +6285,7 @@
         "Gemini request failed with HTTP 503: This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
       ],
       "generation_latency_ms": null,
-      "answer_generation_ms": 30952.073,
+      "answer_generation_ms": 29432.753,
       "prompt_tokens": null,
       "completion_tokens": null,
       "total_tokens": null,

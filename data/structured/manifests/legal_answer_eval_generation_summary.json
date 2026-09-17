@@ -6,7 +6,7 @@
   "provider": "gemini",
   "configured_model": "gemini-3.6-flash",
   "started_at": "2026-09-12T18:02:34.406405+00:00",
-  "completed_at": "2026-09-17T06:44:29.497198+00:00",
+  "completed_at": "2026-09-17T09:11:50.068983+00:00",
   "planned_outputs": 60,
   "attempted_outputs": 60,
   "successful_outputs": 59,
@@ -40,6 +40,6 @@
   },
   "latency_summary_ms": {
     "sum_generation_latency": 1244095.243,
-    "sum_answer_generation_ms": 1275064.157
+    "sum_answer_generation_ms": 1273544.837
   }
 }
