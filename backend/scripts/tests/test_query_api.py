@@ -85,6 +85,46 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(response.json()["detail"]["code"], "MODEL_UNAVAILABLE")
         self.assertNotIn("api-key", str(response.json()).lower())
 
+    def test_public_query_maps_gemini_rate_limit_to_quota_safe_429(self) -> None:
+        with patch.object(
+            query_api,
+            "run_frozen_query_pipeline",
+            side_effect=query_api.QueryExecutionError(
+                "MODEL_PROVIDER_QUOTA_EXCEEDED",
+                "The legal answer provider has reached its temporary usage limit.",
+                429,
+            ),
+        ):
+            response = self.client.post("/query/public", json={"text": "Help"})
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertNotIn("api-key", str(response.json()).lower())
+        self.assertNotIn("gemini", str(response.json()).lower())
+
+    def test_ensure_successful_answer_maps_gemini_rate_limit_distinctly_from_other_provider_errors(
+        self,
+    ) -> None:
+        rate_limited = public_result()
+        rate_limited.answer = None
+        rate_limited.warnings = [
+            LegalAnswerWarning(code="GEMINI_RATE_LIMIT", message="rate limited", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(rate_limited)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(ctx.exception.status_code, 429)
+
+        other_provider_error = public_result()
+        other_provider_error.answer = None
+        other_provider_error.warnings = [
+            LegalAnswerWarning(code="GEMINI_AUTH_ERROR", message="auth failed", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(other_provider_error)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_ERROR")
+        self.assertEqual(ctx.exception.status_code, 503)
+
     def test_professional_query_requires_authentication(self) -> None:
         response = self.client.post("/query/professional", json={"text": "Research bail under BNSS"})
         self.assertEqual(response.status_code, 401)

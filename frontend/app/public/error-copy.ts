@@ -7,7 +7,8 @@ export type PublicAnswerFailure =
   | 'invalid-pdf'
   | 'pdf-too-large'
   | 'pdf-empty'
-  | 'model-unavailable';
+  | 'model-unavailable'
+  | 'model-quota-exceeded';
 export type AdminRequestFailure = 'network' | 'service' | 'timeout';
 export type AdminFileFailure = 'corrupted' | 'processing' | 'timeout' | 'too-large' | 'unsupported';
 
@@ -46,6 +47,10 @@ export const errorCopy = {
       'model-unavailable': {
         title: 'Answer service unavailable',
         message: 'The legal answer model is temporarily unavailable. Try again later.',
+      },
+      'model-quota-exceeded': {
+        title: 'Usage limit reached',
+        message: 'AI answer service has reached its temporary usage limit. Please try again later.',
       },
     } satisfies Record<PublicAnswerFailure, ErrorCopy>,
     loading: {
@@ -146,7 +151,14 @@ export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure
       return 'invalid-pdf';
     if (error.code === 'PDF_PARSE_FAILED' || error.code === 'PDF_CHUNKING_FAILED')
       return 'pdf-empty';
-    if (error.code === 'MODEL_UNAVAILABLE' || error.code === 'MODEL_PROVIDER_ERROR')
+    if (error.code === 'MODEL_PROVIDER_QUOTA_EXCEEDED' || error.status === 429)
+      return 'model-quota-exceeded';
+    if (
+      error.code === 'MODEL_UNAVAILABLE' ||
+      error.code === 'MODEL_PROVIDER_ERROR' ||
+      error.code === 'MODEL_PROVIDER_UNAVAILABLE' ||
+      error.status === 503
+    )
       return 'model-unavailable';
   }
   return classifyRequestFailure(error) === 'network' ? 'network' : 'service';

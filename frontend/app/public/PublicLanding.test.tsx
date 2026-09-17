@@ -19,7 +19,7 @@ function PendingInputStatus() {
       {pendingInput?.kind === 'text'
         ? `text:${pendingInput.content}`
         : pendingInput?.kind === 'file'
-          ? `file:${pendingInput.file.name}`
+          ? `file:${pendingInput.file.name}:${pendingInput.question}`
           : 'none'}
     </output>
   );
@@ -169,7 +169,7 @@ describe('PublicLanding', () => {
     );
   });
 
-  it('reveals a single-PDF upload and hands a valid selected file to the ask route', async () => {
+  it('selecting a PDF retains it locally without submitting or navigating', async () => {
     const user = userEvent.setup();
     const file = new File(['pdf'], 'notice.pdf', { type: 'application/pdf' });
     renderLanding();
@@ -183,7 +183,41 @@ describe('PublicLanding', () => {
 
     await user.upload(fileInput, file);
 
-    expect(screen.getByText('file:notice.pdf')).toBeInTheDocument();
+    expect(screen.getByText('notice.pdf')).toBeInTheDocument();
+    expect(screen.getByText('none')).toBeInTheDocument();
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('requires a question before a selected PDF can be sent', async () => {
+    const user = userEvent.setup();
+    const file = new File(['pdf'], 'notice.pdf', { type: 'application/pdf' });
+    renderLanding();
+
+    await user.click(screen.getByRole('button', { name: 'Upload one PDF' }));
+    const fileInput = screen.getByLabelText('Choose PDF files') as HTMLInputElement;
+    await user.upload(fileInput, file);
+
+    expect(screen.getByRole('button', { name: 'Ask your question' })).toBeDisabled();
+    expect(screen.getByText('Enter a question about this PDF.')).toBeInTheDocument();
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('bundles the attached PDF with the typed question and sends exactly one request on submit', async () => {
+    const user = userEvent.setup();
+    const file = new File(['pdf'], 'notice.pdf', { type: 'application/pdf' });
+    renderLanding();
+
+    await user.click(screen.getByRole('button', { name: 'Upload one PDF' }));
+    const fileInput = screen.getByLabelText('Choose PDF files') as HTMLInputElement;
+    await user.upload(fileInput, file);
+
+    await user.type(screen.getByLabelText('Your question'), 'What does this notice require?');
+    expect(screen.queryByText('Enter a question about this PDF.')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Ask your question' }));
+
+    expect(screen.getByText('file:notice.pdf:What does this notice require?')).toBeInTheDocument();
+    expect(router.push).toHaveBeenCalledTimes(1);
     expect(router.push).toHaveBeenCalledWith('/public/ask');
   });
 });

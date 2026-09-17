@@ -1,4 +1,5 @@
-export type PublicQueryInput = { kind: 'text'; content: string } | { kind: 'file'; file: File };
+export type PublicQueryInput =
+  { kind: 'text'; content: string } | { kind: 'file'; file: File; question: string };
 
 export interface PublicQueryResponse {
   explanation: string;

@@ -127,11 +127,15 @@ describe('fetchPublicQuery', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('sends PDF input to the public multipart endpoint', async () => {
+  it('sends PDF input plus the user-entered question to the public multipart endpoint', async () => {
     const fetchMock = mockFetch(okResponse(responseFixture()));
     const file = new File(['%PDF-1.4'], 'notice.pdf', { type: 'application/pdf' });
 
-    await fetchPublicQuery({ kind: 'file', file });
+    await fetchPublicQuery({
+      kind: 'file',
+      file,
+      question: '  What does this notice require me to do?  ',
+    });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]?.[0]).toBe('http://127.0.0.1:8000/query/public/pdf');
@@ -139,9 +143,19 @@ describe('fetchPublicQuery', () => {
     expect(request?.body).toBeInstanceOf(FormData);
     expect((request?.body as FormData).get('file')).toBe(file);
     expect((request?.body as FormData).get('query')).toBe(
-      'Explain the key legal information in this document',
+      'What does this notice require me to do?',
     );
     expect(new Headers(request?.headers).has('Content-Type')).toBe(false);
+  });
+
+  it('does not invent a question and does not send PDF queries with no question', async () => {
+    const fetchMock = mockFetch(okResponse(responseFixture()));
+    const file = new File(['%PDF-1.4'], 'notice.pdf', { type: 'application/pdf' });
+
+    await expect(fetchPublicQuery({ kind: 'file', file, question: '   ' })).rejects.toThrow(
+      'A question is required to analyze this PDF.',
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('rejects an invalid discriminant before fetch', async () => {

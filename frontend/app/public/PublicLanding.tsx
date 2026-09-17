@@ -19,6 +19,7 @@ export function PublicLanding() {
   const { setPendingInput } = usePublicSession();
   const [question, setQuestion] = useState('');
   const [isUploadVisible, setIsUploadVisible] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
 
   const submitQuestion = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,7 +29,11 @@ export function PublicLanding() {
       return;
     }
 
-    setPendingInput({ kind: 'text', content });
+    if (attachedFile) {
+      setPendingInput({ kind: 'file', file: attachedFile, question: content });
+    } else {
+      setPendingInput({ kind: 'text', content });
+    }
     router.push('/public/ask');
   };
 
@@ -43,13 +48,7 @@ export function PublicLanding() {
 
   const selectFile = (files: File[]) => {
     const [file] = files;
-
-    if (!file) {
-      return;
-    }
-
-    setPendingInput({ kind: 'file', file });
-    router.push('/public/ask');
+    setAttachedFile(file ?? null);
   };
 
   return (
@@ -98,13 +97,29 @@ export function PublicLanding() {
             Your question
           </label>
           <textarea
+            aria-describedby={
+              attachedFile && !question.trim() ? 'public-question-pdf-required' : undefined
+            }
             className="text-type-body min-h-28 w-full resize-y border-0 bg-transparent text-[var(--color-body)] outline-none placeholder:text-[var(--color-muted)] focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]"
             id="public-question"
             onChange={(event) => setQuestion(event.target.value)}
             onKeyDown={submitQuestionOnEnter}
-            placeholder="What would you like help understanding?"
+            placeholder={
+              attachedFile
+                ? 'Ask a question about this PDF…'
+                : 'What would you like help understanding?'
+            }
             value={question}
           />
+          {attachedFile && !question.trim() ? (
+            <p
+              className="text-type-label mt-2 text-[var(--color-warning-foreground)]"
+              id="public-question-pdf-required"
+              role="status"
+            >
+              Enter a question about this PDF.
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-col-reverse gap-3 border-t border-[var(--color-surface-subtle)] pt-3 sm:flex-row sm:items-center sm:justify-between">
             <button
               aria-expanded={isUploadVisible}

@@ -50,12 +50,14 @@ export interface PublicAskProps {
   onRetry?: (entry: ChatEntry) => void;
 }
 
-function activeInputLabel(activeMode: ActiveInputMode): string {
+function activeInputLabel(activeMode: ActiveInputMode, fileNeedsQuestion: boolean): string {
   switch (activeMode) {
     case 'text':
       return 'Ready to send: Written question';
     case 'file':
-      return 'Ready to send: PDF (not stored)';
+      return fileNeedsQuestion
+        ? 'Add a question about this PDF to send'
+        : 'Ready to send: PDF (not stored) + Written question';
     case 'none':
       return 'Type a question or add one PDF';
   }
@@ -154,6 +156,7 @@ export function PublicAsk({
   const timeoutCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeMode: ActiveInputMode = selectedFile ? 'file' : draft.trim() ? 'text' : 'none';
+  const fileNeedsQuestion = Boolean(selectedFile) && !draft.trim();
   const isAnyRequestPending = isRequestPending || requestStatus === 'loading';
 
   const clearRequestTimers = useCallback(() => {
@@ -350,15 +353,15 @@ export function PublicAsk({
       return;
     }
 
-    if (selectedFile) {
-      if (submitInput({ kind: 'file', file: selectedFile })) {
-        resetComposer();
-      }
+    const content = draft.trim();
+    if (!content) {
       return;
     }
 
-    const content = draft.trim();
-    if (!content) {
+    if (selectedFile) {
+      if (submitInput({ kind: 'file', file: selectedFile, question: content })) {
+        resetComposer();
+      }
       return;
     }
 
@@ -386,7 +389,7 @@ export function PublicAsk({
       return;
     }
 
-    armTextInput(event.target.value);
+    setDraft(event.target.value);
   };
 
   const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -396,7 +399,7 @@ export function PublicAsk({
 
     event.preventDefault();
 
-    if (!isAnyRequestPending && activeMode === 'text') {
+    if (!isAnyRequestPending && draft.trim()) {
       submitCurrentInput();
     }
   };
@@ -408,10 +411,6 @@ export function PublicAsk({
 
     const [file] = files;
     setSelectedFile(file ?? null);
-
-    if (file) {
-      setDraft('');
-    }
   };
 
   const clearConversation = useCallback(() => {
@@ -676,20 +675,33 @@ export function PublicAsk({
               id="public-ask-input-mode"
               role="status"
             >
-              {activeInputLabel(activeMode)}
+              {activeInputLabel(activeMode, fileNeedsQuestion)}
             </p>
           </div>
           <textarea
-            aria-describedby="public-ask-input-mode"
+            aria-describedby={
+              fileNeedsQuestion
+                ? 'public-ask-input-mode public-ask-pdf-question-required'
+                : 'public-ask-input-mode'
+            }
             className={`text-type-body mt-3 min-h-28 w-full resize-y rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-[var(--color-body)] placeholder:text-[var(--color-muted)] disabled:cursor-not-allowed disabled:bg-[var(--color-surface-subtle)] ${controlFocusClass}`}
             disabled={isAnyRequestPending}
             id="public-ask-question"
             onChange={handleQuestionChange}
             onKeyDown={handleQuestionKeyDown}
-            placeholder="Ask another question…"
+            placeholder={selectedFile ? 'Ask a question about this PDF…' : 'Ask another question…'}
             ref={textInputRef}
             value={draft}
           />
+          {fileNeedsQuestion ? (
+            <p
+              className="text-type-label mt-2 text-[var(--color-warning-foreground)]"
+              id="public-ask-pdf-question-required"
+              role="status"
+            >
+              Enter a question about this PDF.
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-col-reverse gap-3 border-t border-[var(--color-surface-subtle)] pt-3 sm:flex-row sm:items-center sm:justify-between">
             <button
               aria-controls="public-ask-pdf-upload"
@@ -703,7 +715,7 @@ export function PublicAsk({
             </button>
             <button
               className={`text-type-control inline-flex min-h-11 items-center justify-center rounded-[var(--radius-compact)] bg-[var(--color-brass)] px-5 font-semibold text-[var(--color-inverse)] transition-colors duration-[var(--motion-fast)] hover:bg-[var(--color-brass-hover)] active:bg-[var(--color-brass-active)] disabled:cursor-not-allowed disabled:opacity-60 ${controlFocusClass}`}
-              disabled={isAnyRequestPending || activeMode === 'none'}
+              disabled={isAnyRequestPending || !draft.trim()}
               type="submit"
             >
               Send
