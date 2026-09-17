@@ -44,15 +44,20 @@ class RegistrationResponse(BaseModel):
     user: AuthenticatedUser
     message: str
     email_verification_required: bool = True
-    dev_verification_token: str | None = None
+    dev_verification_otp: str | None = None
 
 
 class VerifyEmailRequest(BaseModel):
-    token: str = Field(..., min_length=16, max_length=256)
+    email: str = Field(..., min_length=3, max_length=255)
+    otp: str = Field(..., min_length=6, max_length=6)
+
+
+class ResendVerificationRequest(BaseModel):
+    email: str = Field(..., min_length=3, max_length=255)
 
 
 class EmailVerificationResponse(BaseModel):
     email_verified: bool
     message: str
-    dev_verification_token: str | None = None
+    dev_verification_otp: str | None = None
     expires_at: datetime | None = None

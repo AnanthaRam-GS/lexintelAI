@@ -153,22 +153,14 @@ async def query_professional_pdf(
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
     try:
-        safe_name = validate_pdf_upload_metadata(file)
-        max_bytes = settings.max_upload_size_mb * 1024 * 1024
-        with tempfile.TemporaryDirectory(prefix="legalai_pdf_query_") as temp_dir:
-            temp_path = Path(temp_dir) / safe_name
-            await write_upload_to_temp(file, temp_path, max_bytes=max_bytes)
-            document = parse_document(temp_path)
-            document["source_file_name"] = safe_name
-            chunks = chunk_document(document)
-            private_context = build_private_pdf_context(document, chunks, query=query)
-            result = run_frozen_query_pipeline(
-                query,
-                mode=AnswerMode.PROFESSIONAL,
-                retrieval_service=retrieval_service,
-                adapter=adapter,
-                private_document_context=private_context,
-            )
+        private_context = await private_pdf_context_from_upload(file, query=query, settings=settings)
+        result = run_frozen_query_pipeline(
+            query,
+            mode=AnswerMode.PROFESSIONAL,
+            retrieval_service=retrieval_service,
+            adapter=adapter,
+            private_document_context=private_context,
+        )
         response = professional_response_from_result(result)
         save_query_history(
             db,
@@ -194,6 +186,52 @@ async def query_professional_pdf(
         ) from exc
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
+
+
+@router.post("/public/pdf", response_model=PublicQueryResponse)
+async def query_public_pdf(
+    query: str = Form(..., min_length=1, max_length=5000),
+    file: UploadFile = File(...),
+    settings: Settings = Depends(get_settings),
+    retrieval_service=Depends(get_retrieval_service),
+    adapter=Depends(get_answer_adapter),
+) -> PublicQueryResponse:
+    try:
+        private_context = await private_pdf_context_from_upload(file, query=query, settings=settings)
+        result = run_frozen_query_pipeline(
+            query,
+            mode=AnswerMode.PUBLIC,
+            retrieval_service=retrieval_service,
+            adapter=adapter,
+            private_document_context=private_context,
+        )
+        return public_response_from_result(result)
+    except HTTPException:
+        raise
+    except DocumentParsingError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"code": "PDF_PARSE_FAILED", "message": str(exc)},
+        ) from exc
+    except DocumentChunkingError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"code": "PDF_CHUNKING_FAILED", "message": str(exc)},
+        ) from exc
+    except QueryExecutionError as exc:
+        raise http_error(exc) from exc
+
+
+async def private_pdf_context_from_upload(file: UploadFile, *, query: str, settings: Settings) -> str:
+    safe_name = validate_pdf_upload_metadata(file)
+    max_bytes = settings.max_upload_size_mb * 1024 * 1024
+    with tempfile.TemporaryDirectory(prefix="legalai_pdf_query_") as temp_dir:
+        temp_path = Path(temp_dir) / safe_name
+        await write_upload_to_temp(file, temp_path, max_bytes=max_bytes)
+        document = parse_document(temp_path)
+        document["source_file_name"] = safe_name
+        chunks = chunk_document(document)
+        return build_private_pdf_context(document, chunks, query=query)
 
 
 def http_error(exc: QueryExecutionError) -> HTTPException:

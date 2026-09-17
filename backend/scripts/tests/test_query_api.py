@@ -136,6 +136,7 @@ class QueryApiTests(unittest.TestCase):
     def test_query_routes_are_registered(self) -> None:
         routes = {route.path for route in app.routes}
         self.assertIn("/query/public", routes)
+        self.assertIn("/query/public/pdf", routes)
         self.assertIn("/query/professional", routes)
         self.assertIn("/query/professional/pdf", routes)
 
@@ -202,9 +203,45 @@ class QueryApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_public_pdf_endpoint_is_not_exposed(self) -> None:
-        response = self.client.post("/query/public/pdf", data={"query": "Help"}, files=pdf_upload())
-        self.assertEqual(response.status_code, 404)
+    def test_public_pdf_accepts_anonymous_upload_and_does_not_save_history(self) -> None:
+        parsed = parsed_document(text="PUBLIC PDF BODY " * 20)
+        chunks = private_chunks("PUBLIC PDF BODY relevant arrest material")
+        seen_paths: list[Path] = []
+
+        def capture_path(path: Path):
+            captured = Path(path)
+            self.assertTrue(captured.exists())
+            seen_paths.append(captured)
+            return parsed
+
+        with patch.object(query_api, "parse_document", side_effect=capture_path) as parser, patch.object(
+            query_api, "chunk_document", return_value=chunks
+        ) as chunker, patch.object(query_api, "run_frozen_query_pipeline", return_value=public_result()) as pipeline, patch.object(
+            query_api, "save_query_history"
+        ) as save_history, patch(
+            "backend.app.services.ingestion.create_ingestion_job"
+        ) as create_job, patch(
+            "backend.app.services.vector_store.ChromaVectorStore.upsert_chunks"
+        ) as upsert:
+            response = self.client.post(
+                "/query/public/pdf",
+                data={"query": "Explain this notice"},
+                files=pdf_upload(filename="../public notice.pdf"),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        parser.assert_called_once()
+        chunker.assert_called_once_with(parsed)
+        pipeline.assert_called_once()
+        self.assertEqual(pipeline.call_args.kwargs["mode"], AnswerMode.PUBLIC)
+        private_context = pipeline.call_args.kwargs["private_document_context"]
+        self.assertIn("public_notice.pdf", private_context)
+        self.assertIn("PUBLIC PDF BODY", private_context)
+        self.assertTrue(seen_paths)
+        self.assertFalse(seen_paths[-1].exists())
+        save_history.assert_not_called()
+        create_job.assert_not_called()
+        upsert.assert_not_called()
 
     def test_professional_pdf_validates_extension_mime_header_and_size(self) -> None:
         app.dependency_overrides[get_db] = lambda: Mock()

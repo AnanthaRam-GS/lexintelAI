@@ -15,6 +15,7 @@ import type {
   OffenseFrequencyPoint,
   OutcomeDistributionPoint,
   ProfessionalQueryResponse,
+  PublicQueryResponse,
   QueryHistoryItem,
   RegistrationResponse,
   EmailVerificationResponse,
@@ -74,15 +75,18 @@ export const authApi = {
     return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
   },
 
-  verifyEmail(token: string): Promise<EmailVerificationResponse> {
+  verifyEmail(email: string, otp: string): Promise<EmailVerificationResponse> {
     return apiFetch<EmailVerificationResponse>('/auth/verify-email', {
       method: 'POST',
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ email, otp }),
     });
   },
 
-  resendVerification(): Promise<EmailVerificationResponse> {
-    return apiFetch<EmailVerificationResponse>('/auth/resend-verification', { method: 'POST' });
+  resendVerification(email: string): Promise<EmailVerificationResponse> {
+    return apiFetch<EmailVerificationResponse>('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
   },
 };
 
@@ -161,6 +165,18 @@ export const queryApi = {
       body.append('session_id', sessionId);
     }
     return apiFetch<ProfessionalQueryResponse>('/query/professional/pdf', {
+      method: 'POST',
+      body,
+    });
+  },
+};
+
+export const publicQueryApi = {
+  submitPdf(file: File, query: string): Promise<PublicQueryResponse> {
+    const body = new FormData();
+    body.append('query', query);
+    body.append('file', file);
+    return apiFetch<PublicQueryResponse>('/query/public/pdf', {
       method: 'POST',
       body,
     });

@@ -158,6 +158,11 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    email_verification_otps = relationship(
+        "EmailVerificationOtp",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
     lawyer_applications = relationship(
         "LawyerVerificationApplication",
         back_populates="user",
@@ -182,6 +187,25 @@ class EmailVerificationToken(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     user = relationship("User", back_populates="email_verification_tokens")
+
+
+class EmailVerificationOtp(Base):
+    """Single-use numeric email OTP metadata with hashed OTP storage."""
+
+    __tablename__ = "email_verification_otps"
+    __table_args__ = (
+        Index("ix_email_verification_otps_user_active", "user_id", "consumed_at"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    otp_hash = Column(String(64), nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    attempts = Column(Integer, nullable=False, default=0, server_default="0")
+    consumed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+
+    user = relationship("User", back_populates="email_verification_otps")
 
 
 class LawyerVerificationApplication(Base):

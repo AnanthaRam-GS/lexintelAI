@@ -6,6 +6,8 @@ import secrets
 import unittest
 from pathlib import Path
 import sys
+from datetime import UTC, datetime, timedelta
+from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
 
@@ -13,8 +15,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from backend.app.db.models import EmailVerificationToken, LawyerVerificationApplication, User
+from backend.app.core.config import Settings
+from backend.app.db.models import EmailVerificationOtp, LawyerVerificationApplication, User
 from backend.app.db.session import SessionLocal
+from backend.app.services.email_delivery import EmailDeliveryError, EmailDeliveryService
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
 
@@ -61,15 +65,20 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
         weak = dict(payload, email=f"weak-{self.email}", password="short")
         self.assertEqual(self.client.post("/auth/register", json=weak).status_code, 422)
 
-    def test_email_verification_token_is_hashed_single_use(self) -> None:
-        self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
+    def test_email_verification_otp_is_hashed_single_use(self) -> None:
+        with patch("backend.app.api.auth.generate_email_otp", return_value="123456"), patch(
+            "backend.app.api.auth.send_verification_otp"
+        ) as send_otp:
+            self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
+        send_otp.assert_called_once()
         db = SessionLocal()
         try:
             user = db.query(User).filter(User.email == self.email).one()
-            token_row = db.query(EmailVerificationToken).filter(EmailVerificationToken.user_id == user.id).one()
-            self.assertEqual(len(token_row.token_hash), 64)
-            self.assertNotIn(self.email, token_row.token_hash)
-            token_row.used_at = token_row.expires_at
+            otp_row = db.query(EmailVerificationOtp).filter(EmailVerificationOtp.user_id == user.id).one()
+            self.assertEqual(len(otp_row.otp_hash), 64)
+            self.assertNotIn(self.email, otp_row.otp_hash)
+            self.assertNotEqual(otp_row.otp_hash, "123456")
+            otp_row.consumed_at = otp_row.expires_at
             user.email_verified = 1
             db.commit()
         finally:
@@ -78,6 +87,112 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
         login = self.client.post("/auth/login", json={"email": self.email, "password": "Password123!"})
         self.assertEqual(login.status_code, 200)
         self.assertTrue(login.json()["user"]["email_verified"])
+
+    def test_correct_otp_verifies_without_role_escalation_and_reuse_fails(self) -> None:
+        with patch("backend.app.api.auth.generate_email_otp", return_value="123456"), patch("backend.app.api.auth.send_verification_otp"):
+            self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
+        verified = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "123456"})
+        self.assertEqual(verified.status_code, 200)
+        reused = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "123456"})
+        self.assertEqual(reused.status_code, 400)
+
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == self.email).one()
+            self.assertEqual(user.role, "public")
+            self.assertEqual(user.email_verified, 1)
+        finally:
+            db.close()
+
+    def test_wrong_expired_and_attempt_limited_otp_are_rejected(self) -> None:
+        with patch("backend.app.api.auth.generate_email_otp", return_value="123456"), patch("backend.app.api.auth.send_verification_otp"):
+            self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
+        wrong = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "000000"})
+        self.assertEqual(wrong.status_code, 400)
+
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == self.email).one()
+            otp_row = db.query(EmailVerificationOtp).filter(EmailVerificationOtp.user_id == user.id).one()
+            otp_row.attempts = 5
+            db.commit()
+        finally:
+            db.close()
+        limited = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "123456"})
+        self.assertEqual(limited.status_code, 429)
+
+        expired_email = f"expired-{self.email}"
+        with patch("backend.app.api.auth.generate_email_otp", return_value="654321"), patch("backend.app.api.auth.send_verification_otp"):
+            self.client.post("/auth/register", json={"full_name": "Expired", "email": expired_email, "password": "Password123!"})
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == expired_email).one()
+            otp_row = db.query(EmailVerificationOtp).filter(EmailVerificationOtp.user_id == user.id).one()
+            otp_row.expires_at = datetime.now(UTC) - timedelta(minutes=1)
+            db.commit()
+        finally:
+            db.close()
+        expired = self.client.post("/auth/verify-email", json={"email": expired_email, "otp": "654321"})
+        self.assertEqual(expired.status_code, 400)
+
+    def test_resend_invalidates_previous_otp_and_enforces_cooldown(self) -> None:
+        with patch("backend.app.api.auth.generate_email_otp", return_value="111111"), patch("backend.app.api.auth.send_verification_otp"):
+            self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
+        cooldown = self.client.post("/auth/resend-verification", json={"email": self.email})
+        self.assertEqual(cooldown.status_code, 429)
+
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == self.email).one()
+            first = db.query(EmailVerificationOtp).filter(EmailVerificationOtp.user_id == user.id).one()
+            first.created_at = datetime.now(UTC) - timedelta(minutes=2)
+            db.commit()
+        finally:
+            db.close()
+        with patch("backend.app.api.auth.generate_email_otp", return_value="222222"), patch("backend.app.api.auth.send_verification_otp") as send_otp:
+            resent = self.client.post("/auth/resend-verification", json={"email": self.email})
+        self.assertEqual(resent.status_code, 200)
+        send_otp.assert_called_once()
+        old = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "111111"})
+        self.assertEqual(old.status_code, 400)
+        new = self.client.post("/auth/verify-email", json={"email": self.email, "otp": "222222"})
+        self.assertEqual(new.status_code, 200)
+
+    def test_smtp_delivery_is_mockable_and_does_not_require_real_email(self) -> None:
+        settings = Settings(
+            email_delivery_mode="smtp",
+            smtp_host="smtp.example.test",
+            smtp_port=2525,
+            smtp_from_email="noreply@example.test",
+            smtp_username="smtp-user",
+            smtp_password="smtp-pass",
+            smtp_use_tls=True,
+        )
+        smtp_client = Mock()
+        smtp_context = Mock()
+        smtp_context.__enter__ = Mock(return_value=smtp_client)
+        smtp_context.__exit__ = Mock(return_value=False)
+
+        with patch("backend.app.services.email_delivery.smtplib.SMTP", return_value=smtp_context) as smtp:
+            EmailDeliveryService(settings).send_email_verification_otp(self.email, "123456", 10)
+
+        smtp.assert_called_once_with("smtp.example.test", 2525, timeout=15)
+        smtp_client.starttls.assert_called_once()
+        smtp_client.login.assert_called_once_with("smtp-user", "smtp-pass")
+        smtp_client.send_message.assert_called_once()
+        message = smtp_client.send_message.call_args.args[0]
+        self.assertEqual(message["To"], self.email)
+        self.assertIn("123456", message.get_content())
+
+    def test_email_delivery_rejects_unsafe_or_broken_modes(self) -> None:
+        with self.assertRaises(EmailDeliveryError):
+            EmailDeliveryService(Settings(app_env="production", email_delivery_mode="console")).send_email_verification_otp(
+                self.email, "123456", 10
+            )
+        with self.assertRaises(EmailDeliveryError):
+            EmailDeliveryService(Settings(email_delivery_mode="smtp", smtp_host="", smtp_from_email="")).send_email_verification_otp(
+                self.email, "123456", 10
+            )
 
     def test_public_and_pending_applicant_are_denied_professional_until_admin_approval(self) -> None:
         public_client = self.register_login_and_verify()

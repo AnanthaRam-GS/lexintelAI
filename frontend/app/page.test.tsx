@@ -7,12 +7,12 @@ const { redirect } = vi.hoisted(() => ({
 vi.mock('next/navigation', () => ({ redirect }));
 
 describe('Home', () => {
-  it('opens the public product instead of the component preview', async () => {
+  it('opens the login onboarding entry instead of the component preview', async () => {
     const { default: Home } = await import('./page');
 
     Home();
 
-    expect(redirect).toHaveBeenCalledWith('/public');
+    expect(redirect).toHaveBeenCalledWith('/login');
     expect(redirect).not.toHaveBeenCalledWith('/dev/component-preview');
   });
 });

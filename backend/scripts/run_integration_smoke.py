@@ -49,6 +49,7 @@ EXPECTED_ROUTES: dict[str, set[str]] = {
     "/analytics/ncrb": {"GET"},
     "/analytics/ncrb-stats": {"GET"},
     "/query/public": {"POST"},
+    "/query/public/pdf": {"POST"},
     "/query/professional": {"POST"},
     "/query/professional/pdf": {"POST"},
     "/query/history": {"GET"},

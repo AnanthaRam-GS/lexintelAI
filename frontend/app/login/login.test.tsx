@@ -38,9 +38,13 @@ describe('LoginPage', () => {
         .fn()
         .mockResolvedValueOnce(jsonResponse({}, 401))
         .mockResolvedValueOnce(
-          jsonResponse({ user: { id: 1, email: 'admin@example.test', role: 'admin' } }),
+          jsonResponse({
+            user: { id: 1, email: 'admin@example.test', role: 'admin', email_verified: true },
+          }),
         )
-        .mockResolvedValueOnce(jsonResponse({ id: 1, email: 'admin@example.test', role: 'admin' })),
+        .mockResolvedValueOnce(
+          jsonResponse({ id: 1, email: 'admin@example.test', role: 'admin', email_verified: true }),
+        ),
     );
 
     render(<LoginPage />);
@@ -75,10 +79,17 @@ describe('LoginPage', () => {
         .fn()
         .mockResolvedValueOnce(jsonResponse({}, 401))
         .mockResolvedValueOnce(
-          jsonResponse({ user: { id: 2, email: 'lawyer@example.test', role: 'lawyer' } }),
+          jsonResponse({
+            user: { id: 2, email: 'lawyer@example.test', role: 'lawyer', email_verified: true },
+          }),
         )
         .mockResolvedValueOnce(
-          jsonResponse({ id: 2, email: 'lawyer@example.test', role: 'lawyer' }),
+          jsonResponse({
+            id: 2,
+            email: 'lawyer@example.test',
+            role: 'lawyer',
+            email_verified: true,
+          }),
         ),
     );
 

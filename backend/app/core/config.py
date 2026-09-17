@@ -63,7 +63,17 @@ class Settings(BaseSettings):
     max_query_length: int = 5000
     verification_document_dir: str = "./data/private/lawyer_verification"
     email_verification_token_minutes: int = 1440
+    email_otp_expiry_minutes: int = 10
+    email_otp_resend_cooldown_seconds: int = 60
+    email_otp_max_attempts: int = 5
     expose_dev_verification_tokens: bool = False
+    email_delivery_mode: str = "console"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = ""
+    smtp_use_tls: bool = True
 
     model_config = SettingsConfigDict(
         env_file=".env",

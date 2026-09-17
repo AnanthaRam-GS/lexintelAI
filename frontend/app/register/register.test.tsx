@@ -18,13 +18,9 @@ describe('RegisterPage', () => {
     replace.mockReset();
   });
 
-  it('creates a public account without sending a role and navigates to lawyer apply when chosen', async () => {
+  it('creates a public account without sending a role and navigates to OTP verification', async () => {
     const register = vi.spyOn(authApi, 'register').mockResolvedValue({
       email_verification_required: true,
-      message: 'ok',
-      user: { id: 1, email: 'public@example.test', role: 'public' },
-    });
-    vi.spyOn(authApi, 'login').mockResolvedValue({
       message: 'ok',
       user: { id: 1, email: 'public@example.test', role: 'public' },
     });
@@ -39,7 +35,11 @@ describe('RegisterPage', () => {
     await user.click(screen.getByLabelText(/take me to lawyer verification/i));
     await user.click(screen.getByRole('button', { name: 'Create public account' }));
 
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/lawyer/apply'));
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        '/verify-email?email=public%40example.test&next=%2Flawyer%2Fapply',
+      ),
+    );
     expect(register).toHaveBeenCalledWith('Public User', 'public@example.test', 'Password123!');
     expect(JSON.stringify(register.mock.calls)).not.toContain('lawyer');
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
