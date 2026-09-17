@@ -389,6 +389,12 @@ def ensure_successful_answer(result: LegalAnswerResult) -> None:
         raise QueryExecutionError("INSUFFICIENT_RETRIEVED_AUTHORITY", "Retrieved legal authority is insufficient for a grounded answer.", status.HTTP_424_FAILED_DEPENDENCY)
     if "MODEL_UNAVAILABLE" in codes:
         raise QueryExecutionError("MODEL_UNAVAILABLE", "The legal answer model is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
+    if "GEMINI_RATE_LIMIT" in codes:
+        raise QueryExecutionError(
+            "MODEL_PROVIDER_QUOTA_EXCEEDED",
+            "The legal answer provider has reached its temporary usage limit.",
+            status.HTTP_429_TOO_MANY_REQUESTS,
+        )
     if any(code.startswith("GEMINI_") or code.endswith("_PROVIDER_ERROR") for code in codes):
         raise QueryExecutionError("MODEL_PROVIDER_ERROR", "The legal answer provider is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
     if "MODEL_OUTPUT_VALIDATION_FAILED" in codes:

@@ -18,8 +18,11 @@ export async function fetchPublicQuery(
   assertPublicQueryInput(input);
 
   if (input.kind === 'file') {
-    const query = 'Explain the key legal information in this document';
-    return publicQueryApi.submitPdf(input.file, query);
+    const question = input.question.trim();
+    if (!question) {
+      throw new Error('A question is required to analyze this PDF.');
+    }
+    return publicQueryApi.submitPdf(input.file, question, options.signal);
   }
 
   const text = input.content.trim();

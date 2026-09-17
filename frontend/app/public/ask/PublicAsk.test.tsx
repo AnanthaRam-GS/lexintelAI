@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ApiClientError } from '../../../lib/api';
 import { PublicSessionProvider, usePublicSession } from '../PublicSessionProvider';
 import type { PublicQueryInput, PublicQueryResponse } from '../query-client';
 
@@ -340,6 +341,7 @@ describe('PublicAsk', () => {
     renderAsk();
 
     const { file } = await selectPdf(user);
+    await user.type(screen.getByLabelText('Your question'), 'What does this notice ask me to do?');
     await user.click(screen.getByRole('button', { name: 'Send' }));
 
     expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
@@ -347,6 +349,7 @@ describe('PublicAsk', () => {
     expect(submittedInput?.kind).toBe('file');
     if (submittedInput?.kind === 'file') {
       expect(submittedInput.file).toBe(file);
+      expect(submittedInput.question).toBe('What does this notice ask me to do?');
     }
     expect(
       await screen.findByRole('article', { name: 'Plain-language legal information' }),
@@ -387,6 +390,48 @@ describe('PublicAsk', () => {
     expect(alert).toHaveTextContent('Check your connection');
     expect(alert).toHaveTextContent('Reconnect, then try your question again.');
     expect(alert).not.toHaveTextContent('private-host');
+  });
+
+  it('maps a 429 provider quota failure to a usage-limit-safe message', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockRejectedValueOnce(
+      new ApiClientError(
+        'Gemini request failed with HTTP 429: quota exceeded for project abc123',
+        429,
+        'MODEL_PROVIDER_QUOTA_EXCEEDED',
+      ),
+    );
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Usage limit reached');
+    expect(alert).toHaveTextContent(
+      'AI answer service has reached its temporary usage limit. Please try again later.',
+    );
+    expect(alert).not.toHaveTextContent('abc123');
+    expect(alert).not.toHaveTextContent('Gemini');
+  });
+
+  it('maps a 503 provider-unavailable failure to the answer-service-unavailable message', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockRejectedValueOnce(
+      new ApiClientError(
+        'The legal answer provider is temporarily unavailable.',
+        503,
+        'MODEL_PROVIDER_ERROR',
+      ),
+    );
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Answer service unavailable');
+    expect(alert).toHaveTextContent(
+      'The legal answer model is temporarily unavailable. Try again later.',
+    );
   });
 
   it('changes from fast to slow and then offers keep-waiting or cancel controls', async () => {
@@ -488,6 +533,7 @@ describe('PublicAsk', () => {
     renderAsk();
 
     const { file } = await selectPdf(user);
+    await user.type(screen.getByLabelText('Your question'), 'What does this notice ask me to do?');
     await user.click(screen.getByRole('button', { name: 'Send' }));
     await screen.findByRole('alert');
     await user.click(screen.getByRole('button', { name: 'Retry' }));
@@ -496,6 +542,7 @@ describe('PublicAsk', () => {
     expect(retriedInput?.kind).toBe('file');
     if (retriedInput?.kind === 'file') {
       expect(retriedInput.file).toBe(file);
+      expect(retriedInput.question).toBe('What does this notice ask me to do?');
     }
     expect(screen.getAllByRole('article', { name: 'Temporary PDF: notice.pdf' })).toHaveLength(1);
 
@@ -566,7 +613,7 @@ describe('PublicAsk', () => {
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
 
-  it('makes text and PDF visibly alternative modes', async () => {
+  it('keeps a typed question attached to a PDF added afterward', async () => {
     const user = userEvent.setup();
     renderAsk();
 
@@ -575,21 +622,47 @@ describe('PublicAsk', () => {
 
     await selectPdf(user);
 
-    expect(screen.getByLabelText('Your question')).toHaveValue('');
-    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
+    expect(screen.getByLabelText('Your question')).toHaveValue('Help me understand this');
+    expect(screen.getByText('notice.pdf')).toBeVisible();
+    expect(screen.getByText('Ready to send: PDF (not stored) + Written question')).toBeVisible();
   });
 
-  it('clears and remounts the selected PDF when a person starts typing', async () => {
+  it('keeps the selected PDF attached while a person types the required question', async () => {
     const user = userEvent.setup();
     renderAsk();
 
     const { input: firstUploadInput } = await selectPdf(user);
+    expect(screen.getByText('Add a question about this PDF to send')).toBeVisible();
+
     await user.type(screen.getByLabelText('Your question'), 'Explain this notice');
 
-    const replacementUploadInput = screen.getByLabelText('Choose PDF files');
-    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
+    expect(screen.getByLabelText('Choose PDF files')).toBe(firstUploadInput);
+    expect(screen.getByText('notice.pdf')).toBeVisible();
+    expect(screen.getByText('Ready to send: PDF (not stored) + Written question')).toBeVisible();
+    expect(screen.queryByText('Enter a question about this PDF.')).not.toBeInTheDocument();
+  });
+
+  it('lets a person remove an attached PDF without submitting or losing the typed question', async () => {
+    const user = userEvent.setup();
+    const submitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>();
+    renderAsk({ onInputSubmitted: submitted });
+
+    await selectPdf(user);
+    await user.type(screen.getByLabelText('Your question'), 'Explain this notice');
+
+    await user.click(screen.getByRole('button', { name: 'Remove notice.pdf' }));
+
     expect(screen.queryByText('notice.pdf')).not.toBeInTheDocument();
-    expect(replacementUploadInput).not.toBe(firstUploadInput);
+    expect(screen.getByLabelText('Your question')).toHaveValue('Explain this notice');
+    expect(screen.getByText('Ready to send: Written question')).toBeVisible();
+    expect(fetchPublicQuery).not.toHaveBeenCalled();
+    expect(submitted).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(submitted).toHaveBeenCalledTimes(1);
+    const submittedInput = submitted.mock.calls[0]?.[0];
+    expect(submittedInput).toEqual({ kind: 'text', content: 'Explain this notice' });
   });
 
   it('switches a selected PDF to text when an empty-state example is chosen', async () => {
@@ -631,7 +704,7 @@ describe('PublicAsk', () => {
     await user.keyboard('{Enter}');
 
     expect(question).toHaveValue('');
-    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
+    expect(screen.getByText('Add a question about this PDF to send')).toBeVisible();
     expect(screen.getByText('notice.pdf')).toBeVisible();
     expect(onInputSubmitted).not.toHaveBeenCalled();
   });
@@ -678,6 +751,7 @@ describe('PublicAsk', () => {
     renderAsk({ onInputSubmitted: submitted });
 
     const { file } = await selectPdf(user);
+    await user.type(screen.getByLabelText('Your question'), 'What does this notice ask me to do?');
     await user.click(screen.getByRole('button', { name: 'Send' }));
 
     expect(screen.getByRole('article', { name: 'Temporary PDF: notice.pdf' })).toBeVisible();
@@ -687,7 +761,21 @@ describe('PublicAsk', () => {
     expect(submittedInput?.kind).toBe('file');
     if (submittedInput?.kind === 'file') {
       expect(submittedInput.file).toBe(file);
+      expect(submittedInput.question).toBe('What does this notice ask me to do?');
     }
+  });
+
+  it('does not submit a selected PDF without a question', async () => {
+    const user = userEvent.setup();
+    const submitted = vi.fn<(input: PublicQueryInput, entry: ChatEntry) => void>();
+    renderAsk({ onInputSubmitted: submitted });
+
+    await selectPdf(user);
+
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
+    expect(screen.getByText('Enter a question about this PDF.')).toBeVisible();
+    expect(fetchPublicQuery).not.toHaveBeenCalled();
+    expect(submitted).not.toHaveBeenCalled();
   });
 
   it('contains a submitted PDF with a long filename inside the conversation grid', async () => {
@@ -696,6 +784,7 @@ describe('PublicAsk', () => {
     renderAsk();
 
     await selectPdf(user, fileName);
+    await user.type(screen.getByLabelText('Your question'), 'Explain this document');
     await user.click(screen.getByRole('button', { name: 'Send' }));
 
     const message = screen.getByRole('article', { name: `Temporary PDF: ${fileName}` });
@@ -754,7 +843,9 @@ describe('PublicAsk', () => {
 
     render(
       <PublicSessionProvider>
-        <SessionSeed input={{ kind: 'file', file }} />
+        <SessionSeed
+          input={{ kind: 'file', file, question: 'What does this notice ask me to do?' }}
+        />
         <PublicAsk onInputSubmitted={submitted} />
       </PublicSessionProvider>,
     );
@@ -767,6 +858,7 @@ describe('PublicAsk', () => {
     expect(submittedInput?.kind).toBe('file');
     if (submittedInput?.kind === 'file') {
       expect(submittedInput.file).toBe(file);
+      expect(submittedInput.question).toBe('What does this notice ask me to do?');
     }
   });
 
@@ -873,7 +965,7 @@ describe('PublicAsk', () => {
     await submitText(user, 'First question');
     expect(await screen.findByRole('alert')).toBeVisible();
     await selectPdf(user);
-    expect(screen.getByText('Ready to send: PDF (not stored)')).toBeVisible();
+    expect(screen.getByText('Add a question about this PDF to send')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Start New Conversation' }));
     await user.click(screen.getByRole('button', { name: 'Start fresh' }));

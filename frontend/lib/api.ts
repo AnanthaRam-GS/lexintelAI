@@ -172,13 +172,14 @@ export const queryApi = {
 };
 
 export const publicQueryApi = {
-  submitPdf(file: File, query: string): Promise<PublicQueryResponse> {
+  submitPdf(file: File, query: string, signal?: AbortSignal): Promise<PublicQueryResponse> {
     const body = new FormData();
     body.append('query', query);
     body.append('file', file);
     return apiFetch<PublicQueryResponse>('/query/public/pdf', {
       method: 'POST',
       body,
+      signal,
     });
   },
 };
