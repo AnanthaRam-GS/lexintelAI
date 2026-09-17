@@ -75,7 +75,15 @@ class GroqAnswerAdapter:
                 "type": "json_schema",
                 "json_schema": {
                     "name": "legal_answer",
-                    "strict": True,
+                    # Non-strict: GroundedCitation.source_metadata is an intentionally
+                    # open-ended dict[str, Any] (it mirrors whatever fields the
+                    # retrieval evidence packet supplies). OpenAI/Groq's strict mode
+                    # requires additionalProperties:false on every object subschema,
+                    # which cannot be satisfied for a genuinely free-form dict without
+                    # closing it to always-empty. Non-strict still guides the model
+                    # with the full schema (matching Gemini's own leniency here) and
+                    # the response is still validated server-side by parse_model_payload.
+                    "strict": False,
                     "schema": groq_payload_schema(schema),
                 },
             },
@@ -128,7 +136,12 @@ class GroqAnswerAdapter:
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
+                "Accept": "application/json",
                 "Authorization": f"Bearer {self.settings.groq_api_key}",
+                # Groq's API is fronted by Cloudflare, which blocks requests that
+                # omit a User-Agent as automated/bot traffic (HTTP 403, Cloudflare
+                # error 1010) before they ever reach Groq's own auth layer.
+                "User-Agent": "legalai-backend/1.0",
             },
             method="POST",
         )
@@ -172,6 +185,12 @@ def extract_groq_text(body: dict[str, Any]) -> str:
 def http_error_code(exc: urllib.error.HTTPError) -> str:
     if exc.code == 429:
         return "GROQ_RATE_LIMIT"
+    if exc.code == 413:
+        # Groq also reports "tokens per minute" tier limits this way when a
+        # single request's prompt is larger than the account's TPM allowance
+        # (distinct from the request-count 429 rate limit above) - this is not
+        # transient and retrying the same prompt will not help.
+        return "GROQ_REQUEST_TOO_LARGE"
     if exc.code in {401, 403}:
         return "GROQ_AUTH_ERROR"
     if 500 <= exc.code <= 599:

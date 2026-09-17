@@ -26,6 +26,20 @@ class Settings(BaseSettings):
     groq_model: str = ""
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
+    # Application-level context budget for a single generative call, deliberately
+    # independent of any provider's advertised maximum context window. A model
+    # (or an account's rate-limited tier) may accept far less than its nominal
+    # context in practice; these settings bound what LegalAI will ever attempt to
+    # send, and are checked before invoking the provider, not just relied upon
+    # via the provider's own rejection. See docs/PRIVATE_PDF_CONTEXT_BUDGETING.md.
+    legalai_llm_context_tokens: int = 40000
+    legalai_llm_reserved_output_tokens: int = 6000
+    legalai_llm_context_safety_margin_tokens: int = 4000
+    private_pdf_input_budget_tokens: int = 18000
+    trusted_evidence_input_budget_tokens: int = 10000
+    private_pdf_top_k: int = 10
+    private_pdf_max_chunks_per_batch: int = 8
+
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral"
 

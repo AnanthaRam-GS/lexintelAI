@@ -91,12 +91,18 @@ class Bm25IngestionUpdateTests(unittest.TestCase):
         self.assertEqual(make_service.call_count, 2)
 
     def test_professional_pdf_flow_does_not_call_bm25_mutation(self) -> None:
+        from backend.app.services.private_pdf_rag import (
+            build_private_chunks,
+            render_private_evidence_block,
+            select_query_focused_private_evidence,
+        )
+
         with patch.object(ingestion, "update_trusted_bm25_index") as update_bm25:
-            context = query_api.build_private_pdf_context(
-                {"source_file_name": "upload.pdf"},
-                [{"chunk_id": "private-1", "text": "private facts", "page_start": 1, "page_end": 1}],
-                query="private facts",
+            chunks = build_private_chunks([{"text": "private facts", "page_start": 1, "page_end": 1}])
+            selected = select_query_focused_private_evidence(
+                chunks, "private facts", dense_provider=None, top_k=10, token_budget_tokens=1000
             )
+            context = render_private_evidence_block(selected, filename="upload.pdf")
         self.assertIn("private facts", context)
         update_bm25.assert_not_called()
 

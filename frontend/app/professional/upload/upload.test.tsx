@@ -51,9 +51,40 @@ describe('Professional Upload Page', () => {
     fireEvent.click(screen.getByRole('button', { name: /Begin Private Analysis/i }));
 
     await waitFor(() => {
-      expect(submitPdfSpy).toHaveBeenCalledWith(file);
+      expect(submitPdfSpy).toHaveBeenCalledWith(file, undefined, undefined, 'brief');
       expect(screen.getByTestId('professional-results-view')).toBeInTheDocument();
       expect(screen.getByText('1. Executive Summary')).toBeInTheDocument();
     });
+  });
+
+  it('shows a neutral processing state without exposing internal chunk/batch details', async () => {
+    let resolveSubmit: (value: typeof mockProfessionalQueryResponse) => void = () => {};
+    vi.spyOn(queryApi, 'submitPdf').mockReturnValue(
+      new Promise((resolve) => {
+        resolveSubmit = resolve;
+      }),
+    );
+
+    render(<ProfessionalUploadPage />);
+
+    const file = new File(['%PDF-1.4 test case file'], 'bail_appeal_brief.pdf', {
+      type: 'application/pdf',
+    });
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Begin Private Analysis/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Begin Private Analysis/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Analyzing document in stages...')).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/batch/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/chunk/i)).not.toBeInTheDocument();
+
+    resolveSubmit(mockProfessionalQueryResponse);
   });
 });
