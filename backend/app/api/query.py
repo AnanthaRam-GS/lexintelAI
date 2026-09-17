@@ -401,6 +401,12 @@ def ensure_successful_answer(result: LegalAnswerResult) -> None:
             "The legal answer provider has reached its temporary usage limit.",
             status.HTTP_429_TOO_MANY_REQUESTS,
         )
+    if any(code.endswith("_REQUEST_TOO_LARGE") for code in codes):
+        raise QueryExecutionError(
+            "MODEL_PROVIDER_REQUEST_TOO_LARGE",
+            "The document or retrieved context is too large for the configured answer provider. Try a shorter document or question.",
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        )
     if any(code.endswith("_AUTH_ERROR") for code in codes):
         raise QueryExecutionError(
             "MODEL_PROVIDER_AUTH_ERROR",

@@ -185,6 +185,12 @@ def extract_groq_text(body: dict[str, Any]) -> str:
 def http_error_code(exc: urllib.error.HTTPError) -> str:
     if exc.code == 429:
         return "GROQ_RATE_LIMIT"
+    if exc.code == 413:
+        # Groq also reports "tokens per minute" tier limits this way when a
+        # single request's prompt is larger than the account's TPM allowance
+        # (distinct from the request-count 429 rate limit above) - this is not
+        # transient and retrying the same prompt will not help.
+        return "GROQ_REQUEST_TOO_LARGE"
     if exc.code in {401, 403}:
         return "GROQ_AUTH_ERROR"
     if 500 <= exc.code <= 599:

@@ -181,6 +181,44 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_UNAVAILABLE")
         self.assertEqual(ctx.exception.status_code, 503)
 
+        groq_too_large = public_result()
+        groq_too_large.answer = None
+        groq_too_large.warnings = [
+            LegalAnswerWarning(code="GROQ_REQUEST_TOO_LARGE", message="tokens per minute limit", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(groq_too_large)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_REQUEST_TOO_LARGE")
+        self.assertEqual(ctx.exception.status_code, 413)
+
+    def test_professional_pdf_query_maps_groq_request_too_large_end_to_end(self) -> None:
+        """Regression test for the real failure observed with a large private
+        PDF context against a Groq account's tokens-per-minute tier limit."""
+        parsed = parsed_document(text="PRIVATE PDF BODY " * 20)
+        chunks = private_chunks("PRIVATE PDF BODY relevant arrest material")
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: GroqAnswerAdapter(settings, sleep=lambda _s: None)
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed), patch.object(
+                query_api, "chunk_document", return_value=chunks
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch(
+                "urllib.request.urlopen",
+                side_effect=http_error(413, "Payload Too Large", body="Request too large ... tokens per minute (TPM)"),
+            ):
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "Explain this document"},
+                    files=pdf_upload(filename="notice.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_REQUEST_TOO_LARGE")
+        self.assertNotIn("live-fixture-key", str(response.json()))
+
     def test_professional_query_requires_authentication(self) -> None:
         response = self.client.post("/query/professional", json={"text": "Research bail under BNSS"})
         self.assertEqual(response.status_code, 401)

@@ -184,6 +184,27 @@ class GroqAnswerAdapterTests(unittest.TestCase):
             result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
         self.assertIn("GROQ_PROVIDER_ERROR", {warning.code for warning in result.warnings})
 
+    def test_413_maps_to_request_too_large_and_is_not_retried(self) -> None:
+        """Regression test: a real Groq account on the free/on-demand tier
+        returns HTTP 413 (not 429) when a single request's prompt exceeds its
+        tokens-per-minute allowance - observed in production with a large
+        professional PDF query (~11.5k tokens against an 8k TPM cap). This is
+        not transient, so it must not be retried and must not be flattened
+        into the generic MODEL_PROVIDER_ERROR bucket."""
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        body = "Request too large for model `openai/gpt-oss-120b` on tokens per minute (TPM): Limit 8000, Requested 11467"
+        with patch("urllib.request.urlopen", side_effect=http_error(413, "Payload Too Large", body=body)) as mocked:
+            with self.assertRaises(ModelProviderError) as ctx:
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(ctx.exception.code, "GROQ_REQUEST_TOO_LARGE")
+        self.assertEqual(mocked.call_count, 1, "a too-large request must not be retried")
+
+    def test_413_recorded_through_full_pipeline_as_request_too_large_warning(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=http_error(413, "Payload Too Large")):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIn("GROQ_REQUEST_TOO_LARGE", {warning.code for warning in result.warnings})
+
     def test_transient_503_retries_then_succeeds(self) -> None:
         adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
         with patch(
