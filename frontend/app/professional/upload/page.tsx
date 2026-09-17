@@ -37,8 +37,10 @@ export default function ProfessionalUploadPage() {
 
     try {
       // CRITICAL CONTRACT: Sends directly to /query/professional/pdf via multipart/form-data.
-      // Must NOT call corpus ingestion.
-      const response = await queryApi.submitPdf(selectedFile);
+      // Must NOT call corpus ingestion. No specific question is collected on this
+      // page, so this is always whole-document brief mode (bounded hierarchical
+      // analysis), never the question-focused targeted-retrieval mode.
+      const response = await queryApi.submitPdf(selectedFile, undefined, undefined, 'brief');
       setResult(response);
     } catch (err) {
       setErrorState({
@@ -162,8 +164,8 @@ export default function ProfessionalUploadPage() {
                 >
                   {isAnalyzing ? (
                     <>
-                      <LoadingSpinner size="sm" label="Analyzing PDF brief" />
-                      <span>Extracting Precedents &amp; Brief...</span>
+                      <LoadingSpinner size="sm" label="Analyzing document in stages" />
+                      <span>Analyzing document in stages...</span>
                     </>
                   ) : (
                     <>

@@ -157,12 +157,16 @@ export const queryApi = {
     file: File,
     query = 'Analyze this legal document.',
     sessionId?: string,
+    analysisMode?: 'question' | 'brief',
   ): Promise<ProfessionalQueryResponse> {
     const body = new FormData();
     body.append('query', query);
     body.append('file', file);
     if (sessionId) {
       body.append('session_id', sessionId);
+    }
+    if (analysisMode) {
+      body.append('analysis_mode', analysisMode);
     }
     return apiFetch<ProfessionalQueryResponse>('/query/professional/pdf', {
       method: 'POST',

@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from argparse import Namespace
+from dataclasses import dataclass
 from functools import lru_cache
+import logging
 import re
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
@@ -34,6 +36,8 @@ from backend.app.services.legal_answer_generation import (
     GeminiAnswerAdapter,
     GroundedCitation,
     LegalAnswerResult,
+    ModelProviderError,
+    ModelUnavailableError,
     ProfessionalLegalBrief,
     PublicLegalAnswer,
     build_grounded_evidence_packet,
@@ -43,16 +47,28 @@ from backend.app.services.legal_answer_prompt import build_legal_answer_prompt
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
+from backend.app.services.private_pdf_rag import (
+    PrivateChunk,
+    batch_private_chunks,
+    build_private_chunks,
+    generate_stage1_batch_summaries,
+    reduce_stage1_batches,
+    render_private_document_map,
+    render_private_evidence_block,
+    select_query_focused_private_evidence,
+    select_representative_excerpts,
+)
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
+from backend.app.services.token_budget import TokenBudget, estimate_tokens, resolve_token_budget
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
 from backend.scripts.build_vector_index import DEFAULT_COLLECTION, DEFAULT_PERSIST_DIR as CHROMA_PERSIST_DIR
 from backend.scripts.retrieve_legal_evidence import DEFAULT_INDEX_NAME, make_service
 
+logger = logging.getLogger("legalai.query")
+
 
 router = APIRouter(prefix="/query", tags=["Query"])
 
-PDF_CONTEXT_CHARACTER_LIMIT = 12000
-PDF_CONTEXT_CHUNK_LIMIT = 8
 UPLOAD_READ_CHUNK_SIZE = 1024 * 1024
 ALLOWED_PDF_MIME_TYPES = {"application/pdf", "application/x-pdf", "application/octet-stream"}
 
@@ -152,6 +168,7 @@ async def query_professional_pdf(
     query: str = Form(..., min_length=1, max_length=5000),
     file: UploadFile = File(...),
     session_id: str | None = Form(None),
+    analysis_mode: str = Form("question"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
     settings: Settings = Depends(get_settings),
@@ -159,13 +176,22 @@ async def query_professional_pdf(
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
     try:
-        private_context = await private_pdf_context_from_upload(file, query=query, settings=settings)
+        parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
+        budget = resolve_token_budget(settings)
+        if analysis_mode.strip().lower() == "brief":
+            private_context_builder = build_whole_document_brief_context_builder(
+                parsed_pdf, adapter=adapter, settings=settings, budget=budget
+            )
+        else:
+            private_context_builder = build_question_focused_context_builder(
+                parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
+            )
         result = run_frozen_query_pipeline(
             query,
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
             adapter=adapter,
-            private_document_context=private_context,
+            private_context_builder=private_context_builder,
         )
         response = professional_response_from_result(result)
         save_query_history(
@@ -181,10 +207,7 @@ async def query_professional_pdf(
     except HTTPException:
         raise
     except DocumentParsingError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={"code": "PDF_PARSE_FAILED", "message": str(exc)},
-        ) from exc
+        raise http_exception_for_pdf_parsing_error(exc) from exc
     except DocumentChunkingError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -203,22 +226,26 @@ async def query_public_pdf(
     adapter=Depends(get_answer_adapter),
 ) -> PublicQueryResponse:
     try:
-        private_context = await private_pdf_context_from_upload(file, query=query, settings=settings)
+        parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
+        budget = resolve_token_budget(settings)
+        # Public PDF is always question-focused: the user explicitly asked a
+        # question, so targeted retrieval is preferred over whole-document
+        # hierarchical analysis (which is a professional-only capability).
+        private_context_builder = build_question_focused_context_builder(
+            parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
+        )
         result = run_frozen_query_pipeline(
             query,
             mode=AnswerMode.PUBLIC,
             retrieval_service=retrieval_service,
             adapter=adapter,
-            private_document_context=private_context,
+            private_context_builder=private_context_builder,
         )
         return public_response_from_result(result)
     except HTTPException:
         raise
     except DocumentParsingError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={"code": "PDF_PARSE_FAILED", "message": str(exc)},
-        ) from exc
+        raise http_exception_for_pdf_parsing_error(exc) from exc
     except DocumentChunkingError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -228,7 +255,40 @@ async def query_public_pdf(
         raise http_error(exc) from exc
 
 
-async def private_pdf_context_from_upload(file: UploadFile, *, query: str, settings: Settings) -> str:
+_PDF_NO_TEXT_MESSAGES = ("no extractable native text", "no parseable text blocks")
+
+
+def http_exception_for_pdf_parsing_error(exc: DocumentParsingError) -> HTTPException:
+    """Distinguish a genuinely unreadable/corrupt PDF (PDF_PARSE_FAILED) from
+    one that parsed fine but simply has no extractable text, e.g. a
+    scanned/image-only PDF (PDF_NO_TEXT) - both currently raise the same
+    `DocumentParsingError` type, so the distinction is made on message."""
+    message = str(exc)
+    if any(marker in message for marker in _PDF_NO_TEXT_MESSAGES):
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"code": "PDF_NO_TEXT", "message": "This document does not appear to contain readable text."},
+        )
+    return HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail={"code": "PDF_PARSE_FAILED", "message": "This document could not be read as a valid PDF."},
+    )
+
+
+@dataclass(frozen=True)
+class ParsedPrivatePdf:
+    """A temporarily uploaded PDF's chunked-in-memory contents. Never written
+    to disk beyond the request-scoped temp file (already deleted by the time
+    this is returned), never added to the trusted corpus, and never handed to
+    the global vector store or lexical index."""
+
+    filename: str
+    private_chunks: list[PrivateChunk]
+    page_count: int
+    extracted_text_length: int
+
+
+async def parse_private_pdf_upload(file: UploadFile, *, settings: Settings) -> ParsedPrivatePdf:
     safe_name = validate_pdf_upload_metadata(file)
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
     with tempfile.TemporaryDirectory(prefix="legalai_pdf_query_") as temp_dir:
@@ -237,7 +297,136 @@ async def private_pdf_context_from_upload(file: UploadFile, *, query: str, setti
         document = parse_document(temp_path)
         document["source_file_name"] = safe_name
         chunks = chunk_document(document)
-        return build_private_pdf_context(document, chunks, query=query)
+    return ParsedPrivatePdf(
+        filename=safe_name,
+        private_chunks=build_private_chunks(chunks),
+        page_count=int(document.get("page_count") or 0),
+        extracted_text_length=len(str(document.get("text") or "")),
+    )
+
+
+def build_question_focused_context_builder(
+    parsed_pdf: ParsedPrivatePdf,
+    *,
+    query: str,
+    retrieval_service: Any,
+    settings: Settings,
+    budget: TokenBudget,
+) -> Callable[[str], str | None]:
+    """Question + PDF flow (public PDF, and professional PDF in the default
+    question-focused mode): rank private chunks against the user's actual
+    question and select a bounded, budgeted subset - never the whole PDF."""
+    dense_provider = getattr(retrieval_service, "dense_provider", None)
+
+    def _builder(frozen_prompt_text: str) -> str | None:
+        already_used_tokens = estimate_tokens(frozen_prompt_text)
+        private_budget_tokens = budget.private_pdf_budget(already_used_tokens=already_used_tokens)
+        selected = select_query_focused_private_evidence(
+            parsed_pdf.private_chunks,
+            query,
+            dense_provider=dense_provider,
+            top_k=settings.private_pdf_top_k,
+            token_budget_tokens=private_budget_tokens,
+        )
+        log_private_pdf_metrics(
+            stage="question_focused",
+            parsed_pdf=parsed_pdf,
+            selected_chunk_count=len(selected),
+            estimated_private_tokens=sum(item.chunk.token_count for item in selected),
+            frozen_prompt_tokens=already_used_tokens,
+            private_budget_tokens=private_budget_tokens,
+            batch_count=0,
+        )
+        if not selected:
+            return None
+        return render_private_evidence_block(selected, filename=parsed_pdf.filename)
+
+    return _builder
+
+
+def build_whole_document_brief_context_builder(
+    parsed_pdf: ParsedPrivatePdf,
+    *,
+    adapter: Any,
+    settings: Settings,
+    budget: TokenBudget,
+) -> Callable[[str], str | None]:
+    """Professional whole-document brief mode: no narrow question is assumed,
+    so the entire private document is summarized hierarchically in bounded
+    batches (Stage 1), reduced to a compact document map, and only that map
+    plus a handful of representative excerpts are ever injected into the
+    final grounded-answer prompt (Stage 2 reuses the normal, frozen
+    generation pipeline unchanged)."""
+    per_batch_token_budget = max(500, min(settings.private_pdf_input_budget_tokens, budget.available_input_tokens // 2))
+    batches = batch_private_chunks(
+        parsed_pdf.private_chunks,
+        max_chunks_per_batch=settings.private_pdf_max_chunks_per_batch,
+        batch_token_budget=per_batch_token_budget,
+    )
+    try:
+        stage1_results = generate_stage1_batch_summaries(batches, adapter=adapter, mode=AnswerMode.PROFESSIONAL)
+    except (ModelUnavailableError, ModelProviderError) as exc:
+        raise_for_stage1_adapter_exception(exc)
+    document_map = reduce_stage1_batches(stage1_results)
+
+    def _builder(frozen_prompt_text: str) -> str | None:
+        already_used_tokens = estimate_tokens(frozen_prompt_text)
+        private_budget_tokens = budget.private_pdf_budget(already_used_tokens=already_used_tokens)
+        map_text = render_private_document_map(document_map)
+        map_tokens = estimate_tokens(map_text)
+        if map_tokens > private_budget_tokens:
+            # The document map is already bounded (capped entries per field,
+            # deterministic reduction) - if it still cannot fit, hierarchical
+            # processing has genuinely failed to bring this within budget.
+            raise QueryExecutionError(
+                "PDF_CONTEXT_TOO_LARGE",
+                "The document analysis could not fit within the configured context budget even after bounded hierarchical summarization.",
+                status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
+        excerpt_budget = max(0, private_budget_tokens - map_tokens)
+        excerpts = select_representative_excerpts(batches, token_budget_tokens=excerpt_budget)
+        excerpt_block = render_private_evidence_block(excerpts, filename=parsed_pdf.filename) if excerpts else ""
+        log_private_pdf_metrics(
+            stage="whole_document_brief",
+            parsed_pdf=parsed_pdf,
+            selected_chunk_count=len(excerpts),
+            estimated_private_tokens=map_tokens + sum(item.chunk.token_count for item in excerpts),
+            frozen_prompt_tokens=already_used_tokens,
+            private_budget_tokens=private_budget_tokens,
+            batch_count=len(batches),
+        )
+        return "\n\n".join(part for part in [map_text, excerpt_block] if part)
+
+    return _builder
+
+
+def log_private_pdf_metrics(
+    *,
+    stage: str,
+    parsed_pdf: ParsedPrivatePdf,
+    selected_chunk_count: int,
+    estimated_private_tokens: int,
+    frozen_prompt_tokens: int,
+    private_budget_tokens: int,
+    batch_count: int,
+) -> None:
+    """Safe, structured observability for the private-PDF pipeline. Never
+    logs PDF content, chunk text, prompts, or API keys - only bounded counts
+    and token estimates."""
+    logger.info(
+        "private_pdf_pipeline stage=%s page_count=%d extracted_text_length=%d "
+        "private_chunk_count=%d selected_chunk_count=%d estimated_private_tokens=%d "
+        "frozen_prompt_tokens=%d private_budget_tokens=%d batch_count=%d",
+        stage,
+        parsed_pdf.page_count,
+        parsed_pdf.extracted_text_length,
+        len(parsed_pdf.private_chunks),
+        selected_chunk_count,
+        estimated_private_tokens,
+        frozen_prompt_tokens,
+        private_budget_tokens,
+        batch_count,
+    )
 
 
 def http_error(exc: QueryExecutionError) -> HTTPException:
@@ -250,7 +439,7 @@ def run_frozen_query_pipeline(
     mode: AnswerMode,
     retrieval_service: Any,
     adapter: Any,
-    private_document_context: str | None = None,
+    private_context_builder: Callable[[str], str | None] | None = None,
 ) -> LegalAnswerResult:
     try:
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
@@ -259,6 +448,12 @@ def run_frozen_query_pipeline(
             raise QueryExecutionError("RETRIEVAL_UNAVAILABLE", "The legal evidence index is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
         packet = build_grounded_evidence_packet(understanding, retrieval)
         prompt = build_legal_answer_prompt(packet, mode=mode)
+        # The private-context builder (if any) is invoked here, AFTER the
+        # trusted-evidence prompt is fully built, so it can measure that
+        # prompt's real token cost and size the private-PDF budget against
+        # whatever is actually left - not a static guess made before trusted
+        # retrieval even ran. See backend/app/services/token_budget.py.
+        private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
         prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
         result = generate_legal_answer(understanding, retrieval, mode=mode, adapter=adapter, prompt=prompt_text)
     except QueryExecutionError:
@@ -321,36 +516,6 @@ async def write_upload_to_temp(file: UploadFile, path: Path, *, max_bytes: int) 
         )
 
 
-def build_private_pdf_context(document: dict[str, Any], chunks: list[dict[str, Any]], *, query: str) -> str:
-    query_terms = meaningful_query_terms(query)
-    ranked = sorted(enumerate(chunks), key=lambda item: (-query_term_hits(item[1], query_terms), item[0]))
-    selected = sorted(ranked[:PDF_CONTEXT_CHUNK_LIMIT], key=lambda item: item[0])
-    blocks: list[str] = []
-    used = 0
-    for index, chunk in selected:
-        text = str(chunk.get("text") or chunk.get("chunk_text") or "").strip()
-        if not text:
-            continue
-        remaining = PDF_CONTEXT_CHARACTER_LIMIT - used
-        if remaining <= 0:
-            break
-        excerpt = text[:remaining]
-        used += len(excerpt)
-        pages = page_range_for_chunk(chunk)
-        blocks.append(
-            "\n".join(
-                [
-                    f'<PRIVATE_DOCUMENT_EXCERPT index="{index + 1}" pages="{pages}">',
-                    excerpt,
-                    "</PRIVATE_DOCUMENT_EXCERPT>",
-                ]
-            )
-        )
-    filename = str(document.get("source_file_name") or "uploaded.pdf")
-    header = f'filename="{sanitize_pdf_filename(filename)}"; context_character_limit={PDF_CONTEXT_CHARACTER_LIMIT}; selected_chunks={len(blocks)}'
-    return "\n\n".join([header, *blocks])
-
-
 def prompt_with_private_pdf_context(prompt: str, private_document_context: str | None) -> str:
     if not private_document_context:
         return prompt
@@ -368,68 +533,68 @@ def prompt_with_private_pdf_context(prompt: str, private_document_context: str |
     return "\n\n".join([prompt, context_block])
 
 
-def meaningful_query_terms(query: str) -> set[str]:
-    return {term for term in re.findall(r"[A-Za-z0-9]+", query.lower()) if len(term) >= 3}
-
-
-def query_term_hits(chunk: dict[str, Any], terms: set[str]) -> int:
-    if not terms:
-        return 0
-    text = str(chunk.get("text") or chunk.get("chunk_text") or "").lower()
-    return sum(1 for term in terms if term in text)
-
-
-def page_range_for_chunk(chunk: dict[str, Any]) -> str:
-    start = chunk.get("page_start")
-    end = chunk.get("page_end") or start
-    if start is None and end is None:
-        return "unknown"
-    return str(start) if start == end else f"{start}-{end}"
+def query_execution_error_for_provider_codes(codes: set[str]) -> QueryExecutionError:
+    """Map a set of adapter/provider warning codes (e.g. `{"GROQ_RATE_LIMIT"}`)
+    to the sanitized, provider-agnostic error the API returns. Shared between
+    `ensure_successful_answer` (codes come from a generated `LegalAnswerResult`)
+    and the Stage-1 hierarchical brief path (codes come from a raw adapter
+    exception, since Stage 1 calls the adapter directly)."""
+    if "INSUFFICIENT_RETRIEVED_AUTHORITY" in codes:
+        return QueryExecutionError("INSUFFICIENT_RETRIEVED_AUTHORITY", "Retrieved legal authority is insufficient for a grounded answer.", status.HTTP_424_FAILED_DEPENDENCY)
+    if "MODEL_UNAVAILABLE" in codes:
+        return QueryExecutionError("MODEL_UNAVAILABLE", "The legal answer model is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
+    if any(code.endswith("_RATE_LIMIT") for code in codes):
+        return QueryExecutionError(
+            "MODEL_PROVIDER_QUOTA_EXCEEDED",
+            "The legal answer provider has reached its temporary usage limit.",
+            status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+    if any(code.endswith("_REQUEST_TOO_LARGE") for code in codes):
+        return QueryExecutionError(
+            "MODEL_PROVIDER_REQUEST_TOO_LARGE",
+            "The document or retrieved context is too large for the configured answer provider. Try a shorter document or question.",
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        )
+    if any(code.endswith("_AUTH_ERROR") for code in codes):
+        return QueryExecutionError(
+            "MODEL_PROVIDER_AUTH_ERROR",
+            "The legal answer provider rejected the configured credentials.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.endswith("_TIMEOUT") for code in codes):
+        return QueryExecutionError(
+            "MODEL_PROVIDER_TIMEOUT",
+            "The legal answer provider did not respond in time.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.endswith("_PROVIDER_ERROR") for code in codes):
+        return QueryExecutionError(
+            "MODEL_PROVIDER_UNAVAILABLE",
+            "The legal answer provider is temporarily unavailable.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.startswith(("GEMINI_", "GROQ_")) for code in codes):
+        return QueryExecutionError("MODEL_PROVIDER_ERROR", "The legal answer provider is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
+    if "MODEL_OUTPUT_VALIDATION_FAILED" in codes:
+        return QueryExecutionError("MODEL_OUTPUT_VALIDATION_FAILED", "The legal answer provider returned an invalid structured answer.", status.HTTP_502_BAD_GATEWAY)
+    return QueryExecutionError("ANSWER_GENERATION_FAILED", "A grounded legal answer could not be generated.", status.HTTP_502_BAD_GATEWAY)
 
 
 def ensure_successful_answer(result: LegalAnswerResult) -> None:
     if result.answer is not None:
         return
     codes = {warning.code for warning in result.warnings}
-    if "INSUFFICIENT_RETRIEVED_AUTHORITY" in codes:
-        raise QueryExecutionError("INSUFFICIENT_RETRIEVED_AUTHORITY", "Retrieved legal authority is insufficient for a grounded answer.", status.HTTP_424_FAILED_DEPENDENCY)
-    if "MODEL_UNAVAILABLE" in codes:
-        raise QueryExecutionError("MODEL_UNAVAILABLE", "The legal answer model is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
-    if any(code.endswith("_RATE_LIMIT") for code in codes):
-        raise QueryExecutionError(
-            "MODEL_PROVIDER_QUOTA_EXCEEDED",
-            "The legal answer provider has reached its temporary usage limit.",
-            status.HTTP_429_TOO_MANY_REQUESTS,
-        )
-    if any(code.endswith("_REQUEST_TOO_LARGE") for code in codes):
-        raise QueryExecutionError(
-            "MODEL_PROVIDER_REQUEST_TOO_LARGE",
-            "The document or retrieved context is too large for the configured answer provider. Try a shorter document or question.",
-            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-        )
-    if any(code.endswith("_AUTH_ERROR") for code in codes):
-        raise QueryExecutionError(
-            "MODEL_PROVIDER_AUTH_ERROR",
-            "The legal answer provider rejected the configured credentials.",
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-    if any(code.endswith("_TIMEOUT") for code in codes):
-        raise QueryExecutionError(
-            "MODEL_PROVIDER_TIMEOUT",
-            "The legal answer provider did not respond in time.",
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-    if any(code.endswith("_PROVIDER_ERROR") for code in codes):
-        raise QueryExecutionError(
-            "MODEL_PROVIDER_UNAVAILABLE",
-            "The legal answer provider is temporarily unavailable.",
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-    if any(code.startswith(("GEMINI_", "GROQ_")) for code in codes):
-        raise QueryExecutionError("MODEL_PROVIDER_ERROR", "The legal answer provider is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
-    if "MODEL_OUTPUT_VALIDATION_FAILED" in codes:
-        raise QueryExecutionError("MODEL_OUTPUT_VALIDATION_FAILED", "The legal answer provider returned an invalid structured answer.", status.HTTP_502_BAD_GATEWAY)
-    raise QueryExecutionError("ANSWER_GENERATION_FAILED", "A grounded legal answer could not be generated.", status.HTTP_502_BAD_GATEWAY)
+    raise query_execution_error_for_provider_codes(codes)
+
+
+def raise_for_stage1_adapter_exception(exc: ModelUnavailableError | ModelProviderError) -> None:
+    """Convert a raw adapter exception raised directly by Stage-1 hierarchical
+    extraction (which calls the adapter without going through
+    `generate_legal_answer`'s own try/except) into the same sanitized error
+    codes the rest of the API uses."""
+    if isinstance(exc, ModelUnavailableError):
+        raise query_execution_error_for_provider_codes({"MODEL_UNAVAILABLE"}) from exc
+    raise query_execution_error_for_provider_codes({exc.code}) from exc
 
 
 def public_response_from_result(result: LegalAnswerResult) -> PublicQueryResponse:
