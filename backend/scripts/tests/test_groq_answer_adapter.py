@@ -1,0 +1,260 @@
+"""Unit tests for the Groq product-runtime answer adapter.
+
+No live Groq calls are made anywhere in this file — every HTTP interaction is
+mocked via `unittest.mock.patch("urllib.request.urlopen", ...)`.
+"""
+
+from __future__ import annotations
+
+import json
+import socket
+import unittest
+import urllib.error
+from unittest.mock import patch
+
+from backend.app.core.config import Settings
+from backend.app.services.groq_answer_adapter import GroqAnswerAdapter, groq_payload_schema
+from backend.app.services.legal_answer_generation import (
+    AnswerMode,
+    ModelProviderError,
+    ModelUnavailableError,
+    PublicLegalAnswer,
+    generate_legal_answer,
+)
+from backend.scripts.tests.test_legal_answer_foundation import evidence, retrieval
+from backend.app.services.legal_query_understanding import understand_legal_query
+
+
+class FakeHttpResponse:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        return False
+
+    def read(self):
+        return json.dumps(self.payload).encode("utf-8")
+
+
+def _fixture_citation() -> dict:
+    return {
+        "evidence_id": "E1",
+        "claim_id": "c1",
+        "supported_text": "support",
+        "source_metadata": evidence("E1").citation_metadata.model_dump(mode="json"),
+        "support_level": "structural",
+    }
+
+
+def groq_payload(text=None):
+    text = text or json.dumps(
+        {
+            "answer": {
+                "summary": "Fixture answer.",
+                "what_this_may_mean": ["The cited fixture is relevant."],
+                "possible_legal_provisions": ["Section 302 IPC was mentioned by the user."],
+                "possible_next_steps": ["Verify current procedure locally."],
+                "important_cautions": ["Applicability depends on facts."],
+                "citations": [_fixture_citation()],
+            },
+            "summary": "Fixture answer.",
+            "claims": [
+                {
+                    "claim_id": "c1",
+                    "text": "A case-specific bail proposition requires retrieved authority.",
+                    "claim_type": "CASE_LAW",
+                    "citations": [_fixture_citation()],
+                    "grounding_status": "STRUCTURALLY_GROUNDED",
+                }
+            ],
+        }
+    )
+    return {
+        "model": "configured-model-returned",
+        "choices": [{"message": {"content": text}}],
+        "usage": {"prompt_tokens": 11, "completion_tokens": 7, "total_tokens": 18},
+    }
+
+
+def http_error(status: int, reason: str = "HTTP error", body: str | None = None) -> urllib.error.HTTPError:
+    from io import BytesIO
+
+    fp = BytesIO(json.dumps({"error": {"message": body or reason, "type": "fixture_error"}}).encode()) if body or reason else None
+    return urllib.error.HTTPError("url", status, reason, hdrs=None, fp=fp)
+
+
+class GroqAnswerAdapterTests(unittest.TestCase):
+    def understanding(self):
+        return understand_legal_query("Section 302 IPC murder bail before Sessions Court")
+
+    def settings(self, **overrides) -> Settings:
+        defaults = dict(groq_api_key="test-groq-key", groq_model="openai/gpt-oss-120b", legalai_llm_provider="groq")
+        defaults.update(overrides)
+        return Settings(**defaults)
+
+    def test_adapter_initializes_with_configured_key_and_model(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
+        self.assertEqual(adapter.settings.groq_api_key, "test-groq-key")
+
+    def test_missing_api_key_fails_safely_as_model_unavailable(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(groq_api_key=""))
+        with self.assertRaises(ModelUnavailableError):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+    def test_missing_model_fails_safely_as_model_unavailable(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(groq_model=""))
+        with self.assertRaises(ModelUnavailableError):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+    def test_model_id_comes_from_configuration_not_hardcoded(self) -> None:
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["body"] = json.loads(request.data.decode("utf-8"))
+            return FakeHttpResponse(groq_payload())
+
+        adapter = GroqAnswerAdapter(self.settings(groq_model="a-completely-different-model-id"))
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            response = adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+        self.assertEqual(captured["body"]["model"], "a-completely-different-model-id")
+        self.assertEqual(response.model_metadata.configured_model_id, "a-completely-different-model-id")
+        self.assertNotIn("openai/gpt-oss-120b", json.dumps(captured["body"]))
+
+    def test_successful_structured_answer_reaches_generate_legal_answer(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", return_value=FakeHttpResponse(groq_payload())):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIsNotNone(result.answer)
+        self.assertEqual(result.model_metadata.provider, "groq")
+        self.assertEqual(result.model_metadata.actual_model_id, "configured-model-returned")
+        self.assertEqual(result.model_metadata.prompt_tokens, 11)
+        self.assertEqual(result.model_metadata.completion_tokens, 7)
+        self.assertEqual(result.model_metadata.total_tokens, 18)
+        self.assertFalse(result.model_metadata.fallback_used)
+
+    def test_malformed_json_response_is_recorded_as_schema_failure_not_invented(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", return_value=FakeHttpResponse(groq_payload(text="not json"))):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIsNone(result.answer)
+        self.assertIn("MODEL_OUTPUT_VALIDATION_FAILED", {warning.code for warning in result.warnings})
+
+    def test_401_maps_to_auth_error(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=http_error(401, "Unauthorized")):
+            with self.assertRaises(ModelProviderError) as ctx:
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(ctx.exception.code, "GROQ_AUTH_ERROR")
+
+    def test_403_maps_to_auth_error(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=http_error(403, "Forbidden")):
+            with self.assertRaises(ModelProviderError) as ctx:
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(ctx.exception.code, "GROQ_AUTH_ERROR")
+
+    def test_429_maps_to_rate_limit_and_is_retried_then_can_still_fail(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=http_error(429, "Too Many Requests")):
+            with self.assertRaises(ModelProviderError) as ctx:
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(ctx.exception.code, "GROQ_RATE_LIMIT")
+        self.assertEqual(ctx.exception.attempt_count, adapter.max_attempts)
+
+    def test_429_recorded_through_full_pipeline_as_rate_limit_warning(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=http_error(429, "Too Many Requests")):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIn("GROQ_RATE_LIMIT", {warning.code for warning in result.warnings})
+
+    def test_timeout_maps_to_timeout_code(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=socket.timeout()):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIn("GROQ_TIMEOUT", {warning.code for warning in result.warnings})
+
+    def test_upstream_500_maps_to_provider_error(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=http_error(500, "Internal Server Error")):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        self.assertIn("GROQ_PROVIDER_ERROR", {warning.code for warning in result.warnings})
+
+    def test_transient_503_retries_then_succeeds(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch(
+            "urllib.request.urlopen",
+            side_effect=[http_error(503, "Service Unavailable"), FakeHttpResponse(groq_payload())],
+        ) as mocked:
+            response = adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(mocked.call_count, 2)
+        self.assertEqual(response.model_metadata.retry_count, 1)
+
+    def test_non_retryable_400_does_not_retry(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=http_error(400, "Bad Request")) as mocked:
+            with self.assertRaises(ModelProviderError):
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(mocked.call_count, 1)
+
+    def test_provider_response_and_key_never_leak_into_result(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=http_error(429, "Too Many Requests")):
+            result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
+        serialized = result.model_dump_json()
+        self.assertNotIn("test-groq-key", serialized)
+        self.assertNotIn("Authorization", serialized)
+        self.assertNotIn("Bearer", serialized)
+
+    def test_api_key_never_appears_in_request_url_or_is_logged_in_the_clear(self) -> None:
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["url"] = request.full_url
+            captured["headers"] = dict(request.header_items())
+            return FakeHttpResponse(groq_payload())
+
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+        self.assertNotIn("test-groq-key", captured["url"])
+        self.assertEqual(captured["headers"].get("Authorization"), "Bearer test-groq-key")
+
+    def test_endpoint_uses_configured_base_url(self) -> None:
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["url"] = request.full_url
+            return FakeHttpResponse(groq_payload())
+
+        adapter = GroqAnswerAdapter(self.settings(groq_base_url="https://groq.internal.test/openai/v1/"))
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+        self.assertEqual(captured["url"], "https://groq.internal.test/openai/v1/chat/completions")
+
+    def test_groq_schema_is_strict_openai_form(self) -> None:
+        schema = groq_payload_schema(PublicLegalAnswer)
+        self.assertEqual(schema["type"], "object")
+        self.assertFalse(schema.get("additionalProperties", True) and "$defs" in schema)
+        self._assert_strict(schema)
+
+    def _assert_strict(self, node) -> None:
+        if isinstance(node, dict):
+            if node.get("type") == "object" and "properties" in node:
+                self.assertEqual(node.get("additionalProperties"), False)
+                self.assertEqual(set(node.get("required", [])), set(node["properties"].keys()))
+            for value in node.values():
+                self._assert_strict(value)
+        elif isinstance(node, list):
+            for item in node:
+                self._assert_strict(item)
+
+
+if __name__ == "__main__":
+    unittest.main()

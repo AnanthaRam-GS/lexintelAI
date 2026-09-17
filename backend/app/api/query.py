@@ -40,6 +40,7 @@ from backend.app.services.legal_answer_generation import (
     generate_legal_answer,
 )
 from backend.app.services.legal_answer_prompt import build_legal_answer_prompt
+from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
@@ -92,6 +93,11 @@ def get_answer_adapter(settings: Settings = Depends(get_settings)):
     provider = settings.legalai_llm_provider.strip().lower()
     if provider == "gemini":
         return GeminiAnswerAdapter(settings)
+    if provider == "groq":
+        return GroqAnswerAdapter(settings)
+    # "ollama" and any other unrecognized provider fall through here deliberately:
+    # Ollama has no working live-generation path (see OllamaAnswerAdapter), and an
+    # explicit, controlled 503 is preferred over a silent fallback to another provider.
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         detail={"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "Configured answer model provider is unavailable."},
@@ -389,13 +395,31 @@ def ensure_successful_answer(result: LegalAnswerResult) -> None:
         raise QueryExecutionError("INSUFFICIENT_RETRIEVED_AUTHORITY", "Retrieved legal authority is insufficient for a grounded answer.", status.HTTP_424_FAILED_DEPENDENCY)
     if "MODEL_UNAVAILABLE" in codes:
         raise QueryExecutionError("MODEL_UNAVAILABLE", "The legal answer model is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
-    if "GEMINI_RATE_LIMIT" in codes:
+    if any(code.endswith("_RATE_LIMIT") for code in codes):
         raise QueryExecutionError(
             "MODEL_PROVIDER_QUOTA_EXCEEDED",
             "The legal answer provider has reached its temporary usage limit.",
             status.HTTP_429_TOO_MANY_REQUESTS,
         )
-    if any(code.startswith("GEMINI_") or code.endswith("_PROVIDER_ERROR") for code in codes):
+    if any(code.endswith("_AUTH_ERROR") for code in codes):
+        raise QueryExecutionError(
+            "MODEL_PROVIDER_AUTH_ERROR",
+            "The legal answer provider rejected the configured credentials.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.endswith("_TIMEOUT") for code in codes):
+        raise QueryExecutionError(
+            "MODEL_PROVIDER_TIMEOUT",
+            "The legal answer provider did not respond in time.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.endswith("_PROVIDER_ERROR") for code in codes):
+        raise QueryExecutionError(
+            "MODEL_PROVIDER_UNAVAILABLE",
+            "The legal answer provider is temporarily unavailable.",
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if any(code.startswith(("GEMINI_", "GROQ_")) for code in codes):
         raise QueryExecutionError("MODEL_PROVIDER_ERROR", "The legal answer provider is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
     if "MODEL_OUTPUT_VALIDATION_FAILED" in codes:
         raise QueryExecutionError("MODEL_OUTPUT_VALIDATION_FAILED", "The legal answer provider returned an invalid structured answer.", status.HTTP_502_BAD_GATEWAY)

@@ -9,11 +9,17 @@ from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 
 from backend.app.api import query as query_api
+from backend.app.core.config import Settings
 from backend.app.core.dependencies import get_current_user
 from backend.app.db.session import get_db
 from backend.app.services.document_parser import DocumentParsingError
+from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
+from backend.scripts.tests.test_groq_answer_adapter import FakeHttpResponse as _FakeHttpResponse
+from backend.scripts.tests.test_groq_answer_adapter import groq_payload, http_error
+from backend.scripts.tests.test_legal_answer_foundation import retrieval
 from backend.app.services.legal_answer_generation import (
     AnswerMode,
+    GeminiAnswerAdapter,
     GroundedCitation,
     GroundingStatus,
     LegalAnswerResult,
@@ -115,14 +121,64 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_QUOTA_EXCEEDED")
         self.assertEqual(ctx.exception.status_code, 429)
 
-        other_provider_error = public_result()
-        other_provider_error.answer = None
-        other_provider_error.warnings = [
+        auth_error = public_result()
+        auth_error.answer = None
+        auth_error.warnings = [
             LegalAnswerWarning(code="GEMINI_AUTH_ERROR", message="auth failed", severity="error")
         ]
         with self.assertRaises(query_api.QueryExecutionError) as ctx:
-            query_api.ensure_successful_answer(other_provider_error)
+            query_api.ensure_successful_answer(auth_error)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_AUTH_ERROR")
+        self.assertEqual(ctx.exception.status_code, 503)
+
+        timeout_error = public_result()
+        timeout_error.answer = None
+        timeout_error.warnings = [
+            LegalAnswerWarning(code="GEMINI_TIMEOUT", message="timed out", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(timeout_error)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_TIMEOUT")
+        self.assertEqual(ctx.exception.status_code, 503)
+
+        upstream_error = public_result()
+        upstream_error.answer = None
+        upstream_error.warnings = [
+            LegalAnswerWarning(code="GEMINI_PROVIDER_ERROR", message="upstream 5xx", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(upstream_error)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_UNAVAILABLE")
+        self.assertEqual(ctx.exception.status_code, 503)
+
+        bad_response_error = public_result()
+        bad_response_error.answer = None
+        bad_response_error.warnings = [
+            LegalAnswerWarning(code="GEMINI_INVALID_RESPONSE", message="bad body", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(bad_response_error)
         self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_ERROR")
+        self.assertEqual(ctx.exception.status_code, 503)
+
+        groq_rate_limited = public_result()
+        groq_rate_limited.answer = None
+        groq_rate_limited.warnings = [
+            LegalAnswerWarning(code="GROQ_RATE_LIMIT", message="rate limited", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(groq_rate_limited)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(ctx.exception.status_code, 429)
+
+        groq_provider_error = public_result()
+        groq_provider_error.answer = None
+        groq_provider_error.warnings = [
+            LegalAnswerWarning(code="GROQ_PROVIDER_ERROR", message="upstream 5xx", severity="error")
+        ]
+        with self.assertRaises(query_api.QueryExecutionError) as ctx:
+            query_api.ensure_successful_answer(groq_provider_error)
+        self.assertEqual(ctx.exception.code, "MODEL_PROVIDER_UNAVAILABLE")
         self.assertEqual(ctx.exception.status_code, 503)
 
     def test_professional_query_requires_authentication(self) -> None:
@@ -179,6 +235,42 @@ class QueryApiTests(unittest.TestCase):
         self.assertIn("/query/public/pdf", routes)
         self.assertIn("/query/professional", routes)
         self.assertIn("/query/professional/pdf", routes)
+
+    def test_get_answer_adapter_selects_groq_for_groq_provider(self) -> None:
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
+
+    def test_get_answer_adapter_selects_gemini_for_gemini_provider(self) -> None:
+        settings = Settings(legalai_llm_provider="gemini", gemini_api_key="key", gemini_model="fixture-model")
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, GeminiAnswerAdapter)
+
+    def test_get_answer_adapter_is_case_insensitive_and_trims_whitespace(self) -> None:
+        settings = Settings(legalai_llm_provider="  GROQ  ", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, GroqAnswerAdapter)
+
+    def test_get_answer_adapter_rejects_ollama_with_controlled_unavailable_error(self) -> None:
+        settings = Settings(legalai_llm_provider="ollama")
+        with self.assertRaises(query_api.HTTPException) as ctx:
+            query_api.get_answer_adapter(settings)
+        self.assertEqual(ctx.exception.status_code, 503)
+        self.assertEqual(ctx.exception.detail["code"], "MODEL_PROVIDER_UNAVAILABLE")
+
+    def test_get_answer_adapter_rejects_unknown_provider_with_controlled_unavailable_error(self) -> None:
+        settings = Settings(legalai_llm_provider="anthropic")
+        with self.assertRaises(query_api.HTTPException) as ctx:
+            query_api.get_answer_adapter(settings)
+        self.assertEqual(ctx.exception.status_code, 503)
+        self.assertEqual(ctx.exception.detail["code"], "MODEL_PROVIDER_UNAVAILABLE")
+
+    def test_get_answer_adapter_never_silently_falls_back_from_groq_to_gemini(self) -> None:
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="", groq_model="", gemini_api_key="key", gemini_model="fixture-model")
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertNotIsInstance(adapter, GeminiAnswerAdapter)
 
     def test_professional_pdf_requires_authentication(self) -> None:
         response = self.client.post(
@@ -280,6 +372,82 @@ class QueryApiTests(unittest.TestCase):
         self.assertTrue(seen_paths)
         self.assertFalse(seen_paths[-1].exists())
         save_history.assert_not_called()
+        create_job.assert_not_called()
+        upsert.assert_not_called()
+
+    def test_public_query_runs_end_to_end_through_groq_with_retrieved_citations(self) -> None:
+        """The full (non-mocked) generation pipeline, with only retrieval and the
+        outbound HTTP call replaced by fixtures, actually reaches Groq and returns
+        a grounded answer citing the retrieved evidence's source metadata."""
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: GroqAnswerAdapter(settings)
+        try:
+            with patch.object(
+                query_api, "retrieve_legal_evidence", return_value=retrieval()
+            ) as retrieve, patch("urllib.request.urlopen", return_value=_FakeHttpResponse(groq_payload())):
+                response = self.client.post("/query/public", json={"text": "Section 302 IPC murder bail"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 200)
+        retrieve.assert_called_once()
+        body = response.json()
+        self.assertTrue(body["sources"], "response must carry sources derived from retrieved evidence")
+        self.assertEqual(body["sources"][0]["title"], "Hypothetical Supreme Court Fixture v State")
+
+    def test_public_query_maps_groq_rate_limit_to_quota_safe_429_end_to_end(self) -> None:
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: GroqAnswerAdapter(settings, sleep=lambda _s: None)
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch(
+                "urllib.request.urlopen", side_effect=http_error(429, "Too Many Requests")
+            ):
+                response = self.client.post("/query/public", json={"text": "Section 302 IPC murder bail"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+
+    def test_public_query_maps_groq_upstream_5xx_to_unavailable_end_to_end(self) -> None:
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: GroqAnswerAdapter(settings, sleep=lambda _s: None)
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch(
+                "urllib.request.urlopen", side_effect=http_error(500, "Internal Server Error")
+            ):
+                response = self.client.post("/query/public", json={"text": "Section 302 IPC murder bail"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_UNAVAILABLE")
+        self.assertNotIn("live-fixture-key", str(response.json()))
+
+    def test_public_pdf_query_runs_through_groq_and_preserves_private_context(self) -> None:
+        parsed = parsed_document(text="PUBLIC PDF BODY " * 20)
+        chunks = private_chunks("PUBLIC PDF BODY relevant arrest material")
+        settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: GroqAnswerAdapter(settings)
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed), patch.object(
+                query_api, "chunk_document", return_value=chunks
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch(
+                "urllib.request.urlopen", return_value=_FakeHttpResponse(groq_payload())
+            ), patch(
+                "backend.app.services.ingestion.create_ingestion_job"
+            ) as create_job, patch(
+                "backend.app.services.vector_store.ChromaVectorStore.upsert_chunks"
+            ) as upsert:
+                response = self.client.post(
+                    "/query/public/pdf",
+                    data={"query": "Explain this notice"},
+                    files=pdf_upload(filename="notice.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 200)
         create_job.assert_not_called()
         upsert.assert_not_called()
 
