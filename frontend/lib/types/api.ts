@@ -1,14 +1,30 @@
-export type UserRole = 'admin' | 'lawyer';
+export type UserRole = 'public' | 'admin' | 'lawyer';
 
 export interface AuthenticatedUser {
   id: number | string;
   email: string;
   role: UserRole;
+  full_name?: string | null;
+  email_verified?: boolean;
 }
 
 export interface LoginResponse {
   user: AuthenticatedUser;
   message: string;
+}
+
+export interface RegistrationResponse {
+  user: AuthenticatedUser;
+  message: string;
+  email_verification_required: boolean;
+  dev_verification_token?: string | null;
+}
+
+export interface EmailVerificationResponse {
+  email_verified: boolean;
+  message: string;
+  dev_verification_token?: string | null;
+  expires_at?: string | null;
 }
 
 export interface SectionReference {
@@ -142,4 +158,37 @@ export interface CorpusStatsResponse {
   by_type: Array<{ doc_type: string; count: number }>;
   postgres_status: string;
   chroma_status: string;
+}
+
+export type LawyerApplicationStatus =
+  'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'RESUBMISSION_REQUIRED' | 'SUSPENDED';
+
+export interface LawyerApplication {
+  id: number;
+  user_id: number;
+  bar_council: string;
+  enrollment_number: string;
+  enrollment_year: number;
+  jurisdiction: string;
+  organization?: string | null;
+  proof_file_name: string;
+  proof_content_type: string;
+  status: LawyerApplicationStatus;
+  submitted_at: string;
+  reviewed_at?: string | null;
+  review_note?: string | null;
+}
+
+export interface LawyerApplicationEnvelope {
+  application: LawyerApplication | null;
+}
+
+export interface AdminLawyerApplication extends LawyerApplication {
+  applicant_email: string;
+  applicant_name?: string | null;
+  reviewed_by?: number | null;
+}
+
+export interface AdminLawyerApplicationList {
+  applications: AdminLawyerApplication[];
 }

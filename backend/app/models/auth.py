@@ -1,8 +1,9 @@
 """Authentication API contracts for LegalAI."""
 
+from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LoginRequest(BaseModel):
@@ -12,12 +13,22 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class RegisterRequest(BaseModel):
+    """Public account registration request; role is never client-controlled."""
+
+    full_name: str = Field(..., min_length=1, max_length=255)
+    email: str = Field(..., min_length=3, max_length=255)
+    password: str = Field(..., min_length=8, max_length=128)
+
+
 class AuthenticatedUser(BaseModel):
     """Authenticated user identity returned after login."""
 
     id: int | str
     email: str
-    role: Literal["lawyer", "admin"]
+    role: Literal["public", "lawyer", "admin"]
+    full_name: str | None = None
+    email_verified: bool = False
 
 
 class LoginResponse(BaseModel):
@@ -25,3 +36,23 @@ class LoginResponse(BaseModel):
 
     user: AuthenticatedUser
     message: str
+
+
+class RegistrationResponse(BaseModel):
+    """Safe registration response without password material."""
+
+    user: AuthenticatedUser
+    message: str
+    email_verification_required: bool = True
+    dev_verification_token: str | None = None
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(..., min_length=16, max_length=256)
+
+
+class EmailVerificationResponse(BaseModel):
+    email_verified: bool
+    message: str
+    dev_verification_token: str | None = None
+    expires_at: datetime | None = None

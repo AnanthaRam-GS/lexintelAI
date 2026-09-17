@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
 import { useAuth } from '../../lib/auth/AuthContext';
@@ -98,6 +99,15 @@ export function LoginForm() {
           >
             {isSubmitting ? 'Signing in…' : 'Sign in'}
           </button>
+          <p className="text-type-body-sm text-center text-[var(--color-muted)]">
+            Don&apos;t have an account?{' '}
+            <Link
+              className="font-semibold text-[var(--color-brass-hover)] underline-offset-4 hover:underline"
+              href="/register"
+            >
+              Register
+            </Link>
+          </p>
         </form>
       </div>
     </main>
@@ -108,7 +118,9 @@ function destinationFor(role: UserRole, requestedPath: string | null): string {
   if (requestedPath && isAllowedDestination(role, requestedPath)) {
     return requestedPath;
   }
-  return role === 'admin' ? '/admin' : '/professional';
+  if (role === 'admin') return '/admin';
+  if (role === 'lawyer') return '/professional';
+  return '/lawyer/apply';
 }
 
 function isAllowedDestination(role: UserRole, path: string): boolean {
@@ -120,6 +132,9 @@ function isAllowedDestination(role: UserRole, path: string): boolean {
   }
   if (path.startsWith('/professional')) {
     return role === 'lawyer' || role === 'admin';
+  }
+  if (path.startsWith('/lawyer/apply')) {
+    return true;
   }
   return false;
 }

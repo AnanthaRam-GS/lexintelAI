@@ -103,6 +103,20 @@ Use a controlled local database and non-production indexes.
 9. Review browser console and backend logs for stack traces, secret leakage, or
    unexpected provider calls.
 
+## Registration And Lawyer Verification
+
+- `/auth/register` creates ordinary `public` users only; role promotion is never
+  accepted from client payloads.
+- Email verification is modeled with hashed, single-use tokens. Local
+  development can expose a test token only when explicitly enabled through
+  settings; production email delivery provider integration remains future work.
+- `/lawyer/apply` stores credential proof files in private verification storage.
+  These files are identity evidence only and must not enter Chroma, BM25, corpus
+  ingestion, or legal RAG retrieval.
+- `/admin/lawyer-verification` is the admin review queue. Only admin approval
+  changes `users.role` to `lawyer`; rejected and pending applicants remain
+  denied by the backend professional RBAC boundary.
+
 ## Known Blockers
 
 - Full authenticated UAT requires the local PostgreSQL service to remain running

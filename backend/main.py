@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.analytics import router as analytics_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.ingest import router as ingest_router
+from backend.app.api.lawyer_verification import router as lawyer_verification_router
 from backend.app.api.query import router as query_router
 from backend.app.api.query_history import router as query_history_router
 from backend.app.core.config import Settings
@@ -40,6 +41,7 @@ app.include_router(ingest_router)
 app.include_router(analytics_router)
 app.include_router(query_router)
 app.include_router(query_history_router)
+app.include_router(lawyer_verification_router)
 
 
 @app.get("/health", tags=["Health"])
