@@ -225,6 +225,38 @@ class GroqAnswerAdapterTests(unittest.TestCase):
         self.assertNotIn("test-groq-key", captured["url"])
         self.assertEqual(captured["headers"].get("Authorization"), "Bearer test-groq-key")
 
+    def test_request_sends_a_user_agent_to_avoid_cloudflare_bot_blocking(self) -> None:
+        """Regression test: Groq's API is fronted by Cloudflare, which returns a
+        403 (Cloudflare error 1010) for requests with no User-Agent, before the
+        request ever reaches Groq's own auth layer. This must never regress."""
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["headers"] = dict(request.header_items())
+            return FakeHttpResponse(groq_payload())
+
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+        self.assertTrue(captured["headers"].get("User-agent"), "request must carry a non-empty User-Agent header")
+
+    def test_response_format_is_non_strict_to_tolerate_open_ended_source_metadata(self) -> None:
+        """Regression test: strict:true rejects GroundedCitation.source_metadata
+        (an open dict[str, Any]) with a 400 'additionalProperties:false must be
+        set on every object' error from Groq, since it has no fixed properties."""
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["body"] = json.loads(request.data.decode("utf-8"))
+            return FakeHttpResponse(groq_payload())
+
+        adapter = GroqAnswerAdapter(self.settings())
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+
+        self.assertFalse(captured["body"]["response_format"]["json_schema"]["strict"])
+
     def test_endpoint_uses_configured_base_url(self) -> None:
         captured = {}
 
