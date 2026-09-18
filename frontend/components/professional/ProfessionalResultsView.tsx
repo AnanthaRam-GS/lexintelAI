@@ -22,6 +22,13 @@ export function ProfessionalResultsView({
   const [activeTab, setActiveTab] = useState<'brief' | 'precedents' | 'sections'>('brief');
 
   const { identified_sections, precedents, case_brief } = result;
+  const optionalSections = [
+    ['Parties & Roles', case_brief.parties_and_roles],
+    ['Material Facts', case_brief.material_facts],
+    ['Chronology / Procedural History', case_brief.chronology],
+    ['Explicit Statutory Provisions', case_brief.statutory_provisions],
+    ['Evidence Identified', case_brief.evidence_identified],
+  ].filter(([, items]) => Array.isArray(items) && items.length > 0) as [string, string[]][];
 
   const handleCopyBrief = async () => {
     const textToCopy = `LEGAL BRIEF: ${queryTitle || 'Case Analysis'}
@@ -165,6 +172,24 @@ ${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court
                 {case_brief.summary}
               </p>
             </article>
+
+            {optionalSections.map(([title, items]) => (
+              <article
+                key={title}
+                className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs"
+              >
+                <h4 className="font-display text-base font-bold text-[var(--color-ink)]">
+                  {title}
+                </h4>
+                <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--color-body)]">
+                  {items.map((item, idx) => (
+                    <li key={idx} className="border-l-2 border-[var(--color-border)] pl-3">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
 
             {/* Key Issues */}
             <article className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs">

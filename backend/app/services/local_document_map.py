@@ -46,15 +46,22 @@ from backend.app.services.token_budget import estimate_tokens
 # ---------------------------------------------------------------------------
 
 _INTENTS: tuple[tuple[str, str], ...] = (
-    ("material_facts", "material facts and incident description"),
-    ("parties_intent", "accused and complainant parties"),
-    ("investigation_excerpts", "procedural history and investigation"),
-    ("charges", "charges offences statutory sections"),
-    ("witness_excerpts", "witness statements"),
-    ("medical_forensic_excerpts", "medical forensic electronic documentary evidence"),
-    ("defence_or_accused_position", "defence accused explanation alibi"),
-    ("findings_or_orders", "court findings reasoning"),
-    ("evidence_excerpts", "relief order sentence bail"),
+    ("document_overview", "document identity parties case title police station court"),
+    ("material_facts", "material facts incident narrative place occurrence facts"),
+    ("chronology", "chronology important dates filed registered arrest order judgment"),
+    ("allegations", "complainant prosecution allegations accused offence"),
+    ("charges", "offences charges statutory provisions sections acts"),
+    ("witness_evidence", "witness statement saw stated examined testimony"),
+    ("documentary_evidence", "documents records certificates reports mahazar panchnama"),
+    ("electronic_evidence", "electronic evidence CCTV phone call data video digital"),
+    ("medical_forensic_evidence", "medical forensic postmortem injury FSL DNA expert"),
+    ("recovery_seizure_evidence", "recovery seizure weapon recovered seized articles"),
+    ("investigation_steps", "investigation police steps arrest search seizure statement"),
+    ("procedural_history", "procedural history trial appeal petition order filed"),
+    ("accused_or_defence_position", "defence accused denied alibi counter submission"),
+    ("arguments_or_contentions", "arguments submissions contentions grounds prayer"),
+    ("court_findings", "court findings reasoning held considered satisfied"),
+    ("relief_or_final_order", "relief final order disposed allowed dismissed sentence bail"),
 )
 _ALLOCATABLE_FIELDS = tuple(name for name, _ in _INTENTS if name != "parties_intent")
 _CANDIDATES_PER_INTENT = 3
@@ -74,15 +81,6 @@ _STATUTE_SUFFIX_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-_DOCUMENT_TYPE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("FIR", ("first information report", "fir no", "f.i.r")),
-    ("chargesheet", ("chargesheet", "charge sheet", "final report under section 173")),
-    ("judgment", ("judgment", "judgement", "in the court of", "before the hon'ble", "j u d g m e n t")),
-    ("appeal", ("memorandum of appeal", "criminal appeal no", "appellant")),
-    ("petition", ("petition under", "petitioner", "writ petition")),
-    ("order", ("order sheet", "this order", "ordered accordingly")),
-)
-
 _MAX_ENTRIES_PER_FIELD = 6
 _MAX_EXCERPT_CHARS = 500
 _MAX_PARTIES = 10
@@ -95,6 +93,27 @@ class MapExcerpt:
     private_evidence_id: str
     pages: str
     excerpt: str
+    page_start: int | None = None
+    page_end: int | None = None
+
+
+@dataclass(frozen=True)
+class PartyRole:
+    role: str
+    name: str | None = None
+    private_evidence_id: str | None = None
+    page_start: int | None = None
+    page_end: int | None = None
+
+
+@dataclass(frozen=True)
+class ChronologyEntry:
+    date: str
+    event: str | None = None
+    context: str | None = None
+    private_evidence_id: str | None = None
+    page_start: int | None = None
+    page_end: int | None = None
 
 
 @dataclass(frozen=True)
@@ -106,18 +125,37 @@ class LocalDocumentMap:
     the trusted corpus's job."""
 
     document_type: str
+    document_type_confidence: float = 0.0
     parties: list[str] = field(default_factory=list)
+    parties_and_roles: list[PartyRole] = field(default_factory=list)
     important_dates: list[str] = field(default_factory=list)
+    chronology: list[ChronologyEntry] = field(default_factory=list)
+    explicit_statutes: list[str] = field(default_factory=list)
     explicit_sections: list[str] = field(default_factory=list)
+    document_overview: list[MapExcerpt] = field(default_factory=list)
     material_facts: list[MapExcerpt] = field(default_factory=list)
     allegations: list[MapExcerpt] = field(default_factory=list)
+    complainant_or_prosecution_position: list[MapExcerpt] = field(default_factory=list)
+    accused_or_defence_position: list[MapExcerpt] = field(default_factory=list)
+    defence_or_accused_position: list[MapExcerpt] = field(default_factory=list)
     charges: list[MapExcerpt] = field(default_factory=list)
     evidence_excerpts: list[MapExcerpt] = field(default_factory=list)
     witness_excerpts: list[MapExcerpt] = field(default_factory=list)
+    witness_evidence: list[MapExcerpt] = field(default_factory=list)
+    documentary_evidence: list[MapExcerpt] = field(default_factory=list)
+    electronic_evidence: list[MapExcerpt] = field(default_factory=list)
     medical_forensic_excerpts: list[MapExcerpt] = field(default_factory=list)
+    medical_forensic_evidence: list[MapExcerpt] = field(default_factory=list)
+    recovery_seizure_evidence: list[MapExcerpt] = field(default_factory=list)
     investigation_excerpts: list[MapExcerpt] = field(default_factory=list)
-    defence_or_accused_position: list[MapExcerpt] = field(default_factory=list)
+    investigation_steps: list[MapExcerpt] = field(default_factory=list)
+    procedural_history: list[MapExcerpt] = field(default_factory=list)
+    arguments_or_contentions: list[MapExcerpt] = field(default_factory=list)
     findings_or_orders: list[MapExcerpt] = field(default_factory=list)
+    court_findings: list[MapExcerpt] = field(default_factory=list)
+    court_reasoning: list[MapExcerpt] = field(default_factory=list)
+    relief_or_final_order: list[MapExcerpt] = field(default_factory=list)
+    missing_or_unclear_information: list[str] = field(default_factory=list)
     important_chunk_ids: list[str] = field(default_factory=list)
     important_pages: list[str] = field(default_factory=list)
 
@@ -127,12 +165,44 @@ class LocalDocumentMap:
 # ---------------------------------------------------------------------------
 
 
+def detect_document_type_with_confidence(filename: str, chunks: list[PrivateChunk]) -> tuple[str, float]:
+    early_text = " ".join(chunk.text for chunk in chunks[:2]).lower()
+    all_text = " ".join(chunk.text for chunk in chunks[:5]).lower()
+    filename_l = re.sub(r"[_\-.]+", " ", filename.lower())
+    scores = {
+        "judgment": 0,
+        "order": 0,
+        "FIR": 0,
+        "chargesheet": 0,
+        "petition": 0,
+    }
+    if re.search(r"(supreme court of india|high court of|in the court of|coram|j\s*\.)", early_text):
+        scores["judgment"] += 4
+    if re.search(r"\b(judg(e)?ment|criminal appeal|civil appeal|appellant\s+v(?:s\.?|\.))\b", early_text):
+        scores["judgment"] += 3
+    if re.search(r"\b(order|ordered accordingly|disposed of)\b", early_text):
+        scores["order"] += 3
+    if "first information report" in early_text or re.search(r"\bf\.?i\.?r\.?\s*(no|number)\b", early_text):
+        scores["FIR"] += 4
+    if re.search(r"\b(police station|informant|complainant|date of occurrence)\b", early_text):
+        scores["FIR"] += 2
+    if re.search(r"\bfir\s+no\b", all_text) and scores["judgment"] == 0:
+        scores["FIR"] += 1
+    if re.search(r"\b(charge\s*sheet|chargesheet|final report|police report)\b", early_text + " " + filename_l):
+        scores["chargesheet"] += 4
+    if re.search(r"\b(list of witnesses|accused list|section 173\(?(?:2)?\)?\s*cr\.?p\.?c)\b", all_text):
+        scores["chargesheet"] += 2
+    if re.search(r"\b(writ petition|petition under|petitioner|respondent|prayer|relief sought)\b", early_text + " " + filename_l):
+        scores["petition"] += 3
+    doc_type, score = max(scores.items(), key=lambda item: item[1])
+    if score < 3:
+        return "unknown", 0.0
+    confidence = min(0.95, 0.45 + (score * 0.1))
+    return doc_type, round(confidence, 2)
+
+
 def detect_document_type(filename: str, chunks: list[PrivateChunk]) -> str:
-    haystack = filename.lower() + " " + " ".join(chunk.text.lower() for chunk in chunks[:3])
-    for doc_type, markers in _DOCUMENT_TYPE_PATTERNS:
-        if any(marker in haystack for marker in markers):
-            return doc_type
-    return "unknown"
+    return detect_document_type_with_confidence(filename, chunks)[0]
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +217,64 @@ def _statute_suffix_after(text: str, end: int) -> str | None:
     return match.group(1) if match else None
 
 
+_SECTION_PATTERN = re.compile(
+    r"\b(?:u/s|under\s+section|sections?|sec\.?)\s+"
+    r"([0-9A-Za-z()/-]+(?:\s*(?:,|and|/|read\s+with|r/w)\s*[0-9A-Za-z()/-]+)*)"
+    r"\s*(IPC|I\.P\.C\.|CrPC|Cr\.P\.C\.|BNS|BNSS|POCSO|Evidence Act|Indian Evidence Act|BSA|Bharatiya Sakshya Adhiniyam)?",
+    re.IGNORECASE,
+)
+_STATUTE_PATTERN = re.compile(
+    r"\b(IPC|I\.P\.C\.|CrPC|Cr\.P\.C\.|BNS|BNSS|POCSO|Evidence Act|Indian Evidence Act|BSA|Bharatiya Sakshya Adhiniyam)\b",
+    re.IGNORECASE,
+)
+_DATE_PATTERN = re.compile(
+    r"\b(?:\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}\s+"
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|"
+    r"Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}|"
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|"
+    r"Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},\s+\d{4})\b",
+    re.IGNORECASE,
+)
+_PARTY_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("appellant", re.compile(r"\bappellant(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+    ("respondent", re.compile(r"\brespondent(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+    ("petitioner", re.compile(r"\bpetitioner(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+    ("accused", re.compile(r"\baccused(?:\s+no\.?\s*\d+)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+    ("complainant", re.compile(r"\bcomplainant\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+    ("informant", re.compile(r"\binformant\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+)
+_VERSUS_PATTERN = re.compile(r"([A-Z][A-Za-z0-9 .,&'-]{2,80})\s+v(?:s\.?|\.?)\s+([A-Z][A-Za-z0-9 .,&'-]{2,80})")
+_GENERIC_PARTY_NAMES = {"accused", "complainant", "informant", "petitioner", "respondent", "appellant", "state"}
+
+
+def _clean_party_name(value: str) -> str | None:
+    name = re.split(r"\s{2,}|\n|,?\s+(?:appellant|respondent|petitioner|accused)\b", value.strip(), flags=re.IGNORECASE)[0]
+    name = re.sub(r"\s+", " ", name).strip(" .:-")
+    if not name or name.lower() in _GENERIC_PARTY_NAMES or len(name) < 3:
+        return None
+    return name[:120]
+
+
+def _event_for_context(context: str) -> str | None:
+    lower = context.lower()
+    cues = (
+        ("arrest", ("arrest", "arrested")),
+        ("FIR registered", ("fir", "registered")),
+        ("incident occurred", ("incident", "occurred")),
+        ("incident occurred", ("occurrence",)),
+        ("charge sheet filed", ("charge sheet", "chargesheet", "final report")),
+        ("petition filed", ("petition", "filed")),
+        ("order pronounced", ("order", "pronounced")),
+        ("judgment delivered", ("judgment", "delivered")),
+        ("medical examination", ("medical", "examination")),
+        ("recovery/seizure", ("recovered", "seized", "recovery", "seizure")),
+    )
+    for label, terms in cues:
+        if any(term in lower for term in terms):
+            return label
+    return None
+
+
 def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str], list[str], list[str]]:
     """Returns (explicit_sections, parties, important_dates), each deduped
     and capped, extracted purely via `legal_ner.extract_deterministic_entities`
@@ -159,6 +287,18 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
     seen_dates: set[str] = set()
 
     for chunk in chunks:
+        for match in _SECTION_PATTERN.finditer(chunk.text):
+            statute = match.group(2)
+            label = f"Section {match.group(1).strip()} {statute or ''}".strip()
+            key = re.sub(r"\s+", " ", label.lower())
+            if key not in seen_sections and len(sections) < _MAX_SECTIONS:
+                seen_sections.add(key)
+                sections.append(label)
+        for match in _STATUTE_PATTERN.finditer(chunk.text):
+            key = match.group(1).lower().replace(".", "")
+            if key not in seen_sections and len(sections) < _MAX_SECTIONS:
+                seen_sections.add(key)
+                sections.append(match.group(1))
         result = extract_deterministic_entities(chunk.text)
         for entity in result.entities:
             if entity.entity_type == "SECTION":
@@ -187,6 +327,58 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
     return sections, parties, dates
 
 
+def extract_parties_and_roles(chunks: list[PrivateChunk]) -> list[PartyRole]:
+    parties: list[PartyRole] = []
+    seen: set[tuple[str, str | None]] = set()
+    for chunk in chunks:
+        head = chunk.text[:1200]
+        for left, right in _VERSUS_PATTERN.findall(head):
+            pairs = (("petitioner/appellant", _clean_party_name(left)), ("respondent", _clean_party_name(right)))
+            for role, name in pairs:
+                key = (role, (name or "").lower())
+                if name and key not in seen and len(parties) < _MAX_PARTIES:
+                    seen.add(key)
+                    parties.append(PartyRole(role=role, name=name, private_evidence_id=chunk.private_chunk_id, page_start=chunk.page_start, page_end=chunk.page_end))
+        for role, pattern in _PARTY_PATTERNS:
+            for match in pattern.finditer(head):
+                name = _clean_party_name(match.group(1))
+                key = (role, (name or "").lower())
+                if name and key not in seen and len(parties) < _MAX_PARTIES:
+                    seen.add(key)
+                    parties.append(PartyRole(role=role, name=name, private_evidence_id=chunk.private_chunk_id, page_start=chunk.page_start, page_end=chunk.page_end))
+    return parties
+
+
+def extract_chronology(chunks: list[PrivateChunk]) -> list[ChronologyEntry]:
+    entries: list[ChronologyEntry] = []
+    seen: set[tuple[str, str]] = set()
+    for chunk in chunks:
+        for match in _DATE_PATTERN.finditer(chunk.text):
+            start = max(0, match.start() - 120)
+            end = min(len(chunk.text), match.end() + 160)
+            context = re.sub(r"\s+", " ", chunk.text[start:end]).strip()
+            sentence_start = max(chunk.text.rfind(".", 0, match.start()) + 1, chunk.text.rfind("\n", 0, match.start()) + 1, 0)
+            next_period = chunk.text.find(".", match.end())
+            sentence_end = next_period + 1 if next_period != -1 else end
+            sentence_context = re.sub(r"\s+", " ", chunk.text[sentence_start:sentence_end]).strip()
+            event = _event_for_context(sentence_context or context)
+            key = (match.group(0).lower(), (event or context[:60]).lower())
+            if key in seen or len(entries) >= _MAX_DATES:
+                continue
+            seen.add(key)
+            entries.append(
+                ChronologyEntry(
+                    date=match.group(0),
+                    event=event,
+                    context=context[:240],
+                    private_evidence_id=chunk.private_chunk_id,
+                    page_start=chunk.page_start,
+                    page_end=chunk.page_end,
+                )
+            )
+    return entries
+
+
 # ---------------------------------------------------------------------------
 # Multi-intent private retrieval + deduplication (sections 5, 6).
 # ---------------------------------------------------------------------------
@@ -210,38 +402,61 @@ def select_multi_intent_evidence(
     intent is never claimed again by a later one, and inclusion stops for
     every remaining intent once the shared budget is spent. Broad document
     coverage is preferred over exhausting the budget on one intent."""
-    claimed_indexes: set[int] = set()
     by_field: dict[str, list[MapExcerpt]] = {name: [] for name in _ALLOCATABLE_FIELDS}
+    candidates_by_field: dict[str, list[PrivateEvidenceItem]] = {}
+    claimed_indexes: set[int] = set()
     used_tokens = 0
 
     for field_name, intent_text in _INTENTS:
-        if field_name == "parties_intent":
-            continue  # parties come from deterministic NER, not intent retrieval
-        if used_tokens >= token_budget_tokens:
-            break
-        remaining_budget = token_budget_tokens - used_tokens
-        candidates = select_query_focused_private_evidence(
+        candidates_by_field[field_name] = select_query_focused_private_evidence(
             chunks,
             intent_text,
             dense_provider=dense_provider,
             top_k=_CANDIDATES_PER_INTENT,
-            token_budget_tokens=remaining_budget,
+            token_budget_tokens=token_budget_tokens,
         )
-        for item in candidates:
-            if item.chunk.chunk_index in claimed_indexes:
-                continue
-            if len(by_field[field_name]) >= _MAX_ENTRIES_PER_FIELD:
-                break
-            claimed_indexes.add(item.chunk.chunk_index)
-            by_field[field_name].append(
-                MapExcerpt(
-                    private_evidence_id=item.chunk.private_chunk_id,
-                    pages=_page_range(item.chunk),
-                    excerpt=_bounded_excerpt(item.chunk.text),
-                )
-            )
-            used_tokens += item.chunk.token_count
 
+    def claim(field_name: str, item: PrivateEvidenceItem) -> bool:
+        nonlocal used_tokens
+        if item.chunk.chunk_index in claimed_indexes:
+            return False
+        if len(by_field[field_name]) >= _MAX_ENTRIES_PER_FIELD:
+            return False
+        if used_tokens + item.chunk.token_count > token_budget_tokens:
+            return False
+        claimed_indexes.add(item.chunk.chunk_index)
+        by_field[field_name].append(
+            MapExcerpt(
+                private_evidence_id=item.chunk.private_chunk_id,
+                pages=_page_range(item.chunk),
+                excerpt=_bounded_excerpt(item.chunk.text),
+                page_start=item.chunk.page_start,
+                page_end=item.chunk.page_end,
+            )
+        )
+        used_tokens += item.chunk.token_count
+        return True
+
+    # Pass 1: fair coverage. Each intent may claim at most one strong unique chunk.
+    for field_name, _ in _INTENTS:
+        if used_tokens >= token_budget_tokens:
+            break
+        for item in candidates_by_field.get(field_name, []):
+            if claim(field_name, item):
+                break
+
+    # Pass 2: spend remaining budget on next-best useful chunks across intents.
+    for rank in range(1, _CANDIDATES_PER_INTENT):
+        if used_tokens >= token_budget_tokens:
+            break
+        for field_name, _ in _INTENTS:
+            candidates = candidates_by_field.get(field_name, [])
+            if rank < len(candidates):
+                claim(field_name, candidates[rank])
+
+    # Pass 3: deterministic ordering after global deduplication and budget trim.
+    for entries in by_field.values():
+        entries.sort(key=lambda entry: int(entry.private_evidence_id[1:]) if entry.private_evidence_id[1:].isdigit() else 0)
     return by_field
 
 
@@ -260,8 +475,15 @@ def build_local_document_map(
     """Build the full local document map. Zero provider calls. Empty fields
     are returned as empty lists rather than invented content when nothing
     relevant is found."""
-    document_type = detect_document_type(filename, chunks)
+    document_type, confidence = detect_document_type_with_confidence(filename, chunks)
     sections, parties, dates = extract_sections_and_entities(chunks)
+    parties_and_roles = extract_parties_and_roles(chunks)
+    chronology = extract_chronology(chunks)
+    explicit_statutes = []
+    for section in sections:
+        for statute in _STATUTE_ABBREVIATIONS:
+            if statute.lower() in section.lower() and statute not in explicit_statutes:
+                explicit_statutes.append(statute)
     by_field = select_multi_intent_evidence(chunks, dense_provider=dense_provider, token_budget_tokens=token_budget_tokens)
 
     all_selected_ids = [excerpt.private_evidence_id for entries in by_field.values() for excerpt in entries]
@@ -271,51 +493,115 @@ def build_local_document_map(
 
     return LocalDocumentMap(
         document_type=document_type,
+        document_type_confidence=confidence,
         parties=parties,
+        parties_and_roles=parties_and_roles,
         important_dates=dates,
+        chronology=chronology,
+        explicit_statutes=explicit_statutes[:10],
         explicit_sections=sections,
+        document_overview=by_field["document_overview"],
         material_facts=by_field["material_facts"],
         allegations=by_field["charges"][: _MAX_ENTRIES_PER_FIELD // 2],
+        complainant_or_prosecution_position=by_field["allegations"],
         charges=by_field["charges"],
-        evidence_excerpts=by_field["evidence_excerpts"],
-        witness_excerpts=by_field["witness_excerpts"],
-        medical_forensic_excerpts=by_field["medical_forensic_excerpts"],
-        investigation_excerpts=by_field["investigation_excerpts"],
-        defence_or_accused_position=by_field["defence_or_accused_position"],
-        findings_or_orders=by_field["findings_or_orders"],
+        evidence_excerpts=(
+            by_field["witness_evidence"]
+            + by_field["documentary_evidence"]
+            + by_field["electronic_evidence"]
+            + by_field["medical_forensic_evidence"]
+            + by_field["recovery_seizure_evidence"]
+        )[:_MAX_ENTRIES_PER_FIELD],
+        witness_excerpts=by_field["witness_evidence"],
+        witness_evidence=by_field["witness_evidence"],
+        documentary_evidence=by_field["documentary_evidence"],
+        electronic_evidence=by_field["electronic_evidence"],
+        medical_forensic_excerpts=by_field["medical_forensic_evidence"],
+        medical_forensic_evidence=by_field["medical_forensic_evidence"],
+        recovery_seizure_evidence=by_field["recovery_seizure_evidence"],
+        investigation_excerpts=by_field["investigation_steps"],
+        investigation_steps=by_field["investigation_steps"],
+        procedural_history=by_field["procedural_history"],
+        defence_or_accused_position=by_field["accused_or_defence_position"],
+        accused_or_defence_position=by_field["accused_or_defence_position"],
+        arguments_or_contentions=by_field["arguments_or_contentions"],
+        findings_or_orders=by_field["court_findings"],
+        court_findings=by_field["court_findings"],
+        court_reasoning=by_field["court_findings"],
+        relief_or_final_order=by_field["relief_or_final_order"],
+        missing_or_unclear_information=_missing_information(document_type, by_field),
         important_chunk_ids=sorted(set(all_selected_ids), key=lambda cid: int(cid[1:])) if all_selected_ids else [],
         important_pages=all_selected_pages,
     )
 
 
+def _missing_information(document_type: str, by_field: dict[str, list[MapExcerpt]]) -> list[str]:
+    missing: list[str] = []
+    if not by_field.get("medical_forensic_evidence"):
+        missing.append("No medical or forensic evidence excerpt was identified in the uploaded material.")
+    if not by_field.get("accused_or_defence_position"):
+        missing.append("No accused or defence position excerpt was identified in the uploaded material.")
+    if document_type in {"judgment", "order"} and not by_field.get("relief_or_final_order"):
+        missing.append("No final relief or operative order excerpt was identified in the selected document map.")
+    return missing[:6]
+
+
 _EXCERPT_FIELDS = (
+    "document_overview",
     "material_facts",
     "allegations",
+    "complainant_or_prosecution_position",
     "charges",
     "evidence_excerpts",
-    "witness_excerpts",
-    "medical_forensic_excerpts",
-    "investigation_excerpts",
+    "witness_evidence",
+    "documentary_evidence",
+    "electronic_evidence",
+    "medical_forensic_evidence",
+    "recovery_seizure_evidence",
+    "investigation_steps",
+    "procedural_history",
     "defence_or_accused_position",
-    "findings_or_orders",
+    "arguments_or_contentions",
+    "court_findings",
+    "relief_or_final_order",
 )
 
 
 def render_local_document_map(document_map: LocalDocumentMap) -> str:
     lines = [
         f'<PRIVATE_DOCUMENT_MAP document_type="{document_map.document_type}" '
+        f'document_type_confidence="{document_map.document_type_confidence}" '
         f'chunks="{",".join(document_map.important_chunk_ids)}">',
         "This is a locally built (no AI-generated summarization), compact map of the "
         "uploaded private document. It describes the document only, is not legal "
         "authority, and any statutory sections below are mentions found explicitly in "
         "the document text, not verified applicable law.",
+        "Prepare a substantive professional case-file summary based only on the uploaded-document P# evidence and trusted E# authority. "
+        "Explain the factual narrative, parties and roles, chronology, explicit statutory provisions, major evidence, procedural posture, "
+        "and unresolved or missing information where supported. Be comprehensive relative to supported evidence; do not pad, speculate, "
+        "or replace the document summary with generic legal commentary.",
     ]
+    if document_map.parties_and_roles:
+        lines.append("parties_and_roles:")
+        for party in document_map.parties_and_roles:
+            name = party.name or "(role only)"
+            evidence = f" [{party.private_evidence_id}]" if party.private_evidence_id else ""
+            lines.append(f"- {party.role}: {name}{evidence}")
     if document_map.parties:
         lines.append("parties: " + "; ".join(document_map.parties))
     if document_map.important_dates:
         lines.append("important_dates: " + "; ".join(document_map.important_dates))
+    if document_map.chronology:
+        lines.append("chronology:")
+        for item in document_map.chronology:
+            event = f" - {item.event}" if item.event else ""
+            evidence = f" [{item.private_evidence_id}]" if item.private_evidence_id else ""
+            context = f": {item.context}" if item.context else ""
+            lines.append(f"- {item.date}{event}{evidence}{context}")
     if document_map.explicit_sections:
         lines.append("statutory_sections_explicitly_mentioned: " + "; ".join(document_map.explicit_sections))
+    if document_map.explicit_statutes:
+        lines.append("statutes_explicitly_mentioned: " + "; ".join(document_map.explicit_statutes))
     for field_name in _EXCERPT_FIELDS:
         entries: list[MapExcerpt] = getattr(document_map, field_name)
         if not entries:
@@ -323,6 +609,10 @@ def render_local_document_map(document_map: LocalDocumentMap) -> str:
         lines.append(f"{field_name}:")
         for entry in entries:
             lines.append(f'- [{entry.private_evidence_id}, pages {entry.pages}] {entry.excerpt}')
+    if document_map.missing_or_unclear_information:
+        lines.append("missing_or_unclear_information:")
+        for item in document_map.missing_or_unclear_information:
+            lines.append(f"- {item}")
     lines.append("</PRIVATE_DOCUMENT_MAP>")
     return "\n".join(lines)
 
@@ -339,6 +629,8 @@ def build_enriched_trusted_query(document_map: LocalDocumentMap, *, fallback_que
         parts.append(" ".join(entry.excerpt[:120] for entry in document_map.charges[:2]))
     if document_map.material_facts:
         parts.append(" ".join(entry.excerpt[:120] for entry in document_map.material_facts[:2]))
+    if document_map.chronology:
+        parts.append(" ".join(f"{item.date} {item.event or ''}" for item in document_map.chronology[:4]))
     enriched = " ".join(part for part in parts if part).strip()
     return enriched or fallback_query
 
@@ -348,9 +640,23 @@ def local_map_metrics(document_map: LocalDocumentMap) -> dict[str, Any]:
     excerpt_count = sum(len(getattr(document_map, name)) for name in _EXCERPT_FIELDS)
     return {
         "document_type": document_map.document_type,
+        "document_type_confidence": document_map.document_type_confidence,
         "parties_count": len(document_map.parties),
+        "parties_and_roles_count": len(document_map.parties_and_roles),
         "dates_count": len(document_map.important_dates),
+        "chronology_count": len(document_map.chronology),
         "sections_count": len(document_map.explicit_sections),
+        "evidence_categories_count": sum(
+            1
+            for name in (
+                "witness_evidence",
+                "documentary_evidence",
+                "electronic_evidence",
+                "medical_forensic_evidence",
+                "recovery_seizure_evidence",
+            )
+            if getattr(document_map, name)
+        ),
         "excerpt_count": excerpt_count,
         "estimated_map_tokens": estimate_tokens(render_local_document_map(document_map)),
     }
