@@ -1,33 +1,18 @@
-"""Tests for the bounded, temporary private-PDF RAG pipeline.
-
-No live provider calls anywhere in this file - Stage-1 hierarchical
-extraction is exercised against a fake in-process adapter, never a real
-Gemini/Groq HTTP call.
-"""
+"""Tests for the bounded, temporary private-PDF chunking and query-focused
+retrieval pipeline. No live provider calls anywhere in this file - this
+module makes no provider calls at all (local_document_map.py's tests cover
+the entirely-local whole-document analysis that replaced the old per-batch
+generative Stage-1 approach)."""
 
 from __future__ import annotations
 
 import unittest
 
-from backend.app.services.legal_answer_generation import (
-    AnswerMode,
-    LegalAnswerModelResponse,
-    ModelGenerationMetadata,
-    ModelProviderError,
-    ModelUnavailableError,
-)
 from backend.app.services.private_pdf_rag import (
-    DocumentMapBatch,
     PrivateChunk,
-    PrivateDocumentBatchSummary,
-    batch_private_chunks,
     build_private_chunks,
-    generate_stage1_batch_summaries,
-    reduce_stage1_batches,
-    render_private_document_map,
     render_private_evidence_block,
     select_query_focused_private_evidence,
-    select_representative_excerpts,
 )
 
 
@@ -213,156 +198,12 @@ class RenderPrivateEvidenceBlockTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
-class FakeStage1Adapter:
-    """A fake `LegalAnswerModelAdapter` used only to test the orchestration
-    logic - never makes any HTTP call."""
-
-    def __init__(self, outcome: str = "success"):
-        self.outcome = outcome
-        self.calls = 0
-
-    def generate_structured_answer(self, prompt, *, schema, mode):
-        self.calls += 1
-        if self.outcome == "unavailable":
-            raise ModelUnavailableError("fixture unavailable")
-        if self.outcome == "provider_error":
-            raise ModelProviderError("GROQ_PROVIDER_ERROR", "fixture upstream failure", http_status=500)
-        answer = {
-            "material_facts": [f"fact from batch {self.calls}"],
-            "statutory_references_mentioned": ["Section 302 IPC"],
-        }
-        return LegalAnswerModelResponse(
-            raw_response="{}",
-            parsed_response={"answer": answer, "summary": "batch summary", "claims": []},
-            model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
-        )
-
-
-class BatchingTests(unittest.TestCase):
-    def make_chunks(self, n: int, token_count: int = 100) -> list[PrivateChunk]:
-        return build_private_chunks([raw_chunk(f"chunk {i}", page=i, token_count=token_count) for i in range(1, n + 1)])
-
-    def test_batches_respect_max_chunk_count(self) -> None:
-        chunks = self.make_chunks(20)
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=5, batch_token_budget=100000)
-        self.assertTrue(all(len(batch) <= 5 for batch in batches))
-        self.assertEqual(sum(len(b) for b in batches), 20)
-
-    def test_batches_respect_token_budget(self) -> None:
-        chunks = self.make_chunks(10, token_count=100)
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=100, batch_token_budget=250)
-        for batch in batches:
-            self.assertLessEqual(sum(c.token_count for c in batch), 300)  # allows one chunk over, never many
-
-    def test_no_batch_contains_the_entire_large_document(self) -> None:
-        chunks = self.make_chunks(50, token_count=200)
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=8, batch_token_budget=1200)
-        self.assertGreater(len(batches), 1)
-        self.assertTrue(all(len(batch) < len(chunks) for batch in batches))
-
-    def test_small_document_produces_a_single_batch(self) -> None:
-        chunks = self.make_chunks(3, token_count=50)
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=8, batch_token_budget=5000)
-        self.assertEqual(len(batches), 1)
-
-
-class Stage1GenerationTests(unittest.TestCase):
-    def test_one_adapter_call_per_batch_not_per_chunk(self) -> None:
-        chunks = build_private_chunks([raw_chunk(f"chunk {i}", token_count=50) for i in range(1, 9)])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=4, batch_token_budget=100000)
-        adapter = FakeStage1Adapter()
-        results = generate_stage1_batch_summaries(batches, adapter=adapter, mode=AnswerMode.PROFESSIONAL)
-        self.assertEqual(adapter.calls, len(batches))
-        self.assertEqual(len(results), len(batches))
-        self.assertIsInstance(results[0], DocumentMapBatch)
-
-    def test_batch_result_tracks_its_source_chunk_ids(self) -> None:
-        chunks = build_private_chunks([raw_chunk("a"), raw_chunk("b")])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=8, batch_token_budget=100000)
-        results = generate_stage1_batch_summaries(batches, adapter=FakeStage1Adapter(), mode=AnswerMode.PROFESSIONAL)
-        self.assertEqual(results[0].chunk_ids, ["P1", "P2"])
-
-    def test_provider_unavailable_propagates_as_the_raw_adapter_exception(self) -> None:
-        chunks = build_private_chunks([raw_chunk("a")])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=8, batch_token_budget=100000)
-        with self.assertRaises(ModelUnavailableError):
-            generate_stage1_batch_summaries(batches, adapter=FakeStage1Adapter(outcome="unavailable"), mode=AnswerMode.PROFESSIONAL)
-
-    def test_provider_error_propagates_as_the_raw_adapter_exception(self) -> None:
-        chunks = build_private_chunks([raw_chunk("a")])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=8, batch_token_budget=100000)
-        with self.assertRaises(ModelProviderError):
-            generate_stage1_batch_summaries(batches, adapter=FakeStage1Adapter(outcome="provider_error"), mode=AnswerMode.PROFESSIONAL)
-
-
-class ReductionTests(unittest.TestCase):
-    def test_reduction_merges_and_dedupes_across_batches(self) -> None:
-        batches = [
-            DocumentMapBatch(batch_index=0, chunk_ids=["P1"], summary=PrivateDocumentBatchSummary(material_facts=["fact A"], statutory_references_mentioned=["Section 302 IPC"])),
-            DocumentMapBatch(batch_index=1, chunk_ids=["P2"], summary=PrivateDocumentBatchSummary(material_facts=["fact B"], statutory_references_mentioned=["Section 302 IPC"])),
-        ]
-        merged = reduce_stage1_batches(batches)
-        self.assertEqual(merged.material_facts, ["fact A", "fact B"])
-        self.assertEqual(merged.statutory_references_mentioned, ["Section 302 IPC"])  # deduped
-        self.assertEqual(merged.covered_chunk_ids, ["P1", "P2"])
-        self.assertEqual(merged.batch_count, 2)
-
-    def test_reduction_caps_entries_per_field_so_growth_is_bounded(self) -> None:
-        batches = [
-            DocumentMapBatch(batch_index=i, chunk_ids=[f"P{i}"], summary=PrivateDocumentBatchSummary(material_facts=[f"fact {i}"]))
-            for i in range(100)
-        ]
-        merged = reduce_stage1_batches(batches)
-        self.assertLessEqual(len(merged.material_facts), 25)
-
-    def test_reduction_of_empty_batch_list_is_safe(self) -> None:
-        merged = reduce_stage1_batches([])
-        self.assertEqual(merged.batch_count, 0)
-        self.assertEqual(merged.material_facts, [])
-
-    def test_rendered_map_marks_statutory_mentions_as_not_verified_law(self) -> None:
-        batches = [DocumentMapBatch(batch_index=0, chunk_ids=["P1"], summary=PrivateDocumentBatchSummary(statutory_references_mentioned=["Section 302 IPC"]))]
-        rendered = render_private_document_map(reduce_stage1_batches(batches))
-        self.assertIn("not verified applicable law", rendered)
-        self.assertIn("Section 302 IPC", rendered)
-
-
-class RepresentativeExcerptTests(unittest.TestCase):
-    def test_selects_one_excerpt_per_batch(self) -> None:
-        chunks = build_private_chunks([raw_chunk(f"chunk {i}", token_count=50) for i in range(1, 9)])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=4, batch_token_budget=100000)
-        excerpts = select_representative_excerpts(batches, token_budget_tokens=100000)
-        self.assertEqual(len(excerpts), len(batches))
-
-    def test_respects_token_budget(self) -> None:
-        chunks = build_private_chunks([raw_chunk(f"chunk {i}", token_count=100) for i in range(1, 9)])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=4, batch_token_budget=100000)
-        excerpts = select_representative_excerpts(batches, token_budget_tokens=150)
-        self.assertLessEqual(sum(item.chunk.token_count for item in excerpts), 150)
-
-    def test_zero_budget_selects_nothing(self) -> None:
-        chunks = build_private_chunks([raw_chunk("chunk", token_count=100)])
-        batches = batch_private_chunks(chunks, max_chunks_per_batch=4, batch_token_budget=100000)
-        self.assertEqual(select_representative_excerpts(batches, token_budget_tokens=0), [])
-
-
 class TraceabilityTests(unittest.TestCase):
     def test_private_ids_never_look_like_trusted_evidence_ids(self) -> None:
         chunks = build_private_chunks([raw_chunk("text")])
         for chunk in chunks:
             self.assertRegex(chunk.private_chunk_id, r"^P\d+$")
             self.assertNotRegex(chunk.private_chunk_id, r"^E\d+$")
-
-    def test_document_map_retains_covered_chunk_ids_for_traceability(self) -> None:
-        batches = [
-            DocumentMapBatch(batch_index=0, chunk_ids=["P1", "P2"], summary=PrivateDocumentBatchSummary()),
-            DocumentMapBatch(batch_index=1, chunk_ids=["P3"], summary=PrivateDocumentBatchSummary()),
-        ]
-        merged = reduce_stage1_batches(batches)
-        self.assertEqual(merged.covered_chunk_ids, ["P1", "P2", "P3"])
-        rendered = render_private_document_map(merged)
-        self.assertIn("P1", rendered)
-        self.assertIn("P3", rendered)
 
 
 if __name__ == "__main__":

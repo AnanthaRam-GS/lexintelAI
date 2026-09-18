@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfessionalUploadPage from './page';
-import { queryApi } from '../../../lib/api';
+import { ApiClientError, queryApi } from '../../../lib/api';
 import { mockProfessionalQueryResponse } from '../../../lib/mocks/professionalMocks';
 
 describe('Professional Upload Page', () => {
@@ -80,11 +80,47 @@ describe('Professional Upload Page', () => {
     fireEvent.click(screen.getByRole('button', { name: /Begin Private Analysis/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Analyzing document in stages...')).toBeInTheDocument();
+      expect(
+        screen.getByText('Analyzing document and retrieving relevant legal authorities...'),
+      ).toBeInTheDocument();
     });
     expect(screen.queryByText(/batch/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/chunk/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/stage/i)).not.toBeInTheDocument();
 
     resolveSubmit(mockProfessionalQueryResponse);
+  });
+
+  it('shows a usage-limit-specific message on a 429 without exposing raw provider detail', async () => {
+    vi.spyOn(queryApi, 'submitPdf').mockRejectedValue(
+      new ApiClientError(
+        'The legal research context exceeded the current AI provider capacity.',
+        429,
+        'MODEL_PROVIDER_QUOTA_EXCEEDED',
+      ),
+    );
+
+    render(<ProfessionalUploadPage />);
+
+    const file = new File(['%PDF-1.4 test case file'], 'bail_appeal_brief.pdf', {
+      type: 'application/pdf',
+    });
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Begin Private Analysis/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Begin Private Analysis/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Usage Limit Reached')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(
+        'AI analysis capacity is temporarily exhausted. Your document was not stored. Please try again after the provider limit resets.',
+      ),
+    ).toBeInTheDocument();
   });
 });

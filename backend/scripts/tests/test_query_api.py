@@ -377,48 +377,27 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(FlakyAdapter.calls, 2, "exactly one retry, no retry loop")
         self.assertLess(call_prompts[1], call_prompts[0], "the retry must actually be smaller than the first attempt")
 
-    def test_professional_pdf_whole_document_brief_mode_uses_bounded_hierarchical_batches(self) -> None:
-        """A synthetic large multi-page document, forced to exceed a one-shot
-        context budget, must be processed as multiple bounded Stage-1
-        batches (not one giant request), reduced, and finished with a
-        Stage-2 final brief - with no single provider call exceeding the
-        configured app-level token budget. No live provider calls."""
-        from backend.app.core.config import Settings as SettingsCls
-        from backend.app.services.private_pdf_rag import PrivateDocumentBatchSummary
-        from backend.app.services.token_budget import estimate_tokens
-
-        # ~40 chunks x ~150 estimated tokens each is comfortably larger than a
-        # small test-configured context budget, forcing multiple batches.
+    def test_professional_pdf_whole_document_brief_mode_makes_zero_stage1_and_exactly_one_final_provider_call(self) -> None:
+        """CRITICAL acceptance test: whole-document brief mode must make ZERO
+        provider calls while building the local document map, and EXACTLY
+        ONE provider call total, for a large (40+ chunk) document - the
+        entire point of replacing the old per-batch generative Stage-1
+        approach that could make 5-10+ calls per document."""
         large_chunks = private_chunks("Material fact about the case and Section 302 IPC. " * 25, count=40)
+        adapter_calls: list[str] = []
 
-        class FakeMultiSchemaAdapter:
-            def __init__(self):
-                self.calls: list[dict] = []
-
+        class FakeAdapter:
             def generate_structured_answer(self, prompt, *, schema, mode):
-                self.calls.append({"schema": schema.__name__, "prompt_tokens": estimate_tokens(prompt)})
-                if schema.__name__ == "PrivateDocumentBatchSummary":
-                    answer = {"material_facts": ["a material fact"], "statutory_references_mentioned": ["Section 302 IPC"]}
-                else:
-                    answer = {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}
+                adapter_calls.append(schema.__name__)
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": answer, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": []},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
-        fake_adapter = FakeMultiSchemaAdapter()
-        test_settings = SettingsCls(
-            legalai_product_max_input_tokens=6000,
-            legalai_llm_reserved_output_tokens=1000,
-            legalai_llm_context_safety_margin_tokens=500,
-            private_pdf_input_budget_tokens=3000,
-            private_pdf_max_chunks_per_batch=8,
-        )
         app.dependency_overrides[get_db] = lambda: Mock()
         app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
-        app.dependency_overrides[query_api.get_answer_adapter] = lambda: fake_adapter
-        app.dependency_overrides[query_api.get_settings] = lambda: test_settings
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FakeAdapter()
         try:
             with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
                 query_api, "chunk_document", return_value=large_chunks
@@ -432,18 +411,100 @@ class QueryApiTests(unittest.TestCase):
                 )
         finally:
             del app.dependency_overrides[query_api.get_answer_adapter]
-            del app.dependency_overrides[query_api.get_settings]
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(adapter_calls, ["ProfessionalLegalBrief"], "exactly one provider call, zero Stage-1 calls, regardless of document size")
 
-        stage1_calls = [c for c in fake_adapter.calls if c["schema"] == "PrivateDocumentBatchSummary"]
-        stage2_calls = [c for c in fake_adapter.calls if c["schema"] != "PrivateDocumentBatchSummary"]
-        self.assertGreater(len(stage1_calls), 1, "a large document must be split into more than one Stage-1 batch")
-        self.assertEqual(len(stage2_calls), 1, "exactly one Stage-2 final-brief call must be made")
+    def test_professional_pdf_brief_mode_429_makes_no_stage1_traffic_and_no_automatic_retry(self) -> None:
+        """A 429 on the single final provider call must not trigger any
+        automatic retry (quota exhaustion retrying immediately would only
+        make things worse) and must never have produced any Stage-1
+        provider traffic in the first place."""
+        large_chunks = private_chunks("Material fact about the case and Section 302 IPC. " * 25, count=40)
+        adapter_calls = 0
 
-        app_budget = test_settings.legalai_product_max_input_tokens
-        for call in fake_adapter.calls:
-            self.assertLess(call["prompt_tokens"], app_budget, "no single provider request may exceed the configured app budget")
+        class FakeAdapter:
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                nonlocal adapter_calls
+                adapter_calls += 1
+                from backend.app.services.legal_answer_generation import ModelProviderError
+
+                raise ModelProviderError("GROQ_RATE_LIMIT", "rate limited", http_status=429)
+
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FakeAdapter()
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=large_chunks
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()):
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "Analyze this legal document.", "analysis_mode": "brief"},
+                    files=pdf_upload(filename="brief.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(adapter_calls, 1, "no automatic retry on quota exhaustion")
+
+    def test_local_document_analysis_failure_is_not_mislabeled_as_a_provider_or_size_problem(self) -> None:
+        large_chunks = private_chunks("Material fact about the case. " * 25, count=10)
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=large_chunks
+            ), patch.object(query_api, "build_local_document_map", side_effect=RuntimeError("local analysis exploded")):
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "Analyze this legal document.", "analysis_mode": "brief"},
+                    files=pdf_upload(filename="brief.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[get_db]
+            del app.dependency_overrides[get_current_user]
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json()["detail"]["code"], "LOCAL_DOCUMENT_ANALYSIS_FAILED")
+        self.assertNotIn("local analysis exploded", str(response.json()))
+
+    def test_professional_pdf_whole_document_brief_mode_enriches_the_trusted_retrieval_query(self) -> None:
+        """The trusted-corpus retrieval query in brief mode should be built
+        from the local document map (explicit sections, charges, material
+        facts), not the raw placeholder text the frontend sends when no
+        specific question is collected."""
+        large_chunks = private_chunks("The accused was charged under Section 302 IPC for murder. " * 10, count=15)
+        captured_queries: list[str] = []
+
+        def fake_retrieve(understanding, *, retrieval_service):
+            captured_queries.append(understanding.query)
+            return retrieval()
+
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=large_chunks
+            ), patch.object(query_api, "retrieve_legal_evidence", side_effect=fake_retrieve), patch.object(
+                query_api, "save_query_history"
+            ), patch.object(query_api, "run_frozen_query_pipeline", wraps=query_api.run_frozen_query_pipeline) as pipeline:
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "Analyze this legal document.", "analysis_mode": "brief"},
+                    files=pdf_upload(filename="brief.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[get_db]
+            del app.dependency_overrides[get_current_user]
+
+        self.assertEqual(response.status_code, 503)  # no answer adapter configured in this test; irrelevant here
+        pipeline.assert_called_once()
+        retrieval_query_used = pipeline.call_args.args[0]
+        self.assertNotEqual(retrieval_query_used, "Analyze this legal document.")
+        self.assertIn("302", retrieval_query_used)
 
     def test_professional_pdf_question_focused_mode_makes_exactly_one_provider_call(self) -> None:
         large_chunks = private_chunks("Material fact about bail under Section 302 IPC. " * 25, count=40)
@@ -477,6 +538,96 @@ class QueryApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(adapter_calls, ["ProfessionalLegalBrief"], "question-focused mode must make exactly one provider call, never per-chunk")
+
+    def test_all_four_query_paths_make_exactly_one_provider_call_on_success(self) -> None:
+        """Section-26 checklist, explicit: public text, professional text,
+        public PDF, and professional PDF (question-focused) each make
+        exactly one provider call on a normal success path."""
+
+        def make_fake_adapter(calls: list[str]):
+            class FakeAdapter:
+                def generate_structured_answer(self, prompt, *, schema, mode):
+                    calls.append(schema.__name__)
+                    if schema.__name__ == "PublicLegalAnswer":
+                        answer = {
+                            "summary": "ok",
+                            "what_this_may_mean": [],
+                            "possible_legal_provisions": [],
+                            "possible_next_steps": [],
+                            "important_cautions": [],
+                            "citations": [],
+                        }
+                    else:
+                        answer = {"issue_summary": "ok", "legal_regime": "IPC"}
+                    return LegalAnswerModelResponse(
+                        raw_response="{}",
+                        parsed_response={"answer": answer, "summary": "ok", "claims": []},
+                        model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="m", response_mode=mode),
+                    )
+
+            return FakeAdapter()
+
+        # public text
+        public_text_calls: list[str] = []
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: make_fake_adapter(public_text_calls)
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()):
+                response = self.client.post("/query/public", json={"text": "What is POCSO Act?"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(public_text_calls), 1, "public text: exactly one provider call")
+
+        # professional text
+        professional_text_calls: list[str] = []
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: make_fake_adapter(professional_text_calls)
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch.object(query_api, "save_query_history"):
+                response = self.client.post("/query/professional", json={"text": "What is POCSO Act?"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(professional_text_calls), 1, "professional text: exactly one provider call")
+
+        # public PDF (question-focused, the only mode public PDF has)
+        public_pdf_calls: list[str] = []
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: make_fake_adapter(public_pdf_calls)
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=private_chunks("PDF body text.", count=10)
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()):
+                response = self.client.post(
+                    "/query/public/pdf",
+                    data={"query": "What does this say?"},
+                    files=pdf_upload(filename="doc.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(public_pdf_calls), 1, "public PDF: exactly one provider call")
+
+        # professional PDF, question-focused mode
+        professional_pdf_calls: list[str] = []
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: make_fake_adapter(professional_pdf_calls)
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=private_chunks("PDF body text.", count=10)
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=retrieval()), patch.object(
+                query_api, "save_query_history"
+            ):
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "What does this say about bail?", "analysis_mode": "question"},
+                    files=pdf_upload(filename="doc.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(professional_pdf_calls), 1, "professional PDF question-focused: exactly one provider call")
 
     def test_pdf_composition_combines_private_and_trusted_budgets_under_one_shared_ceiling(self) -> None:
         """Large trusted evidence AND a large private PDF together must
