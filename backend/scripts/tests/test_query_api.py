@@ -19,9 +19,10 @@ from backend.app.services.private_pdf_rag import (
     render_private_evidence_block,
     select_query_focused_private_evidence,
 )
+from backend.app.services.token_budget import estimate_tokens
 from backend.scripts.tests.test_groq_answer_adapter import FakeHttpResponse as _FakeHttpResponse
 from backend.scripts.tests.test_groq_answer_adapter import groq_payload, http_error
-from backend.scripts.tests.test_legal_answer_foundation import retrieval
+from backend.scripts.tests.test_legal_answer_foundation import evidence, retrieval
 from backend.app.services.legal_answer_generation import (
     AnswerMode,
     GeminiAnswerAdapter,
@@ -225,6 +226,157 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_REQUEST_TOO_LARGE")
         self.assertNotIn("live-fixture-key", str(response.json()))
 
+    def _large_retrieval_fixture(self, item_word_count: int = 700) -> "LegalRetrievalResult":
+        items = [
+            evidence(f"E{i + 1}", text=" ".join(f"e{i + 1}word{n}" for n in range(item_word_count)))
+            for i in range(5)
+        ]
+        return retrieval(items)
+
+    def test_professional_text_query_with_large_evidence_bounds_automatically_no_pdf(self) -> None:
+        """The regression this task fixes: a short professional TEXT query
+        (no PDF at all) with large trusted evidence must still build a
+        bounded provider request."""
+        large_retrieval = self._large_retrieval_fixture()
+        test_settings = Settings(
+            legalai_product_max_input_tokens=3000,
+            legalai_llm_reserved_output_tokens=500,
+            legalai_llm_context_safety_margin_tokens=200,
+            prompt_overhead_reserve_tokens=300,
+            trusted_evidence_input_budget_tokens=2000,
+        )
+        captured_prompts: list[int] = []
+
+        class FakeAdapter:
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                captured_prompts.append(estimate_tokens(prompt))
+                return LegalAnswerModelResponse(
+                    raw_response="{}",
+                    parsed_response={
+                        "answer": {"issue_summary": "POCSO overview", "legal_regime": "IPC"},
+                        "summary": "ok",
+                        "claims": [],
+                    },
+                    model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
+                )
+
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FakeAdapter()
+        app.dependency_overrides[query_api.get_settings] = lambda: test_settings
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=large_retrieval), patch.object(
+                query_api, "save_query_history"
+            ):
+                response = self.client.post(
+                    "/query/professional",
+                    json={"text": "What is POCSO Act and what are the sections related to it"},
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+            del app.dependency_overrides[query_api.get_settings]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(captured_prompts), 1, "no PDF path involved, exactly one provider call")
+        budget = query_api.resolve_product_context_budget(test_settings)
+        self.assertLess(captured_prompts[0], budget.max_input_tokens, "provider request must stay below the app budget")
+
+    def test_public_text_query_cannot_build_unbounded_provider_request(self) -> None:
+        large_retrieval = self._large_retrieval_fixture()
+        test_settings = Settings(
+            legalai_product_max_input_tokens=3000,
+            legalai_llm_reserved_output_tokens=500,
+            legalai_llm_context_safety_margin_tokens=200,
+            prompt_overhead_reserve_tokens=300,
+            trusted_evidence_input_budget_tokens=2000,
+        )
+        captured_prompts: list[int] = []
+
+        class FakeAdapter:
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                captured_prompts.append(estimate_tokens(prompt))
+                return LegalAnswerModelResponse(
+                    raw_response="{}",
+                    parsed_response={
+                        "answer": {
+                            "summary": "ok",
+                            "what_this_may_mean": [],
+                            "possible_legal_provisions": [],
+                            "possible_next_steps": [],
+                            "important_cautions": [],
+                            "citations": [],
+                        },
+                        "summary": "ok",
+                        "claims": [],
+                    },
+                    model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
+                )
+
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FakeAdapter()
+        app.dependency_overrides[query_api.get_settings] = lambda: test_settings
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=large_retrieval):
+                response = self.client.post("/query/public", json={"text": "What is POCSO Act?"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+            del app.dependency_overrides[query_api.get_settings]
+
+        self.assertEqual(response.status_code, 200)
+        budget = query_api.resolve_product_context_budget(test_settings)
+        self.assertLess(captured_prompts[0], budget.max_input_tokens)
+
+    def test_provider_request_too_large_triggers_exactly_one_reduced_context_retry(self) -> None:
+        """If the provider still rejects a NORMAL-tier request as too large
+        (its account limits may differ from our estimate), exactly one
+        REDUCED-tier retry must be attempted, and it must actually shrink
+        the trusted-evidence portion of the request."""
+        large_retrieval = self._large_retrieval_fixture()
+        test_settings = Settings(
+            legalai_product_max_input_tokens=10000,
+            legalai_llm_reserved_output_tokens=1000,
+            legalai_llm_context_safety_margin_tokens=500,
+            prompt_overhead_reserve_tokens=500,
+            trusted_evidence_input_budget_tokens=6000,
+        )
+        call_prompts: list[int] = []
+
+        class FlakyAdapter:
+            calls = 0
+
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                FlakyAdapter.calls += 1
+                call_prompts.append(estimate_tokens(prompt))
+                if FlakyAdapter.calls == 1:
+                    from backend.app.services.legal_answer_generation import ModelProviderError
+
+                    raise ModelProviderError("GROQ_REQUEST_TOO_LARGE", "request too large", http_status=413)
+                return LegalAnswerModelResponse(
+                    raw_response="{}",
+                    parsed_response={
+                        "answer": {"issue_summary": "ok", "legal_regime": "IPC"},
+                        "summary": "ok",
+                        "claims": [],
+                    },
+                    model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
+                )
+
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FlakyAdapter()
+        app.dependency_overrides[query_api.get_settings] = lambda: test_settings
+        try:
+            with patch.object(query_api, "retrieve_legal_evidence", return_value=large_retrieval), patch.object(
+                query_api, "save_query_history"
+            ):
+                response = self.client.post("/query/professional", json={"text": "What is POCSO Act?"})
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+            del app.dependency_overrides[query_api.get_settings]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(FlakyAdapter.calls, 2, "exactly one retry, no retry loop")
+        self.assertLess(call_prompts[1], call_prompts[0], "the retry must actually be smaller than the first attempt")
+
     def test_professional_pdf_whole_document_brief_mode_uses_bounded_hierarchical_batches(self) -> None:
         """A synthetic large multi-page document, forced to exceed a one-shot
         context budget, must be processed as multiple bounded Stage-1
@@ -257,7 +409,7 @@ class QueryApiTests(unittest.TestCase):
 
         fake_adapter = FakeMultiSchemaAdapter()
         test_settings = SettingsCls(
-            legalai_llm_context_tokens=6000,
+            legalai_product_max_input_tokens=6000,
             legalai_llm_reserved_output_tokens=1000,
             legalai_llm_context_safety_margin_tokens=500,
             private_pdf_input_budget_tokens=3000,
@@ -289,7 +441,7 @@ class QueryApiTests(unittest.TestCase):
         self.assertGreater(len(stage1_calls), 1, "a large document must be split into more than one Stage-1 batch")
         self.assertEqual(len(stage2_calls), 1, "exactly one Stage-2 final-brief call must be made")
 
-        app_budget = test_settings.legalai_llm_context_tokens
+        app_budget = test_settings.legalai_product_max_input_tokens
         for call in fake_adapter.calls:
             self.assertLess(call["prompt_tokens"], app_budget, "no single provider request may exceed the configured app budget")
 
@@ -325,6 +477,54 @@ class QueryApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(adapter_calls, ["ProfessionalLegalBrief"], "question-focused mode must make exactly one provider call, never per-chunk")
+
+    def test_pdf_composition_combines_private_and_trusted_budgets_under_one_shared_ceiling(self) -> None:
+        """Large trusted evidence AND a large private PDF together must
+        still respect one shared product-wide budget - neither side may
+        assume the other is unlimited."""
+        large_retrieval = self._large_retrieval_fixture(item_word_count=500)
+        large_chunks = private_chunks("Private document fact about the case. " * 40, count=20)
+        test_settings = Settings(
+            legalai_product_max_input_tokens=6000,
+            legalai_llm_reserved_output_tokens=800,
+            legalai_llm_context_safety_margin_tokens=200,
+            prompt_overhead_reserve_tokens=500,
+            trusted_evidence_input_budget_tokens=3000,
+            private_pdf_input_budget_tokens=3000,
+        )
+        captured_prompts: list[int] = []
+
+        class FakeAdapter:
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                captured_prompts.append(estimate_tokens(prompt))
+                return LegalAnswerModelResponse(
+                    raw_response="{}",
+                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "IPC"}, "summary": "ok", "claims": []},
+                    model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
+                )
+
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FakeAdapter()
+        app.dependency_overrides[query_api.get_settings] = lambda: test_settings
+        try:
+            with patch.object(query_api, "parse_document", return_value=parsed_document(text="doc")), patch.object(
+                query_api, "chunk_document", return_value=large_chunks
+            ), patch.object(query_api, "retrieve_legal_evidence", return_value=large_retrieval), patch.object(
+                query_api, "save_query_history"
+            ):
+                response = self.client.post(
+                    "/query/professional/pdf",
+                    data={"query": "What does this document say about the case?"},
+                    files=pdf_upload(filename="doc.pdf"),
+                )
+        finally:
+            del app.dependency_overrides[query_api.get_answer_adapter]
+            del app.dependency_overrides[query_api.get_settings]
+
+        self.assertEqual(response.status_code, 200)
+        budget = query_api.resolve_product_context_budget(test_settings)
+        self.assertLess(captured_prompts[0], budget.max_input_tokens, "combined private+trusted content must stay under the shared budget")
 
     def test_professional_query_requires_authentication(self) -> None:
         response = self.client.post("/query/professional", json={"text": "Research bail under BNSS"})
