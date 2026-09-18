@@ -128,34 +128,19 @@ New `analysis_mode` form field (`"question"` default, or `"brief"`):
 - **`analysis_mode=brief`** - whole-document hierarchical analysis (used by the
   Professional Upload Brief page, which never collects a specific question).
 
-### Hierarchical whole-document brief mode
+### Whole-document brief mode
 
-```
-Stage 1 (local document map):
-  private chunks → bounded batches (count-capped AND token-budget-capped)
-    → one adapter call per batch → compact structured extraction
-      (material facts, parties, procedural history, legal issues,
-       statutory mentions, arguments, findings, relief, dates,
-       evidentiary observations)
-  → deterministic reduction (dedupe + cap each field at 25 entries)
-    into one compact PrivateDocumentMap
+**Update:** this previously ran a per-batch generative "Stage 1" (one provider
+call per bounded chunk batch, 5-10+ calls on a real document) before a
+generative "Stage 2" final call. It has since been replaced with an entirely
+local (zero provider calls) document map - see
+`docs/SINGLE_CALL_PRIVATE_BRIEF_ANALYSIS.md` for the current design. Whole-
+document brief mode now makes exactly the same one provider call as every
+other query path, regardless of document length.
 
-Stage 2 (final brief):
-  compact document map + a handful of representative excerpts (one per batch)
-    + trusted corpus retrieval (unchanged, frozen)
-  → the existing (frozen) grounded-answer generation pipeline, unchanged
-  → normal ProfessionalLegalBrief response
-```
-
-Reduction is a **deterministic structural merge**, not another provider call - the
-batch summaries are already compact structured lists, so deduping and capping them
-keeps growth bounded without adding more generative round-trips or making the
-pipeline depend on a second live call to test.
-
-If, after this bounded hierarchical processing, the compact document map still
-cannot fit the private-PDF budget (a pathological configuration - the map is already
-capped), the request fails cleanly with `PDF_CONTEXT_TOO_LARGE` rather than sending
-an oversized request and hoping.
+If the (already-capped) local document map still cannot fit the private-PDF
+budget (a pathological configuration), the request fails cleanly with
+`PDF_CONTEXT_TOO_LARGE` rather than sending an oversized request and hoping.
 
 ## Error codes
 
@@ -177,20 +162,20 @@ in `http_exception_for_pdf_parsing_error()`.
 
 ## Provider compatibility
 
-Everything in `private_pdf_rag.py` and `token_budget.py` is provider-agnostic - it
-builds plain prompt text and calls whatever `LegalAnswerModelAdapter`-shaped adapter
-it is given (`GeminiAnswerAdapter` or `GroqAnswerAdapter`). Stage 1 reuses the exact
-same generic `adapter.generate_structured_answer()` / `parse_model_payload()`
-machinery the frozen pipeline already uses for any Pydantic schema, so no
-provider-specific code exists in the hierarchical pipeline. The frozen Phase-0
-Gemini-only grounded-answer benchmark is untouched and unaffected - this feature is
-part of the product runtime pipeline (`backend/app/api/query.py`), not the benchmark
-harness (`backend/scripts/run_grounded_answer_eval_generation.py`).
+Everything in `private_pdf_rag.py`, `local_document_map.py`, and `token_budget.py`
+is provider-agnostic - question-focused mode builds plain prompt text and calls
+whatever `LegalAnswerModelAdapter`-shaped adapter it is given (`GeminiAnswerAdapter`
+or `GroqAnswerAdapter`); whole-document brief mode's local map construction makes
+no provider call at all. The frozen Phase-0 Gemini-only grounded-answer benchmark is
+untouched and unaffected - this feature is part of the product runtime pipeline
+(`backend/app/api/query.py`), not the benchmark harness
+(`backend/scripts/run_grounded_answer_eval_generation.py`).
 
 ## Observability
 
-`log_private_pdf_metrics()` in `query.py` logs, per request, only bounded counts and
-token estimates: PDF page count, extracted text length, private chunk count,
-selected chunk count, estimated private tokens, the frozen prompt's measured token
-count, the private budget, and the Stage-1 batch count. It never logs PDF content,
-chunk text, prompts, or API keys.
+`log_private_pdf_metrics()` (question-focused mode) and
+`log_local_document_map_metrics()` (whole-document brief mode) in `query.py` log,
+per request, only bounded counts and token estimates - PDF page count, extracted
+text length, private chunk count, selected chunk count, estimated private tokens,
+the frozen prompt's measured token count, and the private budget. Neither ever logs
+PDF content, chunk text, prompts, or API keys.
