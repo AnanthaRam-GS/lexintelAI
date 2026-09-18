@@ -66,7 +66,7 @@ window).
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `LEGALAI_LLM_CONTEXT_TOKENS` | 40000 | Total app-level context budget for one generative call |
+| `LEGALAI_PRODUCT_MAX_INPUT_TOKENS` | 40000 | Total app-level context budget for one generative call |
 | `LEGALAI_LLM_RESERVED_OUTPUT_TOKENS` | 6000 | Reserved for the model's response |
 | `LEGALAI_LLM_CONTEXT_SAFETY_MARGIN_TOKENS` | 4000 | Extra buffer, since token estimation is approximate |
 | `PRIVATE_PDF_INPUT_BUDGET_TOKENS` | 18000 | Ceiling on private-PDF evidence in one request |
@@ -94,17 +94,18 @@ computed as whatever room is actually left (`TokenBudget.private_pdf_budget`), c
 by `PRIVATE_PDF_INPUT_BUDGET_TOKENS` - not a static split decided before trusted
 retrieval even ran.
 
-**Known limitation - trusted-evidence budgeting:** `TRUSTED_EVIDENCE_INPUT_BUDGET_TOKENS`
-is enforced as an *informational* ceiling only. The code that renders trusted
-evidence into the prompt (`legal_answer_prompt.py`, `legal_rag_retrieval.py`) is
-pinned by the frozen grounded-answer benchmark's component-hash manifest
-(`data/structured/manifests/legal_answer_eval.json`), so it cannot be edited to
-proactively truncate trusted-evidence text without invalidating that freeze. Per the
-task's own guidance ("prefer additive modules outside pinned files... if unavoidable,
-stop and report the conflict"), this was reported rather than worked around by
-editing a frozen file. In practice this only matters when trusted evidence alone
-already consumes most of the app's context budget, in which case the private-PDF
-budget correctly shrinks toward zero rather than causing an oversized request.
+**Update - trusted-evidence budgeting is now actively enforced.** This section
+previously reported `TRUSTED_EVIDENCE_INPUT_BUDGET_TOKENS` as informational-only,
+because the code that *renders* trusted evidence into the prompt
+(`legal_answer_prompt.py`, `legal_rag_retrieval.py`) is frozen-hash-pinned and
+couldn't be edited to truncate it. That gap is now closed additively, without
+touching either frozen file: `backend/app/services/product_context_budget.py`
+bounds `retrieval.evidence` itself - in strict rank order, excerpting an
+individual oversized chunk at a paragraph/sentence boundary rather than dropping
+it - *before* `build_legal_answer_prompt` ever sees it. See
+`docs/PRODUCT_CONTEXT_BUDGETING.md` for the full design; this is what fixed
+plain text queries (no PDF at all) that were retrieving large trusted evidence
+and exceeding a rate-limited account's real capacity.
 
 ## Public PDF flow (`POST /query/public/pdf`)
 
