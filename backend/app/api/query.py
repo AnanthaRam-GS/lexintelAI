@@ -58,6 +58,13 @@ from backend.app.services.private_pdf_rag import (
     select_query_focused_private_evidence,
     select_representative_excerpts,
 )
+from backend.app.services.product_context_budget import (
+    ContextTier,
+    ProductContextBudget,
+    bound_trusted_evidence,
+    evidence_metrics,
+    resolve_product_context_budget,
+)
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
 from backend.app.services.token_budget import TokenBudget, estimate_tokens, resolve_token_budget
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
@@ -123,11 +130,14 @@ def get_answer_adapter(settings: Settings = Depends(get_settings)):
 @router.post("/public", response_model=PublicQueryResponse)
 def query_public(
     request: PublicTextQueryRequest,
+    settings: Settings = Depends(get_settings),
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> PublicQueryResponse:
     try:
-        result = run_frozen_query_pipeline(request.text, mode=AnswerMode.PUBLIC, retrieval_service=retrieval_service, adapter=adapter)
+        result = run_frozen_query_pipeline(
+            request.text, mode=AnswerMode.PUBLIC, retrieval_service=retrieval_service, adapter=adapter, settings=settings
+        )
         return public_response_from_result(result)
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
@@ -138,6 +148,7 @@ def query_professional(
     request: ProfessionalTextQueryRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
+    settings: Settings = Depends(get_settings),
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
@@ -147,6 +158,7 @@ def query_professional(
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
             adapter=adapter,
+            settings=settings,
         )
         response = professional_response_from_result(result)
         save_query_history(
@@ -191,6 +203,7 @@ async def query_professional_pdf(
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
             adapter=adapter,
+            settings=settings,
             private_context_builder=private_context_builder,
         )
         response = professional_response_from_result(result)
@@ -239,6 +252,7 @@ async def query_public_pdf(
             mode=AnswerMode.PUBLIC,
             retrieval_service=retrieval_service,
             adapter=adapter,
+            settings=settings,
             private_context_builder=private_context_builder,
         )
         return public_response_from_result(result)
@@ -439,23 +453,64 @@ def run_frozen_query_pipeline(
     mode: AnswerMode,
     retrieval_service: Any,
     adapter: Any,
+    settings: Settings,
     private_context_builder: Callable[[str], str | None] | None = None,
 ) -> LegalAnswerResult:
+    """Applies to all four product query paths (public/professional text and
+    PDF). Trusted (E#) evidence is bounded to a product-wide budget *before*
+    the prompt is built - this is what fixes plain text queries (no PDF at
+    all) that were retrieving large trusted chunks and exceeding the
+    provider account's real capacity. Retrieval/ranking/reranking themselves
+    are unchanged (frozen); only how much of the already-ranked top-5 a live
+    generation call actually receives is bounded, in existing rank order.
+
+    If the provider still rejects the resulting (already-bounded) request as
+    too large - its account limits may differ from our estimate - exactly
+    one reduced-context retry is attempted: trusted evidence is halved
+    (REDUCED tier) and any optional private-PDF content is dropped, since it
+    is supplementary to trusted grounding, not the primary answer source.
+    No further retries, no provider switch, no silent fallback.
+    """
+    product_budget = resolve_product_context_budget(settings)
     try:
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
         retrieval = retrieve_legal_evidence(understanding, retrieval_service=retrieval_service)
         if retrieval.error:
             raise QueryExecutionError("RETRIEVAL_UNAVAILABLE", "The legal evidence index is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
-        packet = build_grounded_evidence_packet(understanding, retrieval)
-        prompt = build_legal_answer_prompt(packet, mode=mode)
-        # The private-context builder (if any) is invoked here, AFTER the
-        # trusted-evidence prompt is fully built, so it can measure that
-        # prompt's real token cost and size the private-PDF budget against
-        # whatever is actually left - not a static guess made before trusted
-        # retrieval even ran. See backend/app/services/token_budget.py.
-        private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
-        prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
-        result = generate_legal_answer(understanding, retrieval, mode=mode, adapter=adapter, prompt=prompt_text)
+
+        query_tokens = estimate_tokens(query)
+        result, tier, bounded_retrieval = _attempt_generation(
+            query=query,
+            query_tokens=query_tokens,
+            understanding=understanding,
+            retrieval=retrieval,
+            mode=mode,
+            adapter=adapter,
+            product_budget=product_budget,
+            tier=ContextTier.NORMAL,
+            private_context_builder=private_context_builder,
+        )
+        if result.answer is None and any(
+            warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
+        ):
+            result, tier, bounded_retrieval = _attempt_generation(
+                query=query,
+                query_tokens=query_tokens,
+                understanding=understanding,
+                retrieval=retrieval,
+                mode=mode,
+                adapter=adapter,
+                product_budget=product_budget,
+                tier=ContextTier.REDUCED,
+                private_context_builder=None,
+            )
+        log_product_context_metrics(
+            provider=settings.legalai_llm_provider,
+            model=settings.gemini_model if settings.legalai_llm_provider == "gemini" else settings.groq_model,
+            context_tier=tier,
+            retrieval=bounded_retrieval,
+            result=result,
+        )
     except QueryExecutionError:
         raise
     except ValueError as exc:
@@ -464,6 +519,59 @@ def run_frozen_query_pipeline(
         raise QueryExecutionError("QUERY_PIPELINE_UNAVAILABLE", "The legal query pipeline is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE) from exc
     ensure_successful_answer(result)
     return result
+
+
+def _attempt_generation(
+    *,
+    query: str,
+    query_tokens: int,
+    understanding: Any,
+    retrieval: Any,
+    mode: AnswerMode,
+    adapter: Any,
+    product_budget: ProductContextBudget,
+    tier: ContextTier,
+    private_context_builder: Callable[[str], str | None] | None,
+) -> tuple[LegalAnswerResult, ContextTier, Any]:
+    tier_budget = product_budget if tier is ContextTier.NORMAL else product_budget.reduced()
+    trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
+    bounded_retrieval = bound_trusted_evidence(retrieval, budget_tokens=trusted_budget_tokens)
+
+    packet = build_grounded_evidence_packet(understanding, bounded_retrieval)
+    prompt = build_legal_answer_prompt(packet, mode=mode)
+    # The private-context builder (if any) is invoked here, AFTER the
+    # trusted-evidence prompt is fully built, so it can measure that
+    # prompt's real token cost and size the private-PDF budget against
+    # whatever is actually left - not a static guess made before trusted
+    # retrieval even ran. See backend/app/services/token_budget.py.
+    private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
+    prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
+    result = generate_legal_answer(understanding, bounded_retrieval, mode=mode, adapter=adapter, prompt=prompt_text)
+    return result, tier, bounded_retrieval
+
+
+def log_product_context_metrics(
+    *,
+    provider: str,
+    model: str,
+    context_tier: ContextTier,
+    retrieval: Any,
+    result: LegalAnswerResult,
+) -> None:
+    """Safe, structured observability - counts and token estimates only,
+    never query text, evidence text, PDF content, or API keys."""
+    metrics = evidence_metrics(retrieval)
+    logger.info(
+        "product_context_budget provider=%s model=%s context_tier=%s trusted_evidence_count=%d "
+        "estimated_trusted_evidence_tokens=%d provider_status=%s latency_ms=%s",
+        provider,
+        model,
+        context_tier.value,
+        metrics["evidence_count"],
+        metrics["estimated_evidence_tokens"],
+        "success" if result.answer is not None else (next(iter({w.code for w in result.warnings}), "unknown")),
+        result.timings.get("answer_generation_ms"),
+    )
 
 
 def validate_pdf_upload_metadata(file: UploadFile) -> str:
@@ -550,9 +658,17 @@ def query_execution_error_for_provider_codes(codes: set[str]) -> QueryExecutionE
             status.HTTP_429_TOO_MANY_REQUESTS,
         )
     if any(code.endswith("_REQUEST_TOO_LARGE") for code in codes):
+        # This is a final safety net, not the normal budgeting mechanism -
+        # automatic bounding (bound_trusted_evidence + the one reduced-tier
+        # retry) already tried and failed to fit the provider's real
+        # capacity. The wording is deliberately generic ("research context",
+        # not "document") since this fires for plain text queries with no
+        # PDF involved just as often as PDF ones; PDF_CONTEXT_TOO_LARGE is
+        # the separate, document-specific code for the whole-document-brief
+        # case where even the bounded hierarchical summary cannot fit.
         return QueryExecutionError(
             "MODEL_PROVIDER_REQUEST_TOO_LARGE",
-            "The document or retrieved context is too large for the configured answer provider. Try a shorter document or question.",
+            "The legal research context exceeded the current AI provider capacity. LegalAI has reduced the evidence automatically; please retry if the provider remains busy.",
             status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
         )
     if any(code.endswith("_AUTH_ERROR") for code in codes):

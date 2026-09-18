@@ -64,7 +64,7 @@ class TokenBudgetTests(unittest.TestCase):
 
     def test_resolve_token_budget_reads_from_settings(self) -> None:
         settings = Settings(
-            legalai_llm_context_tokens=9999,
+            legalai_product_max_input_tokens=9999,
             legalai_llm_reserved_output_tokens=111,
             legalai_llm_context_safety_margin_tokens=222,
             private_pdf_input_budget_tokens=333,

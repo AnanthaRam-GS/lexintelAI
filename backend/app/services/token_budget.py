@@ -68,7 +68,7 @@ class TokenBudget:
 
 def resolve_token_budget(settings: Settings) -> TokenBudget:
     return TokenBudget(
-        context_tokens=settings.legalai_llm_context_tokens,
+        context_tokens=settings.legalai_product_max_input_tokens,
         reserved_output_tokens=settings.legalai_llm_reserved_output_tokens,
         safety_margin_tokens=settings.legalai_llm_context_safety_margin_tokens,
         private_pdf_ceiling_tokens=settings.private_pdf_input_budget_tokens,

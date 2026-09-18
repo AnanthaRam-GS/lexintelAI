@@ -32,9 +32,10 @@ class Settings(BaseSettings):
     # context in practice; these settings bound what LegalAI will ever attempt to
     # send, and are checked before invoking the provider, not just relied upon
     # via the provider's own rejection. See docs/PRIVATE_PDF_CONTEXT_BUDGETING.md.
-    legalai_llm_context_tokens: int = 40000
+    legalai_product_max_input_tokens: int = 40000
     legalai_llm_reserved_output_tokens: int = 6000
     legalai_llm_context_safety_margin_tokens: int = 4000
+    prompt_overhead_reserve_tokens: int = 1500
     private_pdf_input_budget_tokens: int = 18000
     trusted_evidence_input_budget_tokens: int = 10000
     private_pdf_top_k: int = 10
