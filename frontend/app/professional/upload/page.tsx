@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { queryApi } from '../../../lib/api';
+import { ApiClientError, queryApi } from '../../../lib/api';
 import { ErrorMessage, LoadingSpinner, UploadDropzone } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
@@ -43,6 +43,14 @@ export default function ProfessionalUploadPage() {
       const response = await queryApi.submitPdf(selectedFile, undefined, undefined, 'brief');
       setResult(response);
     } catch (err) {
+      if (err instanceof ApiClientError && err.status === 429) {
+        setErrorState({
+          title: 'Usage Limit Reached',
+          message:
+            'AI analysis capacity is temporarily exhausted. Your document was not stored. Please try again after the provider limit resets.',
+        });
+        return;
+      }
       setErrorState({
         title: 'Document Analysis Failed',
         message:
@@ -164,8 +172,8 @@ export default function ProfessionalUploadPage() {
                 >
                   {isAnalyzing ? (
                     <>
-                      <LoadingSpinner size="sm" label="Analyzing document in stages" />
-                      <span>Analyzing document in stages...</span>
+                      <LoadingSpinner size="sm" label="Analyzing document securely" />
+                      <span>Analyzing document and retrieving relevant legal authorities...</span>
                     </>
                   ) : (
                     <>

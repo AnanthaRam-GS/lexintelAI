@@ -36,27 +36,27 @@ from backend.app.services.legal_answer_generation import (
     GeminiAnswerAdapter,
     GroundedCitation,
     LegalAnswerResult,
-    ModelProviderError,
-    ModelUnavailableError,
     ProfessionalLegalBrief,
     PublicLegalAnswer,
     build_grounded_evidence_packet,
     generate_legal_answer,
 )
 from backend.app.services.legal_answer_prompt import build_legal_answer_prompt
+from backend.app.services.local_document_map import (
+    LocalDocumentMap,
+    build_enriched_trusted_query,
+    build_local_document_map,
+    local_map_metrics,
+    render_local_document_map,
+)
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
 from backend.app.services.private_pdf_rag import (
     PrivateChunk,
-    batch_private_chunks,
     build_private_chunks,
-    generate_stage1_batch_summaries,
-    reduce_stage1_batches,
-    render_private_document_map,
     render_private_evidence_block,
     select_query_focused_private_evidence,
-    select_representative_excerpts,
 )
 from backend.app.services.product_context_budget import (
     ContextTier,
@@ -191,15 +191,37 @@ async def query_professional_pdf(
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
         budget = resolve_token_budget(settings)
         if analysis_mode.strip().lower() == "brief":
-            private_context_builder = build_whole_document_brief_context_builder(
-                parsed_pdf, adapter=adapter, settings=settings, budget=budget
-            )
+            # Entirely local (zero provider calls) - see local_document_map.py.
+            # Replaces the previous per-batch Stage-1 generative approach,
+            # which could make 5-10+ Groq calls before the single Stage-2
+            # call on a real multi-page document, exhausting a rate-limited
+            # provider account within one request.
+            dense_provider = getattr(retrieval_service, "dense_provider", None)
+            try:
+                document_map = build_local_document_map(
+                    parsed_pdf.private_chunks,
+                    filename=parsed_pdf.filename,
+                    dense_provider=dense_provider,
+                    token_budget_tokens=settings.private_pdf_input_budget_tokens,
+                )
+            except Exception as exc:
+                # A failure here is local analysis (parsing/NER/ranking), not
+                # a provider or a document-size problem - must not be
+                # mislabeled as either.
+                raise QueryExecutionError(
+                    "LOCAL_DOCUMENT_ANALYSIS_FAILED",
+                    "The document could not be analyzed locally.",
+                    status.HTTP_500_INTERNAL_SERVER_ERROR,
+                ) from exc
+            retrieval_query = build_enriched_trusted_query(document_map, fallback_query=query)
+            private_context_builder = build_local_map_context_builder(document_map, budget=budget)
         else:
+            retrieval_query = query
             private_context_builder = build_question_focused_context_builder(
                 parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
             )
         result = run_frozen_query_pipeline(
-            query,
+            retrieval_query,
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
             adapter=adapter,
@@ -358,60 +380,53 @@ def build_question_focused_context_builder(
     return _builder
 
 
-def build_whole_document_brief_context_builder(
-    parsed_pdf: ParsedPrivatePdf,
+def build_local_map_context_builder(
+    document_map: LocalDocumentMap,
     *,
-    adapter: Any,
-    settings: Settings,
     budget: TokenBudget,
 ) -> Callable[[str], str | None]:
-    """Professional whole-document brief mode: no narrow question is assumed,
-    so the entire private document is summarized hierarchically in bounded
-    batches (Stage 1), reduced to a compact document map, and only that map
-    plus a handful of representative excerpts are ever injected into the
-    final grounded-answer prompt (Stage 2 reuses the normal, frozen
-    generation pipeline unchanged)."""
-    per_batch_token_budget = max(500, min(settings.private_pdf_input_budget_tokens, budget.available_input_tokens // 2))
-    batches = batch_private_chunks(
-        parsed_pdf.private_chunks,
-        max_chunks_per_batch=settings.private_pdf_max_chunks_per_batch,
-        batch_token_budget=per_batch_token_budget,
-    )
-    try:
-        stage1_results = generate_stage1_batch_summaries(batches, adapter=adapter, mode=AnswerMode.PROFESSIONAL)
-    except (ModelUnavailableError, ModelProviderError) as exc:
-        raise_for_stage1_adapter_exception(exc)
-    document_map = reduce_stage1_batches(stage1_results)
+    """Professional whole-document brief mode: the document map was already
+    built entirely locally (zero provider calls - see local_document_map.py)
+    *before* this builder runs, so this only measures whether the
+    (already-bounded) map fits the room left after trusted evidence, and
+    renders it. No adapter, no per-batch generative calls."""
 
     def _builder(frozen_prompt_text: str) -> str | None:
         already_used_tokens = estimate_tokens(frozen_prompt_text)
         private_budget_tokens = budget.private_pdf_budget(already_used_tokens=already_used_tokens)
-        map_text = render_private_document_map(document_map)
+        map_text = render_local_document_map(document_map)
         map_tokens = estimate_tokens(map_text)
         if map_tokens > private_budget_tokens:
-            # The document map is already bounded (capped entries per field,
-            # deterministic reduction) - if it still cannot fit, hierarchical
-            # processing has genuinely failed to bring this within budget.
+            # The map is already bounded (capped entries/excerpt sizes,
+            # global intent budget) - if it still cannot fit, local analysis
+            # has genuinely failed to bring this within budget.
             raise QueryExecutionError(
                 "PDF_CONTEXT_TOO_LARGE",
-                "The document analysis could not fit within the configured context budget even after bounded hierarchical summarization.",
+                "The document analysis could not fit within the configured context budget.",
                 status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             )
-        excerpt_budget = max(0, private_budget_tokens - map_tokens)
-        excerpts = select_representative_excerpts(batches, token_budget_tokens=excerpt_budget)
-        excerpt_block = render_private_evidence_block(excerpts, filename=parsed_pdf.filename) if excerpts else ""
-        log_private_pdf_metrics(
-            stage="whole_document_brief",
-            parsed_pdf=parsed_pdf,
-            selected_chunk_count=len(excerpts),
-            estimated_private_tokens=map_tokens + sum(item.chunk.token_count for item in excerpts),
-            frozen_prompt_tokens=already_used_tokens,
-            private_budget_tokens=private_budget_tokens,
-            batch_count=len(batches),
-        )
-        return "\n\n".join(part for part in [map_text, excerpt_block] if part)
+        log_local_document_map_metrics(document_map=document_map, frozen_prompt_tokens=already_used_tokens, private_budget_tokens=private_budget_tokens)
+        return map_text
 
     return _builder
+
+
+def log_local_document_map_metrics(*, document_map: LocalDocumentMap, frozen_prompt_tokens: int, private_budget_tokens: int) -> None:
+    """Safe, structured observability - counts and token estimates only,
+    never document text."""
+    metrics = local_map_metrics(document_map)
+    logger.info(
+        "local_document_map document_type=%s parties_count=%d dates_count=%d sections_count=%d "
+        "excerpt_count=%d estimated_map_tokens=%d frozen_prompt_tokens=%d private_budget_tokens=%d",
+        metrics["document_type"],
+        metrics["parties_count"],
+        metrics["dates_count"],
+        metrics["sections_count"],
+        metrics["excerpt_count"],
+        metrics["estimated_map_tokens"],
+        frozen_prompt_tokens,
+        private_budget_tokens,
+    )
 
 
 def log_private_pdf_metrics(
@@ -701,16 +716,6 @@ def ensure_successful_answer(result: LegalAnswerResult) -> None:
         return
     codes = {warning.code for warning in result.warnings}
     raise query_execution_error_for_provider_codes(codes)
-
-
-def raise_for_stage1_adapter_exception(exc: ModelUnavailableError | ModelProviderError) -> None:
-    """Convert a raw adapter exception raised directly by Stage-1 hierarchical
-    extraction (which calls the adapter without going through
-    `generate_legal_answer`'s own try/except) into the same sanitized error
-    codes the rest of the API uses."""
-    if isinstance(exc, ModelUnavailableError):
-        raise query_execution_error_for_provider_codes({"MODEL_UNAVAILABLE"}) from exc
-    raise query_execution_error_for_provider_codes({exc.code}) from exc
 
 
 def public_response_from_result(result: LegalAnswerResult) -> PublicQueryResponse:
