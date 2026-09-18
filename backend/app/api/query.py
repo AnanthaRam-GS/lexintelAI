@@ -744,11 +744,16 @@ def professional_response_from_result(result: LegalAnswerResult) -> Professional
         precedents=[precedent_from_authority(item.model_dump(mode="json")) for item in answer.retrieved_authorities],
         case_brief=ProfessionalCaseBrief(
             summary=answer.issue_summary,
+            material_facts=answer.material_facts_from_query,
+            chronology=answer.procedural_posture,
+            statutory_provisions=answer.explicit_legal_provisions,
+            evidence_identified=answer.material_facts_from_query,
             applicable_law=answer.applicable_principles,
             key_issues=answer.legal_issues,
             procedural_considerations=answer.procedural_posture,
             precedent_analysis=answer.analysis + answer.counterpoints,
             limitations=[item.message for item in answer.uncertainties],
+            recommended_research_questions=answer.recommended_research_questions,
         ),
     )
 

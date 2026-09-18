@@ -37,11 +37,17 @@ class ProfessionalCaseBrief(BaseModel):
     """Structured professional case analysis."""
 
     summary: str
+    parties_and_roles: list[str] = Field(default_factory=list)
+    material_facts: list[str] = Field(default_factory=list)
+    chronology: list[str] = Field(default_factory=list)
+    statutory_provisions: list[str] = Field(default_factory=list)
+    evidence_identified: list[str] = Field(default_factory=list)
     applicable_law: list[str]
     key_issues: list[str]
     procedural_considerations: list[str]
     precedent_analysis: list[str]
     limitations: list[str]
+    recommended_research_questions: list[str] = Field(default_factory=list)
 
 
 class ProfessionalQueryResponse(BaseModel):

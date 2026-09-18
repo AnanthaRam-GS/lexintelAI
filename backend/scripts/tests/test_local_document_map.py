@@ -67,6 +67,23 @@ class DocumentTypeDetectionTests(unittest.TestCase):
         chunks = build_private_chunks([raw_chunk("Some ambiguous text with nothing recognizable at all.")])
         self.assertEqual(detect_document_type("document.pdf", chunks), "unknown")
 
+    def test_judgment_mentioning_fir_number_does_not_become_fir(self) -> None:
+        chunks = build_private_chunks(
+            [
+                raw_chunk(
+                    "Supreme Court of India. Criminal Appeal No. 12 of 2024. JUDGMENT. "
+                    "The prosecution case began with FIR No. 20/2020 at the police station."
+                )
+            ]
+        )
+        doc_map = build_local_document_map(chunks, filename="appeal_judgment.pdf", dense_provider=None, token_budget_tokens=5000)
+        self.assertEqual(doc_map.document_type, "judgment")
+        self.assertGreaterEqual(doc_map.document_type_confidence, 0.5)
+
+    def test_detects_petition_header(self) -> None:
+        chunks = build_private_chunks([raw_chunk("Writ Petition under Article 226. Petitioner: Asha Rao. Respondent: State of Kerala. Prayer for relief sought.")])
+        self.assertEqual(detect_document_type("petition.pdf", chunks), "petition")
+
 
 class SectionAndEntityExtractionTests(unittest.TestCase):
     def test_extracts_explicit_statutory_sections(self) -> None:
@@ -86,6 +103,21 @@ class SectionAndEntityExtractionTests(unittest.TestCase):
         sections, _, _ = extract_sections_and_entities(chunks)
         normalized = [s.lower() for s in sections]
         self.assertEqual(len(normalized), len(set(normalized)))
+
+    def test_extracts_common_indian_section_formats(self) -> None:
+        chunks = build_private_chunks(
+            [
+                raw_chunk(
+                    "Sections 302, 304 IPC; Sections 376/506 IPC; u/s 161 CrPC; "
+                    "Section 173(2) CrPC; Section 35 BNS; Section 173 BNSS; "
+                    "Section 5 read with Section 6 POCSO; Section 65 BSA."
+                )
+            ]
+        )
+        sections, _, _ = extract_sections_and_entities(chunks)
+        joined = " ".join(sections)
+        for expected in ("302", "376", "161", "173", "35", "BNSS", "POCSO", "BSA"):
+            self.assertIn(expected, joined)
 
     def test_empty_document_returns_empty_lists_not_invented_content(self) -> None:
         chunks = build_private_chunks([raw_chunk("Nothing legally relevant appears in this text at all.")])
@@ -199,6 +231,25 @@ class BuildLocalDocumentMapTests(unittest.TestCase):
         self.assertEqual(doc_map.witness_excerpts, [])
         self.assertEqual(doc_map.medical_forensic_excerpts, [])
 
+    def test_party_roles_and_chronology_are_traceable(self) -> None:
+        chunks = build_private_chunks(
+            [
+                raw_chunk("State of Kerala vs Ramesh Kumar. Appellant: State of Kerala. Respondent: Ramesh Kumar.", page=1),
+                raw_chunk("The FIR was registered on 12/05/2024. The accused was arrested on 13.05.2024.", page=2),
+            ]
+        )
+        doc_map = build_local_document_map(chunks, filename="judgment.pdf", dense_provider=None, token_budget_tokens=5000)
+        self.assertTrue(any(p.name == "State of Kerala" and p.private_evidence_id for p in doc_map.parties_and_roles))
+        self.assertTrue(any(item.event == "FIR registered" and item.private_evidence_id for item in doc_map.chronology))
+        self.assertTrue(any(item.event == "arrest" for item in doc_map.chronology))
+
+    def test_no_hallucinated_medical_or_defence_or_order_fields(self) -> None:
+        chunks = build_private_chunks([raw_chunk("Petitioner: Asha Rao. Respondent: State. Prayer for quashing the notice.", page=1)])
+        doc_map = build_local_document_map(chunks, filename="petition.pdf", dense_provider=None, token_budget_tokens=5000)
+        self.assertEqual(doc_map.medical_forensic_evidence, [])
+        self.assertEqual(doc_map.accused_or_defence_position, [])
+        self.assertEqual(doc_map.relief_or_final_order, [])
+
     def test_zero_provider_calls_ever(self) -> None:
         """Nothing in this module accepts or calls an adapter - structurally
         impossible to make a provider call, not just untested."""
@@ -218,6 +269,15 @@ class RenderAndQueryEnrichmentTests(unittest.TestCase):
         rendered = render_local_document_map(doc_map)
         self.assertIn("not verified applicable law", rendered)
         self.assertIn("locally built", rendered)
+
+    def test_rendered_map_contains_case_file_digest_instruction_and_rich_context(self) -> None:
+        chunks = build_private_chunks([raw_chunk(t, page=i + 1) for i, t in enumerate(FIR_TEXT)])
+        doc_map = build_local_document_map(chunks, filename="fir.pdf", dense_provider=None, token_budget_tokens=5000)
+        rendered = render_local_document_map(doc_map)
+        self.assertIn("case-file summary", rendered)
+        self.assertIn("chronology:", rendered)
+        self.assertIn("statutory_sections_explicitly_mentioned", rendered)
+        self.assertIn("missing_or_unclear_information", rendered)
 
     def test_enriched_query_uses_map_content_over_fallback(self) -> None:
         chunks = build_private_chunks([raw_chunk(t, page=i + 1) for i, t in enumerate(FIR_TEXT)])

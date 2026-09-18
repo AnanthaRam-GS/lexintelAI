@@ -50,11 +50,17 @@ export interface ProfessionalPrecedent {
 
 export interface ProfessionalCaseBrief {
   summary: string;
+  parties_and_roles?: string[];
+  material_facts?: string[];
+  chronology?: string[];
+  statutory_provisions?: string[];
+  evidence_identified?: string[];
   applicable_law: string[];
   key_issues: string[];
   procedural_considerations: string[];
   precedent_analysis: string[];
   limitations: string[];
+  recommended_research_questions?: string[];
 }
 
 export interface ProfessionalQueryResponse {
