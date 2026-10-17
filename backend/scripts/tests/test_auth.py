@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.core.security import (
     COOKIE_NAME,
     DEFAULT_DEV_SECRET,
@@ -237,6 +238,9 @@ class TestAuthIntegration(unittest.TestCase):
             require_admin(lawyer_user)
         self.assertEqual(cm.exception.status_code, 403)
         self.assertIn("Operation not permitted for role 'lawyer'", cm.exception.detail)
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

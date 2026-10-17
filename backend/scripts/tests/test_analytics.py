@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.core.security import COOKIE_NAME
 from backend.app.db.models import Document, DocumentSection, IpcBnsMapping, NcrbStat
 from backend.app.db.session import SessionLocal
@@ -217,6 +218,9 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
 
         bad = client.get("/analytics/ipc-bns-map", params={"change_type": "UNKNOWN"})
         self.assertEqual(bad.status_code, 400)
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":
