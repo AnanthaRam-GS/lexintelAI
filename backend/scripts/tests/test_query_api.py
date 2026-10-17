@@ -8,6 +8,7 @@ from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.api import query as query_api
 from backend.app.core.config import Settings
 from backend.app.core.dependencies import get_current_user
@@ -1225,6 +1226,9 @@ def professional_result() -> LegalAnswerResult:
         query_understanding_version="test-understanding",
         retrieval_version="test-retrieval",
     )
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

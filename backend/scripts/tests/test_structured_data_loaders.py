@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.db.models import IpcBnsMapping, NcrbStat
 from backend.app.db.session import SessionLocal
 from backend.scripts.load_ipc_bns import DEFAULT_CSV_PATH as IPC_CSV
@@ -184,6 +185,9 @@ class TestStructuredDataLoaders(unittest.TestCase):
         self.assertEqual(ncrb_stats["inserted"], 0)
         self.assertEqual(ipc_stats["skipped_invalid"], 0)
         self.assertEqual(ncrb_stats["skipped_invalid"], 0)
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

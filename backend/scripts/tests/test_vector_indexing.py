@@ -5,14 +5,23 @@ from __future__ import annotations
 import json
 import importlib.util
 import math
+import os
 import tempfile
 import unittest
 from pathlib import Path
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.services.embeddings.base import EmbeddingConfig, validate_vectors
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
 from backend.app.services.vector_store import INDEX_VERSION, ChromaVectorStore, JsonVectorStore, metadata_for_chroma
 from backend.scripts import build_vector_index as builder
+
+
+def setUpModule() -> None:
+    # This module uses mock embeddings only; the bootstrap blocks real BGE-M3
+    # and reranker construction unless LEGALAI_ALLOW_MODEL_LOADING=1.
+    if os.environ.get("LEGALAI_SKIP_VECTOR_TESTS") == "1":
+        raise unittest.SkipTest("Vector-index tests skipped by LEGALAI_SKIP_VECTOR_TESTS=1.")
 
 
 class VectorIndexingTest(unittest.TestCase):
@@ -156,6 +165,9 @@ class VectorIndexingTest(unittest.TestCase):
         summary = builder.dry_run_summary(chunks, "collection", Path("chroma_store"), EmbeddingConfig())
         self.assertEqual(summary["expected_chunks"], 3)
         self.assertFalse(summary["would_mutate_vector_store"])
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

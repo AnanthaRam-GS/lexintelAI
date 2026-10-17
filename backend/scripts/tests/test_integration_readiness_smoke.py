@@ -7,6 +7,7 @@ import unittest
 
 from fastapi.testclient import TestClient
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.main import app
 from backend.scripts.run_integration_smoke import EXPECTED_ROUTES, route_methods, run_smoke, summarize
 
@@ -52,6 +53,9 @@ class IntegrationReadinessSmokeTests(unittest.TestCase):
         self.assertIn("apiFetch<PublicQueryResponse>('/query/public'", query_client)
         self.assertIn("publicQueryApi.submitPdf", query_client)
         self.assertIn("redirect('/login')", landing_page)
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

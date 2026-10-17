@@ -15,6 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.core.security import COOKIE_NAME
 from backend.app.db.models import Chunk, Document, IngestionJob
 from backend.app.db.session import SessionLocal
@@ -395,6 +396,9 @@ class TestIngestionEndpoints(unittest.TestCase):
         self.assertIsInstance(data["by_type"], list)
         self.assertEqual(data["postgres_status"], "connected")
         self.assertIn("chroma_status", data)
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":

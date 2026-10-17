@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pymupdf
 
+from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.models.ingest import IngestionStatus
 from backend.app.services.chunker import DocumentChunkingError, chunk_document
 from backend.app.services.document_parser import DocumentParsingError, parse_document
@@ -200,6 +201,9 @@ class FakeVectorStore:
     def upsert_chunks(self, **kwargs):
         self.upserts.append(kwargs)
         return {"inserted": len(kwargs["ids"]), "updated": 0, "skipped_unchanged": 0}
+
+
+db_test_bootstrap.isolate_test_cases(globals())
 
 
 if __name__ == "__main__":
