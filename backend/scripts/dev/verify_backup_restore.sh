@@ -7,21 +7,24 @@
 #    counts with db_row_counts.txt for every table.
 #
 # Usage:
-#   backend/scripts/dev/verify_backup_restore.sh <backup_dir> <rehearsal_database_name>
+#   backend/scripts/dev/verify_backup_restore.sh <backup_dir> <rehearsal_database_name> [--clean]
 #
-# The rehearsal database must already exist, must be empty (no public
-# tables), and must not be the development or test database. It is reached
-# with the same host, port and credentials as the development DATABASE_URL.
+# The rehearsal database must already exist and must not be the development
+# or test database. It is reached with the same host, port and credentials as
+# the development DATABASE_URL. Without --clean it must be empty (no public
+# tables); with --clean, pg_restore --clean --if-exists first drops the
+# objects the dump contains, so an earlier rehearsal is replaced.
 set -euo pipefail
 
-if [ "$#" -ne 2 ]; then
-  echo "usage: $0 <backup_dir> <rehearsal_database_name>" >&2
+if [ "$#" -lt 2 ] || [ "$#" -gt 3 ] || { [ "$#" -eq 3 ] && [ "$3" != "--clean" ]; }; then
+  echo "usage: $0 <backup_dir> <rehearsal_database_name> [--clean]" >&2
   exit 2
 fi
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 BACKUP_DIR="$(cd "$1" && pwd)"
 TARGET_DB="$2"
+CLEAN="${3:-}"
 
 DB_URL="${DATABASE_URL:-}"
 if [ -z "$DB_URL" ] && [ -f "$REPO_ROOT/.env" ]; then
@@ -46,11 +49,14 @@ echo "[2/3] store copies vs live stores"
 
 echo "[3/3] restore into $TARGET_DB"
 existing="$(psql "$TARGET_URL" -X -A -t -v ON_ERROR_STOP=1 -c "SELECT count(*) FROM pg_tables WHERE schemaname = 'public'")"
-if [ "$existing" != "0" ]; then
-  echo "refusing to restore: $TARGET_DB already has $existing public tables" >&2
+if [ "$CLEAN" = "--clean" ]; then
+  pg_restore --clean --if-exists --no-owner --no-privileges --exit-on-error --dbname="$TARGET_URL" "$BACKUP_DIR/legalai_dev.dump"
+elif [ "$existing" != "0" ]; then
+  echo "refusing to restore: $TARGET_DB already has $existing public tables (pass --clean to replace them)" >&2
   exit 2
+else
+  pg_restore --no-owner --no-privileges --exit-on-error --dbname="$TARGET_URL" "$BACKUP_DIR/legalai_dev.dump"
 fi
-pg_restore --no-owner --no-privileges --exit-on-error --dbname="$TARGET_URL" "$BACKUP_DIR/legalai_dev.dump"
 restored="$(mktemp)"
 trap 'rm -f "$restored"' EXIT
 for table in $(psql "$TARGET_URL" -X -A -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1"); do

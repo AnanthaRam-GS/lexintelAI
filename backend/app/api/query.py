@@ -14,7 +14,7 @@ from typing import Any, Callable
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
-from backend.app.core.config import Settings
+from backend.app.core.config import Settings, resolve_chroma_location
 from backend.app.core.dependencies import require_lawyer_or_admin
 from backend.app.db.models import User
 from backend.app.db.session import get_db
@@ -68,7 +68,6 @@ from backend.app.services.product_context_budget import (
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
 from backend.app.services.token_budget import TokenBudget, estimate_tokens, resolve_token_budget
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
-from backend.scripts.build_vector_index import DEFAULT_COLLECTION, DEFAULT_PERSIST_DIR as CHROMA_PERSIST_DIR
 from backend.scripts.retrieve_legal_evidence import DEFAULT_INDEX_NAME, make_service
 
 logger = logging.getLogger("legalai.query")
@@ -93,15 +92,20 @@ def get_settings() -> Settings:
     return Settings()
 
 
+def retrieval_service_args(settings: Settings) -> Namespace:
+    """Store locations for the query path; the Chroma collection is the one ingestion writes to."""
+    chroma_persist_dir, collection = resolve_chroma_location(settings)
+    return Namespace(
+        bm25_persist_dir=BM25_PERSIST_DIR,
+        chroma_persist_dir=chroma_persist_dir,
+        index_name=DEFAULT_INDEX_NAME,
+        collection=collection,
+    )
+
+
 @lru_cache(maxsize=1)
 def _cached_retrieval_service():
-    args = Namespace(
-        bm25_persist_dir=BM25_PERSIST_DIR,
-        chroma_persist_dir=CHROMA_PERSIST_DIR,
-        index_name=DEFAULT_INDEX_NAME,
-        collection=DEFAULT_COLLECTION,
-    )
-    return make_service(args)
+    return make_service(retrieval_service_args(Settings()))
 
 
 def get_retrieval_service():

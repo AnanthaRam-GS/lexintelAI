@@ -326,6 +326,28 @@ def classify_index_entry(
     return "orphan", f"not a curated chunk and not a postgres doc:<id> entry (store: {store})"
 
 
+def test_email_domains(literals: set[str]) -> set[str]:
+    """Email domains used by test fixtures, e.g. "@example.test" in f-strings."""
+    return {
+        literal.rsplit("@", 1)[1].lower()
+        for literal in literals
+        if "@" in literal and re.fullmatch(r"[A-Za-z0-9.-]+\.[A-Za-z]+", literal.rsplit("@", 1)[1])
+    }
+
+
+def classify_user(email: str | None, seeds: set[str], test_domains: set[str]) -> str:
+    """seed_account, test_fixture, unclassified or unknown (no email)."""
+    if not email:
+        return "unknown"
+    email = email.lower()
+    if email in seeds:
+        return "seed_account"
+    domain = email.rsplit("@", 1)[-1]
+    if domain in test_domains or domain.endswith(".test"):
+        return "test_fixture"
+    return "unclassified"
+
+
 def category_lists(assignments: dict[Any, str]) -> dict[str, list[Any]]:
     grouped: dict[str, list[Any]] = {category: [] for category in CATEGORIES}
     for key, category in assignments.items():
@@ -665,7 +687,7 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
             if category != "corpus" and any(assignments[i] == category for i in non_corpus)
         }
         pg_ids_here = {i for i in ids if PG_CHUNK_ID.match(i)}
-        mismatches[f"postgres_chunk_ids_missing_from_{store}"] = sorted(set(pg_chroma_ids) - pg_ids_here)
+        mismatches[f"postgres_chunk_ids_missing_from_{store}"] = sorted(set(pg_chroma_ids) - ids)
         mismatches[f"{store}_doc_ids_not_in_postgres_chunks"] = sorted(pg_ids_here - set(pg_chroma_ids))
         mismatches[f"corpus_provenance_vs_{store}"] = provenance_mismatches(
             curated_chunks, index_metadata_by_store[store], text_hashes_by_store[store]
@@ -710,24 +732,8 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
     validator = validator_duplicates(curated_documents)
 
     # Non-corpus PostgreSQL tables (counts only; no emails are output).
-    # Email domains used by test fixtures, e.g. "@example.test" in f-strings.
-    test_domains = {
-        literal.rsplit("@", 1)[1].lower()
-        for literal in literals
-        if "@" in literal and re.fullmatch(r"[A-Za-z0-9.-]+\.[A-Za-z]+", literal.rsplit("@", 1)[1])
-    }
-
-    def user_category(email: str | None) -> str:
-        if not email:
-            return "unknown"
-        if email in seeds:
-            return "seed_account"
-        domain = email.rsplit("@", 1)[-1]
-        if domain in test_domains or domain.endswith(".test"):
-            return "test_fixture"
-        return "unclassified"
-
-    user_categories = {row["id"]: user_category(row["email"]) for row in pg["users"]}
+    test_domains = test_email_domains(literals)
+    user_categories = {row["id"]: classify_user(row["email"], seeds, test_domains) for row in pg["users"]}
     users_by_category = Counter(user_categories.values())
     users_by_category_role = Counter(f"{user_categories[row['id']]}|{row['role']}" for row in pg["users"])
 
