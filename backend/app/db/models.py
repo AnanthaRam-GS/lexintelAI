@@ -26,6 +26,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
     JSON,
+    text,
 )
 from sqlalchemy.orm import relationship
 
@@ -36,6 +37,14 @@ class Document(Base):
     """Corpus document metadata for judgments, statutes, and legal orders."""
 
     __tablename__ = "documents"
+    __table_args__ = (
+        Index(
+            "uq_documents_source_document_key",
+            "source_document_key",
+            unique=True,
+            postgresql_where=text("source_document_key IS NOT NULL"),
+        ),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     doc_type = Column(String(50), nullable=False, index=True)
@@ -50,7 +59,10 @@ class Document(Base):
     appeal_result = Column(String(100), nullable=True)
     source_url = Column(Text, nullable=True)
     file_path = Column(String(500), nullable=True)
-    checksum = Column(String(64), nullable=True, index=True)
+    checksum = Column(String(64), nullable=True, index=True, unique=True)
+    # External corpus identifier such as "indian_kanoon:<id>"; matches the
+    # document_id carried by Chroma and BM25 entries for curated documents.
+    source_document_key = Column(String(255), nullable=True)
     ingested_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),

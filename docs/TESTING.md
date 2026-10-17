@@ -191,10 +191,19 @@ takes the database URL from `DATABASE_URL` or `.env` and never prints it.
   (sha256 of every file). It refuses a destination inside the repository.
   Backups contain user data: keep them outside the repo and never commit
   them.
-- `backend/scripts/dev/verify_backup_restore.sh <backup_dir> <rehearsal_db>`
+- `backend/scripts/dev/verify_backup_restore.sh <backup_dir> <rehearsal_db> [--clean]`
   re-checks `MANIFEST.txt`, compares the store copies with the live stores,
-  and restores the dump into an existing, empty rehearsal database (never the
-  dev or a `_test` database), then compares row counts.
+  and restores the dump into an existing rehearsal database (never the dev
+  or a `_test` database), then compares row counts. Without `--clean` the
+  target must be empty; with `--clean`, `pg_restore --clean` replaces an
+  earlier rehearsal.
+- `backend/scripts/reconcile_cleanup.py`, `reconcile_backfill.py` and
+  `verify_store_consistency.py` remove the inventory's test pollution,
+  backfill the curated corpus into PostgreSQL, and check PostgreSQL against
+  Chroma and BM25. They take the database through `--database-url-env NAME`
+  and explicit store paths, support `--dry-run`, and refuse the dev database
+  or the repository's real stores without `--confirm-dev`. The procedure is
+  in `docs/reconciliation/EXECUTION_RUNBOOK.md`.
 - `backend/scripts/reconcile_inventory.py` reads PostgreSQL (read-only
   session), Chroma (SQLite `mode=ro&immutable=1`) and BM25, and writes
   `docs/reconciliation/inventory.json` and `INVENTORY_REPORT.md`. Use

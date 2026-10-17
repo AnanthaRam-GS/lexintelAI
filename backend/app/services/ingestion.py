@@ -16,7 +16,7 @@ import uuid
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from backend.app.core.config import Settings
+from backend.app.core.config import Settings, resolve_chroma_location
 from backend.app.db.models import Chunk, Document, IngestionJob
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.models.ingest import (
@@ -219,13 +219,7 @@ def process_ingestion_job(
         # Vector store indexing: MUST be executed using vector_store or ChromaVectorStore from shared vector_store.py
         if vector_store is None:
             try:
-                from backend.app.services.vector_store import ChromaVectorStore, INDEX_VERSION
-                s = Settings()
-                vector_store = ChromaVectorStore(
-                    persist_dir=Path(s.chroma_persist_dir),
-                    collection_name=s.chroma_collection_name,
-                    collection_metadata={"index_version": INDEX_VERSION},
-                )
+                vector_store = trusted_vector_store(Settings())
             except Exception as exc:
                 raise RuntimeError(
                     f"Ingestion blocked: Vector store indexing is unavailable ({exc})."
@@ -274,6 +268,18 @@ def process_ingestion_job(
             db.commit()
     finally:
         db.close()
+
+
+def trusted_vector_store(settings: Settings) -> Any:
+    """Open the trusted-corpus Chroma collection; the query path reads the same one."""
+    from backend.app.services.vector_store import ChromaVectorStore, INDEX_VERSION
+
+    persist_dir, collection_name = resolve_chroma_location(settings)
+    return ChromaVectorStore(
+        persist_dir=persist_dir,
+        collection_name=collection_name,
+        collection_metadata={"index_version": INDEX_VERSION},
+    )
 
 
 def trusted_bm25_chunks(doc: Document, chunks_data: list[dict[str, Any]], chroma_ids: list[str]) -> list[dict[str, Any]]:

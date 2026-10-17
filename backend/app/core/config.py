@@ -5,7 +5,12 @@ It intentionally does not instantiate settings or initialize external
 resources. The intended runtime dependency is `pydantic-settings`.
 """
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CHROMA_COLLECTION = "legalai_trusted_judgments_v1"
 
 
 class Settings(BaseSettings):
@@ -47,7 +52,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://user:password@localhost:5432/legalai"
 
     chroma_persist_dir: str = "./chroma_store"
-    chroma_collection_name: str = "legalai_trusted_judgments_v1"
+    chroma_collection_name: str = DEFAULT_CHROMA_COLLECTION
 
     indian_kanoon_api_token: str = ""
     indian_kanoon_base_url: str = "https://api.indiankanoon.org"
@@ -99,3 +104,15 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+
+def resolve_chroma_location(settings: Settings) -> tuple[Path, str]:
+    """Return the Chroma persist directory and collection shared by ingestion and query.
+
+    A relative ``CHROMA_PERSIST_DIR`` is resolved against the repository root,
+    so both paths open the same store regardless of the working directory.
+    """
+    persist_dir = Path(settings.chroma_persist_dir)
+    if not persist_dir.is_absolute():
+        persist_dir = REPO_ROOT / persist_dir
+    return persist_dir, settings.chroma_collection_name

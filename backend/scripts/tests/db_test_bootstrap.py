@@ -166,8 +166,8 @@ import backend.app.db.models  # noqa: E402,F401
 from backend.scripts import build_lexical_index, build_vector_index  # noqa: E402
 
 ingest_api.UPLOAD_DIR = TEMP_UPLOAD_DIR
+# The query path resolves Chroma from CHROMA_PERSIST_DIR (set above); BM25 is a module constant.
 query_api.BM25_PERSIST_DIR = TEMP_BM25_DIR
-query_api.CHROMA_PERSIST_DIR = TEMP_CHROMA_DIR
 query_api.clear_retrieval_service_cache()
 build_lexical_index.DEFAULT_PERSIST_DIR = TEMP_BM25_DIR
 build_vector_index.DEFAULT_PERSIST_DIR = TEMP_CHROMA_DIR

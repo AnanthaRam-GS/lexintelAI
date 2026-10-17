@@ -17,6 +17,7 @@ from typing import Any
 if __package__ in {None, ""}:
     sys.path.append(str(Path(__file__).resolve().parents[2]))
 
+from backend.app.core.config import DEFAULT_CHROMA_COLLECTION, Settings, resolve_chroma_location  # noqa: E402
 from backend.app.services.embeddings.base import EmbeddingConfig, EmbeddingProvider, validate_vectors  # noqa: E402
 from backend.app.services.embeddings.bge_m3 import BgeM3EmbeddingProvider  # noqa: E402
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider  # noqa: E402
@@ -30,7 +31,7 @@ CHUNK_SUMMARY = REPO_ROOT / "data/structured/manifests/trusted_judgment_chunk_su
 VECTOR_SUMMARY = REPO_ROOT / "data/structured/manifests/trusted_judgment_vector_index_summary.json"
 VECTOR_QA = REPO_ROOT / "docs/VECTOR_INDEX_QA.md"
 DOC_PATH = REPO_ROOT / "docs/EMBEDDING_AND_VECTOR_INDEX.md"
-DEFAULT_COLLECTION = "legalai_trusted_judgments_v1"
+DEFAULT_COLLECTION = DEFAULT_CHROMA_COLLECTION
 DEFAULT_PERSIST_DIR = REPO_ROOT / "chroma_store"
 SEMANTIC_QUERIES = [
     "dowry death section 304B IPC",
@@ -333,8 +334,10 @@ def dry_run_summary(chunks: list[dict[str, Any]], collection: str, persist_dir: 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--collection", default=os.getenv("CHROMA_COLLECTION_NAME", DEFAULT_COLLECTION))
-    parser.add_argument("--persist-dir", type=Path, default=Path(os.getenv("CHROMA_PERSIST_DIR", DEFAULT_PERSIST_DIR)))
+    # Same resolution as ingestion and the query path (CHROMA_* env vars or .env).
+    configured_persist_dir, configured_collection = resolve_chroma_location(Settings())
+    parser.add_argument("--collection", default=configured_collection)
+    parser.add_argument("--persist-dir", type=Path, default=configured_persist_dir)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--batch-size", type=int, default=int(os.getenv("EMBEDDING_BATCH_SIZE", "16")))
