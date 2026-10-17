@@ -89,6 +89,13 @@ Expected output: `Test database 'legalai_test' validated and migrated to head.`
 
 ## Run the DB-backed suites
 
+One process per module, with logs and a summary
+(`backend/scripts/dev/run_db_suites.sh`):
+
+```bash
+backend/scripts/dev/run_db_suites.sh /tmp/legalai_db_suites
+```
+
 All 10 modules in one process:
 
 ```bash
@@ -154,11 +161,41 @@ Avoid `next build` for routine checks: it rewrites the tracked
 
 ## Verifying that a run left development state untouched
 
-Before and after a run, compare:
+`backend/scripts/dev/snapshot_dev_state.sh` records:
 
 - the row count of every table in the development database, in a read-only
   transaction (`SET default_transaction_read_only = on`);
-- the sha256 and mtime of every file under `chroma_store/`, `bm25_store/`, and
-  `data/raw/uploads`.
+- the sha256 and mtime of every file under `chroma_store/`, `bm25_store/`,
+  `data/raw/uploads`, and the corpus sources (`data/processed/judgment_chunks`,
+  `data/processed/judgments_normalized`, `data/processed/acquisition_runs`,
+  `data/raw/judgments`, `data/structured/manifests`). Pass paths as extra
+  arguments to snapshot others.
 
-Both should be identical.
+```bash
+backend/scripts/dev/snapshot_dev_state.sh /tmp/before
+# ... run the suites ...
+backend/scripts/dev/snapshot_dev_state.sh /tmp/after
+diff /tmp/before.db.txt /tmp/after.db.txt && diff /tmp/before.files.txt /tmp/after.files.txt
+```
+
+Both diffs should be empty.
+
+## Backups and reconciliation tooling
+
+These scripts support the data reconciliation in `docs/reconciliation/`. Each
+takes the database URL from `DATABASE_URL` or `.env` and never prints it.
+
+- `backend/scripts/dev/backup_dev_state.sh <backup_root>` writes
+  `<backup_root>/<UTC timestamp>/` with a `pg_dump -Fc`, copies of
+  `chroma_store/` and `bm25_store/`, `db_row_counts.txt`, and `MANIFEST.txt`
+  (sha256 of every file). It refuses a destination inside the repository.
+  Backups contain user data: keep them outside the repo and never commit
+  them.
+- `backend/scripts/dev/verify_backup_restore.sh <backup_dir> <rehearsal_db>`
+  re-checks `MANIFEST.txt`, compares the store copies with the live stores,
+  and restores the dump into an existing, empty rehearsal database (never the
+  dev or a `_test` database), then compares row counts.
+- `backend/scripts/reconcile_inventory.py` reads PostgreSQL (read-only
+  session), Chroma (SQLite `mode=ro&immutable=1`) and BM25, and writes
+  `docs/reconciliation/inventory.json` and `INVENTORY_REPORT.md`. Use
+  `--chroma-dir`, `--bm25-file` and `--output-dir` to point it at copies.
