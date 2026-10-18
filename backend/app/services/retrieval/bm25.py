@@ -205,6 +205,26 @@ class Bm25LexicalIndex:
             self.persist()
         return len(ids)
 
+    def remove_document(self, document_id: str) -> int:
+        """Delete a document's records, then rebuild statistics and index metadata.
+
+        Unlike delete_document, the persisted metadata (counts, fingerprint)
+        stays consistent with the remaining records. Used to compensate a
+        failed ingestion.
+        """
+        if self.path.exists():
+            self.load()
+        ids = [chunk_id for chunk_id, record in self.records.items() if record["document_id"] == document_id]
+        if not ids:
+            return 0
+        for chunk_id in ids:
+            del self.records[chunk_id]
+        self.recompute_statistics()
+        empty = sum(1 for record in self.records.values() if record["length"] == 0)
+        self.metadata = self.index_metadata_from_records(empty_tokenized_docs=empty)
+        self.persist()
+        return len(ids)
+
     def index_metadata(self, chunks: list[dict[str, Any]], empty_tokenized_docs: int = 0) -> dict[str, Any]:
         processing_versions = sorted({str(chunk.get("chunker_version", "unknown")) for chunk in chunks})
         return {

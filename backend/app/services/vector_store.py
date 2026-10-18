@@ -10,6 +10,16 @@ from typing import Any
 
 
 INDEX_VERSION = "legalai-chroma-index-v1"
+# BGE-M3 dense embedding width; the trusted collection must use it.
+EXPECTED_EMBEDDING_DIMENSION = 1024
+
+
+class VectorStoreUnavailable(RuntimeError):
+    """The configured Chroma collection cannot be used; ``code`` is safe to expose."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 @dataclass(frozen=True)
@@ -241,17 +251,58 @@ class JsonVectorStore:
 class ChromaVectorStore:
     """Thin optional Chroma adapter; requires chromadb to be installed locally."""
 
-    def __init__(self, persist_dir: Path, collection_name: str, collection_metadata: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        persist_dir: Path,
+        collection_name: str,
+        collection_metadata: dict[str, Any],
+        *,
+        create_if_missing: bool = True,
+        expected_dimension: int | None = None,
+    ) -> None:
+        """Open (and, for ingestion and index builds, create) a collection.
+
+        Read paths pass ``create_if_missing=False``: a missing store or
+        collection then raises VectorStoreUnavailable instead of silently
+        creating an empty one, and ``expected_dimension`` is enforced.
+        """
         try:
             import chromadb
+            from chromadb.errors import NotFoundError
         except ImportError as exc:
             raise RuntimeError("chromadb is required for real Chroma persistence") from exc
-        self._client = chromadb.PersistentClient(path=str(persist_dir))
-        self._collection = self._client.get_or_create_collection(
-            name=collection_name,
-            metadata=collection_metadata,
-        )
+        self.collection_name = collection_name
+        if create_if_missing:
+            self._client = chromadb.PersistentClient(path=str(persist_dir))
+            self._collection = self._client.get_or_create_collection(
+                name=collection_name,
+                metadata=collection_metadata,
+            )
+        else:
+            # PersistentClient creates the directory and database when absent,
+            # so check for the store before opening it.
+            if not (Path(persist_dir) / "chroma.sqlite3").is_file():
+                raise VectorStoreUnavailable("VECTOR_STORE_MISSING", "The vector store does not exist.")
+            self._client = chromadb.PersistentClient(path=str(persist_dir))
+            try:
+                self._collection = self._client.get_collection(name=collection_name)
+            except (NotFoundError, ValueError) as exc:
+                raise VectorStoreUnavailable(
+                    "VECTOR_COLLECTION_MISSING", f"The vector collection '{collection_name}' does not exist."
+                ) from exc
+        if expected_dimension is not None:
+            dimension = self.dimension()
+            if dimension != expected_dimension:
+                raise VectorStoreUnavailable(
+                    "VECTOR_DIMENSION_MISMATCH",
+                    f"The vector collection '{collection_name}' has embedding dimension {dimension}, "
+                    f"expected {expected_dimension}.",
+                )
         self.collection_metadata = collection_metadata
+
+    def dimension(self) -> int | None:
+        """Embedding width recorded by Chroma; None until the first vector is written."""
+        return getattr(self._collection._model, "dimension", None)
 
     def upsert_chunks(
         self,

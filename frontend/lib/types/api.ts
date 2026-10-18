@@ -162,15 +162,28 @@ export interface AdminIngestionStatusResponse {
   progress: number;
   document_id?: number | string | null;
   chunk_count?: number | null;
+  /** Sanitized, user-safe message. */
   error?: string | null;
+  /** Internal failure code, e.g. LEXICAL_INDEX_FAILED or STALE_JOB. */
+  error_code?: string | null;
+  /** True when cleanup after a failure did not complete; the stores need reconciliation. */
+  needs_reconciliation?: boolean;
 }
 
 export interface CorpusStatsResponse {
   total_documents: number;
   last_updated: string | null;
   by_type: Array<{ doc_type: string; count: number }>;
+  /** Service health: 'healthy' | 'degraded' | 'down'. */
   postgres_status: string;
   chroma_status: string;
+  chroma_detail?: string | null;
+  chroma_collection?: string | null;
+  chroma_record_count?: number | null;
+  bm25_status?: string;
+  bm25_detail?: string | null;
+  bm25_record_count?: number | null;
+  postgres_chunk_count?: number | null;
 }
 
 export type LawyerApplicationStatus =

@@ -24,7 +24,7 @@ from backend.app.services.reranking.base import RerankerConfig
 from backend.app.services.reranking.bge import BgeReranker
 from backend.app.services.retrieval.bm25 import Bm25Config, Bm25LexicalIndex, DEFAULT_INDEX_NAME
 from backend.app.services.retrieval.service import HybridConfig, RetrievalService
-from backend.app.services.vector_store import ChromaVectorStore
+from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, ChromaVectorStore
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
 from backend.scripts.build_vector_index import DEFAULT_COLLECTION, DEFAULT_PERSIST_DIR as CHROMA_PERSIST_DIR, collection_metadata
 
@@ -42,9 +42,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 def make_service(args: argparse.Namespace) -> RetrievalService:
     embedding_config = EmbeddingConfig(model_name="BAAI/bge-m3", device="cpu", batch_size=8, normalize_embeddings=True)
+    # Read path: open the existing collection (never create it) before loading
+    # models, so a missing or wrong-dimension index fails fast.
+    vector_store = ChromaVectorStore(
+        args.chroma_persist_dir,
+        args.collection,
+        collection_metadata(embedding_config, "real_bge_m3"),
+        create_if_missing=False,
+        expected_dimension=EXPECTED_EMBEDDING_DIMENSION,
+    )
     return RetrievalService(
         dense_provider=BgeM3EmbeddingProvider(embedding_config),
-        vector_store=ChromaVectorStore(args.chroma_persist_dir, args.collection, collection_metadata(embedding_config, "real_bge_m3")),
+        vector_store=vector_store,
         lexical_index=Bm25LexicalIndex(args.bm25_persist_dir, args.index_name, Bm25Config(k1=1.5, b=0.75)),
         hybrid_config=HybridConfig(rrf_k=60, candidate_k=20),
         reranker=BgeReranker(

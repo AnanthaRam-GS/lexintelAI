@@ -14,6 +14,7 @@ Defines the 8 core tables required for Step 0.3:
 import uuid
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Column,
     Date,
@@ -24,6 +25,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    false,
     func,
     JSON,
     text,
@@ -312,7 +314,11 @@ class IngestionJob(Base):
         index=True,
     )
     progress = Column(Integer, nullable=False, default=0, server_default="0")
+    # Sanitized, user-safe message; raw exception text goes to server logs only.
     error_message = Column(Text, nullable=True)
+    error_code = Column(String(64), nullable=True)
+    # Set when compensating cleanup after a failure did not complete.
+    needs_reconciliation = Column(Boolean, nullable=False, default=False, server_default=false())
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),

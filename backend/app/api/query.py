@@ -67,6 +67,7 @@ from backend.app.services.product_context_budget import (
 )
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
 from backend.app.services.token_budget import TokenBudget, estimate_tokens, resolve_token_budget
+from backend.app.services.vector_store import VectorStoreUnavailable
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
 from backend.scripts.retrieve_legal_evidence import DEFAULT_INDEX_NAME, make_service
 
@@ -109,7 +110,15 @@ def _cached_retrieval_service():
 
 
 def get_retrieval_service():
-    return _cached_retrieval_service()
+    try:
+        return _cached_retrieval_service()
+    except VectorStoreUnavailable as exc:
+        # Not cached by lru_cache, so the next request retries.
+        logger.error("retrieval index unavailable code=%s detail=%s", exc.code, exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "RETRIEVAL_INDEX_UNAVAILABLE", "message": "The legal evidence index is temporarily unavailable."},
+        ) from exc
 
 
 def clear_retrieval_service_cache() -> None:
