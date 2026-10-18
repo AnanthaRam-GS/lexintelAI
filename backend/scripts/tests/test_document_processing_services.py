@@ -165,8 +165,9 @@ class FakeSession:
         self.commits = 0
         self.added = []
 
-    def query(self, _model):
-        return FakeQuery(self.job)
+    def query(self, model):
+        # Only job lookups find something; document (duplicate) lookups find nothing.
+        return FakeQuery(self.job if getattr(model, "__name__", "") == "IngestionJob" else None)
 
     def add(self, item):
         self.added.append(item)

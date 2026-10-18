@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 from pathlib import Path
 import re
 import uuid
@@ -31,11 +32,15 @@ from backend.app.models.ingest import (
 )
 from backend.app.services.ingestion import (
     create_ingestion_job,
+    find_document_by_checksum,
     get_corpus_stats,
     get_ingestion_job,
     get_job_chunk_count,
     process_ingestion_job,
+    reap_stale_jobs,
 )
+
+logger = logging.getLogger("legalai.ingest")
 
 router = APIRouter(prefix="/ingest", tags=["Corpus Ingestion"])
 settings = Settings()
@@ -106,6 +111,18 @@ async def upload_corpus_document(
         )
 
     checksum = hashlib.sha256(file_bytes).hexdigest()
+    # DATA-003: reject a known document before saving the upload, creating a
+    # job or touching any store. The write phase re-checks under its lock.
+    existing = find_document_by_checksum(db, checksum)
+    if existing is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "DOCUMENT_ALREADY_INGESTED",
+                "message": "This document has already been ingested.",
+                "document_id": existing.id,
+            },
+        )
     job_id = str(uuid.uuid4())
 
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -145,6 +162,11 @@ def get_job_status(
     current_admin: User = Depends(require_admin),
 ) -> IngestionStatusResponse:
     """Retrieve current progress, stage, document id, chunk count, or error for an ingestion job."""
+    try:
+        reap_stale_jobs(db, upload_dir=UPLOAD_DIR)
+    except Exception as exc:  # status reads must not fail because of the reaper
+        db.rollback()
+        logger.error("stale-job reaper failed during status read: %s", type(exc).__name__)
     job = get_ingestion_job(db=db, job_id=job_id)
     if not job:
         raise HTTPException(
@@ -161,6 +183,8 @@ def get_job_status(
         document_id=job.document_id,
         chunk_count=chunk_count if job.document_id else None,
         error=job.error_message,
+        error_code=job.error_code,
+        needs_reconciliation=bool(job.needs_reconciliation),
     )
 
 

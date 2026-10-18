@@ -83,6 +83,9 @@ class Settings(BaseSettings):
     reranker_max_length: int = 512
     reranker_top_k: int = 5
 
+    # Ingestion jobs still non-terminal after this long are reaped to FAILED.
+    ingestion_stale_job_minutes: int = 30
+
     max_upload_size_mb: int = 10
     max_query_length: int = 5000
     verification_document_dir: str = "./data/private/lawyer_verification"

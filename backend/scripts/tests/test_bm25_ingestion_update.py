@@ -70,15 +70,21 @@ class Bm25IngestionUpdateTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 index.upsert_chunks([chunk, chunk])
 
-    def test_ingestion_bm25_chunk_adapter_uses_persisted_document_ids(self) -> None:
-        doc = type("Doc", (), {"id": 42, "source_url": "https://example.test", "case_name": "State v Sample", "court_level": "high_court", "year": 2024, "checksum": "abc"})()
-        chunks = [{"text": "trusted text", "chunk_index": 0, "page_start": 1, "page_end": 2, "paragraph_start": 3, "paragraph_end": 4}]
-        result = ingestion.trusted_bm25_chunks(doc, chunks, ["doc:42:chunk:0000"])
+    def test_ingestion_chunk_adapter_uses_admin_document_key(self) -> None:
+        raw = {"text": "trusted text", "chunk_index": 0, "page_start": 1, "page_end": 2, "paragraph_start": 3, "paragraph_end": 4}
+        result = ingestion.corpus_format_chunk(
+            raw, 0, ingestion.admin_document_key("abc"), "abc", "State v Sample", "high_court", 2024,
+            "https://example.test", "pdf_native",
+        )
 
-        self.assertEqual(result[0]["chunk_id"], "doc:42:chunk:0000")
-        self.assertEqual(result[0]["document_id"], "42")
-        self.assertEqual(result[0]["chunk_text"], "trusted text")
-        self.assertEqual(result[0]["provider"], "admin_upload")
+        self.assertEqual(result["chunk_id"], "admin:abc:chunk:0000")
+        self.assertEqual(result["document_id"], "admin:abc")
+        self.assertEqual(result["chunk_text"], "trusted text")
+        self.assertEqual(result["provider"], "admin_upload")
+        self.assertEqual((result["page_start"], result["page_end"], result["paragraph_start"], result["paragraph_end"]), (1, 2, 3, 4))
+        self.assertEqual(result["court"], {"court_level": "high_court"})
+        self.assertEqual(result["decision_year"], 2024)
+        self.assertIsNone(result["decision_date"])
 
     def test_retrieval_cache_can_be_invalidated_after_ingestion_update(self) -> None:
         query_api._cached_retrieval_service.cache_clear()

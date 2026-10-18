@@ -154,6 +154,29 @@ process-local lock. If BM25 maintenance fails after dense indexing, the job is
 marked `FAILED` rather than falsely `COMPLETED`; the previous BM25 artifact is
 left in place. Multi-process deployments may need a stronger shared file lock.
 
+Ingestion is all-or-nothing: a job is `COMPLETED` only when the document is in
+PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
+`needs_reconciliation` if cleanup could not finish. The full design is in
+`docs/INGESTION_RELIABILITY.md`.
+
+- `POST /ingest/upload` returns **409**
+  `{"detail": {"code": "DOCUMENT_ALREADY_INGESTED", "message": "...", "document_id": <id>}}`
+  when a document with the same file SHA-256 exists, before any write.
+- `GET /ingest/status/{job_id}` keeps its fields. `error` is a sanitized
+  message. New optional fields: `error_code` (for example
+  `LEXICAL_INDEX_FAILED`, `DUPLICATE_DOCUMENT`, `STALE_JOB`) and
+  `needs_reconciliation` (boolean). Jobs stuck in a non-terminal state past
+  `INGESTION_STALE_JOB_MINUTES` are reaped to `FAILED` / `STALE_JOB`.
+- `GET /ingest/corpus/stats` reports `postgres_status`, `chroma_status` and
+  `bm25_status` as `healthy`, `degraded` or `down`, from real checks of the
+  configured collection (existence, dimension 1024, count against PostgreSQL
+  chunks) and of the BM25 index. Optional detail fields: `chroma_detail`,
+  `chroma_collection`, `chroma_record_count`, `bm25_detail`,
+  `bm25_record_count`, `postgres_chunk_count`.
+- Query endpoints return **503** `RETRIEVAL_INDEX_UNAVAILABLE` if the
+  configured collection is missing or has the wrong dimension. The query path
+  never creates it.
+
 Frozen ingestion states:
 
 - `QUEUED`

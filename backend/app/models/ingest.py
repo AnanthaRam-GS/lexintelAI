@@ -43,6 +43,8 @@ class IngestionStatusResponse(BaseModel):
     document_id: int | str | None = None
     chunk_count: int | None = None
     error: str | None = None
+    error_code: str | None = None
+    needs_reconciliation: bool = False
 
 
 class CorpusTypeCount(BaseModel):
@@ -58,5 +60,13 @@ class CorpusStatsResponse(BaseModel):
     total_documents: int
     last_updated: datetime | None = None
     by_type: list[CorpusTypeCount]
+    # Service health values: "healthy", "degraded" or "down" (the frontend contract).
     postgres_status: str
     chroma_status: str
+    chroma_detail: str | None = None
+    chroma_collection: str | None = None
+    chroma_record_count: int | None = None
+    bm25_status: str = "down"
+    bm25_detail: str | None = None
+    bm25_record_count: int | None = None
+    postgres_chunk_count: int | None = None

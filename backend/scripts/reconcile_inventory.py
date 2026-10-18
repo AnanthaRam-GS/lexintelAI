@@ -70,6 +70,7 @@ DEFAULT_BM25_FILE = REPO_ROOT / "bm25_store/legalai_trusted_judgments_bm25_v1.js
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "docs/reconciliation"
 
 UPLOAD_PREFIX = "data/raw/uploads/"
+ADMIN_KEY_PREFIX = "admin:"  # source_document_key of admin uploads (services/ingestion.py)
 UPLOAD_NAME = re.compile(r"^[0-9a-f-]{36}_(?P<name>.+)$")
 PG_CHUNK_ID = re.compile(r"^doc:(?P<doc>\d+):chunk:(?P<index>\d+)$")
 
@@ -176,7 +177,8 @@ def read_postgres(url: str) -> dict[str, list[dict[str, Any]]]:
     queries = {
         "documents": (
             "SELECT id, doc_type, case_name, court_name, court_level, case_number, decision_date, year, "
-            "case_disposition, conviction_status, appeal_result, source_url, file_path, checksum FROM documents ORDER BY id"
+            "case_disposition, conviction_status, appeal_result, source_url, file_path, checksum, source_document_key "
+            "FROM documents ORDER BY id"
         ),
         "chunks": "SELECT id, document_id, chunk_index, chroma_id FROM chunks ORDER BY id",
         "document_sections": "SELECT document_id, count(*) AS n FROM document_sections GROUP BY document_id ORDER BY document_id",
@@ -299,6 +301,8 @@ def classify_pg_document(
         return "corpus", "checksum matches a curated raw_sha256"
     if document.get("source_url") and document["source_url"] in corpus_urls:
         return "corpus", "source_url matches a curated source_url"
+    if (document.get("source_document_key") or "").startswith(ADMIN_KEY_PREFIX):
+        return "admin_ingested", "source_document_key is an admin:<sha256> upload key"
     basename = upload_basename(document.get("file_path"))
     fixture_values = [basename, document.get("case_name"), checksum]
     if any(value and value in literals for value in fixture_values):
@@ -313,9 +317,16 @@ def classify_index_entry(
     curated_chunks: dict[str, dict[str, Any]],
     pg_document_categories: dict[int, str],
     store: str,
+    pg_key_categories: dict[str, str] | None = None,
 ) -> tuple[str, str]:
     if entry_id in curated_chunks:
         return "corpus", "chunk_id is in the curated chunk files"
+    if entry_id.startswith(ADMIN_KEY_PREFIX) and ":chunk:" in entry_id:
+        key = entry_id.split(":chunk:", 1)[0]
+        category = (pg_key_categories or {}).get(key)
+        if category is not None:
+            return category, f"admin:<sha256> entry for postgres document classified {category}"
+        return "orphan", f"admin:<sha256> entry with no postgres document (store: {store})"
     match = PG_CHUNK_ID.match(entry_id)
     if match:
         document_id = int(match.group("doc"))
@@ -600,6 +611,11 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
     }
     pg_chunk_document = {row["id"]: row["document_id"] for row in pg["chunks"]}
     pg_chroma_ids = {row["chroma_id"]: row for row in pg["chunks"] if row.get("chroma_id")}
+    pg_key_category = {
+        document["source_document_key"]: pg_document_category[document_id]
+        for document_id, document in pg_documents.items()
+        if document.get("source_document_key")
+    }
 
     pg_corpus_documents: dict[str, dict[str, Any]] = {}
     sha_to_document = {doc["sha256"]: document_id for document_id, doc in curated_documents.items()}
@@ -619,7 +635,7 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
         store = f"chroma:{name}"
         embeddings = collection["embeddings"]
         assignments = {
-            entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, store)[0]
+            entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, store, pg_key_category)[0]
             for entry_id in embeddings
         }
         store_assignments[store] = assignments
@@ -634,7 +650,7 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
 
     bm25_store = "bm25:legalai_trusted_judgments_bm25_v1"
     bm25_assignments = {
-        entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, bm25_store)[0]
+        entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, bm25_store, pg_key_category)[0]
         for entry_id in bm25_records
     }
     store_assignments[bm25_store] = bm25_assignments
@@ -656,7 +672,7 @@ def build_inventory(chroma_dir: Path, bm25_file: Path) -> dict[str, Any]:
     for file_name, mirror in mirrors.items():
         store = f"json_mirror:chroma_store/{file_name}"
         assignments = {
-            entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, store)[0]
+            entry_id: classify_index_entry(entry_id, curated_chunks, pg_document_category, store, pg_key_category)[0]
             for entry_id in mirror["records"]
         }
         auxiliary_mirrors[store] = {
