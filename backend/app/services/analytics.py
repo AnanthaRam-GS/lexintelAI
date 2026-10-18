@@ -84,6 +84,23 @@ def _optional_year(value: int | None) -> int | None:
     return value
 
 
+def section_label(statute: str | None, section: str) -> str:
+    """Statute-qualified section label, e.g. "IPC 302" (the frontend contract).
+
+    Grouping by the bare number would merge different provisions that share
+    a number, such as IPC 302 and BNS 302.
+    """
+    return f"{statute} {section}" if statute else section
+
+
+def _section_filter(query, section: str | None):
+    """Filter by a full label ("IPC 302") or by a bare section number across statutes."""
+    if section is None:
+        return query
+    label = func.concat(DocumentSection.statute, " ", DocumentSection.section)
+    return query.filter((label == section) | (DocumentSection.section == section))
+
+
 def _conviction_bucket(value: str | None) -> str | None:
     label = _normalize_label(value)
     if label in CONVICTED_LABELS:
@@ -114,6 +131,7 @@ def get_offence_frequency(
 
     query = (
         db.query(
+            DocumentSection.statute,
             DocumentSection.section,
             Document.year,
             func.count(func.distinct(Document.id)),
@@ -125,16 +143,20 @@ def get_offence_frequency(
     )
     if year is not None:
         query = query.filter(Document.year == year)
-    if section is not None:
-        query = query.filter(DocumentSection.section == section)
+    query = _section_filter(query, section)
 
     rows = (
-        query.group_by(DocumentSection.section, Document.year)
-        .order_by(Document.year.desc(), func.count(func.distinct(Document.id)).desc(), DocumentSection.section)
+        query.group_by(DocumentSection.statute, DocumentSection.section, Document.year)
+        .order_by(
+            Document.year.desc(),
+            func.count(func.distinct(Document.id)).desc(),
+            DocumentSection.statute,
+            DocumentSection.section,
+        )
         .all()
     )
     return [
-        OffenseFrequencyPoint(section=row[0], year=int(row[1]), count=int(row[2]))
+        OffenseFrequencyPoint(section=section_label(row[0], row[1]), year=int(row[2]), count=int(row[3]))
         for row in rows
     ]
 
@@ -150,15 +172,14 @@ def get_outcome_distribution(
     court_level = _optional_filter_text(court_level, "court_level")
 
     query = (
-        db.query(Document, DocumentSection.section)
+        db.query(Document, DocumentSection.statute, DocumentSection.section)
         .join(DocumentSection, DocumentSection.document_id == Document.id)
         .filter(Document.court_level.isnot(None))
         .filter(Document.court_level != "")
         .filter(DocumentSection.section.isnot(None))
         .filter(DocumentSection.section != "")
     )
-    if section is not None:
-        query = query.filter(DocumentSection.section == section)
+    query = _section_filter(query, section)
     if court_level is not None:
         query = query.filter(Document.court_level == court_level)
 
@@ -173,7 +194,8 @@ def get_outcome_distribution(
     seen_conviction: dict[tuple[str, str, int, str], None] = {}
     seen_appeal: dict[tuple[str, str, int, str], None] = {}
 
-    for document, section_value in query.all():
+    for document, statute, raw_section in query.all():
+        section_value = section_label(statute, raw_section)
         key = (section_value, document.court_level)
         grouped[key]  # ensure the pair is present even if outcomes are unknown
 
@@ -215,22 +237,22 @@ def get_section_cooccurrence(
     section = _optional_filter_text(section, "section")
 
     rows = (
-        db.query(DocumentSection.document_id, DocumentSection.section)
+        db.query(DocumentSection.document_id, DocumentSection.statute, DocumentSection.section)
         .filter(DocumentSection.section.isnot(None))
         .filter(DocumentSection.section != "")
         .all()
     )
-    sections_by_document: dict[int, set[str]] = defaultdict(set)
-    for document_id, section_value in rows:
-        sections_by_document[document_id].add(section_value)
+    sections_by_document: dict[int, set[tuple[str, str]]] = defaultdict(set)
+    for document_id, statute, section_value in rows:
+        sections_by_document[document_id].add((section_label(statute, section_value), section_value))
 
     pair_counts: dict[tuple[str, str], int] = defaultdict(int)
     for section_set in sections_by_document.values():
         unique_sections = sorted(section_set)
-        for section_a, section_b in combinations(unique_sections, 2):
-            if section is not None and section not in {section_a, section_b}:
+        for (label_a, bare_a), (label_b, bare_b) in combinations(unique_sections, 2):
+            if section is not None and section not in {label_a, label_b, bare_a, bare_b}:
                 continue
-            pair_counts[(section_a, section_b)] += 1
+            pair_counts[(label_a, label_b)] += 1
 
     return [
         SectionCooccurrencePoint(section_a=pair[0], section_b=pair[1], count=count)
