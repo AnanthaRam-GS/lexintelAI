@@ -100,4 +100,28 @@ describe('Professional Analytics Dashboard', () => {
     expect(screen.getByRole('heading', { name: 'Maharashtra' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Uttar Pradesh' })).toBeInTheDocument();
   });
+
+  it('renders an unreported NCRB case count as a dash instead of failing', async () => {
+    vi.spyOn(analyticsApi, 'getNcrbStats').mockResolvedValue([
+      {
+        year: 2024,
+        state: 'Unreported State',
+        offense_category: 'Murder',
+        ipc_section: '302',
+        case_count: null,
+        conviction_count: null,
+        acquittal_count: null,
+      },
+    ]);
+    render(<ProfessionalAnalyticsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tab-offense-trends')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /NCRB Statistics/i }));
+
+    const card = screen.getByRole('heading', { name: 'Unreported State' })
+      .parentElement as HTMLElement;
+    expect(card).toHaveTextContent('Total Cases—');
+  });
 });

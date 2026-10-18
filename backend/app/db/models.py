@@ -65,6 +65,9 @@ class Document(Base):
     # External corpus identifier such as "indian_kanoon:<id>"; matches the
     # document_id carried by Chroma and BM25 entries for curated documents.
     source_document_key = Column(String(255), nullable=True)
+    # Per outcome field: {"rule": ..., "chunk_id": ...} for every non-null outcome value.
+    outcome_evidence = Column(JSON, nullable=True)
+    outcome_method = Column(String(64), nullable=True)
     ingested_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -118,6 +121,9 @@ class DocumentSection(Base):
     """Statutory sections referenced by or associated with a document."""
 
     __tablename__ = "document_sections"
+    __table_args__ = (
+        UniqueConstraint("document_id", "statute", "section", name="uq_document_sections_document_statute_section"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     document_id = Column(
@@ -128,6 +134,11 @@ class DocumentSection(Base):
     )
     statute = Column(String(255), nullable=False)
     section = Column(String(100), nullable=False, index=True)
+    # Provenance: mentions found, chunks containing them, first evidence chunk, method.
+    mention_count = Column(Integer, nullable=True)
+    chunk_count = Column(Integer, nullable=True)
+    evidence_chunk_id = Column(String(255), nullable=True)
+    extraction_method = Column(String(64), nullable=True)
 
     # Relationship
     document = relationship("Document", back_populates="document_sections")
@@ -354,6 +365,7 @@ class NcrbStat(Base):
     state = Column(String(100), nullable=False, index=True)
     offense_category = Column(String(150), nullable=False, index=True)
     ipc_section = Column(String(100), nullable=True, index=True)
-    case_count = Column(Integer, nullable=False, default=0, server_default="0")
-    conviction_count = Column(Integer, nullable=True, default=0, server_default="0")
-    acquittal_count = Column(Integer, nullable=True, default=0, server_default="0")
+    # No defaults: a count the source does not report must stay NULL, never 0.
+    case_count = Column(Integer, nullable=True)
+    conviction_count = Column(Integer, nullable=True)
+    acquittal_count = Column(Integer, nullable=True)

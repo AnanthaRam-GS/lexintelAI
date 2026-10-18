@@ -47,6 +47,6 @@ class NcrbStatPoint(BaseModel):
     state: str
     offense_category: str
     ipc_section: str | None = None
-    case_count: int
+    case_count: int | None = None
     conviction_count: int | None = None
     acquittal_count: int | None = None

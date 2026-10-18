@@ -119,7 +119,8 @@ export interface NcrbStatPoint {
   state: string;
   offense_category: string;
   ipc_section?: string | null;
-  case_count: number;
+  /** Null when NCRB reports no count for the row. */
+  case_count: number | null;
   conviction_count?: number | null;
   acquittal_count?: number | null;
 }

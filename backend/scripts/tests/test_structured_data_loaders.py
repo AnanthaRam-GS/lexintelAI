@@ -187,6 +187,93 @@ class TestStructuredDataLoaders(unittest.TestCase):
         self.assertEqual(ncrb_stats["skipped_invalid"], 0)
 
 
+NCRB_FIELDS = ["year", "state", "offense_category", "ipc_section", "bns_section", "case_count", "conviction_count", "acquittal_count"]
+IPC_FIELDS = ["ipc_section", "ipc_description", "bns_section", "bns_description", "change_type"]
+
+
+def write_csv(fieldnames: list[str], rows: list[dict]) -> Path:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", newline="", suffix=".csv", delete=False) as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    return Path(handle.name)
+
+
+def ncrb_row(**overrides) -> dict:
+    row = {"year": "2024", "state": f"{MARKER} State", "offense_category": "Murder", "ipc_section": "302",
+           "bns_section": "103", "case_count": "9", "conviction_count": "", "acquittal_count": ""}
+    row.update(overrides)
+    return row
+
+
+class TestLoaderValidation(unittest.TestCase):
+    """Rejection reasons, NULL handling and idempotent upserts."""
+
+    def setUp(self) -> None:
+        self.db = SessionLocal()
+        self.paths: list[Path] = []
+
+    def tearDown(self) -> None:
+        for path in self.paths:
+            path.unlink(missing_ok=True)
+        self.db.close()
+
+    def csv(self, fieldnames: list[str], rows: list[dict]) -> Path:
+        path = write_csv(fieldnames, rows)
+        self.paths.append(path)
+        return path
+
+    def test_ncrb_rejections_are_counted_by_reason_and_missing_counts_stay_null(self) -> None:
+        path = self.csv(NCRB_FIELDS, [
+            ncrb_row(),
+            ncrb_row(offense_category="Not reported", case_count=""),
+            ncrb_row(offense_category="Non integer", case_count="12a"),
+            ncrb_row(offense_category="Negative", case_count="-3"),
+            ncrb_row(offense_category="", ipc_section="999"),
+            ncrb_row(case_count="10"),  # same key as the first row, different count
+            ncrb_row(),  # exact repeat of the first row
+            ncrb_row(offense_category="Hyphen suffix", ipc_section="366-B", bns_section=""),
+        ])
+        stats = load_ncrb_stats(self.db, path)
+        self.assertEqual(stats["rejected"], {
+            "duplicate_key_conflict": 1, "missing_required_field": 1, "negative_count": 1, "non_integer_value": 1,
+        })
+        self.assertEqual(stats["inserted"], 3)
+        self.assertEqual(stats["skipped_existing"], 1)
+        self.assertEqual(stats["notes"]["exact_duplicate_in_file"], 1)
+        self.assertEqual(stats["notes"]["case_count_not_reported"], 1)
+        self.assertEqual(stats["notes"]["bns_section_not_stored"], 2)
+        self.assertEqual(stats["source_rows"], stats["inserted"] + stats["skipped_existing"] + stats["skipped_invalid"])
+
+        not_reported = self.db.query(NcrbStat).filter_by(offense_category="Not reported").one()
+        self.assertIsNone(not_reported.case_count)  # never fabricated as 0
+        self.assertEqual(self.db.query(NcrbStat).filter_by(offense_category="Hyphen suffix").one().ipc_section, "366B")
+
+    def test_ncrb_upsert_updates_changed_counts_then_makes_no_changes(self) -> None:
+        load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [ncrb_row()]))
+        changed = load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [ncrb_row(case_count="11")]))
+        self.assertEqual((changed["inserted"], changed["updated"]), (0, 1))
+        again = load_ncrb_stats(self.db, self.paths[-1])
+        self.assertEqual((again["inserted"], again["updated"], again["skipped_existing"]), (0, 0, 1))
+        self.assertEqual(self.db.query(NcrbStat).filter_by(state=f"{MARKER} State").one().case_count, 11)
+
+    def test_ipc_bns_rejections_are_counted_by_reason(self) -> None:
+        good = {"ipc_section": f"{MARKER}-498-A", "ipc_description": "Cruelty", "bns_section": "85", "bns_description": "Cruelty", "change_type": "direct"}
+        path = self.csv(IPC_FIELDS, [
+            good,
+            dict(good),  # exact repeat
+            {**good, "ipc_description": ""},
+            {**good, "ipc_description": "Other", "change_type": "RENUMBERED"},
+            {**good, "ipc_description": "Too long", "bns_section": "1" * 60},
+        ])
+        stats = load_ipc_bns_mapping(self.db, path)
+        self.assertEqual(stats["rejected"], {"field_too_long": 1, "invalid_change_type": 1, "missing_required_field": 1})
+        self.assertEqual((stats["inserted"], stats["exact_duplicate_in_file"]), (1, 1))
+        row = self.db.query(IpcBnsMapping).filter(IpcBnsMapping.ipc_section.like(f"{MARKER}%")).one()
+        self.assertEqual((row.ipc_section, row.change_type), (f"{MARKER}-498A", "DIRECT"))
+        self.assertEqual(load_ipc_bns_mapping(self.db, path)["inserted"], 0)
+
+
 db_test_bootstrap.isolate_test_cases(globals())
 
 

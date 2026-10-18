@@ -197,8 +197,17 @@ Analytics contracts define response rows for:
 - IPC to BNS mappings
 - NCRB statistics
 
-These are response contracts only. SQL queries, storage access, and dashboard
-implementation belong to later phases.
+Data sources, production methods and reconciliation are described in
+`docs/ANALYTICS_DATA.md`.
+
+- **Section labels** in offence frequency, outcome distribution and
+  co-occurrence are statute-qualified: `"<statute> <section>"`, for example
+  `"IPC 302"` or `"BNS 103"`, as the frontend expects. Bare numbers would
+  merge different provisions (IPC 302 and BNS 302). The `section` filter
+  accepts a full label or a bare section number (all statutes).
+- **`ncrb-stats` `case_count`** is `null` when NCRB reports no count. It is
+  never `0` for missing data.
+- **Empty data:** every endpoint returns `200 []`, never an error.
 
 ## Error Format
 

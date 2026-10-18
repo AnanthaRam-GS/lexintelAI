@@ -556,7 +556,7 @@ export default function ProfessionalAnalyticsPage() {
                       <div>
                         <p className="text-[0.6875rem] text-[var(--color-muted)]">Total Cases</p>
                         <p className="font-display text-sm font-bold text-[var(--color-ink)]">
-                          {stat.case_count.toLocaleString()}
+                          {stat.case_count?.toLocaleString() ?? '—'}
                         </p>
                       </div>
                       <div>

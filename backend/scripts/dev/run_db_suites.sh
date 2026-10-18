@@ -43,7 +43,7 @@ for module in "${MODULES[@]}"; do
   "$PYTHON" -B -m unittest -v "backend.scripts.tests.$module" > "$log" 2>&1
   rc=$?
   ran=$(grep -oE '^Ran [0-9]+' "$log" | grep -oE '[0-9]+' || echo 0)
-  result=$(grep -E '^(OK|FAILED)' "$log" | tail -1)
+  result=$(grep -E '^(OK|FAILED)( \(|$)' "$log" | tail -1)
   printf '%-40s rc=%s ran=%s %-28s %ss\n' "$module" "$rc" "$ran" "${result:-NO_RESULT}" "$(($(date +%s) - start))"
 done | tee "$OUT_DIR/summary.txt"
 
