@@ -36,12 +36,13 @@ def _handle_filter_error(exc: AnalyticsFilterError) -> None:
 def offence_frequency(
     year: int | None = Query(None),
     section: str | None = Query(None),
+    include_all_sections: bool = Query(False, description="Also count procedural, definitional and liability-linking provisions."),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
 ) -> list[OffenseFrequencyPoint]:
-    """Return offence frequency counts by statutory section and year."""
+    """Return offence frequency counts by statutory section and year (offence provisions only by default)."""
     try:
-        return get_offence_frequency(db, year=year, section=section)
+        return get_offence_frequency(db, year=year, section=section, include_all_sections=include_all_sections)
     except AnalyticsFilterError as exc:
         _handle_filter_error(exc)
 
@@ -50,12 +51,15 @@ def offence_frequency(
 def outcome_distribution(
     section: str | None = Query(None),
     court_level: str | None = Query(None),
+    include_all_sections: bool = Query(False, description="Also include non-offence provisions."),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
 ) -> list[OutcomeDistributionPoint]:
-    """Return normalized conviction and appeal outcome counts."""
+    """Return normalized conviction and appeal outcome counts (offence provisions only by default)."""
     try:
-        return get_outcome_distribution(db, section=section, court_level=court_level)
+        return get_outcome_distribution(
+            db, section=section, court_level=court_level, include_all_sections=include_all_sections
+        )
     except AnalyticsFilterError as exc:
         _handle_filter_error(exc)
 
@@ -63,12 +67,13 @@ def outcome_distribution(
 @router.get("/section-cooccurrence", response_model=list[SectionCooccurrencePoint])
 def section_cooccurrence(
     section: str | None = Query(None),
+    include_all_sections: bool = Query(False, description="Also include non-offence provisions."),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
 ) -> list[SectionCooccurrencePoint]:
-    """Return co-occurrence counts for pairs of statutory sections."""
+    """Return co-occurrence counts for pairs of statutory sections (offence provisions only by default)."""
     try:
-        return get_section_cooccurrence(db, section=section)
+        return get_section_cooccurrence(db, section=section, include_all_sections=include_all_sections)
     except AnalyticsFilterError as exc:
         _handle_filter_error(exc)
 
@@ -101,10 +106,11 @@ def ncrb_filtering(
     state: str | None = Query(None),
     offense_category: str | None = Query(None),
     ipc_section: str | None = Query(None),
+    include_aggregates: bool = Query(False, description="Also return state/UT/all-India totals and subtotal heads."),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
 ) -> list[NcrbStatPoint]:
-    """Return NCRB statistics filtered by year, state, category, or section."""
+    """Return NCRB statistics filtered by year, state, category, or section (aggregate rows excluded by default)."""
     try:
         return get_ncrb_stats(
             db,
@@ -112,6 +118,7 @@ def ncrb_filtering(
             state=state,
             offense_category=offense_category,
             ipc_section=ipc_section,
+            include_aggregates=include_aggregates,
         )
     except AnalyticsFilterError as exc:
         _handle_filter_error(exc)

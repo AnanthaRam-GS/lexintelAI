@@ -4,8 +4,15 @@ This document covers the data behind the five analytics endpoints (plan Flow
 4): where each dataset comes from, how it is validated and produced, the
 dev-database numbers, and the known limitations.
 
-**Review status: every produced value is UNREVIEWED.** Section citations and
-outcomes come from deterministic rules, not from qualified legal review.
+**Review status: every produced value is UNREVIEWED** until a reviewer's
+file is imported (see "Review"). Section citations and outcomes come from
+deterministic rules, not from qualified legal review.
+
+**Defaults (step 8):** offence frequency, outcome distribution and
+co-occurrence count **offence provisions only** (see "Provision types");
+`include_all_sections=true` returns every cited section. NCRB statistics
+exclude **aggregate rows** (see "NCRB aggregate rows");
+`include_aggregates=true` returns them.
 
 | Endpoint | Source tables | Produced by |
 |---|---|---|
@@ -79,7 +86,7 @@ verbatim, because they name a group of provisions, not one section.
 | Loader | Identity | Second run |
 |---|---|---|
 | IPC-BNS | the whole row | inserts 0 |
-| NCRB | (year, state, offense_category, ipc_section); changed counts are updated | 0 changes |
+| NCRB | (year, state, offense_category, ipc_section); changed counts, BNS head or aggregate flag are updated | 0 changes |
 
 Rows in the database that are no longer in the source are reported
 (`db_rows_not_in_source`), never deleted.
@@ -94,6 +101,9 @@ Rows in the database that are no longer in the source are reported
 | Second run changes | 0 | 0 |
 | Section values normalized | 1 | 117 |
 
+After migration 0008 the NCRB reload updated 5,120 existing rows (BNS head
+and/or aggregate flag) and inserted none; the second run made 0 changes.
+
 ### Data-quality notes
 
 - **NCRB `case_count`:** blank in 41 rows. Stored as NULL, never 0. Migration
@@ -101,18 +111,53 @@ Rows in the database that are no longer in the source are reported
   three count columns.
 - **NCRB `conviction_count` and `acquittal_count`:** blank in all rows.
   Table 1A.4 reports registrations, not disposals.
-- **NCRB `bns_section`:** 4,610 rows have one. It is validated but **not
-  stored**: `ncrb_stats` has no BNS column by schema design (the loader tests
-  assert this). Only the row's `ipc_section` and `offense_category` are kept.
-  See "Decisions needed".
-- **NCRB aggregate rows:** the table includes `TOTAL STATE(S)`, `TOTAL UT(S)`
-  and `TOTAL ALL INDIA`, and subtotal heads such as "Murder (Total a+b+c)".
-  Summing every row therefore counts each case more than once: 31,285,562
-  across all rows, against 9,578,302 for state and UT rows only. The endpoint
-  returns rows as published.
+- **NCRB `bns_section`: stored since migration 0008.** 4,610 of 6,139 rows
+  have one. Why: Table 1A.4 is the 2024 edition, the first reported under the
+  BNS, and it gives the BNS head next to the IPC head. Dropping it lost half
+  of the source's own crosswalk, and BNS-only heads (organised crime, mob
+  lynching) had no section at all. The loader test that asserted the column
+  was absent now asserts the stored value.
+- **NCRB group totals do not always equal their components in the processed
+  CSV.** "Total Offences against Public Tranquillity" equals the sum of its
+  rioting, unlawful assembly and affray rows in only 1 of 36 states. Some
+  component values also look shifted between neighbouring heads (in Goa,
+  "Murder - a) Mob Lynching" holds all 30 murders). This points to an
+  extraction-alignment problem in `data/processed/ncrb/`, not in the loader.
+  Totals are excluded by default, but the per-head values should be checked
+  against the PDF before they are presented as authoritative.
 - **IPC-BNS:** 3 `REPEALED` rows have no BNS section; that is correct, not
   missing data. 253 rows list several IPC sections in one field.
 
+### NCRB aggregate rows
+
+Table 1A.4 mixes base rows with totals. The loader flags them
+(`is_aggregate`, `aggregate_type`) from the table's own labels:
+
+| `aggregate_type` | Rule | Rows |
+|---|---|---:|
+| `state_total` | state is `TOTAL STATE(S)` | 159 |
+| `ut_total` | state is `TOTAL UT(S)` | 159 |
+| `all_india_total` | state is `TOTAL ALL INDIA` | 159 |
+| `subtotal_head` | crime head contains `(Total …)` (e.g. "Murder (Total a+b+c)", "Offences Affecting the Human Body (Total)") or a parenthesised sum ("Hurt (Simple +Grievous)") | 504 |
+| `group_total` | crime head starts with `Total ` (e.g. "Total IPC/BNS Crimes", "Total Special & Local Laws (SLL)") | 246 |
+| base (`is_aggregate = false`) | everything else | 4,912 |
+
+State-total rows take precedence over the crime-head rules. On dev, no
+unflagged crime head contains "total".
+
+**Numerical check.** Each lettered subtotal head equals the sum of its direct
+components in all 39 states for Sexual Harassment, Murder, Road Accidents,
+Simple Hurt and Grievous Hurt. "Hurt (Simple +Grievous)" equals Simple Hurt
+plus Grievous Hurt in 37 of 39. Kidnapping & Abduction and Rioting do not add
+up directly because they contain nested sub-totals (themselves flagged), not
+because of mislabelling.
+
+**Sums.** All rows: 31,285,562. Non-aggregate rows (the endpoint default):
+**4,266,712**, which `verify_analytics.py` reconciles with
+`SELECT sum(case_count) FROM ncrb_stats WHERE NOT is_aggregate`. Because of
+the group-total caveat above, this sum is not NCRB's published total
+cognizable crime figure, and it mixes IPC/BNS heads with Special & Local Laws
+heads. Use it per head, not as one national total.
 ## Section producer (`document_sections`)
 
 Section detection reuses the existing deterministic extractor,
@@ -168,7 +213,47 @@ Top 10 sections by number of documents:
 
 **Meaning.** `document_sections` records sections a judgment **cites**. That
 includes procedural and definitional provisions (CrPC 313, CrPC 161, IPC 2,
-IPC 11), not only the offences charged. See "Decisions needed".
+IPC 11), not only the offences charged. Every row is kept; the analytics
+endpoints filter at query time (next section).
+
+## Provision types
+
+`services/provision_types.py` (`provision_types_v1`) classifies each
+(statute, section) by the statute's own chapters. The legal section catalog
+has no provision-type field.
+
+| Type | Rule | Examples |
+|---|---|---|
+| `offence` | IPC 118-120, 120B, 121-510 except 149; BNS 61, 63-358 except 190; NDPS 15-33 except 29; POCSO 3-22 except 16-18; SC/ST Act 3, 4 | IPC 302, 498A; BNS 103; NDPS 20 |
+| `liability_linking` | IPC 34, 35, 37, 38, 107-117 (abetment), 149, 511 (attempt); BNS 45-60, 62, 190; NDPS 29; POCSO 16-18 | IPC 34, IPC 149 |
+| `definitional_general` | IPC 1-106 except 34, 35, 37, 38 (definitions, punishments, general exceptions), 120A; BNS 1-44; NDPS 1-14, 34-40; POCSO 1-2; SC/ST 1-2, 5-9 | IPC 2, IPC 96 |
+| `procedural` | all CrPC and BNSS; NDPS 41+; POCSO 23+; SC/ST 10+ | CrPC 313, CrPC 482 |
+| `evidentiary` | Evidence Act | Evidence Act 27 |
+| `unclassified` | outside the known ranges, or a suffixed IPC number up to 120 that does not exist (e.g. "IPC 113B") | IPC 113B |
+
+Only `offence` is counted by default, in offence frequency, outcome
+distribution and co-occurrence. `include_all_sections=true` returns every
+cited section.
+
+**Dev results (2026-10-18), offence-only default.** 166 distinct offence
+provisions, 462 document citations. Excluded:
+
+| Type | Distinct provisions | Document citations | Most cited |
+|---|---:|---:|---|
+| `procedural` | 135 | 310 | CrPC 313 (26), CrPC 161 (20), CrPC 482 (13) |
+| `definitional_general` | 42 | 74 | IPC 2 (6), IPC 1 (5), IPC 3 (5) |
+| `liability_linking` | 9 | 52 | IPC 34 (30), IPC 149 (8), IPC 511 (4) |
+| `evidentiary` | 13 | 14 | Evidence Act 25 (2) |
+| `unclassified` | 5 | 8 | IPC 113B (4) |
+
+Top 10 offence provisions by number of documents: IPC 302 (23), IPC 120B
+(16), IPC 420 (15), IPC 307 (14), IPC 323 (14), IPC 406 (13), IPC 326 (11),
+IPC 506 (11), IPC 304 (10), IPC 324 (10).
+
+**Known extractor limitation.** "Section 113B of the Evidence Act read with
+304B IPC" is bound to IPC by the extractor in 4 documents ("IPC 113B"). No
+such IPC section exists, so the classifier marks it `unclassified` and it is
+not counted.
 
 ## Outcome producer
 
@@ -221,9 +306,36 @@ Every non-null value has an evidence chunk that exists in PostgreSQL.
 - **Review file.** `produce_analytics_data.py --review-dir <outside repo>`
   writes a CSV (mode 600) with, for each document: the key, the cited
   sections, each outcome value or status, the rule, the evidence chunk, the
-  competing candidates, a short evidence excerpt, and
-  `review_status=UNREVIEWED`. It contains judgment text and must never be
-  committed.
+  competing candidates, a short evidence excerpt, `review_status`
+  (`UNREVIEWED`, or `REVIEWED` once imported), and empty reviewer columns
+  `reviewer`, `corrected_conviction_status`, `corrected_appeal_result`,
+  `corrected_case_disposition`, `review_notes`. It contains judgment text
+  and must never be committed.
+- **Reviewer workflow.**
+  1. Copy the review CSV (keep it outside the repository). For each row you
+     check, write your name in `reviewer` and set `review_status` to
+     `CONFIRMED` (the three outcome values are right), `CORRECTED` (fill
+     `corrected_<field>` for each wrong field: one of the rule labels in the
+     "Outcome producer" table, or `NULL` to clear it; a blank keeps the
+     produced value) or `REJECTED` (all three outcomes are cleared). Leave
+     unchecked rows `UNREVIEWED`.
+  2. Import it: `backend/scripts/import_analytics_review.py
+     --database-url-env DATABASE_URL --review-csv <copy> --dry-run`, then
+     without `--dry-run` (plus `--confirm-dev` on dev).
+  3. The import is all-or-nothing. It refuses the whole file on an unknown
+     `document_id`, a mismatched `source_document_key`, a duplicate row, a
+     blank reviewer, an unknown status or label, corrections on a
+     non-CORRECTED row, or a stale row whose produced values no longer match
+     an unreviewed document. Re-importing the same file changes nothing.
+  4. Imported documents get `review_status = REVIEWED`, `review_decision`,
+     `reviewed_by` and `reviewed_at`. Corrected values carry the evidence
+     rule `reviewer_correction`. The producer never overwrites a reviewed
+     document's outcomes (`outcomes_skipped_reviewed`). Its sections and
+     court level are still produced, because the review covers the three
+     outcome fields only. `review_notes` stays in the CSV.
+
+  The import has been tested on the test database only; it has not been run
+  on dev.
 - **ID-only summary.** `docs/analytics/REVIEW_SUMMARY.md` (from
   `--summary-out`) has keys, counts, labels and rule names only.
 - **Non-expert spot check (2026-10-18).** Three errors were found in the
@@ -237,13 +349,16 @@ Every non-null value has an evidence chunk that exists in PostgreSQL.
   trial taken as a case-level acquittal, which led to the
   `case_disposition = acquitted` safeguard. This is not legal review.
 
-## Decisions needed
+## Decisions
 
-1. Should offence-frequency analytics count only offence provisions (IPC,
-   BNS, special Acts) rather than every cited section, which includes CrPC
-   and Evidence Act procedure?
-2. Should NCRB's `bns_section` be stored? That needs a migration, and a
-   change to the loader test that asserts the column is absent.
-3. Should NCRB aggregate rows (`TOTAL …` states and `(Total …)` heads) be
-   flagged or excluded?
-4. Who performs the qualified legal review of the UNREVIEWED values?
+Decided in step 8 (2026-10-18):
+1. Analytics count offence provisions only by default ("Provision types").
+2. NCRB `bns_section` is stored (migration 0008).
+3. NCRB aggregate rows are flagged and excluded by default ("NCRB aggregate
+   rows").
+4. Reviews are imported with `import_analytics_review.py` ("Review").
+
+Open:
+- Who performs the qualified legal review of the UNREVIEWED values?
+- The NCRB group-total misalignment in the processed CSV (see "Data-quality
+  notes") needs checking against the source PDF.

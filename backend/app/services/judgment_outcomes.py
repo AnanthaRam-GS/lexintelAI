@@ -94,6 +94,11 @@ RULES: tuple[OutcomeRule, ...] = (
     _rule("case_disposition", "acquitted", "disposition_acquitted", rf"{_PERSON}{_GAP}\b{_BE}acquitted\b"),
 )
 
+# The values a field may hold, whether from a rule or from a reviewer's correction.
+ALLOWED_VALUES: dict[str, frozenset[str]] = {
+    name: frozenset(rule.value for rule in RULES if rule.field == name and rule.value != CONFLICT) for name in FIELDS
+}
+
 # A match inside a hypothetical or modal clause ("what if the appellant is
 # acquitted", "I would maintain the convictions") is not an operative order.
 _NON_OPERATIVE_CONTEXT = re.compile(

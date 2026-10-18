@@ -225,10 +225,12 @@ export default function ProfessionalAnalyticsPage() {
               <div className="flex flex-col gap-3 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="font-display text-base font-bold text-[var(--color-ink)]">
-                    Annual Offense Frequency by Section (2019–2023)
+                    Annual Offense Frequency by Section
                   </h2>
                   <p className="text-xs text-[var(--color-muted)]">
-                    Total reported offences across Indian jurisdictions.
+                    Judgments in the corpus citing each offence provision, by decision year.
+                    Procedural (CrPC/BNSS), definitional and liability-linking provisions (e.g. IPC
+                    34, 149) are excluded.
                   </p>
                 </div>
 
@@ -254,6 +256,15 @@ export default function ProfessionalAnalyticsPage() {
                   </select>
                 </div>
               </div>
+
+              {offenseData.length === 0 && (
+                <p
+                  data-testid="offense-empty"
+                  className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-sm text-[var(--color-muted)]"
+                >
+                  No offence provisions have been identified in the analysed judgments yet.
+                </p>
+              )}
 
               {/* Chart Container */}
               <div className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs">
@@ -390,9 +401,19 @@ export default function ProfessionalAnalyticsPage() {
                   Statutory Section Co-occurrence Matrix
                 </h2>
                 <p className="text-xs text-[var(--color-muted)]">
-                  Frequency of penal sections filed jointly in primary chargesheets and FIRs.
+                  Number of judgments in the corpus citing both offence provisions. Procedural,
+                  definitional and liability-linking provisions are excluded.
                 </p>
               </div>
+
+              {cooccurrenceData.length === 0 && (
+                <p
+                  data-testid="cooccurrence-empty"
+                  className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-sm text-[var(--color-muted)]"
+                >
+                  No judgment cites two or more offence provisions yet.
+                </p>
+              )}
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {cooccurrenceData.map((pair, idx) => (
@@ -503,7 +524,8 @@ export default function ProfessionalAnalyticsPage() {
                     National Crime Records Bureau (NCRB) State Statistics
                   </h2>
                   <p className="text-xs text-[var(--color-muted)]">
-                    State-wise reported case incidence, convictions, and acquittals.
+                    State/UT-wise cases registered (Crime in India 2024, Table 1A.4). National,
+                    state/UT total and subtotal rows are excluded to avoid double counting.
                   </p>
                 </div>
 
@@ -529,6 +551,15 @@ export default function ProfessionalAnalyticsPage() {
                   </select>
                 </div>
               </div>
+
+              {ncrbData.length === 0 && (
+                <p
+                  data-testid="ncrb-empty"
+                  className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-sm text-[var(--color-muted)]"
+                >
+                  No NCRB statistics have been loaded yet.
+                </p>
+              )}
 
               {/* State Comparison Cards */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

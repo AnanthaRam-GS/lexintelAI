@@ -40,6 +40,11 @@ class Document(Base):
 
     __tablename__ = "documents"
     __table_args__ = (
+        CheckConstraint("review_status IN ('UNREVIEWED', 'REVIEWED')", name="check_documents_review_status"),
+        CheckConstraint(
+            "review_decision IS NULL OR review_decision IN ('CONFIRMED', 'CORRECTED', 'REJECTED')",
+            name="check_documents_review_decision",
+        ),
         Index(
             "uq_documents_source_document_key",
             "source_document_key",
@@ -68,6 +73,11 @@ class Document(Base):
     # Per outcome field: {"rule": ..., "chunk_id": ...} for every non-null outcome value.
     outcome_evidence = Column(JSON, nullable=True)
     outcome_method = Column(String(64), nullable=True)
+    # Human review of produced sections/outcomes; REVIEWED documents are never re-produced.
+    review_status = Column(String(20), nullable=False, default="UNREVIEWED", server_default="UNREVIEWED")
+    review_decision = Column(String(20), nullable=True)  # CONFIRMED | CORRECTED | REJECTED
+    reviewed_by = Column(String(255), nullable=True)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
     ingested_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -365,7 +375,11 @@ class NcrbStat(Base):
     state = Column(String(100), nullable=False, index=True)
     offense_category = Column(String(150), nullable=False, index=True)
     ipc_section = Column(String(100), nullable=True, index=True)
+    bns_section = Column(String(100), nullable=True, index=True)
     # No defaults: a count the source does not report must stay NULL, never 0.
     case_count = Column(Integer, nullable=True)
     conviction_count = Column(Integer, nullable=True)
     acquittal_count = Column(Integer, nullable=True)
+    # State/UT/all-India totals and the table's own subtotal heads (see load_ncrb.aggregate_type).
+    is_aggregate = Column(Boolean, nullable=False, default=False, server_default=false(), index=True)
+    aggregate_type = Column(String(32), nullable=True)
