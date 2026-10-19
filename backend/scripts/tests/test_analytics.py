@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -17,7 +19,8 @@ from backend.app.core.security import COOKIE_NAME
 from backend.app.db.models import Chunk, Document, DocumentSection, IpcBnsMapping, NcrbStat
 from backend.app.services.judgment_sections import EXTRACTION_METHOD as SECTION_METHOD
 from backend.scripts import verify_analytics
-from backend.scripts.produce_analytics_data import produce
+from backend.scripts.import_analytics_review import ReviewImportError, import_review, read_review_csv
+from backend.scripts.produce_analytics_data import produce, write_review
 from backend.app.db.session import SessionLocal
 from backend.app.services.analytics import (
     AnalyticsFilterError,
@@ -123,19 +126,19 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         return client
 
     def test_offence_frequency_counts_distinct_documents(self) -> None:
-        points = get_offence_frequency(self.db, year=2020, section=f"{MARKER}-302")
+        points = get_offence_frequency(self.db, year=2020, section=f"{MARKER}-302", include_all_sections=True)
         self.assertEqual(len(points), 1)
         # Labels are statute-qualified ("IPC 302"), the frontend contract.
         self.assertEqual(points[0].section, f"IPC {MARKER}-302")
         self.assertEqual(points[0].year, 2020)
         self.assertEqual(points[0].count, 2)
         # The full label filters the same rows as the bare section number.
-        self.assertEqual(get_offence_frequency(self.db, year=2020, section=f"IPC {MARKER}-302"), points)
+        self.assertEqual(get_offence_frequency(self.db, year=2020, section=f"IPC {MARKER}-302", include_all_sections=True), points)
 
     def test_outcome_distribution_normalizes_labels(self) -> None:
         points = {
             (row.section, row.court_level): row
-            for row in get_outcome_distribution(self.db, section=f"{MARKER}-302")
+            for row in get_outcome_distribution(self.db, section=f"{MARKER}-302", include_all_sections=True)
         }
         high_court = points[(f"IPC {MARKER}-302", "High Court")]
         supreme_court = points[(f"IPC {MARKER}-302", "Supreme Court")]
@@ -147,7 +150,7 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         self.assertEqual(supreme_court.appeal_allowed, 1)
 
     def test_section_cooccurrence_pairs(self) -> None:
-        points = get_section_cooccurrence(self.db, section=f"{MARKER}-302")
+        points = get_section_cooccurrence(self.db, section=f"{MARKER}-302", include_all_sections=True)
         pair = next(
             row
             for row in points
@@ -165,6 +168,12 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         self.assertEqual(stats[0].case_count, 12)
         self.assertEqual(stats[0].conviction_count, 4)
 
+    def test_marker_sections_are_not_offence_provisions_by_default(self) -> None:
+        # The marker sections ("IPC R3_ANALYTICS_TEST-302") are unclassified, so the offence-only default drops them.
+        self.assertEqual(get_offence_frequency(self.db, year=2020, section=f"{MARKER}-302"), [])
+        self.assertEqual(get_section_cooccurrence(self.db, section=f"{MARKER}-302"), [])
+        self.assertEqual(get_outcome_distribution(self.db, section=f"{MARKER}-302"), [])
+
     def test_invalid_filters_raise(self) -> None:
         with self.assertRaises(AnalyticsFilterError):
             get_offence_frequency(self.db, year=1800)
@@ -181,27 +190,27 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         client = self._login()
         freq = client.get(
             "/analytics/offence-frequency",
-            params={"year": 2020, "section": f"{MARKER}-302"},
+            params={"year": 2020, "section": f"{MARKER}-302", "include_all_sections": "true"},
         )
         self.assertEqual(freq.status_code, 200)
         # Test contract route /analytics/offense-frequency
         freq_contract = client.get(
             "/analytics/offense-frequency",
-            params={"year": 2020, "section": f"{MARKER}-302"},
+            params={"year": 2020, "section": f"{MARKER}-302", "include_all_sections": "true"},
         )
         self.assertEqual(freq_contract.status_code, 200)
         self.assertEqual(freq_contract.json()[0]["count"], 2)
 
         outcomes = client.get(
             "/analytics/outcome-distribution",
-            params={"section": f"{MARKER}-302"},
+            params={"section": f"{MARKER}-302", "include_all_sections": "true"},
         )
         self.assertEqual(outcomes.status_code, 200)
         self.assertTrue(any(row["court_level"] == "High Court" for row in outcomes.json()))
 
         cooccur = client.get(
             "/analytics/section-cooccurrence",
-            params={"section": f"{MARKER}-34"},
+            params={"section": f"{MARKER}-34", "include_all_sections": "true"},
         )
         self.assertEqual(cooccur.status_code, 200)
         self.assertTrue(any(row["count"] == 1 for row in cooccur.json()))
@@ -383,6 +392,186 @@ class TestAnalyticsProducerAndReconciliation(unittest.TestCase):
         frequency = {(row["section"], row["year"]): row["count"] for row in self.client.get("/analytics/offense-frequency").json()}
         self.assertEqual(frequency[("IPC 302", 2023)], 1)
         self.assertEqual(frequency[("BNS 103", 2024)], 1)
+
+    def test_offence_frequency_and_cooccurrence_count_offence_provisions_only(self) -> None:
+        docs = self.seed_corpus()
+        produce(self.db, dry_run=False)
+        # Definitional (IPC 2), liability-linking (IPC 149) and procedural (BNSS 482) citations on top of 302/34/201/CrPC 313.
+        for statute, section in (("IPC", "2"), ("IPC", "149"), ("BNSS", "482")):
+            self.db.add(DocumentSection(document_id=docs["dismissed"].id, statute=statute, section=section, extraction_method="test"))
+        self.db.commit()
+
+        def labels(path: str, **params) -> set[str]:
+            rows = self.client.get(path, params=params).json()
+            if path.endswith("cooccurrence"):
+                return {label for row in rows for label in (row["section_a"], row["section_b"])}
+            return {row["section"] for row in rows}
+
+        excluded = {"IPC 34", "IPC 149", "IPC 2", "CrPC 313", "BNSS 482"}
+        for path in ("/analytics/offense-frequency", "/analytics/outcome-distribution", "/analytics/section-cooccurrence"):
+            with self.subTest(path=path):
+                default = labels(path)
+                everything = labels(path, include_all_sections="true")
+                self.assertFalse(default & excluded)
+                self.assertTrue(excluded <= everything)
+                self.assertTrue({"IPC 302", "IPC 201"} <= default)
+        pairs = {(row["section_a"], row["section_b"]): row["count"] for row in self.client.get("/analytics/section-cooccurrence").json()}
+        self.assertEqual(pairs, {("IPC 201", "IPC 302"): 1, ("BNS 103", "IPC 302"): 1})
+        self.assertEqual(verify_analytics.main(["--database-url-env", "TEST_DATABASE_URL"]), 0)
+
+    def test_ncrb_aggregates_are_excluded_by_default_and_sums_reconcile(self) -> None:
+        rows = [
+            ("Kerala", "Murder (Total a+b)", 5, True, "subtotal_head"),
+            ("Kerala", "Murder - a) Gain", 2, False, None),
+            ("Kerala", "Murder - b) Other", 3, False, None),
+            ("Goa", "Murder - a) Gain", 1, False, None),
+            ("TOTAL STATE(S)", "Murder - a) Gain", 3, True, "state_total"),
+            ("TOTAL ALL INDIA", "Murder - a) Gain", 3, True, "all_india_total"),
+        ]
+        for state, category, count, aggregate, kind in rows:
+            self.db.add(NcrbStat(year=2024, state=state, offense_category=category, ipc_section="302", bns_section="103",
+                                 case_count=count, is_aggregate=aggregate, aggregate_type=kind))
+        self.db.commit()
+        default = self.client.get("/analytics/ncrb-stats").json()
+        self.assertEqual(len(default), 3)
+        self.assertFalse(any(row["is_aggregate"] for row in default))
+        self.assertEqual(sum(row["case_count"] for row in default), 6)  # SQL sum over non-aggregate rows
+        self.assertEqual({row["bns_section"] for row in default}, {"103"})
+        everything = self.client.get("/analytics/ncrb-stats", params={"include_aggregates": "true"}).json()
+        self.assertEqual(len(everything), 6)
+        self.assertEqual(
+            sorted(row["aggregate_type"] for row in everything if row["is_aggregate"]),
+            ["all_india_total", "state_total", "subtotal_head"],
+        )
+
+    def test_producer_never_overwrites_reviewed_outcomes(self) -> None:
+        docs = self.seed_corpus()
+        produce(self.db, dry_run=False)
+        reviewed = self.db.get(Document, docs["dismissed"].id)
+        reviewed.appeal_result, reviewed.case_disposition = "allowed", "appeal allowed"
+        reviewed.outcome_evidence = {"appeal_result": {"rule": "reviewer_correction", "chunk_id": None}}
+        reviewed.review_status, reviewed.review_decision, reviewed.reviewed_by = "REVIEWED", "CORRECTED", "reviewer-1"
+        self.db.commit()
+
+        stats = produce(self.db, dry_run=False)
+        self.db.expire_all()
+        document = self.db.get(Document, docs["dismissed"].id)
+        self.assertEqual(stats["outcomes_skipped_reviewed"], 1)
+        self.assertEqual(sum(stats["outcomes_changed"].values()), 0)
+        self.assertEqual((document.appeal_result, document.case_disposition), ("allowed", "appeal allowed"))
+        self.assertEqual(document.outcome_evidence, {"appeal_result": {"rule": "reviewer_correction", "chunk_id": None}})
+        row = next(r for r in stats["review_rows"] if r["document_id"] == document.id)
+        self.assertEqual(row["review_status"], "REVIEWED")
+        self.assertEqual(
+            {key for key in row if key.startswith(("reviewer", "corrected_", "review_notes"))},
+            {"reviewer", "corrected_conviction_status", "corrected_appeal_result", "corrected_case_disposition", "review_notes"},
+        )
+
+
+class TestAnalyticsReviewImport(unittest.TestCase):
+    """import_analytics_review.py: decisions, refusals, dry run and idempotence."""
+
+    NOW = datetime(2026, 10, 18, 12, 0, tzinfo=timezone.utc)
+
+    def setUp(self) -> None:
+        self.db = SessionLocal()
+        self.producer = TestAnalyticsProducerAndReconciliation()
+        self.producer.db = self.db
+        self.docs = self.producer.seed_corpus()
+        stats = produce(self.db, dry_run=False)
+        self.tmp = tempfile.TemporaryDirectory()  # outside the repository, as write_review requires
+        self.rows = {int(row["document_id"]): row for row in read_review_csv(write_review(stats["review_rows"], Path(self.tmp.name), "test"))}
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+        self.db.close()
+
+    def row(self, name: str, **fields: str) -> dict[str, str]:
+        return {**self.rows[self.docs[name].id], **fields}
+
+    def outcomes(self, name: str) -> tuple:
+        self.db.expire_all()
+        document = self.db.get(Document, self.docs[name].id)
+        return (document.conviction_status, document.appeal_result, document.case_disposition)
+
+    def test_confirmed_corrected_and_rejected_rows_are_applied_once(self) -> None:
+        rows = [
+            self.row("dismissed", review_status="CONFIRMED", reviewer="reviewer-1"),
+            self.row("acquitted", review_status="CORRECTED", reviewer="reviewer-1",
+                     corrected_appeal_result="partly allowed", corrected_case_disposition="NULL"),
+            self.row("ambiguous", review_status="rejected", reviewer="reviewer-2"),
+            self.row("manual"),  # still UNREVIEWED: skipped
+        ]
+        before_dismissed = self.db.get(Document, self.docs["dismissed"].id).outcome_evidence
+        stats = import_review(self.db, rows, dry_run=False, now=self.NOW)
+        self.assertEqual(
+            (stats["confirmed"], stats["corrected"], stats["rejected"], stats["skipped_not_reviewed"], stats["changes"]),
+            (1, 1, 1, 1, 3),
+        )
+        self.assertEqual(self.outcomes("dismissed"), ("convicted", "dismissed", "appeal dismissed"))
+        self.assertEqual(self.outcomes("acquitted"), ("acquitted", "partly allowed", None))
+        self.assertEqual(self.outcomes("ambiguous"), (None, None, None))
+
+        dismissed = self.db.get(Document, self.docs["dismissed"].id)
+        self.assertEqual(dismissed.outcome_evidence, before_dismissed)  # confirmed: rule evidence kept
+        self.assertEqual(
+            (dismissed.review_status, dismissed.review_decision, dismissed.reviewed_by, dismissed.reviewed_at),
+            ("REVIEWED", "CONFIRMED", "reviewer-1", self.NOW),
+        )
+        acquitted = self.db.get(Document, self.docs["acquitted"].id)
+        self.assertEqual(acquitted.outcome_evidence["appeal_result"], {"rule": "reviewer_correction", "chunk_id": None})
+        self.assertNotIn("case_disposition", acquitted.outcome_evidence)
+        self.assertEqual(acquitted.outcome_evidence["conviction_status"]["rule"], "accused_acquitted")
+        ambiguous = self.db.get(Document, self.docs["ambiguous"].id)
+        self.assertEqual((ambiguous.review_decision, ambiguous.outcome_evidence), ("REJECTED", None))
+        self.assertEqual(self.db.get(Document, self.docs["manual"].id).review_status, "UNREVIEWED")
+
+        again = import_review(self.db, rows, dry_run=False, now=datetime(2027, 1, 1, tzinfo=timezone.utc))
+        self.assertEqual((again["changes"], again["unchanged"]), (0, 3))
+        self.db.expire_all()
+        self.assertEqual(self.db.get(Document, self.docs["dismissed"].id).reviewed_at, self.NOW)  # not re-stamped
+
+        # The producer leaves the reviewed values alone.
+        produced = produce(self.db, dry_run=False)
+        self.assertEqual(produced["outcomes_skipped_reviewed"], 3)
+        self.assertEqual(self.outcomes("acquitted"), ("acquitted", "partly allowed", None))
+        self.assertEqual(self.outcomes("ambiguous"), (None, None, None))
+
+    def test_dry_run_writes_nothing(self) -> None:
+        stats = import_review(self.db, [self.row("ambiguous", review_status="REJECTED", reviewer="r")], dry_run=True)
+        self.assertEqual(stats["rejected"], 1)
+        self.db.expire_all()
+        self.assertEqual(self.db.get(Document, self.docs["ambiguous"].id).review_status, "UNREVIEWED")
+
+    def test_invalid_files_are_refused_without_writing(self) -> None:
+        good = self.row("dismissed", review_status="CONFIRMED", reviewer="r")
+        cases = {
+            "unknown document_id": [good, {**good, "document_id": "999999", "source_document_key": ""}],
+            "source_document_key does not match": [{**good, "source_document_key": "other:key"}],
+            "not an integer": [{**good, "document_id": "abc"}],
+            "more than once": [good, dict(good)],
+            "reviewer is blank": [{**good, "reviewer": ""}],
+            "unknown review_status": [{**good, "review_status": "MAYBE"}],
+            "is not allowed": [self.row("dismissed", review_status="CORRECTED", reviewer="r", corrected_appeal_result="quashed")],
+            "no corrected_* value": [self.row("dismissed", review_status="CORRECTED", reviewer="r")],
+            "corrected_* values given": [{**good, "corrected_appeal_result": "allowed"}],
+            "unexpected produced value": [{**good, "appeal_result": "won"}],
+        }
+        for expected, rows in cases.items():
+            with self.subTest(expected=expected):
+                with self.assertRaises(ReviewImportError) as raised:
+                    import_review(self.db, rows, dry_run=False)
+                self.assertTrue(any(expected in problem for problem in raised.exception.problems), raised.exception.problems)
+                self.db.expire_all()
+                self.assertEqual(self.db.get(Document, self.docs["dismissed"].id).review_status, "UNREVIEWED")
+
+    def test_stale_rows_are_refused(self) -> None:
+        document = self.db.get(Document, self.docs["dismissed"].id)
+        document.appeal_result = "allowed"  # changed after the review file was produced
+        self.db.commit()
+        with self.assertRaises(ReviewImportError) as raised:
+            import_review(self.db, [self.row("dismissed", review_status="CONFIRMED", reviewer="r")], dry_run=False)
+        self.assertIn("stale row", raised.exception.problems[0])
 
 
 db_test_bootstrap.isolate_test_cases(globals())

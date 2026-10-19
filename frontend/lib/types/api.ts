@@ -119,10 +119,16 @@ export interface NcrbStatPoint {
   state: string;
   offense_category: string;
   ipc_section?: string | null;
+  /** BNS head NCRB reports next to the IPC head, when it has one. */
+  bns_section?: string | null;
   /** Null when NCRB reports no count for the row. */
   case_count: number | null;
   conviction_count?: number | null;
   acquittal_count?: number | null;
+  /** True for total and subtotal rows; the API excludes them unless include_aggregates=true. */
+  is_aggregate?: boolean;
+  /** state_total | ut_total | all_india_total | subtotal_head | group_total, or null for a base row. */
+  aggregate_type?: string | null;
 }
 
 export type AdminDocumentType = 'judgment' | 'statute' | 'other';

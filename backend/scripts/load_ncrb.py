@@ -10,17 +10,19 @@ loaded once and noted as ``exact_duplicate_in_file``.
 Missing values stay NULL. A blank case_count (41 source rows) is stored as
 NULL, never 0, and is reported as ``case_count_not_reported``. Table 1A.4
 reports no conviction or acquittal counts, so those columns are NULL for
-every row. The CSV's bns_section is validated but not stored:
-ncrb_stats has no BNS column (by schema design); the count of non-blank
-values is reported as ``bns_section_not_stored``.
+every row. The BNS head (``bns_section``) is stored next to the IPC head
+(migration 0008). Aggregate rows (state/UT/all-India totals and the table's
+"(Total ...)" / "Total ..." heads) are flagged with ``is_aggregate`` and
+``aggregate_type``, so analytics can exclude them from sums.
 
 Section fields: whitespace is collapsed and hyphenated letter suffixes are
 joined ("366-B" -> "366B"), as in document_sections. Crime-head ranges
 ("147-151", "376 r/w 511") are kept verbatim.
 
 Idempotent upsert on (year, state, offense_category, ipc_section): new keys
-are inserted, keys whose counts changed are updated, and identical rows are
-left alone. A second run makes 0 changes and never duplicates.
+are inserted, keys whose counts, BNS head or aggregate flag changed are
+updated, and identical rows are left alone. A second run makes 0 changes and
+never duplicates.
 
 Usage:
     .venv/bin/python backend/scripts/load_ncrb.py --database-url-env DATABASE_URL [--dry-run] [--confirm-dev]
@@ -31,6 +33,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import csv
+import re
 import sys
 from pathlib import Path
 
@@ -55,8 +58,34 @@ REQUIRED_COLUMNS = {
     "conviction_count",
     "acquittal_count",
 }
-FIELD_LIMITS = {"state": 100, "offense_category": 150, "ipc_section": 100}
+FIELD_LIMITS = {"state": 100, "offense_category": 150, "ipc_section": 100, "bns_section": 100}
 COUNT_FIELDS = ("case_count", "conviction_count", "acquittal_count")
+UPDATE_FIELDS = COUNT_FIELDS + ("bns_section", "is_aggregate", "aggregate_type")
+
+# Table 1A.4's own total rows and total heads.
+TOTAL_STATE_ROWS = {"TOTAL STATE(S)": "state_total", "TOTAL UT(S)": "ut_total", "TOTAL ALL INDIA": "all_india_total"}
+# "(Total ...)" or a parenthesised sum such as "Hurt (Simple +Grievous)".
+_SUBTOTAL_HEAD = re.compile(r"\((?:Total\b|[^)]*\+)")
+
+
+def aggregate_type(state: str, offense_category: str) -> str | None:
+    """Aggregate kind of an NCRB row, from the table's own labels; None for a base row.
+
+    - ``state_total`` / ``ut_total`` / ``all_india_total``: the table's total
+      rows (state column "TOTAL STATE(S)", "TOTAL UT(S)", "TOTAL ALL INDIA");
+    - ``subtotal_head``: a crime head labelled "(Total ...)", e.g. "Murder
+      (Total a+b+c)", followed in the table by its lettered components, or
+      a parenthesised sum of other heads, "Hurt (Simple +Grievous)";
+    - ``group_total``: a crime head starting "Total ...", e.g. "Total IPC/BNS
+      Crimes".
+    """
+    if state in TOTAL_STATE_ROWS:
+        return TOTAL_STATE_ROWS[state]
+    if _SUBTOTAL_HEAD.search(offense_category):
+        return "subtotal_head"
+    if offense_category.startswith("Total "):
+        return "group_total"
+    return None
 
 
 def _blank_to_none(value: str | None) -> str | None:
@@ -114,7 +143,9 @@ def load_ncrb_stats(
         state = _blank_to_none(raw.get("state"))
         offense_category = _blank_to_none(raw.get("offense_category"))
         ipc_section = normalize_section_field(raw.get("ipc_section"))
+        bns_section = normalize_section_field(raw.get("bns_section"))
         notes["normalized_section_values"] += int(ipc_section != _blank_to_none(raw.get("ipc_section")))
+        notes["normalized_section_values"] += int(bns_section != _blank_to_none(raw.get("bns_section")))
         try:
             year = _parse_optional_int(raw.get("year"))
             counts = {name: _parse_optional_int(raw.get(name)) for name in COUNT_FIELDS}
@@ -128,7 +159,17 @@ def load_ncrb_stats(
         if any(value is not None and value < 0 for value in counts.values()):
             rejected["negative_count"] += 1
             continue
-        parsed = {"year": year, "state": state, "offense_category": offense_category, "ipc_section": ipc_section, **counts}
+        kind = aggregate_type(state, offense_category)
+        parsed = {
+            "year": year,
+            "state": state,
+            "offense_category": offense_category,
+            "ipc_section": ipc_section,
+            "bns_section": bns_section,
+            **counts,
+            "is_aggregate": kind is not None,
+            "aggregate_type": kind,
+        }
         if any(parsed[name] and len(parsed[name]) > limit for name, limit in FIELD_LIMITS.items()):
             rejected["field_too_long"] += 1
             continue
@@ -143,17 +184,19 @@ def load_ncrb_stats(
         seen_in_file[key] = parsed
         if counts["case_count"] is None:
             notes["case_count_not_reported"] += 1
-        if _blank_to_none(raw.get("bns_section")):
-            notes["bns_section_not_stored"] += 1
+        if bns_section:
+            notes["bns_section_stored"] += 1
+        if kind:
+            notes[f"aggregate_{kind}"] += 1
 
         current = existing.get(key)
         if current is None:
             pending.append(parsed)
-        elif any(getattr(current, name) != counts[name] for name in COUNT_FIELDS):
+        elif any(getattr(current, name) != parsed[name] for name in UPDATE_FIELDS):
             updated += 1
             if not dry_run:
-                for name in COUNT_FIELDS:
-                    setattr(current, name, counts[name])
+                for name in UPDATE_FIELDS:
+                    setattr(current, name, parsed[name])
         else:
             skipped_existing += 1
 

@@ -205,6 +205,21 @@ Data sources, production methods and reconciliation are described in
   `"IPC 302"` or `"BNS 103"`, as the frontend expects. Bare numbers would
   merge different provisions (IPC 302 and BNS 302). The `section` filter
   accepts a full label or a bare section number (all statutes).
+- **Offence provisions only by default.** `offense-frequency`,
+  `outcome-distribution` and `section-cooccurrence` count only offence
+  provisions (`backend/app/services/provision_types.py`). Procedural (CrPC,
+  BNSS), evidentiary, definitional/general (e.g. IPC 2, general exceptions)
+  and liability-linking provisions (e.g. IPC 34, 149, 511) are left out.
+  Query parameter `include_all_sections=true` (default `false`) returns
+  every cited section.
+- **`ncrb-stats` aggregate rows excluded by default.** State/UT/all-India
+  total rows and subtotal or group-total crime heads are left out, so sums
+  over the response do not double count. Query parameter
+  `include_aggregates=true` (default `false`) returns them.
+- **`ncrb-stats` row fields** (added in step 8): `bns_section` (string or
+  `null`), `is_aggregate` (boolean), `aggregate_type` (`state_total`,
+  `ut_total`, `all_india_total`, `subtotal_head`, `group_total`, or `null`
+  for a base row). The same applies to `/analytics/ncrb`.
 - **`ncrb-stats` `case_count`** is `null` when NCRB reports no count. It is
   never `0` for missing data.
 - **Empty data:** every endpoint returns `200 []`, never an error.

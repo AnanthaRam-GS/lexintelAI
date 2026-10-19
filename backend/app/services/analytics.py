@@ -14,6 +14,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.db.models import Document, DocumentSection, IpcBnsMapping, NcrbStat
+from backend.app.services.provision_types import is_offence
 from backend.app.models.analytics import (
     IpcBnsMappingRow,
     NcrbStatPoint,
@@ -124,8 +125,14 @@ def get_offence_frequency(
     *,
     year: int | None = None,
     section: str | None = None,
+    include_all_sections: bool = False,
 ) -> list[OffenseFrequencyPoint]:
-    """Count distinct corpus documents per statutory section and year."""
+    """Count distinct corpus documents per statutory section and year.
+
+    By default only offence provisions are counted (services/provision_types.py);
+    ``include_all_sections`` also counts procedural, definitional and
+    liability-linking provisions. document_sections keeps every cited section.
+    """
     year = _optional_year(year)
     section = _optional_filter_text(section, "section")
 
@@ -158,6 +165,7 @@ def get_offence_frequency(
     return [
         OffenseFrequencyPoint(section=section_label(row[0], row[1]), year=int(row[2]), count=int(row[3]))
         for row in rows
+        if include_all_sections or is_offence(row[0], row[1])
     ]
 
 
@@ -166,8 +174,12 @@ def get_outcome_distribution(
     *,
     section: str | None = None,
     court_level: str | None = None,
+    include_all_sections: bool = False,
 ) -> list[OutcomeDistributionPoint]:
-    """Return outcome counts with labels normalized into canonical buckets."""
+    """Return outcome counts with labels normalized into canonical buckets.
+
+    Sections are offence provisions only unless ``include_all_sections``.
+    """
     section = _optional_filter_text(section, "section")
     court_level = _optional_filter_text(court_level, "court_level")
 
@@ -195,6 +207,8 @@ def get_outcome_distribution(
     seen_appeal: dict[tuple[str, str, int, str], None] = {}
 
     for document, statute, raw_section in query.all():
+        if not include_all_sections and not is_offence(statute, raw_section):
+            continue
         section_value = section_label(statute, raw_section)
         key = (section_value, document.court_level)
         grouped[key]  # ensure the pair is present even if outcomes are unknown
@@ -232,8 +246,12 @@ def get_section_cooccurrence(
     db: Session,
     *,
     section: str | None = None,
+    include_all_sections: bool = False,
 ) -> list[SectionCooccurrencePoint]:
-    """Count distinct documents in which two statutory sections co-occur."""
+    """Count distinct documents in which two statutory sections co-occur.
+
+    Offence provisions only unless ``include_all_sections``.
+    """
     section = _optional_filter_text(section, "section")
 
     rows = (
@@ -244,6 +262,8 @@ def get_section_cooccurrence(
     )
     sections_by_document: dict[int, set[tuple[str, str]]] = defaultdict(set)
     for document_id, statute, section_value in rows:
+        if not include_all_sections and not is_offence(statute, section_value):
+            continue
         sections_by_document[document_id].add((section_label(statute, section_value), section_value))
 
     pair_counts: dict[tuple[str, str], int] = defaultdict(int)
@@ -310,14 +330,22 @@ def get_ncrb_stats(
     state: str | None = None,
     offense_category: str | None = None,
     ipc_section: str | None = None,
+    include_aggregates: bool = False,
 ) -> list[NcrbStatPoint]:
-    """Return NCRB statistics rows matching the supplied filters."""
+    """Return NCRB statistics rows matching the supplied filters.
+
+    Aggregate rows (state/UT/all-India totals and subtotal heads, see
+    load_ncrb.aggregate_type) are excluded unless ``include_aggregates``, so
+    sums over the result do not double count.
+    """
     year = _optional_year(year)
     state = _optional_filter_text(state, "state")
     offense_category = _optional_filter_text(offense_category, "offense_category")
     ipc_section = _optional_filter_text(ipc_section, "ipc_section")
 
     query = db.query(NcrbStat)
+    if not include_aggregates:
+        query = query.filter(NcrbStat.is_aggregate.is_(False))
     if year is not None:
         query = query.filter(NcrbStat.year == year)
     if state is not None:
@@ -339,9 +367,12 @@ def get_ncrb_stats(
             state=row.state,
             offense_category=row.offense_category,
             ipc_section=row.ipc_section,
+            bns_section=row.bns_section,
             case_count=row.case_count,
             conviction_count=row.conviction_count,
             acquittal_count=row.acquittal_count,
+            is_aggregate=bool(row.is_aggregate),
+            aggregate_type=row.aggregate_type,
         )
         for row in rows
     ]

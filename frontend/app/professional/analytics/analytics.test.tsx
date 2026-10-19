@@ -124,4 +124,44 @@ describe('Professional Analytics Dashboard', () => {
       .parentElement as HTMLElement;
     expect(card).toHaveTextContent('Total Cases—');
   });
+
+  it('labels the offence-only default and the NCRB aggregate exclusion', async () => {
+    render(<ProfessionalAnalyticsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tab-offense-trends')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(/Procedural \(CrPC\/BNSS\), definitional and liability-linking provisions/i),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Section Co-occurrence/i }));
+    expect(
+      screen.getByText(/Procedural, definitional and liability-linking provisions are excluded/i),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /NCRB Statistics/i }));
+    expect(
+      screen.getByText(/subtotal rows are excluded to avoid double counting/i),
+    ).toBeInTheDocument();
+  });
+
+  it('shows empty states when no offence provisions or NCRB rows are available', async () => {
+    vi.spyOn(analyticsApi, 'getOffenseFrequency').mockResolvedValue([]);
+    vi.spyOn(analyticsApi, 'getSectionCooccurrence').mockResolvedValue([]);
+    vi.spyOn(analyticsApi, 'getNcrbStats').mockResolvedValue([]);
+    render(<ProfessionalAnalyticsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('offense-empty')).toHaveTextContent(
+        'No offence provisions have been identified in the analysed judgments yet.',
+      );
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Section Co-occurrence/i }));
+    expect(screen.getByTestId('cooccurrence-empty')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /NCRB Statistics/i }));
+    expect(screen.getByTestId('ncrb-empty')).toHaveTextContent(
+      'No NCRB statistics have been loaded yet.',
+    );
+  });
 });
