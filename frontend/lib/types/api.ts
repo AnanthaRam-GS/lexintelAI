@@ -141,6 +141,14 @@ export interface ServiceStatus {
   detail?: string;
 }
 
+export interface ReconciliationJobSummary {
+  jobId: string;
+  errorCode: string | null;
+  /** Sanitized, admin-facing message. */
+  message: string | null;
+  completedAt: string | null;
+}
+
 export interface CorpusStats {
   totalDocuments: number;
   lastUpdatedTimestamp: string;
@@ -148,6 +156,18 @@ export interface CorpusStats {
   breakdown: Record<AdminDocumentType, number>;
   chromaDb: ServiceStatus;
   postgresql: ServiceStatus;
+  /** BM25 keyword index. */
+  keywordIndex: ServiceStatus;
+  /** Vectors in the Chroma collection; null when the store could not be opened. */
+  chromaRecordCount: number | null;
+  /** Records in the BM25 keyword index; null when it could not be read. */
+  keywordRecordCount: number | null;
+  /** Chunks in PostgreSQL, the canonical store. */
+  postgresChunkCount: number | null;
+  /** Failed ingestions whose cleanup did not complete. */
+  reconciliationJobCount: number;
+  /** The most recent of them (at most 20). */
+  reconciliationJobs: ReconciliationJobSummary[];
 }
 
 export interface AdminIngestionMetadata {
@@ -191,6 +211,13 @@ export interface CorpusStatsResponse {
   bm25_detail?: string | null;
   bm25_record_count?: number | null;
   postgres_chunk_count?: number | null;
+  reconciliation_job_count?: number;
+  reconciliation_jobs?: Array<{
+    job_id: string;
+    error_code?: string | null;
+    error_message?: string | null;
+    completed_at?: string | null;
+  }>;
 }
 
 export type LawyerApplicationStatus =

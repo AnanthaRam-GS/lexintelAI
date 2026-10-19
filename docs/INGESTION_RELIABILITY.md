@@ -23,13 +23,21 @@ succeeded.
 ## Ordering: PostgreSQL commits last
 
 1. **Read-only stages** (`EXTRACTING`, `CHUNKING`, `EMBEDDING`) write nothing:
-   parse the PDF, chunk it, embed it.
+   parse the PDF, chunk it, analyse it, embed it. Analysis (step 9) runs the
+   `document_sections` extractor (`produce_analytics_data.desired_sections`)
+   on the chunks and adds the index metadata fields
+   (`docs/INDEX_METADATA.md`) and the derived `effective_legal_regime` to
+   every chunk, so the indexes receive them with the first write.
 2. **Write phase** (`INDEXING`), under a process-wide lock:
    1. Re-check that no document with this checksum exists.
    2. Upsert the chunks into Chroma.
    3. Upsert them into BM25 (temp-write, validate, atomic replace).
-   4. In **one PostgreSQL transaction**, insert the document and its chunks and
-      set the job to `COMPLETED`.
+   4. In **one PostgreSQL transaction**, insert the document and its chunks,
+      run the analytics producer for the document
+      (`produce_analytics_data.produce_document`: `document_sections`,
+      outcome columns and evidence, court level), and set the job to
+      `COMPLETED`. The producer is the same code the batch producer runs, so
+      the `document_sections` rows equal the sections in the index metadata.
 3. **On any failure in the write phase:**
    1. Roll back the PostgreSQL transaction.
    2. Run compensating cleanup: remove the document's BM25 records (statistics
@@ -80,11 +88,17 @@ chunk carries:
 - chunk index, text source type, raw SHA-256, and normalizer and chunker
   versions.
 
+Derived during ingestion (step 9, `docs/INDEX_METADATA.md`):
+- `doc_type`, `cited_sections`, `offence_sections`, `chunk_sections`, their
+  counts and `index_metadata_version`;
+- `effective_legal_regime`, from the cited statutes (`ipc_crpc`, `bns_bnss`,
+  `mixed_or_transition`, `unknown`).
+
 Not supplied by the upload and never inferred:
 - court name;
 - decision date (the upload form has no field for it);
-- document sections, offence family and legal regime, which are deferred to
-  N2.
+- offence family: no code maps sections to the corpus's offence-family
+  vocabulary, so `effective_offence_family` stays empty for admin uploads.
 
 PostgreSQL chunk rows store the same text and provenance values as the
 indexes, so the consistency verifier can compare them directly.
@@ -142,6 +156,7 @@ document text and no SQL parameters.
 | `VECTOR_INDEX_FAILED` | The vector index could not be updated. |
 | `LEXICAL_INDEX_FAILED` | The keyword index could not be updated. |
 | `DATABASE_WRITE_FAILED` | The document could not be saved to the database. |
+| `ANALYTICS_FAILED` | Cited sections and outcomes could not be derived for this document. |
 | `STALE_JOB` | Ingestion did not finish within the time limit and was stopped. |
 | `INGESTION_FAILED` | Ingestion failed unexpectedly. |
 
@@ -162,6 +177,12 @@ values follow the frontend contract: `healthy`, `degraded` or `down`.
 | `chroma_detail`, `chroma_collection`, `chroma_record_count` | Reason, collection name, entry count |
 | `bm25_status`, `bm25_detail`, `bm25_record_count` | Same rules for the BM25 index (also `degraded` if its metadata disagrees with its records) |
 | `postgres_chunk_count` | Rows in `chunks` |
+| `reconciliation_job_count`, `reconciliation_jobs` | Jobs with `needs_reconciliation`: the total, and the 20 most recent (`job_id`, `error_code`, `error_message`, `completed_at`) |
+
+The admin status page (`/admin`) shows each store's health with its reason,
+the Chroma count next to the PostgreSQL chunk count, the BM25 record count,
+and the jobs that need reconciliation. The ingestion page shows a failed
+job's sanitized message with its `error_code`.
 
 The check never creates a store or a collection. `/health` stays a cheap,
 public database check.

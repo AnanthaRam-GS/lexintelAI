@@ -97,11 +97,8 @@ def excerpt(text: str, start: int | None, end: int | None) -> str:
     return flat[max(0, start - EXCERPT_CHARS // 2): min(len(flat), end + EXCERPT_CHARS // 2)]
 
 
-def produce(session: Any, *, dry_run: bool) -> dict[str, Any]:
-    from backend.app.db.models import Chunk, Document, DocumentSection
-
-    regimes = statute_regimes()
-    stats: dict[str, Any] = {
+def new_stats() -> dict[str, Any]:
+    return {
         "documents": 0,
         "sections": Counter(),
         "section_rejections": Counter(),
@@ -110,9 +107,125 @@ def produce(session: Any, *, dry_run: bool) -> dict[str, Any]:
         "outcomes_skipped_reviewed": 0,
         "court_level": Counter(),
     }
+
+
+def produce_document(
+    session: Any,
+    document: Any,
+    chunks: list[tuple[int, str, str]],
+    stats: dict[str, Any],
+    regimes: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Sections, outcomes and court level for one document; returns its review row.
+
+    ``chunks`` is (chunk_index, chunk_id, text). Writes go to ``session``
+    only; the caller commits or rolls back. Admin ingestion calls this inside
+    its PostgreSQL transaction (``services/ingestion.py``).
+    """
+    from backend.app.db.models import DocumentSection
+
+    regimes = regimes or statute_regimes()
+    stats["documents"] += 1
+    texts = {chunk_id: text for _, chunk_id, text in chunks}
+
+    # Sections
+    wanted, rejected = desired_sections(chunks)
+    stats["section_rejections"].update(rejected)
+    existing = {(row.statute, row.section): row for row in session.query(DocumentSection).filter_by(document_id=document.id)}
+    for key, provenance in wanted.items():
+        row = existing.get(key)
+        if row is None:
+            session.add(DocumentSection(document_id=document.id, statute=key[0], section=key[1], **provenance))
+            stats["sections"]["inserted"] += 1
+        elif any(getattr(row, name) != value for name, value in provenance.items()):
+            for name, value in provenance.items():
+                setattr(row, name, value)
+            stats["sections"]["updated"] += 1
+        else:
+            stats["sections"]["unchanged"] += 1
+    for key, row in existing.items():
+        if key not in wanted:
+            if row.extraction_method == EXTRACTION_METHOD:
+                session.delete(row)
+                stats["sections"]["deleted"] += 1
+            else:
+                stats["sections"]["kept_other_method"] += 1
+
+    # Outcomes (a reviewed document's values are the reviewer's: never overwritten)
+    findings = extract_outcomes(operative_chunks(chunks))
+    reviewed = document.review_status == REVIEWED
+    if reviewed:
+        stats["outcomes_skipped_reviewed"] += 1
+    evidence = dict(document.outcome_evidence or {})
+    changed = False
+    for field in FIELDS if not reviewed else ():
+        finding = findings[field]
+        value = finding.value if finding.status == "found" else None
+        current = getattr(document, field)
+        if current is not None and field not in evidence:
+            # A value this producer did not write (manual or another method): never overwrite.
+            stats["outcomes_kept_other_method"][field] += 1
+            continue
+        wanted_evidence = {"rule": finding.rule, "chunk_id": finding.chunk_id} if value is not None else None
+        if current != value or evidence.get(field) != wanted_evidence:
+            setattr(document, field, value)
+            if wanted_evidence is None:
+                evidence.pop(field, None)
+            else:
+                evidence[field] = wanted_evidence
+            stats["outcomes_changed"][field] += 1
+            changed = True
+    if not reviewed and (changed or document.outcome_method != OUTCOME_METHOD):
+        document.outcome_evidence = evidence or None
+        if document.outcome_method != OUTCOME_METHOD:
+            stats["outcomes_changed"]["outcome_method"] += 1
+        document.outcome_method = OUTCOME_METHOD
+
+    # Court level
+    derived = derive_court_level(document.court_name)
+    if document.court_level is None and derived is not None:
+        document.court_level = derived
+        stats["court_level"]["filled"] += 1
+    elif document.court_level is None:
+        stats["court_level"]["left_null_ambiguous_or_missing_name"] += 1
+    elif derived is not None and derived != document.court_level:
+        stats["court_level"]["existing_disagrees_with_name"] += 1
+    else:
+        stats["court_level"]["existing_kept"] += 1
+
+    return {
+        "document_id": document.id,
+        "source_document_key": document.source_document_key or "",
+        "court_level": document.court_level or "",
+        "sections": "; ".join(
+            f"{statute} {section} [{regime_for(statute, regimes)}; mentions={wanted[(statute, section)]['mention_count']}]"
+            for statute, section in sorted(wanted)
+        ),
+        **{
+            f"{field}": findings[field].value or findings[field].status
+            for field in FIELDS
+        },
+        **{f"{field}_rule": findings[field].rule or "" for field in FIELDS},
+        **{f"{field}_evidence_chunk": findings[field].chunk_id or "" for field in FIELDS},
+        **{f"{field}_candidates": ", ".join(findings[field].candidates) for field in FIELDS},
+        **{
+            f"{field}_excerpt": excerpt(texts.get(findings[field].chunk_id, ""), findings[field].start, findings[field].end)
+            for field in FIELDS
+        },
+        "review_status": REVIEWED if reviewed else UNREVIEWED,
+        "reviewer": "",
+        **{f"corrected_{field}": "" for field in FIELDS},
+        "review_notes": "",
+    }
+
+
+def produce(session: Any, *, dry_run: bool) -> dict[str, Any]:
+    from backend.app.db.models import Chunk, Document
+
+    regimes = statute_regimes()
+    stats = new_stats()
     review_rows: list[dict[str, Any]] = []
-    documents = session.query(Document).order_by(Document.id).all()
-    for document in documents:
+    for document in session.query(Document).order_by(Document.id).all():
         chunk_rows = (
             session.query(Chunk.chunk_index, Chunk.chroma_id, Chunk.text)
             .filter(Chunk.document_id == document.id)
@@ -120,101 +233,7 @@ def produce(session: Any, *, dry_run: bool) -> dict[str, Any]:
         )
         if not chunk_rows:
             continue
-        stats["documents"] += 1
-        chunks = [(row[0], row[1], row[2]) for row in chunk_rows]
-        texts = {chunk_id: text for _, chunk_id, text in chunks}
-
-        # Sections
-        wanted, rejected = desired_sections(chunks)
-        stats["section_rejections"].update(rejected)
-        existing = {(row.statute, row.section): row for row in session.query(DocumentSection).filter_by(document_id=document.id)}
-        for key, provenance in wanted.items():
-            row = existing.get(key)
-            if row is None:
-                session.add(DocumentSection(document_id=document.id, statute=key[0], section=key[1], **provenance))
-                stats["sections"]["inserted"] += 1
-            elif any(getattr(row, name) != value for name, value in provenance.items()):
-                for name, value in provenance.items():
-                    setattr(row, name, value)
-                stats["sections"]["updated"] += 1
-            else:
-                stats["sections"]["unchanged"] += 1
-        for key, row in existing.items():
-            if key not in wanted:
-                if row.extraction_method == EXTRACTION_METHOD:
-                    session.delete(row)
-                    stats["sections"]["deleted"] += 1
-                else:
-                    stats["sections"]["kept_other_method"] += 1
-
-        # Outcomes (a reviewed document's values are the reviewer's: never overwritten)
-        findings = extract_outcomes(operative_chunks(chunks))
-        reviewed = document.review_status == REVIEWED
-        if reviewed:
-            stats["outcomes_skipped_reviewed"] += 1
-        evidence = dict(document.outcome_evidence or {})
-        changed = False
-        for field in FIELDS if not reviewed else ():
-            finding = findings[field]
-            value = finding.value if finding.status == "found" else None
-            current = getattr(document, field)
-            if current is not None and field not in evidence:
-                # A value this producer did not write (manual or another method): never overwrite.
-                stats["outcomes_kept_other_method"][field] += 1
-                continue
-            wanted_evidence = {"rule": finding.rule, "chunk_id": finding.chunk_id} if value is not None else None
-            if current != value or evidence.get(field) != wanted_evidence:
-                setattr(document, field, value)
-                if wanted_evidence is None:
-                    evidence.pop(field, None)
-                else:
-                    evidence[field] = wanted_evidence
-                stats["outcomes_changed"][field] += 1
-                changed = True
-        if not reviewed and (changed or document.outcome_method != OUTCOME_METHOD):
-            document.outcome_evidence = evidence or None
-            if document.outcome_method != OUTCOME_METHOD:
-                stats["outcomes_changed"]["outcome_method"] += 1
-            document.outcome_method = OUTCOME_METHOD
-
-        # Court level
-        derived = derive_court_level(document.court_name)
-        if document.court_level is None and derived is not None:
-            document.court_level = derived
-            stats["court_level"]["filled"] += 1
-        elif document.court_level is None:
-            stats["court_level"]["left_null_ambiguous_or_missing_name"] += 1
-        elif derived is not None and derived != document.court_level:
-            stats["court_level"]["existing_disagrees_with_name"] += 1
-        else:
-            stats["court_level"]["existing_kept"] += 1
-
-        review_rows.append(
-            {
-                "document_id": document.id,
-                "source_document_key": document.source_document_key or "",
-                "court_level": document.court_level or "",
-                "sections": "; ".join(
-                    f"{statute} {section} [{regime_for(statute, regimes)}; mentions={wanted[(statute, section)]['mention_count']}]"
-                    for statute, section in sorted(wanted)
-                ),
-                **{
-                    f"{field}": findings[field].value or findings[field].status
-                    for field in FIELDS
-                },
-                **{f"{field}_rule": findings[field].rule or "" for field in FIELDS},
-                **{f"{field}_evidence_chunk": findings[field].chunk_id or "" for field in FIELDS},
-                **{f"{field}_candidates": ", ".join(findings[field].candidates) for field in FIELDS},
-                **{
-                    f"{field}_excerpt": excerpt(texts.get(findings[field].chunk_id, ""), findings[field].start, findings[field].end)
-                    for field in FIELDS
-                },
-                "review_status": REVIEWED if reviewed else UNREVIEWED,
-                "reviewer": "",
-                **{f"corrected_{field}": "" for field in FIELDS},
-                "review_notes": "",
-            }
-        )
+        review_rows.append(produce_document(session, document, [(row[0], row[1], row[2]) for row in chunk_rows], stats, regimes))
 
     if dry_run:
         session.rollback()

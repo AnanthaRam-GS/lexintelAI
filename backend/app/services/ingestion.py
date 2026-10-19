@@ -10,10 +10,14 @@ An ingestion ends in exactly one of two states:
 - FAILED: nothing for the document is left in any store, or, if cleanup
   itself failed, ``needs_reconciliation`` is set on the job.
 
-Ordering: parse, chunk and embed write nothing. The write phase then
-upserts Chroma, then BM25, and commits PostgreSQL **last**, in one
-transaction that inserts the document and its chunks and flips the job to
-COMPLETED. A failure at any write step rolls back the PostgreSQL transaction
+Ordering: parse, chunk, analyse and embed write nothing. Analysis derives
+the cited sections with the document_sections extractor and adds the
+index_metadata_v1 fields (``services/index_metadata.py``) and the derived
+``effective_legal_regime`` to every chunk. The write phase then upserts
+Chroma, then BM25, and commits PostgreSQL **last**, in one transaction that
+inserts the document and its chunks, runs the analytics producer for it
+(``produce_analytics_data.produce_document``: document_sections, outcomes,
+court level) and flips the job to COMPLETED. A failure at any write step rolls back the PostgreSQL transaction
 and removes the document's entries from BM25 and Chroma by its
 ``source_document_key`` (compensating cleanup). The write phase holds a
 process-wide lock, so concurrent ingestions and the stale-job reaper cannot
@@ -46,11 +50,13 @@ from sqlalchemy.orm import Session
 from backend.app.core.config import Settings, resolve_chroma_location
 from backend.app.db.models import Chunk, Document, IngestionJob
 from backend.app.db.session import SessionLocal, check_db_connection
+from backend.scripts.produce_analytics_data import desired_sections, new_stats, produce_document
 from backend.app.models.ingest import (
     CorpusStatsResponse,
     CorpusTypeCount,
     IngestionStatus,
     IngestionStatusResponse,
+    ReconciliationJob,
 )
 
 logger = logging.getLogger("legalai.ingestion")
@@ -62,6 +68,7 @@ _INGEST_WRITE_LOCK = threading.Lock()
 ADMIN_KEY_PREFIX = "admin:"
 ADMIN_PROVIDER = "admin_upload"
 SECTION_HEADING_MAX = 255
+RECONCILIATION_JOBS_SHOWN = 20
 NON_TERMINAL_STATUSES = (
     IngestionStatus.QUEUED.value,
     IngestionStatus.EXTRACTING.value,
@@ -79,6 +86,7 @@ SAFE_MESSAGES = {
     "VECTOR_INDEX_FAILED": "The vector index could not be updated.",
     "LEXICAL_INDEX_FAILED": "The keyword index could not be updated.",
     "DATABASE_WRITE_FAILED": "The document could not be saved to the database.",
+    "ANALYTICS_FAILED": "Cited sections and outcomes could not be derived for this document.",
     "STALE_JOB": "Ingestion did not finish within the time limit and was stopped.",
     "INGESTION_FAILED": "Ingestion failed unexpectedly.",
 }
@@ -90,6 +98,7 @@ STAGE_ERROR_CODES = {
     "vector": "VECTOR_INDEX_FAILED",
     "bm25": "LEXICAL_INDEX_FAILED",
     "database": "DATABASE_WRITE_FAILED",
+    "analytics": "ANALYTICS_FAILED",
 }
 
 
@@ -223,6 +232,11 @@ def get_corpus_stats(db: Session, settings: Settings | None = None) -> CorpusSta
     is_db_ok, _ = check_db_connection()
     chroma = get_vector_store_status(settings, expected_count=pg_chunks)
     bm25 = get_bm25_status(expected_count=pg_chunks)
+    flagged = db.query(IngestionJob).filter(IngestionJob.needs_reconciliation.is_(True))
+    reconciliation_jobs = [
+        ReconciliationJob(job_id=job.id, error_code=job.error_code, error_message=job.error_message, completed_at=job.completed_at)
+        for job in flagged.order_by(IngestionJob.completed_at.desc().nullslast(), IngestionJob.id).limit(RECONCILIATION_JOBS_SHOWN)
+    ]
     return CorpusStatsResponse(
         total_documents=total_docs,
         last_updated=last_updated,
@@ -236,6 +250,8 @@ def get_corpus_stats(db: Session, settings: Settings | None = None) -> CorpusSta
         bm25_detail=bm25["detail"],
         bm25_record_count=bm25["count"],
         postgres_chunk_count=pg_chunks,
+        reconciliation_job_count=flagged.count(),
+        reconciliation_jobs=reconciliation_jobs,
     )
 
 
@@ -290,6 +306,8 @@ def process_ingestion_job(
         ]
         if find_document_by_checksum(db, checksum) is not None:
             raise IngestionError("DUPLICATE_DOCUMENT")
+        stage = "analytics"
+        add_index_metadata(chunks, doc_type)
 
         _advance(db, job, IngestionStatus.EMBEDDING, 60)
         stage = "embed"
@@ -339,6 +357,10 @@ def process_ingestion_job(
                 )
                 document.chunks = [pg_chunk(chunk) for chunk in chunks]
                 db.add(document)
+                db.flush()
+                stage = "analytics"
+                produce_document(db, document, analytics_chunks(chunks), new_stats())
+                stage = "database"
                 job.document = document
                 job.status = IngestionStatus.COMPLETED.value
                 job.progress = 100
@@ -479,7 +501,9 @@ def corpus_format_chunk(
     """Shape a chunk like the curated corpus chunk files (same Chroma/BM25 schema).
 
     Fields the upload does not supply (court name, decision date, offence
-    family, legal regime) stay empty; they are never inferred here.
+    family, legal regime) stay empty here. add_index_metadata later derives
+    the legal regime from the cited statutes; the offence family is never
+    inferred.
     """
     chunk_index = int(raw.get("chunk_index", position))
     heading_path = list(raw.get("heading_path") or [])
@@ -511,6 +535,26 @@ def corpus_format_chunk(
         "heading_path": heading_path,
         "section_heading": heading[:SECTION_HEADING_MAX] if heading else None,
     }
+
+
+def analytics_chunks(chunks: list[dict[str, Any]]) -> list[tuple[int, str, str]]:
+    """(chunk_index, chunk_id, text), the producer's chunk form."""
+    return [(chunk["chunk_index"], chunk["chunk_id"], chunk["chunk_text"]) for chunk in chunks]
+
+
+def add_index_metadata(chunks: list[dict[str, Any]], doc_type: str) -> None:
+    """Add index_metadata_v1 fields and the derived legal regime to each chunk, before any write.
+
+    The sections come from the producer's extractor (desired_sections), so they
+    equal the document_sections rows produce_document writes in the same ingestion.
+    """
+    from backend.app.services.index_metadata import chunk_index_fields, derive_legal_regime
+
+    pairs = set(desired_sections(analytics_chunks(chunks))[0])
+    regime = derive_legal_regime(statute for statute, _ in pairs)
+    for chunk in chunks:
+        chunk.update(chunk_index_fields(doc_type, pairs, chunk["chunk_text"]))
+        chunk["effective_legal_regime"] = regime
 
 
 def chroma_metadatas(chunks: list[dict[str, Any]], provider: Any) -> list[dict[str, Any]]:

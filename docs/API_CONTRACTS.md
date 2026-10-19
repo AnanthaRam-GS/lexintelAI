@@ -164,7 +164,8 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
   when a document with the same file SHA-256 exists, before any write.
 - `GET /ingest/status/{job_id}` keeps its fields. `error` is a sanitized
   message. New optional fields: `error_code` (for example
-  `LEXICAL_INDEX_FAILED`, `DUPLICATE_DOCUMENT`, `STALE_JOB`) and
+  `LEXICAL_INDEX_FAILED`, `DUPLICATE_DOCUMENT`, `STALE_JOB`, and since step 9
+  `ANALYTICS_FAILED`) and
   `needs_reconciliation` (boolean). Jobs stuck in a non-terminal state past
   `INGESTION_STALE_JOB_MINUTES` are reaped to `FAILED` / `STALE_JOB`.
 - `GET /ingest/corpus/stats` reports `postgres_status`, `chroma_status` and
@@ -172,7 +173,13 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
   configured collection (existence, dimension 1024, count against PostgreSQL
   chunks) and of the BM25 index. Optional detail fields: `chroma_detail`,
   `chroma_collection`, `chroma_record_count`, `bm25_detail`,
-  `bm25_record_count`, `postgres_chunk_count`.
+  `bm25_record_count`, `postgres_chunk_count`. Since step 9 it also returns
+  `reconciliation_job_count` (integer) and `reconciliation_jobs` (the 20 most
+  recent jobs with `needs_reconciliation`: `job_id`, `error_code`,
+  `error_message`, `completed_at`).
+- Since step 9 a completed admin ingestion also writes the document's
+  `document_sections`, outcome columns and index metadata
+  (`docs/INDEX_METADATA.md`) in the same all-or-nothing write.
 - Query endpoints return **503** `RETRIEVAL_INDEX_UNAVAILABLE` if the
   configured collection is missing or has the wrong dimension. The query path
   never creates it.

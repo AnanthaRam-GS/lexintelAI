@@ -136,6 +136,11 @@ def metadata_for_chroma(chunk: dict[str, Any], fingerprint: str) -> dict[str, An
         "chunker_version": chunk.get("chunker_version"),
         "index_fingerprint": fingerprint,
     }
+    # index_metadata_v1 fields, when the chunk carries them (an empty list is left out:
+    # Chroma rejects empty list metadata).
+    from backend.app.services.index_metadata import FIELDS, store_form
+
+    metadata.update(store_form({key: chunk[key] for key in FIELDS if key in chunk}))
     return {key: value for key, value in metadata.items() if value is not None}
 
 

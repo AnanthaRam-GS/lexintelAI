@@ -20,6 +20,8 @@ import type {
   RegistrationResponse,
   EmailVerificationResponse,
   SectionCooccurrencePoint,
+  ServiceHealth,
+  ServiceStatus,
 } from './types/api';
 
 const defaultApiBaseUrl = 'http://127.0.0.1:8000';
@@ -313,9 +315,24 @@ function toCorpusStats(response: CorpusStatsResponse): CorpusStats {
     lastUpdatedTimestamp: timestamp,
     lastIngestionDate: timestamp,
     breakdown,
-    chromaDb: { status: serviceHealth(response.chroma_status) },
+    chromaDb: withDetail(serviceHealth(response.chroma_status), response.chroma_detail),
     postgresql: { status: serviceHealth(response.postgres_status) },
+    keywordIndex: withDetail(serviceHealth(response.bm25_status ?? 'down'), response.bm25_detail),
+    chromaRecordCount: response.chroma_record_count ?? null,
+    keywordRecordCount: response.bm25_record_count ?? null,
+    postgresChunkCount: response.postgres_chunk_count ?? null,
+    reconciliationJobCount: response.reconciliation_job_count ?? 0,
+    reconciliationJobs: (response.reconciliation_jobs ?? []).map((job) => ({
+      jobId: job.job_id,
+      errorCode: job.error_code ?? null,
+      message: job.error_message ?? null,
+      completedAt: job.completed_at ?? null,
+    })),
   };
+}
+
+function withDetail(status: ServiceHealth, detail: string | null | undefined): ServiceStatus {
+  return detail ? { status, detail } : { status };
 }
 
 function serviceHealth(value: string): CorpusStats['chromaDb']['status'] {

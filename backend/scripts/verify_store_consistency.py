@@ -10,6 +10,17 @@ indexes must hold nothing else, and the Chroma database must hold no other
 collection unless ``--allow-extra-collections`` is given. BM25's stored
 metadata (chunk count, document count, fingerprint) must match its records.
 
+Index metadata (``index_metadata_v1``, see ``services/index_metadata.py``):
+each chunk's ``doc_type``, ``cited_sections``, ``offence_sections``,
+``chunk_sections``, their counts and ``index_metadata_version`` must equal
+what PostgreSQL derives, in both indexes. ``effective_legal_regime`` must be
+present and in the regime vocabulary; for admin uploads (``admin:`` keys) it
+must equal the regime derived from the cited statutes. Curated-corpus values
+come from the reviewed acquisition manifest, which PostgreSQL does not hold,
+so only their vocabulary and their consistency within a document are checked.
+``effective_offence_family``, where present, must be the same on every chunk
+of a document.
+
 Nothing is modified: PostgreSQL is read in a read-only session, Chroma through
 SQLite ``mode=ro&immutable=1``, and BM25 as JSON. Exits 0 when consistent and
 1 on any mismatch.
@@ -33,6 +44,8 @@ from typing import Any
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from backend.app.services.index_metadata import FIELDS, REGIME_FIELD, expected_from_postgres, index_view  # noqa: E402
+from backend.app.services.legal_regime import REGIMES  # noqa: E402
 from backend.scripts.reconcile_common import connect, resolve_database  # noqa: E402
 
 PROVENANCE = ("chunk_index", "page_start", "page_end", "paragraph_start", "paragraph_end")
@@ -72,6 +85,7 @@ def read_postgres(url: str) -> dict[str, dict[str, Any]]:
                 "SELECT id, document_id, chroma_id, text, chunk_index, page_start, page_end, paragraph_start, paragraph_end FROM chunks"
             )
             rows = cursor.fetchall()
+            index_expected = expected_from_postgres(cursor)
     finally:
         connection.rollback()
         connection.close()
@@ -93,7 +107,7 @@ def read_postgres(url: str) -> dict[str, dict[str, Any]]:
     for document_id, key in documents.items():
         if (key or str(document_id)) not in documents_with_chunks:
             problems["postgres_documents_without_chunks"].append(key or str(document_id))
-    return {"chunks": chunks, "problems": problems}
+    return {"chunks": chunks, "problems": problems, "index_expected": index_expected}
 
 
 def read_chroma(chroma_dir: Path, collection: str) -> tuple[dict[str, dict[str, Any]], list[str]]:
@@ -118,6 +132,21 @@ def read_chroma(chroma_dir: Path, collection: str) -> tuple[dict[str, dict[str, 
             metadata = entries.setdefault(embedding_id, {})
             if key is not None:
                 metadata[key] = next((v for v in values if v is not None), None)
+        # List metadata (Chroma >= 1.5) is stored one element per row.
+        arrays = connection.execute(
+            """
+            SELECT e.embedding_id, a.key, a.string_value, a.int_value, a.float_value, a.bool_value
+            FROM embedding_metadata_array a
+            JOIN embeddings e ON e.id = a.id
+            JOIN segments s ON s.id = e.segment_id
+            JOIN collections c ON c.id = s.collection
+            WHERE c.name = ?
+            ORDER BY a.rowid
+            """,
+            (collection,),
+        ) if _has_table(connection, "embedding_metadata_array") else []
+        for embedding_id, key, *values in arrays:
+            entries.setdefault(embedding_id, {}).setdefault(key, []).append(next((v for v in values if v is not None), None))
     finally:
         connection.close()
     return (
@@ -127,6 +156,36 @@ def read_chroma(chroma_dir: Path, collection: str) -> tuple[dict[str, dict[str, 
         },
         collections,
     )
+
+
+def _has_table(connection: sqlite3.Connection, name: str) -> bool:
+    return connection.execute("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (name,)).fetchone() is not None
+
+
+def compare_index_metadata(
+    name: str, expected: dict[str, dict[str, Any]], index: dict[str, dict[str, Any]], problems: dict[str, list[str]]
+) -> None:
+    """index_metadata_v1 fields and the effective_* fields of every chunk present in both."""
+    regimes: dict[str, set] = defaultdict(set)
+    families: dict[str, set] = defaultdict(set)
+    for chunk_id in sorted(set(expected) & set(index)):
+        entry, metadata = expected[chunk_id], index[chunk_id]
+        view = index_view(metadata)
+        for field in FIELDS:
+            if view[field] != entry["fields"][field]:
+                problems[f"{name}_{field}_mismatch"].append(chunk_id)
+        regime = metadata.get(REGIME_FIELD)
+        if regime not in REGIMES:
+            problems[f"{name}_{REGIME_FIELD}_missing_or_invalid"].append(chunk_id)
+        elif entry["document_key"].startswith("admin:") and regime != entry["derived_regime"]:
+            problems[f"{name}_{REGIME_FIELD}_mismatch"].append(chunk_id)
+        regimes[entry["document_key"]].add(regime)
+        families[entry["document_key"]].add(metadata.get("effective_offence_family"))
+    for key in sorted(regimes):
+        if len(regimes[key]) > 1:
+            problems[f"{name}_{REGIME_FIELD}_differs_within_document"].append(key)
+        if len(families[key]) > 1:
+            problems[f"{name}_effective_offence_family_differs_within_document"].append(key)
 
 
 def read_bm25(path: Path) -> tuple[dict[str, dict[str, Any]], dict[str, Any], list[dict[str, Any]]]:
@@ -207,6 +266,8 @@ def main(argv: list[str] | None = None) -> int:
     fingerprint = check_bm25_metadata(bm25_metadata, bm25_records, problems)
     compare_index("chroma", pg["chunks"], chroma, problems)
     compare_index("bm25", pg["chunks"], bm25, problems)
+    compare_index_metadata("chroma", pg["index_expected"], chroma, problems)
+    compare_index_metadata("bm25", pg["index_expected"], bm25, problems)
 
     pg_documents = {entry["document"] for entry in pg["chunks"].values()}
     summary = {
