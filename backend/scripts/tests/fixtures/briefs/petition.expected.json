@@ -1,0 +1,41 @@
+{
+  "fixture": "petition_synthetic.txt",
+  "synthetic": true,
+  "document_type": "petition",
+  "parties": [
+    {
+      "name": "Nikhil Placeholder",
+      "role": "petitioner"
+    },
+    {
+      "name": "State of Fictionaland",
+      "role": "respondent"
+    },
+    {
+      "name": "Priya Testcase",
+      "role": "respondent"
+    }
+  ],
+  "dated_events": [
+    "2024-01-15",
+    "2024-05-12",
+    "2024-05-20",
+    "2024-08-01",
+    "2024-09-02"
+  ],
+  "procedural_stages": [
+    "FIR registration",
+    "bail",
+    "charge sheet filing",
+    "petition/quashing"
+  ],
+  "evidence_categories": [
+    "documents",
+    "electronic"
+  ],
+  "absent_evidence_categories": [
+    "medical_forensic",
+    "recoveries"
+  ],
+  "notes": "Quashing petition under s.528 BNSS: agreement 15.01.2024, FIR 12.05.2024, anticipatory bail 20.05.2024, charge sheet 01.08.2024, petition filed 02.09.2024. Annexed agreement and FIR copy (documents) and WhatsApp messages (electronic)."
+}

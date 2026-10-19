@@ -21,7 +21,6 @@ from backend.app.db.session import get_db
 from backend.app.models.common import SectionReference
 from backend.app.models.query import (
     ProfessionalCaseBrief,
-    ProfessionalPrecedent,
     ProfessionalQueryResponse,
     ProfessionalTextQueryRequest,
     PublicQueryResponse,
@@ -51,7 +50,8 @@ from backend.app.services.local_document_map import (
 )
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
 from backend.app.services.legal_query_understanding import understand_legal_query
-from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
+from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
+from backend.app.services import professional_brief
 from backend.app.services.private_pdf_rag import (
     PrivateChunk,
     build_private_chunks,
@@ -78,6 +78,18 @@ router = APIRouter(prefix="/query", tags=["Query"])
 
 UPLOAD_READ_CHUNK_SIZE = 1024 * 1024
 ALLOWED_PDF_MIME_TYPES = {"application/pdf", "application/x-pdf", "application/octet-stream"}
+
+
+@dataclass(frozen=True)
+class QueryPipelineOutcome:
+    """A successful answer, and the bounded trusted evidence it was generated from.
+
+    Precedents are built from ``retrieval`` (retrieved metadata, reranker
+    scores, chunk text), never from the model's text.
+    """
+
+    result: LegalAnswerResult
+    retrieval: LegalRetrievalResult | None = None
 
 
 class QueryExecutionError(RuntimeError):
@@ -148,10 +160,10 @@ def query_public(
     adapter=Depends(get_answer_adapter),
 ) -> PublicQueryResponse:
     try:
-        result = run_frozen_query_pipeline(
+        outcome = run_frozen_query_pipeline(
             request.text, mode=AnswerMode.PUBLIC, retrieval_service=retrieval_service, adapter=adapter, settings=settings
         )
-        return public_response_from_result(result)
+        return public_response_from_result(outcome.result)
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
 
@@ -166,14 +178,17 @@ def query_professional(
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
     try:
-        result = run_frozen_query_pipeline(
+        outcome = run_frozen_query_pipeline(
             request.text,
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
             adapter=adapter,
             settings=settings,
         )
-        response = professional_response_from_result(result)
+        result = outcome.result
+        response = professional_response_from_result(
+            result, retrieval=outcome.retrieval, excerpt_max_chars=settings.precedent_excerpt_max_chars
+        )
         save_query_history(
             db,
             query_text=request.text,
@@ -203,6 +218,7 @@ async def query_professional_pdf(
     try:
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
         budget = resolve_token_budget(settings)
+        document_map: LocalDocumentMap | None = None
         if analysis_mode.strip().lower() == "brief":
             # Entirely local (zero provider calls) - see local_document_map.py.
             # Replaces the previous per-batch Stage-1 generative approach,
@@ -233,7 +249,7 @@ async def query_professional_pdf(
             private_context_builder = build_question_focused_context_builder(
                 parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
             )
-        result = run_frozen_query_pipeline(
+        outcome = run_frozen_query_pipeline(
             retrieval_query,
             mode=AnswerMode.PROFESSIONAL,
             retrieval_service=retrieval_service,
@@ -241,7 +257,14 @@ async def query_professional_pdf(
             settings=settings,
             private_context_builder=private_context_builder,
         )
-        response = professional_response_from_result(result)
+        result = outcome.result
+        response = professional_response_from_result(
+            result,
+            retrieval=outcome.retrieval,
+            document_map=document_map,
+            private_chunks=parsed_pdf.private_chunks,
+            excerpt_max_chars=settings.precedent_excerpt_max_chars,
+        )
         save_query_history(
             db,
             query_text=query,
@@ -282,7 +305,7 @@ async def query_public_pdf(
         private_context_builder = build_question_focused_context_builder(
             parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
         )
-        result = run_frozen_query_pipeline(
+        outcome = run_frozen_query_pipeline(
             query,
             mode=AnswerMode.PUBLIC,
             retrieval_service=retrieval_service,
@@ -290,7 +313,7 @@ async def query_public_pdf(
             settings=settings,
             private_context_builder=private_context_builder,
         )
-        return public_response_from_result(result)
+        return public_response_from_result(outcome.result)
     except HTTPException:
         raise
     except DocumentParsingError as exc:
@@ -483,7 +506,7 @@ def run_frozen_query_pipeline(
     adapter: Any,
     settings: Settings,
     private_context_builder: Callable[[str], str | None] | None = None,
-) -> LegalAnswerResult:
+) -> QueryPipelineOutcome:
     """Applies to all four product query paths (public/professional text and
     PDF). Trusted (E#) evidence is bounded to a product-wide budget *before*
     the prompt is built - this is what fixes plain text queries (no PDF at
@@ -546,7 +569,7 @@ def run_frozen_query_pipeline(
     except Exception as exc:
         raise QueryExecutionError("QUERY_PIPELINE_UNAVAILABLE", "The legal query pipeline is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE) from exc
     ensure_successful_answer(result)
-    return result
+    return QueryPipelineOutcome(result=result, retrieval=bounded_retrieval)
 
 
 def _attempt_generation(
@@ -748,24 +771,46 @@ def public_response_from_result(result: LegalAnswerResult) -> PublicQueryRespons
     )
 
 
-def professional_response_from_result(result: LegalAnswerResult) -> ProfessionalQueryResponse:
+def professional_response_from_result(
+    result: LegalAnswerResult,
+    *,
+    retrieval: LegalRetrievalResult | None = None,
+    document_map: LocalDocumentMap | None = None,
+    private_chunks: list[PrivateChunk] | None = None,
+    excerpt_max_chars: int = 400,
+) -> ProfessionalQueryResponse:
+    """Map a professional answer to the API response; field sources are in services/professional_brief.py.
+
+    The model supplies the summary, material facts, issues, law, analysis,
+    procedural posture and uncertainties. Parties, chronology, procedural
+    stages and evidence come from the uploaded document's local map
+    (``document_map``, brief mode only), and precedents from the retrieved
+    trusted evidence (``retrieval``). No field is copied into another.
+    """
     answer = result.answer
     if not isinstance(answer, ProfessionalLegalBrief):
         raise QueryExecutionError("PROFESSIONAL_SCHEMA_MISMATCH", "The legal answer provider returned an invalid professional answer.", status.HTTP_502_BAD_GATEWAY)
+    parties = professional_brief.parties_and_roles(document_map)
+    for party in professional_brief.validated_llm_parties(getattr(answer, "parties_and_roles", None) or [], private_chunks or []):
+        if party not in parties:
+            parties.append(party)
+    limitations = [item.message for item in answer.uncertainties]
+    limitations += [item for item in professional_brief.document_limitations(document_map) if item not in limitations]
     return ProfessionalQueryResponse(
         identified_sections=section_references(answer.explicit_legal_provisions + answer.potential_additional_provisions),
-        precedents=[precedent_from_authority(item.model_dump(mode="json")) for item in answer.retrieved_authorities],
+        precedents=professional_brief.precedents_from_retrieval(retrieval, max_chars=excerpt_max_chars),
         case_brief=ProfessionalCaseBrief(
             summary=answer.issue_summary,
+            parties_and_roles=parties,
             material_facts=answer.material_facts_from_query,
-            chronology=answer.procedural_posture,
+            chronology=professional_brief.chronology(document_map),
             statutory_provisions=answer.explicit_legal_provisions,
-            evidence_identified=answer.material_facts_from_query,
+            evidence_identified=professional_brief.evidence_identified(document_map),
             applicable_law=answer.applicable_principles,
             key_issues=answer.legal_issues,
-            procedural_considerations=answer.procedural_posture,
+            procedural_considerations=professional_brief.procedural_considerations(document_map, answer.procedural_posture),
             precedent_analysis=answer.analysis + answer.counterpoints,
-            limitations=[item.message for item in answer.uncertainties],
+            limitations=limitations,
             recommended_research_questions=answer.recommended_research_questions,
         ),
     )
@@ -810,26 +855,3 @@ def section_references(values: list[str]) -> list[SectionReference]:
         if cleaned:
             sections.append(SectionReference(statute="Unspecified", section=cleaned, context="generated_from_grounded_answer"))
     return sections
-
-
-def precedent_from_authority(authority: dict[str, Any]) -> ProfessionalPrecedent:
-    court = authority.get("court")
-    return ProfessionalPrecedent(
-        document_id=authority.get("document_id") or authority.get("evidence_id") or "",
-        case_name=authority.get("case_name") or "Retrieved authority",
-        court=court.get("name") if isinstance(court, dict) else court,
-        year=year_from_date(authority.get("judgment_date")),
-        relevance_score=1.0,
-        source_url=authority.get("source_url"),
-        page_start=authority.get("page_start"),
-        page_end=authority.get("page_end"),
-        paragraph_start=authority.get("paragraph_start"),
-        paragraph_end=authority.get("paragraph_end"),
-    )
-
-
-def year_from_date(value: Any) -> int | None:
-    text = str(value or "")
-    if len(text) >= 4 and text[:4].isdigit():
-        return int(text[:4])
-    return None

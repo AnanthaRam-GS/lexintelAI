@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     trusted_evidence_input_budget_tokens: int = 10000
     private_pdf_top_k: int = 10
     private_pdf_max_chunks_per_batch: int = 8
+    # Professional brief: maximum characters of a precedent excerpt (trusted chunk text).
+    precedent_excerpt_max_chars: int = 400
 
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral"

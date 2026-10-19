@@ -1,0 +1,29 @@
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD. All names, places and numbers below are fictional and were invented for software testing.
+
+FINAL REPORT / CHARGE SHEET
+(Under Section 173(2) Cr.P.C.)
+In the Court of the Judicial Magistrate First Class, Fictionalpur
+
+Police Station: Riverbend. FIR No. 0123/2023 dated 10.01.2023.
+Offences: Sections 420, 406 and 120B IPC.
+Complainant: Asha Testwoman, proprietor of Testwoman Traders, Fictionalpur.
+Accused No. 1: Dev Fakename, s/o Mohan Fakename, Fictionalpur.
+Accused No. 2: Sunil Mockwala, Riverbend Market, Fictionalpur.
+
+Brief facts of the case:
+The complainant alleges that between June and December 2022 the accused persons induced her to deposit Rs. 4,50,000 in a fictitious investment scheme on the strength of a forged partnership agreement, and later refused to return the money.
+\f
+Details of investigation:
+The FIR was registered on 10.01.2023.
+Both accused were arrested on 20.01.2023.
+Accused No. 1 was released on bail by the Judicial Magistrate on 02.02.2023.
+During investigation, the statements of witnesses LW-1 Ramesh Sampleman and LW-2 Geeta Demo were recorded under Section 161 Cr.P.C.
+The bank account statements and the original forged agreement were seized under a seizure memo dated 25.01.2023.
+The questioned signatures were sent to the Forensic Science Laboratory, whose report dated 15.03.2023 states that the signatures on the agreement do not match the specimen signatures of the complainant.
+A rubber stamp used on the agreement was recovered from the office of Accused No. 2.
+The investigation having been completed, this charge sheet is filed on 30.04.2023 against both accused for offences under Sections 420, 406 and 120B IPC.
+
+List of witnesses: LW-1 Ramesh Sampleman; LW-2 Geeta Demo; LW-3 Inspector Kavya Notreal, Investigating Officer.
+List of documents: FIR; seizure memo; bank account statements; FSL report.
+
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD.

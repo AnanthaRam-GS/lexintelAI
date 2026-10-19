@@ -43,6 +43,34 @@ describe('CitationCard Component', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
+  it('shows "Relevance not available" instead of a percentage when there is no reranker score', () => {
+    render(<CitationCard precedent={{ ...mockPrecedent, relevance_score: null }} />);
+
+    expect(screen.getByText('Relevance not available')).toBeInTheDocument();
+    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
+  });
+
+  it('shows the excerpt with its trusted chunk ID and single-page pinpoint', () => {
+    render(
+      <CitationCard
+        precedent={{
+          ...mockPrecedent,
+          chunk_id: 'indian_kanoon:87917455:chunk:0000',
+          page_start: 2,
+          page_end: 2,
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId('excerpt-chunk-id')).toHaveTextContent(
+      'indian_kanoon:87917455:chunk:0000',
+    );
+    expect(
+      screen.getByText(/circumstances from which the conclusion of guilt/),
+    ).toBeInTheDocument();
+    expect(screen.getByText('p. 2')).toBeInTheDocument();
+  });
+
   it('handles excerpt toggle when excerpt is long', () => {
     const longExcerptPrecedent = {
       ...mockPrecedent,

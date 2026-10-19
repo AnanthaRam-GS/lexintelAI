@@ -36,10 +36,16 @@ export interface SectionReference {
 
 export interface ProfessionalPrecedent {
   document_id: number | string;
+  /** Trusted chunk the excerpt and provenance come from. */
+  chunk_id?: string | null;
   case_name: string;
   court?: string | null;
   year?: number | null;
-  relevance_score: number;
+  /** Reranker score normalized to 0-1 (sigmoid); null when no reranker score is available. */
+  relevance_score: number | null;
+  /** Raw reranker score. */
+  reranker_score?: number | null;
+  /** Bounded verbatim span of the trusted chunk text. */
   excerpt?: string | null;
   source_url?: string | null;
   page_start?: number | null;

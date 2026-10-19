@@ -106,6 +106,38 @@ The professional response is structured into:
 Citation metadata must come from retrieved backend metadata, not from
 LLM-generated citation details.
 
+**Precedents** (`precedents[]`) are built from the retrieved trusted evidence
+the answer was generated from, one per retrieved document, in rank order:
+
+| Field | Source |
+|---|---|
+| `document_id`, `chunk_id` | the retrieved trusted chunk |
+| `case_name`, `court`, `year`, `source_url` | retrieved chunk metadata |
+| `page_start`, `page_end`, `paragraph_start`, `paragraph_end` | retrieved chunk provenance |
+| `reranker_score` | the BGE reranker's raw score for that chunk, or `null` |
+| `relevance_score` | `1 / (1 + e^-reranker_score)` (logistic sigmoid, monotonic, 0-1), or `null` when there is no reranker score. Never a constant. |
+| `excerpt` | a verbatim span of the chunk text, at most `PRECEDENT_EXCERPT_MAX_CHARS` (default 400) characters, centred on the passage most relevant to the retrieval query; `...` marks a cut |
+
+The model's `retrieved_authorities` are not turned into precedents.
+
+**Case-brief field sources.** `parties_and_roles`, `chronology`,
+`procedural_considerations` and `evidence_identified` are lists of strings,
+and every document-derived item ends with its uploaded-document reference,
+for example `[P2, p. 3]`:
+
+| Field | Source |
+|---|---|
+| `summary`, `material_facts`, `statutory_provisions`, `key_issues`, `applicable_law`, `precedent_analysis`, `recommended_research_questions` | the model |
+| `parties_and_roles` | brief mode: local document-map party detection, `"<Role>: <name> [P#, p. N]"` |
+| `chronology` | brief mode: dated events only, sorted by date, `"<YYYY-MM-DD> - <event>: <sentence> [P#, p. N]"` |
+| `procedural_considerations` | brief mode: procedural stages stated in the document (FIR registration, arrest, investigation, bail, charge sheet filing, framing of charges, trial, appeal, revision, petition/quashing), `"<stage>: <sentence> [P#, p. N]"`; then the model's procedural posture |
+| `evidence_identified` | brief mode: evidence named in the document by category (Witnesses, Documents, Medical/forensic, Electronic, Recoveries/seizures), `"<categories>: <sentence> [P#, p. N]"` |
+| `limitations` | the model's uncertainties, then the document map's missing-information notes |
+
+Text queries and question-focused PDF queries have no document map, so
+`parties_and_roles`, `chronology` and `evidence_identified` are empty there:
+nothing is inferred from the query text. No field copies another.
+
 ## Public Query
 
 Public Mode requires no login. Public users may submit either text or a
