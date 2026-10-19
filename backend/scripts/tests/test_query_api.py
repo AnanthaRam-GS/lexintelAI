@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
+import math
+import re
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
@@ -37,6 +41,17 @@ from backend.app.services.legal_answer_generation import (
     PublicLegalAnswer,
     RetrievedAuthority,
 )
+from backend.app.services import professional_brief
+from backend.app.services.embeddings.base import EmbeddingConfig
+from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
+from backend.app.services.local_document_map import build_local_document_map
+from backend.app.services.reranking.mock import DeterministicMockReranker
+from backend.app.services.retrieval.bm25 import Bm25LexicalIndex
+from backend.app.services.retrieval.service import HybridConfig, RetrievalService
+from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, INDEX_VERSION, JsonVectorStore, metadata_for_chroma
+from backend.scripts import build_vector_index as vector_builder
+from backend.scripts.tests.brief_fixtures import FIXTURE_NAMES, fixture_pdf_bytes, fixture_private_chunks
+from backend.scripts.tests.brief_fixtures import expected as expected_brief
 from backend.main import app
 
 
@@ -51,7 +66,7 @@ class QueryApiTests(unittest.TestCase):
 
     def test_public_query_requires_no_auth_and_does_not_save_history(self) -> None:
         result = public_result()
-        with patch.object(query_api, "run_frozen_query_pipeline", return_value=result) as pipeline, patch.object(
+        with patch.object(query_api, "run_frozen_query_pipeline", return_value=outcome(result)) as pipeline, patch.object(
             query_api, "save_query_history"
         ) as save_history:
             response = self.client.post("/query/public", json={"text": "Can the police arrest me without notice?"})
@@ -693,7 +708,7 @@ class QueryApiTests(unittest.TestCase):
         app.dependency_overrides[get_db] = lambda: fake_db
         app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
         result = professional_result()
-        with patch.object(query_api, "run_frozen_query_pipeline", return_value=result) as pipeline, patch.object(
+        with patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_outcome()) as pipeline, patch.object(
             query_api, "save_query_history"
         ) as save_history:
             response = self.client.post(
@@ -706,6 +721,12 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(body["case_brief"]["summary"], "Bail research brief")
         self.assertEqual(body["precedents"][0]["case_name"], "Example v State")
         self.assertNotIn("retrieved full chunk body", str(body))
+        # Precedents come from retrieved evidence: reranker-based score, bounded excerpt, chunk provenance.
+        precedent = body["precedents"][0]
+        self.assertEqual(precedent["chunk_id"], "doc-1:chunk:0007")
+        self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + 2.718281828459045 ** -2.0), places=5)
+        self.assertLessEqual(len(precedent["excerpt"]), 400)
+        self.assertNotEqual(precedent["excerpt"], PROFESSIONAL_EVIDENCE_TEXT)
         pipeline.assert_called_once()
         self.assertEqual(pipeline.call_args.kwargs["mode"], AnswerMode.PROFESSIONAL)
         save_history.assert_called_once()
@@ -794,7 +815,7 @@ class QueryApiTests(unittest.TestCase):
         chunks = private_chunks("PRIVATE PDF BODY relevant bail material")
         with patch.object(query_api, "parse_document", return_value=parsed) as parser, patch.object(
             query_api, "chunk_document", return_value=chunks
-        ) as chunker, patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_result()) as pipeline, patch.object(
+        ) as chunker, patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_outcome()) as pipeline, patch.object(
             query_api, "save_query_history"
         ) as save_history:
             response = self.client.post(
@@ -822,7 +843,7 @@ class QueryApiTests(unittest.TestCase):
         app.dependency_overrides[get_current_user] = lambda: user(role="admin")
         with patch.object(query_api, "parse_document", return_value=parsed_document()), patch.object(
             query_api, "chunk_document", return_value=private_chunks("admin context")
-        ), patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_result()), patch.object(
+        ), patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_outcome()), patch.object(
             query_api, "save_query_history"
         ):
             response = self.client.post(
@@ -846,7 +867,7 @@ class QueryApiTests(unittest.TestCase):
 
         with patch.object(query_api, "parse_document", side_effect=capture_path) as parser, patch.object(
             query_api, "chunk_document", return_value=chunks
-        ) as chunker, patch.object(query_api, "run_frozen_query_pipeline", return_value=public_result()) as pipeline, patch.object(
+        ) as chunker, patch.object(query_api, "run_frozen_query_pipeline", return_value=outcome(public_result())) as pipeline, patch.object(
             query_api, "save_query_history"
         ) as save_history, patch(
             "backend.app.services.ingestion.create_ingestion_job"
@@ -1035,7 +1056,7 @@ class QueryApiTests(unittest.TestCase):
 
         with patch.object(query_api, "parse_document", side_effect=capture_path), patch.object(
             query_api, "chunk_document", return_value=private_chunks("context")
-        ), patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_result()), patch.object(
+        ), patch.object(query_api, "run_frozen_query_pipeline", return_value=professional_outcome()), patch.object(
             query_api, "save_query_history"
         ):
             response = self.client.post(
@@ -1191,6 +1212,38 @@ def public_result() -> LegalAnswerResult:
     )
 
 
+def outcome(result: LegalAnswerResult, retrieval_result=None) -> "query_api.QueryPipelineOutcome":
+    return query_api.QueryPipelineOutcome(result=result, retrieval=retrieval_result)
+
+
+PROFESSIONAL_EVIDENCE_TEXT = " ".join(
+    f"Paragraph {n}: the court considered the conditions for regular bail and the period of custody." for n in range(1, 30)
+)
+
+
+def professional_retrieval():
+    item = evidence("E1", text=PROFESSIONAL_EVIDENCE_TEXT).model_copy(
+        update={
+            "document_id": "doc-1",
+            "judgment_id": "doc-1",
+            "chunk_id": "doc-1:chunk:0007",
+            "case_name": "Example v State",
+            "court": {"court_name": "Example Court"},
+            "judgment_date": "2024-01-02",
+            "source_url": "https://example.test/judgment",
+            "paragraph_start": 3,
+            "paragraph_end": 5,
+            "reranker_score": 2.0,
+            "reranker_rank": 1,
+        }
+    )
+    return retrieval([item])
+
+
+def professional_outcome() -> "query_api.QueryPipelineOutcome":
+    return outcome(professional_result(), professional_retrieval())
+
+
 def professional_result() -> LegalAnswerResult:
     answer = ProfessionalLegalBrief(
         issue_summary="Bail research brief",
@@ -1226,6 +1279,286 @@ def professional_result() -> LegalAnswerResult:
         query_understanding_version="test-understanding",
         retrieval_version="test-retrieval",
     )
+
+
+
+# ---------------------------------------------------------------------------
+# Professional brief pipeline (BRIEF-001/002/003): fixtures through the real
+# parser, chunker and local document map; real retrieval code over temporary
+# stores with a deterministic mock reranker; mocked LLM. No live provider.
+# ---------------------------------------------------------------------------
+
+TRUSTED_DOCUMENTS = (
+    "indian_kanoon:87917455",
+    "indian_kanoon:136492342",
+    "indian_kanoon:6939849",
+    "indian_kanoon:1291057",
+    "indian_kanoon:163450772",
+)
+MOCK_FACTS = ["MOCK FACT: the dispute concerns the events described in the uploaded document."]
+MOCK_POSTURE = ["MOCK POSTURE: the matter is at the stage described in the uploaded document."]
+_REFERENCE = re.compile(r"\[(P\d+)(?:, pp?\. [\d-]+)?\]$")
+
+
+def _flat(text: str) -> str:
+    return " ".join(text.split()).lower()
+
+
+class RecordingRetrievalService(RetrievalService):
+    """The real RetrievalService, recording each retrieved chunk's reranker score."""
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.reranker_scores: dict[str, float] = {}
+
+    def retrieve(self, *args, **kwargs):
+        response = super().retrieve(*args, **kwargs)
+        for item in response.results:
+            self.reranker_scores[item.chunk_id] = item.rerank_score
+        return response
+
+
+class MockBriefAdapter:
+    """Mocked LLM: a valid ProfessionalLegalBrief with recognisable model-only content."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+        self.prompts: list[str] = []
+
+    def generate_structured_answer(self, prompt, *, schema, mode):
+        self.calls += 1
+        self.prompts.append(prompt)
+        answer = {
+            "issue_summary": "MOCK SUMMARY",
+            "material_facts_from_query": MOCK_FACTS,
+            "explicit_legal_provisions": ["MOCK PROVISION"],
+            "procedural_posture": MOCK_POSTURE,
+            "legal_regime": "ipc_crpc",
+            "legal_issues": ["MOCK ISSUE"],
+            "applicable_principles": ["MOCK PRINCIPLE"],
+            "analysis": ["MOCK ANALYSIS"],
+        }
+        return LegalAnswerModelResponse(
+            raw_response="{}",
+            parsed_response={"answer": answer, "summary": "MOCK SUMMARY", "claims": []},
+            model_metadata=ModelGenerationMetadata(provider="mock", configured_model_id="mock-model", response_mode=mode),
+        )
+
+
+class ProfessionalBriefPipelineTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.tmp.name)
+        cls.trusted = [chunk for chunk in vector_builder.load_chunks() if chunk["document_id"] in TRUSTED_DOCUMENTS]
+        embedder = DeterministicMockEmbeddingProvider(EmbeddingConfig(model_name="deterministic-mock", dimension=EXPECTED_EMBEDDING_DIMENSION))
+        store = JsonVectorStore(root / "chroma", "brief_test", {"index_version": INDEX_VERSION})
+        store.upsert_chunks(
+            ids=[chunk["chunk_id"] for chunk in cls.trusted],
+            vectors=embedder.embed_documents([chunk["chunk_text"] for chunk in cls.trusted]),
+            documents=[chunk["chunk_text"] for chunk in cls.trusted],
+            metadatas=[metadata_for_chroma(chunk, "brief-test") for chunk in cls.trusted],
+        )
+        lexical = Bm25LexicalIndex(root / "bm25", "brief_test")
+        lexical.build(cls.trusted, rebuild=True)
+        cls.service = RecordingRetrievalService(
+            dense_provider=embedder,
+            vector_store=store,
+            lexical_index=lexical,
+            hybrid_config=HybridConfig(rrf_k=60, candidate_k=20),
+            reranker=DeterministicMockReranker(),
+        )
+        cls.trusted_by_id = {chunk["chunk_id"]: chunk for chunk in cls.trusted}
+        cls.settings = Settings()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.tmp.cleanup()
+
+    def setUp(self) -> None:
+        self.client = TestClient(app)
+        self.adapter = MockBriefAdapter()
+        app.dependency_overrides[get_db] = lambda: Mock()
+        app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
+        app.dependency_overrides[query_api.get_retrieval_service] = lambda: self.service
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: self.adapter
+        app.dependency_overrides[query_api.get_settings] = lambda: self.settings
+
+    def tearDown(self) -> None:
+        app.dependency_overrides.clear()
+
+    def brief_for(self, name: str) -> dict:
+        calls_before = self.adapter.calls
+        with patch.object(query_api, "save_query_history"):
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief for this document.", "analysis_mode": "brief"},
+                files=pdf_upload(filename=expected_brief(name)["fixture"].replace(".txt", ".pdf"), body=fixture_pdf_bytes(name)),
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(self.adapter.calls - calls_before, 1)  # one mocked provider call per brief, no live LLM
+        return response.json()
+
+    def assert_references_resolve(self, items: list[str], chunk_texts: dict[str, str], *, name: str, field: str) -> None:
+        """Every item ends with a real P# reference, and its quoted text is in that chunk."""
+        for item in items:
+            match = _REFERENCE.search(item)
+            self.assertIsNotNone(match, f"{name} {field}: no P# reference in {item!r}")
+            evidence_id = match.group(1)
+            self.assertIn(evidence_id, chunk_texts, f"{name} {field}: unknown {evidence_id}")
+            body = item[: match.start()].strip()
+            quoted = body.split(": ", 1)[1] if ": " in body else body
+            quoted = quoted.removesuffix("...").strip()
+            if field == "chronology":
+                quoted = body.split(": ", 1)[1].removesuffix("...").strip() if ": " in body else ""
+            self.assertIn(_flat(quoted), chunk_texts[evidence_id], f"{name} {field}: {quoted!r} is not in {evidence_id}")
+
+    def test_each_fixture_brief_meets_its_expected_output(self) -> None:
+        results = {}
+        for name in FIXTURE_NAMES:
+            with self.subTest(fixture=name):
+                expectation = expected_brief(name)
+                body = self.brief_for(name)
+                brief = body["case_brief"]
+                _filename, private_chunks = fixture_private_chunks(name)
+                chunk_texts = {chunk.private_chunk_id: _flat(chunk.text) for chunk in private_chunks}
+
+                # Document type: as detected by the endpoint's local map and sent in the one provider prompt.
+                detected = re.search(r'<PRIVATE_DOCUMENT_MAP document_type="([^"]+)"', self.adapter.prompts[-1]).group(1)
+                self.assertEqual(detected, expectation["document_type"])
+
+                # Parties: every expected party with its role; nothing that is not in the document.
+                parties = brief["parties_and_roles"]
+                for party in expectation["parties"]:
+                    self.assertTrue(
+                        any(item.lower().startswith(f"{party['role']}:") and party["name"].lower() in item.lower() for item in parties),
+                        f"{name}: missing {party} in {parties}",
+                    )
+                self.assertEqual(len(parties), len(expectation["parties"]), f"{name}: unexpected parties {parties}")
+                self.assert_references_resolve(parties, chunk_texts, name=name, field="parties_and_roles")
+
+                # Chronology: dated, sorted, the expected dates present, every item referenced.
+                dates = [item.split(" - ", 1)[0] for item in brief["chronology"]]
+                self.assertEqual(dates, sorted(dates), f"{name}: chronology not sorted")
+                self.assertTrue(set(expectation["dated_events"]) <= set(dates), f"{name}: {expectation['dated_events']} not in {dates}")
+                self.assert_references_resolve(brief["chronology"], chunk_texts, name=name, field="chronology")
+
+                # Procedural stages: from stage detection, distinct from chronology.
+                stages = {label.strip().lower() for item in brief["procedural_considerations"] if _REFERENCE.search(item) for label in item.split(": ", 1)[0].split(";")}
+                self.assertTrue({stage.lower() for stage in expectation["procedural_stages"]} <= stages, f"{name}: {expectation['procedural_stages']} not in {stages}")
+                if not expectation["procedural_stages"]:
+                    self.assertEqual(stages, set())
+                self.assertFalse(set(brief["procedural_considerations"]) & set(brief["chronology"]))
+                self.assertIn(MOCK_POSTURE[0], brief["procedural_considerations"])
+                self.assert_references_resolve([item for item in brief["procedural_considerations"] if item not in MOCK_POSTURE], chunk_texts, name=name, field="procedural_considerations")
+
+                # Evidence: from evidence detection, never a copy of the facts.
+                categories = {label.strip() for item in brief["evidence_identified"] for label in item.split(": ", 1)[0].split(",")}
+                labels = {"witnesses": "Witnesses", "documents": "Documents", "medical_forensic": "Medical/forensic", "electronic": "Electronic", "recoveries": "Recoveries/seizures"}
+                self.assertTrue({labels[c] for c in expectation["evidence_categories"]} <= categories, f"{name}: {expectation['evidence_categories']} not in {categories}")
+                self.assertFalse({labels[c] for c in expectation["absent_evidence_categories"]} & categories, f"{name}: unexpected evidence {categories}")
+                self.assertEqual(brief["material_facts"], MOCK_FACTS)
+                self.assertFalse(set(brief["evidence_identified"]) & set(brief["material_facts"]))
+                self.assert_references_resolve(brief["evidence_identified"], chunk_texts, name=name, field="evidence_identified")
+
+                # No field is a copy of another.
+                list_fields = [key for key, value in brief.items() if isinstance(value, list)]
+                for index, left in enumerate(list_fields):
+                    for right in list_fields[index + 1:]:
+                        if brief[left] or brief[right]:
+                            self.assertNotEqual(brief[left], brief[right], f"{name}: {left} == {right}")
+                            self.assertFalse(set(brief[left]) & set(brief[right]), f"{name}: {left} and {right} share items")
+
+                self.assert_precedents(body["precedents"], name=name)
+                results[name] = {
+                    "document_type": detected,
+                    "parties": len(parties),
+                    "chronology": len(brief["chronology"]),
+                    "procedural": len(brief["procedural_considerations"]) - 1,
+                    "evidence": sorted(categories),
+                    "precedents": [p["relevance_score"] for p in body["precedents"]],
+                }
+        print("\nBRIEF FIXTURE RESULTS", json.dumps(results, sort_keys=True))
+
+    def assert_precedents(self, precedents: list[dict], *, name: str) -> None:
+        self.assertTrue(precedents, f"{name}: no precedents")
+        scores = [p["relevance_score"] for p in precedents]
+        self.assertGreater(len(set(scores)), 1, f"{name}: relevance scores do not vary: {scores}")
+        self.assertNotIn(1.0, scores)
+        for precedent in precedents:
+            chunk = self.trusted_by_id.get(precedent["chunk_id"])
+            self.assertIsNotNone(chunk, f"{name}: precedent chunk {precedent['chunk_id']} is not a trusted chunk")
+            raw = self.service.reranker_scores[precedent["chunk_id"]]
+            self.assertEqual(precedent["reranker_score"], raw)
+            self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + math.exp(-raw)), places=6)
+            self.assertEqual(precedent["document_id"], chunk["document_id"])
+            self.assertEqual(precedent["case_name"], chunk["case_title"])
+            self.assertEqual(precedent["source_url"], chunk["source_url"])
+            self.assertEqual((precedent["paragraph_start"], precedent["paragraph_end"]), (chunk["paragraph_start"], chunk["paragraph_end"]))
+            self.assertEqual((precedent["page_start"], precedent["page_end"]), (chunk.get("page_start"), chunk.get("page_end")))
+            excerpt = precedent["excerpt"]
+            self.assertTrue(excerpt, f"{name}: empty excerpt")
+            self.assertLessEqual(len(excerpt), self.settings.precedent_excerpt_max_chars)
+            core = excerpt.removeprefix("...").removesuffix("...").strip()
+            self.assertIn(core, " ".join(chunk["chunk_text"].split()), f"{name}: excerpt is not verbatim chunk text")
+
+    def test_text_only_query_returns_no_document_fields(self) -> None:
+        with patch.object(query_api, "save_query_history"):
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody for an accused under Section 61 BNS"})
+        self.assertEqual(response.status_code, 200, response.text)
+        brief = response.json()["case_brief"]
+        self.assertEqual(brief["parties_and_roles"], [])  # never invented from the query
+        self.assertEqual(brief["chronology"], [])
+        self.assertEqual(brief["evidence_identified"], [])
+        self.assertEqual(brief["procedural_considerations"], MOCK_POSTURE)
+        self.assertEqual(brief["material_facts"], MOCK_FACTS)
+        self.assert_precedents(response.json()["precedents"], name="text query")
+
+    def test_relevance_is_null_when_no_reranker_score_is_available(self) -> None:
+        unranked = professional_retrieval()
+        unranked.evidence[0] = unranked.evidence[0].model_copy(update={"reranker_score": None, "reranker_rank": None})
+        response = query_api.professional_response_from_result(professional_result(), retrieval=unranked)
+        self.assertIsNone(response.precedents[0].relevance_score)
+        self.assertIsNone(response.precedents[0].reranker_score)
+        self.assertTrue(response.precedents[0].excerpt)
+
+
+class ProfessionalMapperTests(unittest.TestCase):
+    """professional_response_from_result, field by field."""
+
+    def test_each_field_comes_from_its_own_source(self) -> None:
+        name = "chargesheet"
+        filename, private_chunks = fixture_private_chunks(name)
+        document_map = build_local_document_map(private_chunks, filename=filename, dense_provider=None, token_budget_tokens=6000)
+        result = professional_result()
+        result.answer.material_facts_from_query.extend(MOCK_FACTS)
+        result.answer.procedural_posture.extend(MOCK_POSTURE)
+        response = query_api.professional_response_from_result(
+            result, retrieval=professional_retrieval(), document_map=document_map, private_chunks=private_chunks, excerpt_max_chars=300
+        )
+        brief = response.case_brief
+        self.assertEqual(brief.summary, "Bail research brief")
+        self.assertEqual(brief.material_facts, MOCK_FACTS)  # model
+        self.assertEqual(brief.parties_and_roles, professional_brief.parties_and_roles(document_map))  # document map
+        self.assertEqual(brief.chronology, professional_brief.chronology(document_map))  # document map, dated
+        self.assertEqual(brief.evidence_identified, professional_brief.evidence_identified(document_map))  # document map
+        self.assertEqual(brief.procedural_considerations, professional_brief.procedural_considerations(document_map, MOCK_POSTURE))
+        self.assertEqual(brief.statutory_provisions, ["BNSS section 480"])
+        self.assertEqual(brief.key_issues, ["Bail"])
+        self.assertEqual(brief.applicable_law, ["Grounded principle"])
+        self.assertEqual(brief.precedent_analysis, ["Grounded analysis"])
+        for item in document_map.missing_or_unclear_information:
+            self.assertIn(item, brief.limitations)
+        self.assertNotEqual(brief.chronology, brief.procedural_considerations)
+        self.assertNotEqual(brief.evidence_identified, brief.material_facts)
+        self.assertTrue(brief.parties_and_roles and brief.chronology and brief.evidence_identified)
+        precedent = response.precedents[0]
+        self.assertEqual((precedent.case_name, precedent.chunk_id), ("Example v State", "doc-1:chunk:0007"))
+        self.assertLessEqual(len(precedent.excerpt), 300)
+
+    def test_precedents_ignore_model_authorities(self) -> None:
+        response = query_api.professional_response_from_result(professional_result(), retrieval=None)
+        self.assertEqual(response.precedents, [])  # the model's retrieved_authorities are never turned into precedents
 
 
 db_test_bootstrap.isolate_test_cases(globals())

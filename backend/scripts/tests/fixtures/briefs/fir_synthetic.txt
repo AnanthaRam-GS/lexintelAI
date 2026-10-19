@@ -1,0 +1,25 @@
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD. All names, places and numbers below are fictional and were invented for software testing.
+
+FIRST INFORMATION REPORT
+(Under Section 173 of the Bharatiya Nagarik Suraksha Sanhita, 2023)
+
+District: Fictionalpur. Police Station: Sample Nagar.
+FIR No. 0042/2024. Date of registration: 04-03-2024.
+Acts and Sections: Section 309(4) BNS and Section 115(2) BNS.
+
+Complainant: Meera Placeholder, aged 34, resident of 12 Lakepoint Colony, Fictionalpur.
+Accused: Ravi Sampleton, resident of Old Mill Road, Fictionalpur.
+Date and time of occurrence: 03-03-2024 at about 9:15 PM.
+Place of occurrence: near the bus stand, Lakepoint Colony.
+
+Statement of the complainant:
+While I was walking home from the bus stand, the accused Ravi Sampleton snatched my handbag containing Rs. 5,000 and my mobile phone, and pushed me to the ground. I suffered injuries on my left arm.
+My neighbour Kiran Exampleton saw the incident and is an eye-witness.
+The shop next to the bus stand has a CCTV camera facing the road.
+\f
+Action taken:
+The FIR was registered on 04-03-2024 at 10:30 AM on the basis of the above statement.
+The complainant was sent for medical examination to the District Hospital, Fictionalpur, on 04-03-2024.
+The investigation was entrusted to Sub-Inspector Arjun Notreal of Police Station Sample Nagar, who visited the place of occurrence and requested the CCTV footage from the shop owner.
+
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD.

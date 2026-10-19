@@ -1,0 +1,34 @@
+{
+  "fixture": "judgment.txt",
+  "synthetic": false,
+  "document_type": "judgment",
+  "parties": [
+    {
+      "name": "Neelam @ Neeraj",
+      "role": "applicant"
+    },
+    {
+      "name": "The State Of Madhya Pradesh",
+      "role": "respondent"
+    }
+  ],
+  "dated_events": [
+    "2013-10-30",
+    "2015-08-14",
+    "2018-10-11",
+    "2019-02-08"
+  ],
+  "procedural_stages": [
+    "trial",
+    "appeal",
+    "revision",
+    "bail"
+  ],
+  "evidence_categories": [],
+  "absent_evidence_categories": [
+    "electronic",
+    "medical_forensic",
+    "recoveries"
+  ],
+  "notes": "Criminal revision (s.397/401 CrPC) against a conviction under s.379 IPC: trial by the JMFC (judgment 30.10.2013), appeal dismissed by the Additional Sessions Judge (14.8.2015), custody since 11.10.2018, revision decided 08-02-2019 with an application for suspension of sentence and bail. The text names no witness, document exhibit, forensic, electronic or recovery evidence."
+}

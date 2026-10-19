@@ -1,0 +1,19 @@
+{
+  "fixture": "unknown_synthetic.txt",
+  "synthetic": true,
+  "document_type": "unknown",
+  "parties": [],
+  "dated_events": [
+    "2024-07-07"
+  ],
+  "procedural_stages": [],
+  "evidence_categories": [],
+  "absent_evidence_categories": [
+    "witnesses",
+    "documents",
+    "electronic",
+    "medical_forensic",
+    "recoveries"
+  ],
+  "notes": "Housing-society meeting notes: not a legal filing, no parties with legal roles, one dated event (the meeting), no procedural stage or evidence."
+}

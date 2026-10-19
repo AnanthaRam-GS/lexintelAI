@@ -25,7 +25,7 @@ export function ProfessionalResultsView({
   const optionalSections = [
     ['Parties & Roles', case_brief.parties_and_roles],
     ['Material Facts', case_brief.material_facts],
-    ['Chronology / Procedural History', case_brief.chronology],
+    ['Chronology', case_brief.chronology],
     ['Explicit Statutory Provisions', case_brief.statutory_provisions],
     ['Evidence Identified', case_brief.evidence_identified],
   ].filter(([, items]) => Array.isArray(items) && items.length > 0) as [string, string[]][];
@@ -52,7 +52,7 @@ ${case_brief.precedent_analysis.map((prec) => `• ${prec}`).join('\n')}
 ${case_brief.limitations.map((lim) => `• ${lim}`).join('\n')}
 
 RELEVANT CITATIONS:
-${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court'}) - Relevance: ${Math.round(p.relevance_score * 100)}%\nExcerpt: ${p.excerpt || 'None'}`).join('\n\n')}
+${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court'}) - Relevance: ${p.relevance_score == null ? 'not available' : `${Math.round(p.relevance_score * 100)}%`}\nExcerpt: ${p.excerpt || 'None'}${p.chunk_id ? ` [${p.chunk_id}]` : ''}`).join('\n\n')}
 `;
 
     try {

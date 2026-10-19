@@ -18,13 +18,21 @@ class ProfessionalTextQueryRequest(BaseModel):
 
 
 class ProfessionalPrecedent(BaseModel):
-    """Retrieved precedent metadata with backend-provided provenance."""
+    """Retrieved precedent, built from retrieved trusted evidence (never from model text).
+
+    ``relevance_score`` is the reranker score normalized to 0-1 with a logistic
+    sigmoid (``services/professional_brief.py``), or None when the evidence has
+    no reranker score. ``reranker_score`` is the raw score. ``excerpt`` is a
+    bounded span of the trusted chunk ``chunk_id``.
+    """
 
     document_id: int | str
+    chunk_id: str | None = None
     case_name: str
     court: str | None = None
     year: int | None = None
-    relevance_score: float
+    relevance_score: float | None = None
+    reranker_score: float | None = None
     excerpt: str | None = None
     source_url: str | None = None
     page_start: int | None = None

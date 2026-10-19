@@ -31,7 +31,37 @@ When supported by the uploaded document and trusted authority, the professional 
 - Procedural Considerations
 - Limitations / Missing Information
 
-Empty sections are preferable to invented facts. Short documents may produce short briefs; substantial documents should produce a fuller case-file digest within the configured context budget.
+Empty sections are preferable to invented facts.
+
+## Field Sources (BRIEF-001, BRIEF-002)
+
+The model's output schema (`ProfessionalLegalBrief`) is frozen and has no
+parties, chronology or evidence fields, so the response layer
+(`backend/app/services/professional_brief.py`) fills them from the local
+document map, which is extractive and cannot invent content:
+
+- **Parties & Roles:** labelled parties ("Complainant: ...", "Accused No. 1:
+  ...", "Respondent No. 2: ...") and the "X vs Y" title, whose first party
+  takes the document's own label (appellant, petitioner or applicant).
+- **Chronology:** every date mention in its sentence, with the event named in
+  the clause around the date (FIR registered, arrest, bail, judgment
+  delivered ...). Dates are parsed day-first and sorted; unparseable dates are
+  left out.
+- **Procedural Considerations:** sentences that state a procedural stage, by
+  cue. This is a different source from the chronology, followed by the
+  model's procedural posture.
+- **Evidence Identified:** sentences that name evidence, with their categories:
+  witnesses, documents, medical/forensic, electronic, recoveries/seizures.
+  The material facts are never copied here.
+
+Model-proposed parties would be accepted only with a P# reference whose text
+contains the name (`validated_llm_parties`). The frozen schema cannot carry
+them today. Precedents are built from the retrieved E# evidence, not from
+model text; see `docs/API_CONTRACTS.md`.
+
+Fixtures for every document type, with expected outputs, are in
+`backend/scripts/tests/fixtures/briefs/`. The pipeline tests run them through
+the real parser, chunker and document map, with a mocked model. Short documents may produce short briefs; substantial documents should produce a fuller case-file digest within the configured context budget.
 
 ## Budget And Privacy
 

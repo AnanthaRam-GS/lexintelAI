@@ -26,6 +26,7 @@ Additive and outside the 5 frozen files - it only imports read-only from
 
 from __future__ import annotations
 
+from datetime import date
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -86,6 +87,11 @@ _MAX_EXCERPT_CHARS = 500
 _MAX_PARTIES = 10
 _MAX_DATES = 10
 _MAX_SECTIONS = 15
+_MAX_PROCEDURAL_ITEMS = 12
+_MAX_EVIDENCE_ITEMS = 12
+_MAX_SENTENCE_CHARS = 220
+_EVENT_WINDOW_BEFORE = 80
+_EVENT_WINDOW_AFTER = 40
 
 
 @dataclass(frozen=True)
@@ -117,6 +123,28 @@ class ChronologyEntry:
 
 
 @dataclass(frozen=True)
+class ProceduralStage:
+    """A sentence that states a procedural step (FIR, arrest, bail, charge sheet, trial, appeal ...)."""
+
+    stages: tuple[str, ...]
+    text: str
+    private_evidence_id: str
+    page_start: int | None = None
+    page_end: int | None = None
+
+
+@dataclass(frozen=True)
+class EvidenceItem:
+    """A sentence that names evidence, with its categories (witnesses, documents ...)."""
+
+    categories: tuple[str, ...]
+    text: str
+    private_evidence_id: str
+    page_start: int | None = None
+    page_end: int | None = None
+
+
+@dataclass(frozen=True)
 class LocalDocumentMap:
     """Compact, request-local, bounded structured summary of an uploaded
     private document, built entirely without any provider call. Statutory
@@ -130,6 +158,8 @@ class LocalDocumentMap:
     parties_and_roles: list[PartyRole] = field(default_factory=list)
     important_dates: list[str] = field(default_factory=list)
     chronology: list[ChronologyEntry] = field(default_factory=list)
+    procedural_stages: list[ProceduralStage] = field(default_factory=list)
+    evidence_items: list[EvidenceItem] = field(default_factory=list)
     explicit_statutes: list[str] = field(default_factory=list)
     explicit_sections: list[str] = field(default_factory=list)
     document_overview: list[MapExcerpt] = field(default_factory=list)
@@ -176,14 +206,27 @@ def detect_document_type_with_confidence(filename: str, chunks: list[PrivateChun
         "chargesheet": 0,
         "petition": 0,
     }
-    if re.search(r"(supreme court of india|high court of|in the court of|coram|j\s*\.)", early_text):
+    if re.search(r"supreme court of india", early_text):
         scores["judgment"] += 4
+    # A High Court or trial-court header also heads petitions and police reports
+    # filed before that court, so it is weaker evidence of a judgment on its own.
+    if re.search(r"(high court of|in the court of)", early_text):
+        scores["judgment"] += 2
+    if re.search(r"\b(coram|judge)\b|\bj\s*\.(?=\s|\]|$)", early_text):
+        scores["judgment"] += 2
     if re.search(r"\b(judg(e)?ment|criminal appeal|civil appeal|appellant\s+v(?:s\.?|\.))\b", early_text):
         scores["judgment"] += 3
     if re.search(r"\b(order|ordered accordingly|disposed of)\b", early_text):
         scores["order"] += 3
-    if "first information report" in early_text or re.search(r"\bf\.?i\.?r\.?\s*(no|number)\b", early_text):
+    # Charge sheets and petitions cite the FIR they arise from ("FIR No. ..."), so a
+    # bare FIR number is weaker FIR evidence when such a header is present.
+    report_or_petition_header = re.search(
+        r"\b(charge\s*sheet|chargesheet|final report|police report|petition under|petition for)\b", early_text + " " + filename_l
+    )
+    if "first information report" in early_text:
         scores["FIR"] += 4
+    elif re.search(r"\bf\.?i\.?r\.?\s*(no|number)\b", early_text):
+        scores["FIR"] += 2 if report_or_petition_header else 4
     if re.search(r"\b(police station|informant|complainant|date of occurrence)\b", early_text):
         scores["FIR"] += 2
     if re.search(r"\bfir\s+no\b", all_text) and scores["judgment"] == 0:
@@ -194,6 +237,10 @@ def detect_document_type_with_confidence(filename: str, chunks: list[PrivateChun
         scores["chargesheet"] += 2
     if re.search(r"\b(writ petition|petition under|petitioner|respondent|prayer|relief sought)\b", early_text + " " + filename_l):
         scores["petition"] += 3
+    if re.search(r"\b(most respectfully|showeth|humbly prayed|it is (?:therefore )?(?:most respectfully )?prayed)\b", all_text):
+        scores["petition"] += 2
+    if re.search(r"\bpetition (?:under|for quashing)\b", early_text):
+        scores["petition"] += 2
     doc_type, score = max(scores.items(), key=lambda item: item[1])
     if score < 3:
         return "unknown", 0.0
@@ -235,20 +282,32 @@ _DATE_PATTERN = re.compile(
     r"Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},\s+\d{4})\b",
     re.IGNORECASE,
 )
-_PARTY_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("appellant", re.compile(r"\bappellant(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
-    ("respondent", re.compile(r"\brespondent(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
-    ("petitioner", re.compile(r"\bpetitioner(?:s)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
-    ("accused", re.compile(r"\baccused(?:\s+no\.?\s*\d+)?\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
-    ("complainant", re.compile(r"\bcomplainant\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
-    ("informant", re.compile(r"\binformant\s*[:\-]\s*([A-Z][A-Za-z0-9 .,&'-]{2,80})", re.IGNORECASE)),
+_NAME = r"([A-Z][A-Za-z0-9 .,&@'-]{2,80})"
+_PARTY_NUMBER = r"(?:\s+no\.?\s*\d+)?"
+_PARTY_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
+    (role, re.compile(rf"\b{role}(?:s)?{_PARTY_NUMBER}[ \t]*[:\-][ \t]*{_NAME}", re.IGNORECASE))
+    for role in ("appellant", "respondent", "petitioner", "applicant", "accused", "complainant", "informant")
 )
-_VERSUS_PATTERN = re.compile(r"([A-Z][A-Za-z0-9 .,&'-]{2,80})\s+v(?:s\.?|\.?)\s+([A-Z][A-Za-z0-9 .,&'-]{2,80})")
-_GENERIC_PARTY_NAMES = {"accused", "complainant", "informant", "petitioner", "respondent", "appellant", "state"}
+_VERSUS_PATTERN = re.compile(r"([A-Z][A-Za-z0-9 .,&@'-]{2,80})[ \t]+[vV](?:[sS]\.?|\.)?[ \t]+([A-Z][A-Za-z0-9 .,&@'-]{2,80})")
+_GENERIC_PARTY_NAMES = {"accused", "complainant", "informant", "petitioner", "respondent", "appellant", "applicant", "state"}
+# Text after a name that describes the person rather than naming them.
+_NAME_END = re.compile(
+    r"\s{2,}|\n|,|\(|\.\s|\s+(?:aged|age|resident|r/o|s/o|d/o|w/o|son of|daughter of|wife of|through)\b"
+    r"|,?\s+(?:appellant|respondent|petitioner|applicant|accused)\b",
+    re.IGNORECASE,
+)
+_LEFT_PARTY_ROLES = ("appellant", "petitioner", "applicant")
+
+
+def _versus_left_role(text: str) -> str:
+    """Role of the first party in "X vs Y": the document's own most frequent label, if any."""
+    counts = {role: len(re.findall(rf"\b{role}s?\b", text, re.IGNORECASE)) for role in _LEFT_PARTY_ROLES}
+    role, count = max(counts.items(), key=lambda item: item[1])
+    return role if count else "petitioner/appellant"
 
 
 def _clean_party_name(value: str) -> str | None:
-    name = re.split(r"\s{2,}|\n|,?\s+(?:appellant|respondent|petitioner|accused)\b", value.strip(), flags=re.IGNORECASE)[0]
+    name = _NAME_END.split(value.strip(), maxsplit=1)[0]
     name = re.sub(r"\s+", " ", name).strip(" .:-")
     if not name or name.lower() in _GENERIC_PARTY_NAMES or len(name) < 3:
         return None
@@ -259,6 +318,7 @@ def _event_for_context(context: str) -> str | None:
     lower = context.lower()
     cues = (
         ("arrest", ("arrest", "arrested")),
+        ("bail", ("bail",)),
         ("FIR registered", ("fir", "registered")),
         ("incident occurred", ("incident", "occurred")),
         ("incident occurred", ("occurrence",)),
@@ -270,7 +330,7 @@ def _event_for_context(context: str) -> str | None:
         ("recovery/seizure", ("recovered", "seized", "recovery", "seizure")),
     )
     for label, terms in cues:
-        if any(term in lower for term in terms):
+        if any(re.search(rf"\b{re.escape(term)}\b", lower) for term in terms):
             return label
     return None
 
@@ -330,10 +390,11 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
 def extract_parties_and_roles(chunks: list[PrivateChunk]) -> list[PartyRole]:
     parties: list[PartyRole] = []
     seen: set[tuple[str, str | None]] = set()
+    left_role = _versus_left_role(" ".join(chunk.text for chunk in chunks))
     for chunk in chunks:
         head = chunk.text[:1200]
         for left, right in _VERSUS_PATTERN.findall(head):
-            pairs = (("petitioner/appellant", _clean_party_name(left)), ("respondent", _clean_party_name(right)))
+            pairs = ((left_role, _clean_party_name(left)), ("respondent", _clean_party_name(right)))
             for role, name in pairs:
                 key = (role, (name or "").lower())
                 if name and key not in seen and len(parties) < _MAX_PARTIES:
@@ -350,33 +411,143 @@ def extract_parties_and_roles(chunks: list[PrivateChunk]) -> list[PartyRole]:
 
 
 def extract_chronology(chunks: list[PrivateChunk]) -> list[ChronologyEntry]:
+    """One entry per date mention, with the sentence it appears in and the event that sentence names."""
     entries: list[ChronologyEntry] = []
     seen: set[tuple[str, str]] = set()
     for chunk in chunks:
-        for match in _DATE_PATTERN.finditer(chunk.text):
-            start = max(0, match.start() - 120)
-            end = min(len(chunk.text), match.end() + 160)
-            context = re.sub(r"\s+", " ", chunk.text[start:end]).strip()
-            sentence_start = max(chunk.text.rfind(".", 0, match.start()) + 1, chunk.text.rfind("\n", 0, match.start()) + 1, 0)
-            next_period = chunk.text.find(".", match.end())
-            sentence_end = next_period + 1 if next_period != -1 else end
-            sentence_context = re.sub(r"\s+", " ", chunk.text[sentence_start:sentence_end]).strip()
-            event = _event_for_context(sentence_context or context)
-            key = (match.group(0).lower(), (event or context[:60]).lower())
-            if key in seen or len(entries) >= _MAX_DATES:
-                continue
-            seen.add(key)
-            entries.append(
-                ChronologyEntry(
-                    date=match.group(0),
-                    event=event,
-                    context=context[:240],
-                    private_evidence_id=chunk.private_chunk_id,
-                    page_start=chunk.page_start,
-                    page_end=chunk.page_end,
+        for sentence in _sentences(chunk):
+            for match in _DATE_PATTERN.finditer(sentence):
+                # The clause around the date names its event ("judgment dated 30.10.2013 passed by");
+                # a long sentence can carry several dates with different events.
+                window = sentence[max(0, match.start() - _EVENT_WINDOW_BEFORE): match.end() + _EVENT_WINDOW_AFTER]
+                event = _event_for_context(window) or _event_for_context(sentence)
+                key = (match.group(0).lower(), (event or sentence[:60]).lower())
+                if key in seen or len(entries) >= _MAX_DATES:
+                    continue
+                seen.add(key)
+                entries.append(
+                    ChronologyEntry(
+                        date=match.group(0),
+                        event=event,
+                        context=_bounded_sentence(sentence),
+                        private_evidence_id=chunk.private_chunk_id,
+                        page_start=chunk.page_start,
+                        page_end=chunk.page_end,
+                    )
                 )
-            )
     return entries
+
+
+_MONTHS = {name: index for index, name in enumerate(
+    ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), start=1
+)}
+
+
+def parse_date_iso(value: str) -> str | None:
+    """ISO date for a date string matched by _DATE_PATTERN (Indian day-first order), or None."""
+    text = value.strip().lower().replace(",", " ")
+    numeric = re.fullmatch(r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})", text)
+    try:
+        if numeric:
+            day, month, year = (int(part) for part in numeric.groups())
+            year += 2000 if year < 100 else 0
+            return date(year, month, day).isoformat()
+        parts = text.split()
+        if len(parts) == 3 and parts[0].isdigit():  # 12 March 2024
+            return date(int(parts[2]), _MONTHS[parts[1][:3]], int(parts[0])).isoformat()
+        if len(parts) == 3 and parts[1].isdigit():  # March 12 2024
+            return date(int(parts[2]), _MONTHS[parts[0][:3]], int(parts[1])).isoformat()
+    except (KeyError, ValueError):
+        return None
+    return None
+
+
+_SENTENCE_SPLIT = re.compile(r"(?<=[.?!])[ \t]+(?=[A-Z0-9(])|\n+")
+_LINE_WRAP = re.compile(r"(?<![.:;?!)\n])\n(?!\n)")
+_ABBREVIATION = re.compile(r"\b(No|Nos|Mr|Mrs|Ms|Dr|Sr|Smt|Shri|Rs|vs|Cr|Ltd|Co|S|P|C|I|J)\.[ \t]+", re.IGNORECASE)
+_KEEP_SPACE = "\x00"
+
+
+def _bounded_sentence(sentence: str) -> str:
+    return sentence if len(sentence) <= _MAX_SENTENCE_CHARS else sentence[:_MAX_SENTENCE_CHARS].rsplit(" ", 1)[0] + "..."
+
+
+def _sentences(chunk: PrivateChunk) -> list[str]:
+    """Full sentences of a chunk, with PDF line wraps joined and abbreviations kept inside a sentence."""
+    text = _ABBREVIATION.sub(lambda match: f"{match.group(1)}.{_KEEP_SPACE}", _LINE_WRAP.sub(" ", chunk.text))
+    sentences = []
+    for raw in _SENTENCE_SPLIT.split(text):
+        sentence = re.sub(r"\s+", " ", raw.replace(_KEEP_SPACE, " ")).strip()
+        if len(sentence) >= 12:
+            sentences.append(sentence)
+    return sentences
+
+
+# Procedural steps, by cue. One sentence may state several (labels in this order).
+PROCEDURAL_STAGE_RULES: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
+    (label, re.compile(pattern, re.IGNORECASE))
+    for label, pattern in (
+        ("FIR registration", r"\b(?:FIR|first information report)\b[^.]{0,120}?\b(?:was|is|has been)\s+(?:registered|lodged|recorded)\b"
+                             r"|\b(?:registered|lodged)\b[^.]{0,40}?\b(?:an?|the)?\s*(?:FIR|first information report)\b"),
+        ("arrest", r"\barrest(?:ed)?\b"),
+        ("investigation", r"\binvestigat(?:ion|ing officer|ed)\b"),
+        ("bail", r"\bbail\b"),
+        ("charge sheet filing", r"\b(?:charge[- ]?sheet|final report)\b[^.]{0,80}?\b(?:is|was|has been)?\s*(?:filed|submitted|laid)\b"
+                                r"|\b(?:filed|submitted)\b[^.]{0,40}?\b(?:charge[- ]?sheet|final report)\b"),
+        ("framing of charges", r"\bcharges?\s+(?:were|was|is|are|have been|has been)\s+framed\b|\bframing of charges?\b"),
+        ("trial", r"\b(?:trial|sessions case)\b|\bconvicted\b"),
+        ("appeal", r"\bappeal\b"),
+        ("revision", r"\brevision\b"),
+        ("petition/quashing", r"\b(?:petition|quash(?:ing)?)\b"),
+    )
+)
+
+# Evidence categories, by cue. One sentence may name several kinds of evidence.
+EVIDENCE_CATEGORY_RULES: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
+    (label, re.compile(pattern, re.IGNORECASE))
+    for label, pattern in (
+        ("witnesses", r"\b(?:eye[- ]?witness(?:es)?|witness(?:es)?|PW[- ]?\d+|LW[- ]?\d+)\b"),
+        ("documents", r"\b(?:documents|documentary|agreement|bank (?:account )?statements?|certificate|panchnama|mahazar|seizure memo|annexure|receipt)\b"),
+        ("medical_forensic", r"\b(?:post[- ]?mortem|medical (?:examination|report|certificate|evidence)|MLC|forensic|FSL|DNA|injury report)\b"),
+        ("electronic", r"\b(?:CCTV|call detail records?|CDR|electronic (?:record|evidence)|video|WhatsApp|e-?mail|SMS|section 65B)\b"),
+        ("recoveries", r"\b(?:recover(?:y|ed|ies)|seiz(?:ed|ure)|weapon)\b"),
+    )
+)
+EVIDENCE_CATEGORY_LABELS = {
+    "witnesses": "Witnesses",
+    "documents": "Documents",
+    "medical_forensic": "Medical/forensic",
+    "electronic": "Electronic",
+    "recoveries": "Recoveries/seizures",
+}
+
+
+def extract_procedural_stages(chunks: list[PrivateChunk]) -> list[ProceduralStage]:
+    """Sentences stating a procedural step, in document order (cue-based, no model)."""
+    items: list[ProceduralStage] = []
+    seen: set[str] = set()
+    for chunk in chunks:
+        for sentence in _sentences(chunk):
+            stages = tuple(label for label, pattern in PROCEDURAL_STAGE_RULES if pattern.search(sentence))
+            key = sentence.lower()
+            if stages and key not in seen and len(items) < _MAX_PROCEDURAL_ITEMS:
+                seen.add(key)
+                items.append(ProceduralStage(stages, _bounded_sentence(sentence), chunk.private_chunk_id, chunk.page_start, chunk.page_end))
+    return items
+
+
+def extract_evidence_items(chunks: list[PrivateChunk]) -> list[EvidenceItem]:
+    """Sentences naming evidence, with their categories, in document order (cue-based, no model)."""
+    items: list[EvidenceItem] = []
+    seen: set[str] = set()
+    for chunk in chunks:
+        for sentence in _sentences(chunk):
+            categories = tuple(label for label, pattern in EVIDENCE_CATEGORY_RULES if pattern.search(sentence))
+            key = sentence.lower()
+            if categories and key not in seen and len(items) < _MAX_EVIDENCE_ITEMS:
+                seen.add(key)
+                items.append(EvidenceItem(categories, _bounded_sentence(sentence), chunk.private_chunk_id, chunk.page_start, chunk.page_end))
+    return items
 
 
 # ---------------------------------------------------------------------------
@@ -479,6 +650,8 @@ def build_local_document_map(
     sections, parties, dates = extract_sections_and_entities(chunks)
     parties_and_roles = extract_parties_and_roles(chunks)
     chronology = extract_chronology(chunks)
+    procedural_stages = extract_procedural_stages(chunks)
+    evidence_items = extract_evidence_items(chunks)
     explicit_statutes = []
     for section in sections:
         for statute in _STATUTE_ABBREVIATIONS:
@@ -498,6 +671,8 @@ def build_local_document_map(
         parties_and_roles=parties_and_roles,
         important_dates=dates,
         chronology=chronology,
+        procedural_stages=procedural_stages,
+        evidence_items=evidence_items,
         explicit_statutes=explicit_statutes[:10],
         explicit_sections=sections,
         document_overview=by_field["document_overview"],
@@ -529,21 +704,36 @@ def build_local_document_map(
         court_findings=by_field["court_findings"],
         court_reasoning=by_field["court_findings"],
         relief_or_final_order=by_field["relief_or_final_order"],
-        missing_or_unclear_information=_missing_information(document_type, by_field),
+        missing_or_unclear_information=_missing_information(
+            document_type, by_field, parties=parties_and_roles, chronology=chronology, evidence=evidence_items
+        ),
         important_chunk_ids=sorted(set(all_selected_ids), key=lambda cid: int(cid[1:])) if all_selected_ids else [],
         important_pages=all_selected_pages,
     )
 
 
-def _missing_information(document_type: str, by_field: dict[str, list[MapExcerpt]]) -> list[str]:
+def _missing_information(
+    document_type: str,
+    by_field: dict[str, list[MapExcerpt]],
+    *,
+    parties: list[PartyRole] | None = None,
+    chronology: list[ChronologyEntry] | None = None,
+    evidence: list[EvidenceItem] | None = None,
+) -> list[str]:
     missing: list[str] = []
+    if parties is not None and not parties:
+        missing.append("No party with a stated role (complainant, accused, petitioner, respondent ...) was identified in the uploaded document.")
+    if chronology is not None and not any(parse_date_iso(entry.date) for entry in chronology):
+        missing.append("No dated event was identified in the uploaded document.")
+    if evidence is not None and not evidence:
+        missing.append("No witness, documentary, medical/forensic, electronic or recovery evidence was identified in the uploaded document.")
     if not by_field.get("medical_forensic_evidence"):
         missing.append("No medical or forensic evidence excerpt was identified in the uploaded material.")
     if not by_field.get("accused_or_defence_position"):
         missing.append("No accused or defence position excerpt was identified in the uploaded material.")
     if document_type in {"judgment", "order"} and not by_field.get("relief_or_final_order"):
         missing.append("No final relief or operative order excerpt was identified in the selected document map.")
-    return missing[:6]
+    return missing[:8]
 
 
 _EXCERPT_FIELDS = (
@@ -598,6 +788,15 @@ def render_local_document_map(document_map: LocalDocumentMap) -> str:
             evidence = f" [{item.private_evidence_id}]" if item.private_evidence_id else ""
             context = f": {item.context}" if item.context else ""
             lines.append(f"- {item.date}{event}{evidence}{context}")
+    if document_map.procedural_stages:
+        lines.append("procedural_stages:")
+        for stage in document_map.procedural_stages:
+            lines.append(f"- [{stage.private_evidence_id}] {', '.join(stage.stages)}: {stage.text}")
+    if document_map.evidence_items:
+        lines.append("evidence_identified:")
+        for item in document_map.evidence_items:
+            categories = ", ".join(EVIDENCE_CATEGORY_LABELS[name] for name in item.categories)
+            lines.append(f"- [{item.private_evidence_id}] {categories}: {item.text}")
     if document_map.explicit_sections:
         lines.append("statutory_sections_explicitly_mentioned: " + "; ".join(document_map.explicit_sections))
     if document_map.explicit_statutes:
@@ -645,6 +844,8 @@ def local_map_metrics(document_map: LocalDocumentMap) -> dict[str, Any]:
         "parties_and_roles_count": len(document_map.parties_and_roles),
         "dates_count": len(document_map.important_dates),
         "chronology_count": len(document_map.chronology),
+        "procedural_stage_count": len(document_map.procedural_stages),
+        "evidence_item_count": len(document_map.evidence_items),
         "sections_count": len(document_map.explicit_sections),
         "evidence_categories_count": sum(
             1

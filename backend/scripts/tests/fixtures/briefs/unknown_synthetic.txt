@@ -1,0 +1,12 @@
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD. All names, places and numbers below are fictional and were invented for software testing.
+
+Notes from a residents' association meeting, Maple Grove Housing Society, Samplepur
+Date of meeting: 07-07-2024
+
+Present: the secretary and eleven members.
+1. The secretary reported that the water tank on Block C needs cleaning.
+2. Members discussed a complaint about parking near Gate 2 and agreed to repaint the parking lines.
+3. A member mentioned that a legal notice might be sent to the maintenance contractor if the lift is not repaired, but no decision was taken.
+4. The next meeting will be held after the monsoon.
+
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD.

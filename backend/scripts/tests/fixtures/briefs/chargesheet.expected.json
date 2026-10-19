@@ -1,0 +1,44 @@
+{
+  "fixture": "chargesheet_synthetic.txt",
+  "synthetic": true,
+  "document_type": "chargesheet",
+  "parties": [
+    {
+      "name": "Asha Testwoman",
+      "role": "complainant"
+    },
+    {
+      "name": "Dev Fakename",
+      "role": "accused"
+    },
+    {
+      "name": "Sunil Mockwala",
+      "role": "accused"
+    }
+  ],
+  "dated_events": [
+    "2023-01-10",
+    "2023-01-20",
+    "2023-01-25",
+    "2023-02-02",
+    "2023-03-15",
+    "2023-04-30"
+  ],
+  "procedural_stages": [
+    "FIR registration",
+    "arrest",
+    "bail",
+    "investigation",
+    "charge sheet filing"
+  ],
+  "evidence_categories": [
+    "witnesses",
+    "documents",
+    "medical_forensic",
+    "recoveries"
+  ],
+  "absent_evidence_categories": [
+    "electronic"
+  ],
+  "notes": "FIR 10.01.2023, arrest 20.01.2023, seizure 25.01.2023, bail 02.02.2023, FSL report 15.03.2023, charge sheet filed 30.04.2023. Witness statements, seized documents, FSL (forensic) report, recovered rubber stamp."
+}

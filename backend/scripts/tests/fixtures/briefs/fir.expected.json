@@ -1,0 +1,32 @@
+{
+  "fixture": "fir_synthetic.txt",
+  "synthetic": true,
+  "document_type": "FIR",
+  "parties": [
+    {
+      "name": "Meera Placeholder",
+      "role": "complainant"
+    },
+    {
+      "name": "Ravi Sampleton",
+      "role": "accused"
+    }
+  ],
+  "dated_events": [
+    "2024-03-03",
+    "2024-03-04"
+  ],
+  "procedural_stages": [
+    "FIR registration",
+    "investigation"
+  ],
+  "evidence_categories": [
+    "witnesses",
+    "electronic",
+    "medical_forensic"
+  ],
+  "absent_evidence_categories": [
+    "recoveries"
+  ],
+  "notes": "Occurrence 03-03-2024; FIR registered and medical examination 04-03-2024; investigation entrusted to a sub-inspector. Eye-witness, CCTV camera/footage, medical examination."
+}

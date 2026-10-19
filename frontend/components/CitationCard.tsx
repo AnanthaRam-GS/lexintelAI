@@ -11,7 +11,8 @@ export interface CitationCardProps {
 export function CitationCard({ precedent, className = '' }: CitationCardProps) {
   const [isExcerptExpanded, setIsExcerptExpanded] = useState(false);
 
-  const relevancePct = Math.round(precedent.relevance_score * 100);
+  const relevancePct =
+    precedent.relevance_score == null ? null : Math.round(precedent.relevance_score * 100);
 
   const hasPinpoints =
     precedent.page_start != null ||
@@ -49,19 +50,31 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
           </div>
         </div>
 
-        {/* Relevance Score Indicator */}
-        <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[var(--color-border)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs">
-          <div className="h-1.5 w-10 overflow-hidden rounded-full bg-black/10">
-            <div
-              className="h-full bg-[var(--color-brass)] transition-all duration-300"
-              style={{ width: `${relevancePct}%` }}
-            />
+        {/* Relevance: the reranker's score for this precedent, or "not available" */}
+        {relevancePct == null ? (
+          <div
+            className="flex shrink-0 items-center self-start rounded-full border border-[var(--color-border)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs text-[var(--color-muted)]"
+            title="The reranker did not score this precedent."
+          >
+            Relevance not available
           </div>
-          <span className="font-semibold text-[var(--color-ink)]">{relevancePct}%</span>
-          <span className="text-[0.6875rem] text-[var(--color-muted)] uppercase tracking-wider">
-            Match
-          </span>
-        </div>
+        ) : (
+          <div
+            className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[var(--color-border)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs"
+            title="Reranker relevance score (0-100)"
+          >
+            <div className="h-1.5 w-10 overflow-hidden rounded-full bg-black/10">
+              <div
+                className="h-full bg-[var(--color-brass)] transition-all duration-300"
+                style={{ width: `${relevancePct}%` }}
+              />
+            </div>
+            <span className="font-semibold text-[var(--color-ink)]">{relevancePct}%</span>
+            <span className="text-[0.6875rem] text-[var(--color-muted)] uppercase tracking-wider">
+              Relevance
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Excerpt Section */}
@@ -74,6 +87,14 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
           >
             &ldquo;{precedent.excerpt}&rdquo;
           </p>
+          {precedent.chunk_id && (
+            <p className="mt-1 text-[0.6875rem] text-[var(--color-muted)]">
+              Excerpt from{' '}
+              <span className="font-mono" data-testid="excerpt-chunk-id">
+                {precedent.chunk_id}
+              </span>
+            </p>
+          )}
           {precedent.excerpt.length > 180 && (
             <button
               type="button"
@@ -93,10 +114,9 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
             <span className="font-medium text-[var(--color-body)]">Pinpoint:</span>
             {precedent.page_start != null && (
               <span className="rounded bg-[var(--color-surface-subtle)] px-1.5 py-0.5">
-                pp. {precedent.page_start}
                 {precedent.page_end != null && precedent.page_end !== precedent.page_start
-                  ? `–${precedent.page_end}`
-                  : ''}
+                  ? `pp. ${precedent.page_start}–${precedent.page_end}`
+                  : `p. ${precedent.page_start}`}
               </span>
             )}
             {precedent.paragraph_start != null && (
