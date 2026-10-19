@@ -65,6 +65,20 @@ function removePersistedJob(jobId: string) {
   writePersistedIngestionJobs(readPersistedIngestionJobs().filter(({ id }) => id !== jobId));
 }
 
+interface ServerFailure {
+  code: string | null;
+  message: string | null;
+}
+
+/** Failure copy from the server's sanitized message and error code, if it sent one. */
+function serverFailureContent(failure: ServerFailure | undefined) {
+  if (!failure?.message) return undefined;
+  return {
+    title: errorCopy.admin.file.processing.title,
+    message: failure.code ? `${failure.message} (Error code: ${failure.code})` : failure.message,
+  };
+}
+
 function liveStatusToJob(
   live: Awaited<ReturnType<typeof adminIngestionApi.getStatus>>,
   filename: string,
@@ -101,6 +115,8 @@ export function IngestionWorkspace() {
   const [submitFailure, setSubmitFailure] = useState<AdminRequestFailure | null>(null);
   const [jobs, setJobs] = useState<IngestionJob[]>([]);
   const [fileFailures, setFileFailures] = useState<Record<string, AdminFileFailure>>({});
+  // The server's sanitized message and error code for a failed job.
+  const [serverFailures, setServerFailures] = useState<Record<string, ServerFailure>>({});
   const [pollingFailures, setPollingFailures] = useState<Record<string, AdminRequestFailure>>({});
   const [uploadKey, setUploadKey] = useState(0);
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
@@ -125,7 +141,12 @@ export function IngestionWorkspace() {
       ? 'service'
       : null;
   const failureContentByJobId = Object.fromEntries(
-    Object.entries(fileFailures).map(([jobId, reason]) => [jobId, errorCopy.admin.file[reason]]),
+    Object.entries(fileFailures).map(([jobId, reason]) => [
+      jobId,
+      // A known failure keeps its specific guidance; otherwise show what the server reported.
+      (reason === 'processing' ? serverFailureContent(serverFailures[jobId]) : undefined) ??
+        errorCopy.admin.file[reason],
+    ]),
   );
 
   const stopPolling = useCallback((jobId: string) => {
@@ -210,6 +231,13 @@ export function IngestionWorkspace() {
             setFileFailures((current) => ({
               ...current,
               [jobId]: toAdminFileFailure(live.error),
+            }));
+            setServerFailures((current) => ({
+              ...current,
+              [jobId]: {
+                code: liveResponse.error_code ?? null,
+                message: liveResponse.error ?? null,
+              },
             }));
           }
           if (isTerminal(live.stage)) {

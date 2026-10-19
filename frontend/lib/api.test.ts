@@ -132,7 +132,58 @@ describe('frontend API adapters', () => {
       breakdown: { judgment: 3, statute: 2, other: 1 },
       chromaDb: { status: 'degraded' },
       postgresql: { status: 'healthy' },
+      keywordIndex: { status: 'down' },
+      chromaRecordCount: null,
+      reconciliationJobCount: 0,
+      reconciliationJobs: [],
     });
+  });
+
+  it('maps store counts, reasons and reconciliation jobs from corpus stats', async () => {
+    mockFetch([
+      {
+        total_documents: 70,
+        last_updated: null,
+        by_type: [{ doc_type: 'judgment', count: 70 }],
+        postgres_status: 'healthy',
+        chroma_status: 'degraded',
+        chroma_detail: '1358 vectors but 1356 PostgreSQL chunks.',
+        chroma_record_count: 1358,
+        bm25_status: 'healthy',
+        bm25_detail: null,
+        bm25_record_count: 1356,
+        postgres_chunk_count: 1356,
+        reconciliation_job_count: 1,
+        reconciliation_jobs: [
+          {
+            job_id: 'job-7',
+            error_code: 'LEXICAL_INDEX_FAILED',
+            error_message: 'The keyword index could not be updated.',
+            completed_at: '2026-10-19T08:30:00Z',
+          },
+        ],
+      },
+    ]);
+
+    const stats = await adminIngestionApi.getCorpusStats();
+
+    expect(stats).toMatchObject({
+      chromaDb: { status: 'degraded', detail: '1358 vectors but 1356 PostgreSQL chunks.' },
+      keywordIndex: { status: 'healthy' },
+      chromaRecordCount: 1358,
+      keywordRecordCount: 1356,
+      postgresChunkCount: 1356,
+      reconciliationJobCount: 1,
+      reconciliationJobs: [
+        {
+          jobId: 'job-7',
+          errorCode: 'LEXICAL_INDEX_FAILED',
+          message: 'The keyword index could not be updated.',
+          completedAt: '2026-10-19T08:30:00Z',
+        },
+      ],
+    });
+    expect(stats.keywordIndex).not.toHaveProperty('detail');
   });
 });
 

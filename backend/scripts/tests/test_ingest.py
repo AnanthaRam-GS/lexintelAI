@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import hashlib
 import io
+import json
 import os
 from pathlib import Path
 import sqlite3
@@ -14,6 +15,7 @@ import unittest
 from unittest.mock import patch
 
 from fastapi import HTTPException
+import numpy as np
 from fastapi.testclient import TestClient
 
 # Ensure repository root is on sys.path
@@ -23,7 +25,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.core.security import COOKIE_NAME
-from backend.app.db.models import Chunk, Document, IngestionJob
+from backend.app.db.models import Chunk, Document, DocumentSection, IngestionJob
 from backend.app.db.session import SessionLocal
 from backend.app.models.ingest import IngestionStatus
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
@@ -41,7 +43,7 @@ from backend.app.services.embeddings.base import EmbeddingConfig
 from backend.app.services.retrieval.bm25 import DEFAULT_INDEX_NAME, Bm25LexicalIndex
 from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, INDEX_VERSION, ChromaVectorStore, JsonVectorStore
 from backend.main import app
-from backend.scripts import build_lexical_index, verify_store_consistency
+from backend.scripts import build_lexical_index, enrich_index_metadata, verify_store_consistency
 from backend.scripts.seed_users import seed_development_users
 
 
@@ -543,6 +545,7 @@ class TestIngestionReliability(unittest.TestCase):
         self.assertFalse(job.needs_reconciliation)
         self.assertIsNone(job.document_id)
         self.assertEqual(self.db.query(Document).count(), 1)  # only the baseline
+        self.assertEqual(self.db.query(DocumentSection).count(), 0)  # the baseline cites no section
         self.assertEqual(self.store_counts(), (2, 2, 2))
         self.assertEqual(self.verifier_exit(), 0)
 
@@ -571,10 +574,136 @@ class TestIngestionReliability(unittest.TestCase):
             self.assertEqual(metadata["decision_year"], 2024)
             self.assertEqual(metadata["decision_date"], "")  # not supplied by the upload: never inferred
             self.assertEqual((metadata["page_start"], metadata["paragraph_start"], metadata["paragraph_end"]), (1, 1, 2))
-            self.assertNotIn("effective_offence_family", metadata)  # deferred to N2, not fabricated
+            self.assertNotIn("effective_offence_family", metadata)  # not derivable: never fabricated
+            self.assertEqual(metadata["effective_legal_regime"], "unknown")  # no statute cited
+            self.assertEqual((metadata["doc_type"], metadata["cited_section_count"], metadata["chunk_section_count"]), ("judgment", 0, 0))
+            self.assertNotIn("cited_sections", metadata)  # empty list: absent key, count 0
+            self.assertEqual(metadata["index_metadata_version"], "index_metadata_v1")
         self.assertIn("index_fingerprint", chroma_metadata)
         second = store.get_chunk(f"{key}:chunk:0001")["metadata"]
         self.assertEqual((second["page_start"], second["has_page_provenance"]), (-1, False))
+
+    def test_ingestion_writes_sections_outcomes_and_index_metadata_together(self) -> None:
+        text = (
+            "The appellant was charged under Section 302 IPC read with Section 34 IPC and Section 313 Cr.P.C. "
+            "In the result, the appeal is dismissed. The conviction of the appellant is upheld."
+        )
+        job = self.ingest(text, "analysed")
+        self.assertEqual(job.status, IngestionStatus.COMPLETED.value, job.error_message)
+        document = self.db.get(Document, job.document_id)
+        self.assertEqual(
+            {(row.statute, row.section) for row in document.document_sections},
+            {("IPC", "302"), ("IPC", "34"), ("CrPC", "313")},
+        )
+        self.assertEqual((document.appeal_result, document.conviction_status, document.case_disposition), ("dismissed", "convicted", "appeal dismissed"))
+        self.assertEqual(document.outcome_method, "operative_rules_v2")
+        self.assertIn("appeal_result", document.outcome_evidence)
+
+        key = document.source_document_key
+        store = ingestion.trusted_vector_store(ingestion.Settings())
+        index = Bm25LexicalIndex(self.bm25_dir, DEFAULT_INDEX_NAME)
+        for chunk_id in (f"{key}:chunk:0000", f"{key}:chunk:0001"):
+            for metadata in (store.get_chunk(chunk_id)["metadata"], index.get_chunk(chunk_id)["metadata"]):
+                self.assertEqual(metadata["doc_type"], "judgment")
+                self.assertEqual(metadata["cited_sections"], ["CrPC 313", "IPC 34", "IPC 302"])
+                self.assertEqual(metadata["offence_sections"], ["IPC 302"])
+                self.assertEqual(metadata["chunk_sections"], ["CrPC 313", "IPC 34", "IPC 302"])
+                self.assertEqual((metadata["cited_section_count"], metadata["offence_section_count"], metadata["chunk_section_count"]), (3, 1, 3))
+                self.assertEqual(metadata["effective_legal_regime"], "ipc_crpc")
+                self.assertNotIn("effective_offence_family", metadata)
+        self.assertEqual(self.verifier_exit(), 0)
+
+    def test_injected_failures_in_the_analytics_writes_leave_no_trace(self) -> None:
+        text = "The appellant was charged under Section 302 IPC. The appeal is dismissed."
+        real_produce = ingestion.produce_document
+
+        def produce_then_fail(session, document, chunks, stats, regimes=None):
+            real_produce(session, document, chunks, stats, regimes)  # sections and outcomes really written, then failure
+            session.flush()
+            raise RuntimeError(SECRET_ERROR)
+
+        def raise_secret(*_args, **_kwargs):
+            raise RuntimeError(SECRET_ERROR)
+
+        for index, (target, replacement) in enumerate((("add_index_metadata", raise_secret), ("produce_document", produce_then_fail))):
+            with self.subTest(failure=target), patch.object(ingestion, target, replacement):
+                job = self.ingest(f"{text} {index}", f"analytics-failure-{index}")
+                self.assert_failed_cleanly(job, "ANALYTICS_FAILED")
+
+    def enrich(self, *extra: str) -> int:
+        return enrich_index_metadata.main([
+            "--database-url-env", "TEST_DATABASE_URL",
+            "--chroma-dir", str(self.chroma_dir),
+            "--bm25-file", str(self.bm25_dir / f"{DEFAULT_INDEX_NAME}.json"),
+            "--collection", TEST_COLLECTION,
+            *extra,
+        ])
+
+    def strip_index_metadata(self) -> None:
+        """Remove the index_metadata_v1 fields and the derived regime, as in an index built before step 9."""
+        from backend.app.services.index_metadata import FIELDS
+
+        removed = {key: None for key in (*FIELDS, "effective_legal_regime")}
+        store = ingestion.trusted_vector_store(ingestion.Settings())
+        ids = store._collection.get(include=[])["ids"]
+        store._collection.update(ids=ids, metadatas=[dict(removed) for _ in ids])
+        index = Bm25LexicalIndex(self.bm25_dir, DEFAULT_INDEX_NAME)
+        for record in index.records.values():
+            for key in removed:
+                record["metadata"].pop(key, None)
+        index.persist()
+
+    def index_snapshot(self) -> dict:
+        store = ingestion.trusted_vector_store(ingestion.Settings())
+        got = store._collection.get(include=["embeddings", "documents", "metadatas"])
+        vectors = {i: hashlib.sha256(np.asarray(e, dtype=np.float32).tobytes()).hexdigest() for i, e in zip(got["ids"], got["embeddings"])}
+        payload = json.loads((self.bm25_dir / f"{DEFAULT_INDEX_NAME}.json").read_text())
+        return {
+            "vectors": vectors,
+            "documents": dict(zip(got["ids"], got["documents"])),
+            "metadatas": dict(zip(got["ids"], got["metadatas"])),
+            "bm25_statistics": enrich_index_metadata.bm25_statistics_digest(payload),
+        }
+
+    def test_enrichment_adds_only_metadata_and_is_idempotent(self) -> None:
+        job = self.ingest("Charged under Section 302 IPC and Section 103 BNS. The appeal is dismissed.", "to-enrich")
+        self.assertEqual(job.status, IngestionStatus.COMPLETED.value, job.error_message)
+        enriched = self.index_snapshot()
+        self.strip_index_metadata()
+        self.assertEqual(self.verifier_exit(), 1)  # fields missing
+        stripped = self.index_snapshot()
+
+        self.assertEqual(self.enrich("--dry-run"), 0)
+        self.assertEqual(self.index_snapshot(), stripped)  # dry run writes nothing
+        self.assertEqual(self.enrich(), 0)
+        after = self.index_snapshot()
+        self.assertEqual(after, enriched)  # same metadata as ingestion wrote, nothing else changed
+        self.assertEqual((after["vectors"], after["documents"], after["bm25_statistics"]), (stripped["vectors"], stripped["documents"], stripped["bm25_statistics"]))
+        key = self.db.get(Document, job.document_id).source_document_key
+        self.assertEqual(after["metadatas"][f"{key}:chunk:0000"]["effective_legal_regime"], "mixed_or_transition")
+        self.assertEqual(self.verifier_exit(), 0)
+        self.assertEqual(self.enrich(), 0)
+        self.assertEqual(self.index_snapshot(), after)  # second run: 0 changes
+
+    def test_enrichment_never_changes_an_existing_legal_regime(self) -> None:
+        store = ingestion.trusted_vector_store(ingestion.Settings())
+        ids = store._collection.get(include=[])["ids"]
+        store._collection.update(ids=ids, metadatas=[{"effective_legal_regime": "ipc_crpc"} for _ in ids])  # e.g. a reviewed value
+        self.assertEqual(self.enrich(), 0)
+        self.assertEqual({m["effective_legal_regime"] for m in store._collection.get(include=["metadatas"])["metadatas"]}, {"ipc_crpc"})
+
+    def test_verifier_detects_corrupted_index_metadata(self) -> None:
+        job = self.ingest("Charged under Section 302 IPC. The appeal is dismissed.", "to-corrupt")
+        key = self.db.get(Document, job.document_id).source_document_key
+        store = ingestion.trusted_vector_store(ingestion.Settings())
+        store._collection.update(ids=[f"{key}:chunk:0000"], metadatas=[{"offence_sections": ["IPC 307"]}])
+        self.assertEqual(self.verifier_exit(), 1)
+        store._collection.update(ids=[f"{key}:chunk:0000"], metadatas=[{"offence_sections": ["IPC 302"]}])
+        self.assertEqual(self.verifier_exit(), 0)
+        index = Bm25LexicalIndex(self.bm25_dir, DEFAULT_INDEX_NAME)
+        index.records[f"{key}:chunk:0001"]["metadata"]["doc_type"] = "statute"
+        index.persist()
+        self.assertEqual(self.verifier_exit(), 1)
 
     def test_injected_failures_leave_no_trace_and_sanitized_errors(self) -> None:
         real_store = ingestion.trusted_vector_store(ingestion.Settings())
@@ -635,6 +764,12 @@ class TestIngestionReliability(unittest.TestCase):
         self.assertNotIn(SECRET_ERROR, job.error_message)
         self.assertEqual(self.db.query(Document).count(), 1)
         self.assertEqual(self.verifier_exit(), 1)  # the leftover vectors are what reconciliation must fix
+        stats = get_corpus_stats(self.db)
+        self.assertEqual(stats.reconciliation_job_count, 1)
+        self.assertEqual(
+            (stats.reconciliation_jobs[0].job_id, stats.reconciliation_jobs[0].error_code, stats.reconciliation_jobs[0].error_message),
+            (job.id, "LEXICAL_INDEX_FAILED", job.error_message),
+        )
 
     # -- DATA-003 -----------------------------------------------------------
 

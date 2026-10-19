@@ -155,8 +155,15 @@ class FakeQuery:
     def filter(self, *_args, **_kwargs):
         return self
 
+    def filter_by(self, **_kwargs):
+        return self
+
     def first(self):
         return self.job
+
+    def __iter__(self):
+        # The analytics producer lists existing document_sections rows: there are none.
+        return iter([])
 
 
 class FakeSession:
@@ -174,6 +181,9 @@ class FakeSession:
 
     def commit(self):
         self.commits += 1
+
+    def flush(self):
+        pass
 
     def refresh(self, item):
         if getattr(item, "id", None) is None:

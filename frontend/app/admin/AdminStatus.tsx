@@ -14,7 +14,12 @@ import {
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
 import { adminIngestionApi } from '../../lib/api';
-import type { CorpusStats, ServiceHealth, ServiceStatus } from '../../lib/types/api';
+import type {
+  CorpusStats,
+  ReconciliationJobSummary,
+  ServiceHealth,
+  ServiceStatus,
+} from '../../lib/types/api';
 import { classifyRequestFailure, errorCopy, type AdminRequestFailure } from '../public/error-copy';
 
 const ADMIN_STATUS_TIMEOUT_MS = 10_000;
@@ -52,14 +57,26 @@ function formatStatusTimestamp(timestamp: string) {
     : `${statusTimestampFormatter.format(date)} UTC`;
 }
 
+const countFormatter = new Intl.NumberFormat('en-GB');
+
+function formatCount(count: number | null, noun: string) {
+  return count === null ? `${noun}: unavailable` : `${countFormatter.format(count)} ${noun}`;
+}
+
 function ServiceHealthRegion({
+  facts,
   name,
+  reason,
   service,
 }: {
-  name: 'ChromaDB' | 'PostgreSQL';
+  facts: string[];
+  name: 'ChromaDB' | 'Keyword index' | 'PostgreSQL';
+  /** Admin-facing reason composed by the backend; shown only when the service is not healthy. */
+  reason?: string;
   service: ServiceStatus;
 }) {
   const { Icon, className, label } = healthView[service.status];
+  const shownReason = service.status !== 'healthy' ? reason : undefined;
 
   return (
     <section
@@ -80,8 +97,73 @@ function ServiceHealthRegion({
           <p className="text-type-body-sm mt-1 text-[var(--color-muted)]">
             {errorCopy.admin.serviceHealth[service.status]}
           </p>
+          {shownReason ? (
+            <p className="text-type-body-sm mt-1 text-[var(--color-body)]">Reason: {shownReason}</p>
+          ) : null}
+          <ul className="text-type-body-sm mt-2 space-y-0.5 text-[var(--color-body)]">
+            {facts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
         </div>
       </div>
+    </section>
+  );
+}
+
+function ReconciliationRegion({
+  count,
+  jobs,
+}: {
+  count: number;
+  jobs: ReconciliationJobSummary[];
+}) {
+  return (
+    <section
+      aria-labelledby="reconciliation-heading"
+      className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-component)] sm:p-6 lg:col-span-12"
+    >
+      <h2
+        className="font-display text-type-heading-sm font-semibold text-[var(--color-ink)]"
+        id="reconciliation-heading"
+      >
+        Ingestions needing reconciliation
+      </h2>
+      {count === 0 ? (
+        <p className="text-type-body-sm mt-2 text-[var(--color-muted)]">
+          No failed ingestion has left data behind in the indexes.
+        </p>
+      ) : (
+        <>
+          <p className="text-type-body-sm mt-2 text-[var(--color-body)]">
+            {count === 1
+              ? '1 failed ingestion could not be fully cleaned up.'
+              : `${count} failed ingestions could not be fully cleaned up.`}{' '}
+            Run the store consistency check and remove the leftover index entries.
+            {jobs.length < count ? ` Showing the ${jobs.length} most recent.` : ''}
+          </p>
+          <ul className="mt-3 space-y-2" aria-label="Jobs needing reconciliation">
+            {jobs.map((job) => (
+              <li
+                className="text-type-body-sm rounded-[var(--radius-compact)] border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] p-3 text-[var(--color-body)]"
+                key={job.jobId}
+              >
+                <p className="break-all font-semibold text-[var(--color-ink)]">Job {job.jobId}</p>
+                <p className="mt-1">
+                  {job.message ?? 'No message recorded.'}
+                  {job.errorCode ? ` (Error code: ${job.errorCode})` : ''}
+                </p>
+                {job.completedAt ? (
+                  <p className="mt-1 text-[var(--color-muted)]">
+                    Failed:{' '}
+                    <time dateTime={job.completedAt}>{formatStatusTimestamp(job.completedAt)}</time>
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </section>
   );
 }
@@ -142,9 +224,29 @@ function StatusRegions({ stats }: { stats: CorpusStats }) {
       </section>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
-        <ServiceHealthRegion name="ChromaDB" service={stats.chromaDb} />
-        <ServiceHealthRegion name="PostgreSQL" service={stats.postgresql} />
+        <ServiceHealthRegion
+          facts={[
+            formatCount(stats.chromaRecordCount, 'vectors'),
+            `${formatCount(stats.postgresChunkCount, 'chunks')} in PostgreSQL`,
+          ]}
+          name="ChromaDB"
+          reason={stats.chromaDb.detail}
+          service={stats.chromaDb}
+        />
+        <ServiceHealthRegion
+          facts={[formatCount(stats.keywordRecordCount, 'records')]}
+          name="Keyword index"
+          reason={stats.keywordIndex.detail}
+          service={stats.keywordIndex}
+        />
+        <ServiceHealthRegion
+          facts={[formatCount(stats.postgresChunkCount, 'chunks')]}
+          name="PostgreSQL"
+          service={stats.postgresql}
+        />
       </div>
+
+      <ReconciliationRegion count={stats.reconciliationJobCount} jobs={stats.reconciliationJobs} />
 
       <section
         aria-labelledby="ingest-heading"
@@ -185,6 +287,7 @@ function StatusLoadingRegions() {
       {[
         { label: 'Loading Corpus status', className: 'lg:col-span-7' },
         { label: 'Loading ChromaDB status', className: 'lg:col-span-5' },
+        { label: 'Loading Keyword index status', className: 'lg:col-span-5 lg:col-start-8' },
         { label: 'Loading PostgreSQL status', className: 'lg:col-span-5 lg:col-start-8' },
       ].map(({ className, label }) => (
         <section

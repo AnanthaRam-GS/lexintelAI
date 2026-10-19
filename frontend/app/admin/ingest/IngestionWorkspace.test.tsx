@@ -26,6 +26,7 @@ vi.mock('../../../lib/api', () => ({
           status: status.stage,
           progress: status.progress,
           error: status.error,
+          error_code: status.errorCode,
         };
       }
       return status;
@@ -804,6 +805,43 @@ describe('IngestionWorkspace', () => {
 
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
     expect(readPersistedIngestionJobs()).toEqual([]);
+  });
+
+  it('shows the sanitized server message and error code for a failed job', async () => {
+    writePersistedIngestionJobs([{ id: 'job-index', filename: 'index.pdf', stage: 'INDEXING' }]);
+    vi.mocked(getStatusMock).mockResolvedValue({
+      id: 'job-index',
+      filename: 'index.pdf',
+      stage: 'FAILED',
+      progress: 80,
+      error:
+        'The keyword index could not be updated. Cleanup did not complete; the stores need reconciliation.',
+      errorCode: 'LEXICAL_INDEX_FAILED',
+    });
+
+    render(<IngestionWorkspace />);
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent("This file couldn't be processed");
+    expect(alert).toHaveTextContent('The keyword index could not be updated.');
+    expect(alert).toHaveTextContent('the stores need reconciliation');
+    expect(alert).toHaveTextContent('(Error code: LEXICAL_INDEX_FAILED)');
+  });
+
+  it('falls back to general guidance when a failed job has no server message', async () => {
+    writePersistedIngestionJobs([{ id: 'job-quiet', filename: 'quiet.pdf', stage: 'EMBEDDING' }]);
+    vi.mocked(getStatusMock).mockResolvedValue({
+      id: 'job-quiet',
+      filename: 'quiet.pdf',
+      stage: 'FAILED',
+      progress: 60,
+    });
+
+    render(<IngestionWorkspace />);
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Check the PDF, then add it again in a new batch.');
+    expect(alert).not.toHaveTextContent('Error code');
   });
 
   it('keeps two completed files clear when one file in a submitted batch of three fails', async () => {

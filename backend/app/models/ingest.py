@@ -54,6 +54,15 @@ class CorpusTypeCount(BaseModel):
     count: int
 
 
+class ReconciliationJob(BaseModel):
+    """A failed ingestion whose cleanup did not complete (needs_reconciliation)."""
+
+    job_id: str
+    error_code: str | None = None
+    error_message: str | None = None
+    completed_at: datetime | None = None
+
+
 class CorpusStatsResponse(BaseModel):
     """Corpus and storage health summary."""
 
@@ -70,3 +79,6 @@ class CorpusStatsResponse(BaseModel):
     bm25_detail: str | None = None
     bm25_record_count: int | None = None
     postgres_chunk_count: int | None = None
+    # Jobs flagged needs_reconciliation: the total, and the most recent ones.
+    reconciliation_job_count: int = 0
+    reconciliation_jobs: list[ReconciliationJob] = []
