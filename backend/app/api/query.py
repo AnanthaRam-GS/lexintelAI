@@ -891,10 +891,13 @@ def public_response_from_result(result: LegalAnswerResult) -> PublicQueryRespons
     answer = result.answer
     if not isinstance(answer, PublicLegalAnswer):
         raise QueryExecutionError("PUBLIC_SCHEMA_MISMATCH", "The legal answer provider returned an invalid public answer.", status.HTTP_502_BAD_GATEWAY)
+    # Only citations that passed validation may become sources or fallback sections:
+    # a citation whose metadata does not match the retrieved evidence is never shown.
+    valid_citations = validated_citations(result)
     sections = [public_section(item) for item in answer.possible_legal_provisions]
     if not sections:
-        sections = [public_section_from_reference(item) for item in result.citations]
-    sources = public_sources(result.citations)
+        sections = [public_section_from_reference(item) for item in valid_citations]
+    sources = public_sources(valid_citations)
     return PublicQueryResponse(
         explanation=answer.summary or result.summary,
         sections=sections,
@@ -929,16 +932,21 @@ def history_safe_response(response: ProfessionalQueryResponse) -> dict[str, Any]
     return payload
 
 
-def validated_cited_evidence_ids(result: LegalAnswerResult) -> set[str]:
-    """E# IDs the answer cites with citations that passed validation (citation_validation issues excluded)."""
+def validated_citations(result: LegalAnswerResult) -> list[GroundedCitation]:
+    """The answer's citations that passed validation (any citation_validation issue excludes it)."""
     issues = result.citation_validation.issues if result.citation_validation else []
     rejected = {(issue.evidence_id, issue.claim_id) for issue in issues}
     rejected_evidence = {issue.evidence_id for issue in issues if issue.claim_id is None}
-    return {
-        citation.evidence_id
+    return [
+        citation
         for citation in result.citations
         if (citation.evidence_id, citation.claim_id) not in rejected and citation.evidence_id not in rejected_evidence
-    }
+    ]
+
+
+def validated_cited_evidence_ids(result: LegalAnswerResult) -> set[str]:
+    """E# IDs the answer cites with citations that passed validation."""
+    return {citation.evidence_id for citation in validated_citations(result)}
 
 
 def professional_response_from_result(
@@ -1010,7 +1018,7 @@ def public_sources(citations: list[GroundedCitation]) -> list[PublicSource]:
         if key not in seen:
             seen.add(key)
             sources.append(PublicSource(title=title, link=link))
-    return sources or [PublicSource(title="India Code", link="https://www.indiacode.nic.in/")]
+    return sources
 
 
 def safe_public_link(value: Any) -> str:

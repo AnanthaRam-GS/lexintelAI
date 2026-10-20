@@ -32,6 +32,12 @@ Set via `LEGALAI_LLM_PROVIDER`:
 
 **Groq is the primary and Gemini the fallback**
 (`LEGALAI_LLM_PROVIDER=groq`, `LEGALAI_LLM_FALLBACK_PROVIDER=gemini`).
+
+> **Temporary deviation from the plan.** The plan names Gemini as the primary
+> provider. Groq is primary for now because Gemini was not reliably
+> available: in the step 11 live runs (2026-10-19), every Gemini call returned
+> HTTP 503 or 429. Revert to Gemini primary when it is available again. This
+> is an owner decision (step 11b).
 `backend/app/services/llm_provider_chain.py` wraps the two adapters in a
 `FallbackAnswerAdapter`. It is an ordinary answer adapter, so the frozen
 generation pipeline is unchanged.
@@ -66,6 +72,32 @@ to the usual safe API error (table below).
 
 `LEGALAI_LLM_FALLBACK_PROVIDER` empty, `none` or equal to the primary disables
 the fallback.
+
+`LEGALAI_LLM_MAX_RETRIES` (optional) overrides each adapter's automatic
+retries after the first attempt, per process. Unset keeps the adapter
+default (3 attempts). Supervised live runs set it to 1 to bound the provider
+call count. The Groq adapter logs `finish_reason`, `completion_tokens` and
+`reasoning_tokens` for every completion, never content.
+
+### Frozen-file change: `legal_answer_generation.py` re-pinned (2026-10-20)
+
+`model_unavailable_result()` referenced the undefined names `http_status`,
+`provider_code` and `provider_message`. It raised `NameError` whenever the
+answer model was unavailable (missing key or model), so the API returned
+`QUERY_PIPELINE_UNAVAILABLE` instead of `MODEL_UNAVAILABLE`. It now records
+`None` for them, because no provider was called.
+
+The prompt, schemas, parsing and citation validation are unchanged.
+
+| | SHA-256 |
+|---|---|
+| old | `4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131` |
+| new | `7760d55c056ee414649d9df11631ebe4ea94ae7fab3393686b20724f2a67cb8e` |
+
+The change is recorded in
+`data/structured/manifests/legal_answer_eval.json` (`component_hashes` and
+`component_hash_changes`). The already-generated eval outputs
+(`legal_answer_eval_outputs.json`) keep the hashes recorded at their run.
 
 `GroqAnswerAdapter` lives in its own module, separate from
 `legal_answer_generation.py`, specifically so that adding it does not change

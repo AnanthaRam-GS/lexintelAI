@@ -126,6 +126,19 @@ class ProviderChainTests(unittest.TestCase):
             self.assertNotIsInstance(plain, FallbackAnswerAdapter)
         self.assertIsNone(build_answer_adapter(Settings(legalai_llm_provider="ollama"), factories))
 
+    def test_retry_override_applies_per_instance_without_changing_defaults(self) -> None:
+        from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
+        from backend.app.services.legal_answer_generation import GeminiAnswerAdapter
+
+        factories = {"groq": GroqAnswerAdapter, "gemini": GeminiAnswerAdapter}
+        default = build_answer_adapter(Settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="gemini"), factories)
+        self.assertEqual((default.primary.max_attempts, default.fallback.max_attempts), (GroqAnswerAdapter.max_attempts, GeminiAnswerAdapter.max_attempts))
+        limited = build_answer_adapter(
+            Settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="gemini", legalai_llm_max_retries=1), factories
+        )
+        self.assertEqual((limited.primary.max_attempts, limited.fallback.max_attempts), (2, 2))
+        self.assertEqual((GroqAnswerAdapter.max_attempts, GeminiAnswerAdapter.max_attempts), (3, 3))  # class defaults unchanged
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -115,7 +115,7 @@ the answer was generated from, one per retrieved document, in rank order:
 | `case_name`, `court`, `year`, `source_url` | retrieved chunk metadata |
 | `page_start`, `page_end`, `paragraph_start`, `paragraph_end` | retrieved chunk provenance |
 | `reranker_score` | the BGE reranker's raw score for that chunk, or `null` |
-| `relevance_score` | `1 / (1 + e^-reranker_score)` (logistic sigmoid, monotonic, 0-1), or `null` when there is no reranker score. Never a constant. |
+| `relevance_score` | **relative relevance within this query**: the returned precedents' raw reranker scores, min-max scaled so the top precedent is `1.0` and the lowest `0.0`. It is `null` when the precedent has no reranker score, when there is only one scored precedent, or when all scores are equal. It is not an absolute probability (a sigmoid of the BGE logits saturated at 0.98-1.0 live). The UI labels it "relative relevance". |
 | `excerpt` | a verbatim span of the chunk text, at most `PRECEDENT_EXCERPT_MAX_CHARS` (default 400) characters, centred on the passage most relevant to the retrieval query; `...` marks a cut |
 
 The model's `retrieved_authorities` are not turned into precedents. Every
@@ -163,6 +163,13 @@ The same timings and backend are always logged, without query or document
 text. Public responses also gain `debug` (`null` by default).
 
 ## Public Query
+
+**Sources are validated citations only.** `sources[]` (and the fallback
+`sections[]` built when the answer names no provision) come only from
+citations that passed citation validation. If no citation validates,
+`sources` is `[]`; it never falls back to unvalidated citations or to a
+placeholder link. The frontend then says it could not verify a source for the
+answer.
 
 Public Mode requires no login. Public users may submit either text or a
 temporary PDF, one input form at a time. PDF upload endpoints will use

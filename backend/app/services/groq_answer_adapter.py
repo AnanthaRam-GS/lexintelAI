@@ -17,6 +17,7 @@ contract, so the rest of the (frozen) grounded-answer pipeline in
 from __future__ import annotations
 
 import json
+import logging
 import socket
 import time
 import urllib.error
@@ -38,6 +39,9 @@ from backend.app.services.legal_answer_generation import (
     elapsed_ms,
 )
 
+
+
+logger = logging.getLogger("legalai.groq")
 
 class GroqAnswerAdapter:
     """Product-runtime answer adapter backed by Groq's OpenAI-compatible API."""
@@ -108,6 +112,15 @@ class GroqAnswerAdapter:
             raise ModelProviderError("GROQ_INVALID_RESPONSE", "Groq returned no API response.")
         text = extract_groq_text(body)
         usage = body.get("usage", {})
+        # Completion diagnostics only (no content): whether the output hit a length limit,
+        # and how much of the completion budget went to reasoning tokens.
+        choice = (body.get("choices") or [{}])[0]
+        logger.info(
+            "groq_completion finish_reason=%s completion_tokens=%s reasoning_tokens=%s",
+            choice.get("finish_reason"),
+            usage.get("completion_tokens"),
+            (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+        )
         metadata = ModelGenerationMetadata(
             provider="groq",
             configured_model_id=self.settings.groq_model,

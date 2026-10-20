@@ -119,8 +119,20 @@ def build_answer_adapter(settings: Any, factories: dict[str, Any]) -> Any | None
     primary_name = settings.legalai_llm_provider.strip().lower()
     if primary_name not in factories:
         return None
-    primary = factories[primary_name](settings)
+    primary = _with_retry_override(factories[primary_name](settings), settings)
     fallback_name = (settings.legalai_llm_fallback_provider or "").strip().lower()
     if not fallback_name or fallback_name in {"none", primary_name} or fallback_name not in factories:
         return primary
-    return FallbackAnswerAdapter(primary, factories[fallback_name](settings), primary_name=primary_name, fallback_name=fallback_name)
+    fallback = _with_retry_override(factories[fallback_name](settings), settings)
+    return FallbackAnswerAdapter(primary, fallback, primary_name=primary_name, fallback_name=fallback_name)
+
+
+def _with_retry_override(adapter: Any, settings: Any) -> Any:
+    """Apply LEGALAI_LLM_MAX_RETRIES (retries after the first attempt) to one adapter instance.
+
+    Unset keeps the adapter's own default; the class defaults are not changed.
+    """
+    retries = getattr(settings, "legalai_llm_max_retries", None)
+    if retries is not None and hasattr(adapter, "max_attempts"):
+        adapter.max_attempts = max(0, int(retries)) + 1
+    return adapter

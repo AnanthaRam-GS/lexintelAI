@@ -15,12 +15,15 @@ the model does not produce, from sources that cannot invent content:
 Without an uploaded document (text queries, question-focused PDF queries)
 the document fields are empty; nothing is inferred from the query text.
 
-Precedent relevance is the reranker's own score for that chunk, normalized
-to 0-1 with a logistic sigmoid, ``1 / (1 + e^-score)``. The sigmoid is
-monotonic, so the order of the scores is unchanged. ``BAAI/bge-reranker-v2-m3``
-returns raw logits; the sigmoid of a logit is the probability the reranker
-model assigns. A precedent without a reranker score gets ``None``, never a
-constant.
+Precedent relevance is a *relative* score within one query: the reranker's
+raw scores of the returned precedents, min-max scaled so the top precedent is
+1.0 and the lowest 0.0, ``(score - min) / (max - min)``. It ranks precedents
+against each other; it is not an absolute probability. (A sigmoid of the raw
+``BAAI/bge-reranker-v2-m3`` logits was tried first, but live logits of 4-6
+all mapped to 0.98-1.0, so it did not discriminate.) The raw score is kept in
+``reranker_score``. Relevance is ``None`` when a precedent has no reranker
+score, when there is only one scored precedent, or when all scores are equal,
+because no meaningful relative number exists then.
 """
 
 from __future__ import annotations
@@ -38,7 +41,7 @@ from backend.app.services.local_document_map import (
 from backend.app.services.private_pdf_rag import PrivateChunk
 from backend.app.services.retrieval.bm25 import tokenize_legal_text
 
-RELEVANCE_SCORE_METHOD = "sigmoid(reranker_score)"
+RELEVANCE_SCORE_METHOD = "min-max of reranker_score within the query (relative)"
 ELLIPSIS = "..."
 
 
@@ -163,16 +166,16 @@ def document_limitations(document_map: LocalDocumentMap | None) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def normalize_reranker_score(score: float | None) -> float | None:
-    """Logistic sigmoid of the reranker score, in (0, 1); None when there is no score."""
-    if score is None or not math.isfinite(score):
-        return None
-    if score >= 0:
-        value = 1.0 / (1.0 + math.exp(-score))
-    else:
-        exponent = math.exp(score)
-        value = exponent / (1.0 + exponent)
-    return round(value, 6)
+def relative_relevance(scores: list[float | None]) -> list[float | None]:
+    """Min-max scale raw reranker scores within one result set (top = 1.0); None where not meaningful."""
+    present = [score for score in scores if score is not None and math.isfinite(score)]
+    if len(present) < 2 or max(present) == min(present):
+        return [None] * len(scores)
+    low, high = min(present), max(present)
+    return [
+        round((score - low) / (high - low), 6) if score is not None and math.isfinite(score) else None
+        for score in scores
+    ]
 
 
 _EXCERPT_SENTENCE = re.compile(r"(?<=[.?!;])\s+")
@@ -252,12 +255,15 @@ def precedents_from_retrieval(
         return []
     query = retrieval.query if query is None else query
     cited_documents = {item.document_id for item in retrieval.evidence if item.citation_id in cited_evidence_ids}
-    precedents: list[ProfessionalPrecedent] = []
+    best: list[Any] = []
     seen: set[str] = set()
     for evidence in sorted(retrieval.evidence, key=lambda item: item.rank):
-        if evidence.document_id in seen:
-            continue
-        seen.add(evidence.document_id)
+        if evidence.document_id not in seen:
+            seen.add(evidence.document_id)
+            best.append(evidence)
+    relevance = relative_relevance([evidence.reranker_score for evidence in best])
+    precedents: list[ProfessionalPrecedent] = []
+    for evidence, relative in zip(best, relevance):
         precedents.append(
             ProfessionalPrecedent(
                 document_id=evidence.document_id,
@@ -265,7 +271,7 @@ def precedents_from_retrieval(
                 case_name=evidence.case_name or evidence.document_id,
                 court=_court_name(evidence.court),
                 year=_year(evidence.judgment_date),
-                relevance_score=normalize_reranker_score(evidence.reranker_score),
+                relevance_score=relative,
                 reranker_score=evidence.reranker_score,
                 cited_in_answer=evidence.document_id in cited_documents,
                 excerpt=precedent_excerpt(evidence.text, query, max_chars) if evidence.text.strip() else None,

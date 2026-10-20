@@ -530,10 +530,11 @@ def model_unavailable_result(
         evidence_retrieved=evidence_ids,
         evidence_unused=evidence_ids,
         model_metadata=metadata,
+        # No provider was called, so there is no HTTP status or provider code.
         provider_diagnostic={
-            "http_status": http_status,
-            "provider_code": provider_code,
-            "provider_message_sanitized": provider_message,
+            "http_status": None,
+            "provider_code": None,
+            "provider_message_sanitized": None,
         },
         timings={"answer_generation_ms": total_ms},
         query_understanding_version=understanding.schema_version,

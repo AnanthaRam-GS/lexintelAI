@@ -22,9 +22,19 @@
       "description": "LegalQueryUnderstanding plus frozen top-5 LegalAI retrieval evidence using the existing grounded prompt and citation contract."
     }
   },
+  "component_hash_changes": [
+    {
+      "date": "2026-10-20",
+      "path": "backend/app/services/legal_answer_generation.py",
+      "old_sha256": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
+      "new_sha256": "7760d55c056ee414649d9df11631ebe4ea94ae7fab3393686b20724f2a67cb8e",
+      "reason": "Bug fix: model_unavailable_result() referenced undefined http_status, provider_code and provider_message and raised NameError whenever the answer model was unavailable (missing key or model), so the API returned QUERY_PIPELINE_UNAVAILABLE instead of MODEL_UNAVAILABLE. Its provider_diagnostic now records None for them (no provider was called). Prompt, schemas, parsing and citation validation are unchanged; already-generated eval outputs keep their recorded run hashes.",
+      "approved_by": "project owner, step 11b decision 4"
+    }
+  ],
   "component_hashes": {
     "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
-    "backend/app/services/legal_answer_generation.py": "4c8de1d0eed16f11a1aa60d37a65a90e7931429971a52c4df6f31ff469f3d131",
+    "backend/app/services/legal_answer_generation.py": "7760d55c056ee414649d9df11631ebe4ea94ae7fab3393686b20724f2a67cb8e",
     "backend/app/services/legal_citation_validation.py": "9c072a848f79276b27b158db0a792f30860cb348e5255e32aa0d335a160f63b0",
     "backend/app/services/legal_rag_retrieval.py": "2034acf1bb2b833e33181eff6f747a4dcb7d0801a43c6d45f85f327dfa7b02db",
     "backend/app/services/legal_query_understanding.py": "8138c5320293a35407f0c9a115e8b3fc5a57e28ab1bb338e5a07f1532fe4cbf1",

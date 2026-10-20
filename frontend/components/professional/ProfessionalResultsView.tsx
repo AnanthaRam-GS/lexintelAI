@@ -52,7 +52,7 @@ ${case_brief.precedent_analysis.map((prec) => `• ${prec}`).join('\n')}
 ${case_brief.limitations.map((lim) => `• ${lim}`).join('\n')}
 
 RELEVANT CITATIONS:
-${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court'}) - Relevance: ${p.relevance_score == null ? 'not available' : `${Math.round(p.relevance_score * 100)}%`}\nExcerpt: ${p.excerpt || 'None'}${p.chunk_id ? ` [${p.chunk_id}]` : ''}`).join('\n\n')}
+${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court'}) - Relative relevance: ${p.relevance_score == null ? 'not ranked' : `${Math.round(p.relevance_score * 100)}%`}\nExcerpt: ${p.excerpt || 'None'}${p.chunk_id ? ` [${p.chunk_id}]` : ''}`).join('\n\n')}
 `;
 
     try {

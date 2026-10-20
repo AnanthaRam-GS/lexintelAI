@@ -276,7 +276,15 @@ function PublicResponse({
             ))}
           </ul>
         </section>
-      ) : null}
+      ) : (
+        <p
+          className="text-type-body-sm mt-8 text-[var(--color-muted)]"
+          data-testid="no-verified-sources"
+        >
+          We could not verify a source for this answer. Treat it as general information and check it
+          with a qualified legal professional.
+        </p>
+      )}
 
       <ResponseFooter />
     </article>

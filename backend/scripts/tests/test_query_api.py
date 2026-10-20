@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
-import math
 import re
 import tempfile
 import unittest
@@ -732,7 +731,8 @@ class QueryApiTests(unittest.TestCase):
         # Precedents come from retrieved evidence: reranker-based score, bounded excerpt, chunk provenance.
         precedent = body["precedents"][0]
         self.assertEqual(precedent["chunk_id"], "doc-1:chunk:0007")
-        self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + 2.718281828459045 ** -2.0), places=5)
+        self.assertIsNone(precedent["relevance_score"])  # a single precedent has no relative relevance
+        self.assertEqual(precedent["reranker_score"], 2.0)
         self.assertLessEqual(len(precedent["excerpt"]), 400)
         self.assertNotEqual(precedent["excerpt"], PROFESSIONAL_EVIDENCE_TEXT)
         pipeline.assert_called_once()
@@ -1519,14 +1519,20 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
     def assert_precedents(self, precedents: list[dict], *, name: str) -> None:
         self.assertTrue(precedents, f"{name}: no precedents")
         scores = [p["relevance_score"] for p in precedents]
+        raws = [self.service.reranker_scores[p["chunk_id"]] for p in precedents]
         self.assertGreater(len(set(scores)), 1, f"{name}: relevance scores do not vary: {scores}")
-        self.assertNotIn(1.0, scores)
+        if len(precedents) > 1:
+            # Relative relevance: min-max of the raw reranker scores within this result set.
+            low, high = min(raws), max(raws)
+            self.assertEqual(max(scores), 1.0)
+            self.assertEqual(min(scores), 0.0)
+            for precedent, raw in zip(precedents, raws):
+                self.assertAlmostEqual(precedent["relevance_score"], (raw - low) / (high - low), places=6)
         for precedent in precedents:
             chunk = self.trusted_by_id.get(precedent["chunk_id"])
             self.assertIsNotNone(chunk, f"{name}: precedent chunk {precedent['chunk_id']} is not a trusted chunk")
             raw = self.service.reranker_scores[precedent["chunk_id"]]
             self.assertEqual(precedent["reranker_score"], raw)
-            self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + math.exp(-raw)), places=6)
             self.assertEqual(precedent["document_id"], chunk["document_id"])
             self.assertEqual(precedent["case_name"], chunk["case_title"])
             self.assertEqual(precedent["source_url"], chunk["source_url"])
@@ -1652,11 +1658,9 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         with patch.object(query_api, "save_query_history") as save:
             response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
         self.assertEqual(response.status_code, 503)
-        # Known defect in the frozen, hash-pinned legal_answer_generation.py: model_unavailable_result()
-        # references an undefined `http_status` and raises NameError, so the pipeline's catch-all
-        # returns QUERY_PIPELINE_UNAVAILABLE instead of MODEL_UNAVAILABLE. The response is still a
-        # sanitized 503 without key or traceback text. Update this assertion when the frozen file is fixed.
-        self.assertEqual(response.json(), {"detail": {"code": "QUERY_PIPELINE_UNAVAILABLE", "message": "The legal query pipeline is temporarily unavailable."}})
+        # model_unavailable_result() no longer raises NameError (fixed and re-pinned in step 11b),
+        # so an unavailable model maps to MODEL_UNAVAILABLE, not the generic pipeline error.
+        self.assertEqual(response.json(), {"detail": {"code": "MODEL_UNAVAILABLE", "message": "The legal answer model is temporarily unavailable."}})
         self.assertNotIn("API key", response.text)
         self.assertNotIn("Traceback", response.text)
         save.assert_not_called()
@@ -1721,6 +1725,21 @@ class ProfessionalMapperTests(unittest.TestCase):
         )
         response = query_api.professional_response_from_result(rejected, retrieval=two_documents)
         self.assertEqual([p.cited_in_answer for p in response.precedents], [False, False])  # a rejected citation does not count
+
+    def test_invalid_citations_never_become_public_sources(self) -> None:
+        valid = query_api.public_response_from_result(public_result())
+        self.assertEqual([source.title for source in valid.sources], ["Example v State"])
+
+        invalid = public_result()
+        invalid.answer.possible_legal_provisions.clear()  # would otherwise fall back to sections built from citations
+        invalid.citation_validation = CitationValidationResult(
+            valid=False,
+            issues=[CitationValidationIssue(code=CitationValidationErrorCode.METADATA_MISMATCH, message="mismatch", evidence_id="E1", claim_id="C1")],
+        )
+        response = query_api.public_response_from_result(invalid)
+        self.assertEqual(response.sources, [])  # no fallback to unvalidated citations, nor to a placeholder source
+        self.assertEqual(response.sections, [])
+        self.assertNotIn("Example v State", response.model_dump_json())
 
     def test_precedents_ignore_model_authorities(self) -> None:
         response = query_api.professional_response_from_result(professional_result(), retrieval=None)

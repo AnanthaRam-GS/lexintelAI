@@ -65,18 +65,24 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
           </div>
         </div>
 
-        {/* Relevance: the reranker's score for this precedent, or "not available" */}
+        {/* Relative relevance within this result set (top precedent = 100%) */}
         {relevancePct == null ? (
           <div
             className="flex shrink-0 items-center self-start rounded-full border border-[var(--color-border)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs text-[var(--color-muted)]"
-            title="The reranker did not score this precedent."
+            data-testid="relevance-label"
+            title={
+              precedent.reranker_score == null
+                ? 'The reranker did not score this precedent.'
+                : 'Only one precedent, or all were scored equally, so there is no relative ranking.'
+            }
           >
-            Relevance not available
+            {precedent.reranker_score == null ? 'Relevance not available' : 'Relative relevance'}
           </div>
         ) : (
           <div
             className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[var(--color-border)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs"
-            title="Reranker relevance score (0-100)"
+            data-testid="relevance-label"
+            title="Relevance relative to the other precedents for this query (top precedent = 100%)"
           >
             <div className="h-1.5 w-10 overflow-hidden rounded-full bg-black/10">
               <div
@@ -86,7 +92,7 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
             </div>
             <span className="font-semibold text-[var(--color-ink)]">{relevancePct}%</span>
             <span className="text-[0.6875rem] text-[var(--color-muted)] uppercase tracking-wider">
-              Relevance
+              Relative relevance
             </span>
           </div>
         )}

@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     # Fallback answer provider, tried only on a provider failure of the primary
     # (services/llm_provider_chain.py). Empty or "none" disables it.
     legalai_llm_fallback_provider: str = "gemini"
+    # Optional override of each answer adapter's automatic retries (None keeps the adapter default).
+    legalai_llm_max_retries: int | None = None
     # Return per-stage query timings and the answering backend in the response `debug` field.
     legalai_query_debug: bool = False
     gemini_model: str = ""

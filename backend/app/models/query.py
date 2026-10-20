@@ -22,9 +22,10 @@ class ProfessionalTextQueryRequest(BaseModel):
 class ProfessionalPrecedent(BaseModel):
     """Retrieved precedent, built from retrieved trusted evidence (never from model text).
 
-    ``relevance_score`` is the reranker score normalized to 0-1 with a logistic
-    sigmoid (``services/professional_brief.py``), or None when the evidence has
-    no reranker score. ``reranker_score`` is the raw score. ``excerpt`` is a
+    ``relevance_score`` is the relative relevance within this query: raw
+    reranker scores min-max scaled across the returned precedents, top = 1.0
+    (``services/professional_brief.py``); None with no reranker score, a single
+    scored precedent, or all-equal scores. ``reranker_score`` is the raw score. ``excerpt`` is a
     bounded span of the trusted chunk ``chunk_id``. ``cited_in_answer`` is
     true when the answer cites this document through a citation that passed
     validation.
