@@ -45,6 +45,8 @@ export interface ProfessionalPrecedent {
   relevance_score: number | null;
   /** Raw reranker score. */
   reranker_score?: number | null;
+  /** True when the answer cites this precedent through a validated citation. */
+  cited_in_answer?: boolean;
   /** Bounded verbatim span of the trusted chunk text. */
   excerpt?: string | null;
   source_url?: string | null;
@@ -69,10 +71,18 @@ export interface ProfessionalCaseBrief {
   recommended_research_questions?: string[];
 }
 
+/** Per-stage timings and the answering backend; present only when the backend enables LEGALAI_QUERY_DEBUG. */
+export interface QueryDebugInfo {
+  endpoint: string;
+  timings_ms: Record<string, number>;
+  backend: Record<string, string | boolean | null>;
+}
+
 export interface ProfessionalQueryResponse {
   identified_sections: SectionReference[];
   precedents: ProfessionalPrecedent[];
   case_brief: ProfessionalCaseBrief;
+  debug?: QueryDebugInfo | null;
 }
 
 export interface PublicQueryResponse {
@@ -80,6 +90,7 @@ export interface PublicQueryResponse {
   sections: Array<{ title: string; explanation: string; link: string }>;
   sources: Array<{ title: string; link: string }>;
   nextStepGuidance: string;
+  debug?: QueryDebugInfo | null;
 }
 
 export interface QueryHistoryItem {

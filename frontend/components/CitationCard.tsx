@@ -32,6 +32,21 @@ export function CitationCard({ precedent, className = '' }: CitationCardProps) {
           <h3 className="font-display text-[1.0625rem] font-bold leading-snug text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-brass-hover)]">
             {precedent.case_name}
           </h3>
+          {precedent.cited_in_answer ? (
+            <p
+              className="mt-1 inline-flex items-center rounded-full border border-[var(--color-success-border)] bg-[var(--color-success-surface)] px-2 py-0.5 text-[0.6875rem] font-semibold text-[var(--color-success-foreground)]"
+              data-testid="cited-in-answer"
+            >
+              Cited in answer
+            </p>
+          ) : (
+            <p
+              className="mt-1 text-[0.6875rem] text-[var(--color-muted)]"
+              data-testid="retrieved-only"
+            >
+              Retrieved, not cited in the answer
+            </p>
+          )}
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--color-muted)]">
             {precedent.court && (

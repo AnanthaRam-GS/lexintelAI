@@ -71,6 +71,18 @@ describe('CitationCard Component', () => {
     expect(screen.getByText('p. 2')).toBeInTheDocument();
   });
 
+  it('marks precedents the answer cites and those it only retrieved', () => {
+    render(<CitationCard precedent={{ ...mockPrecedent, cited_in_answer: true }} />);
+    expect(screen.getByTestId('cited-in-answer')).toHaveTextContent('Cited in answer');
+    cleanup();
+
+    render(<CitationCard precedent={{ ...mockPrecedent, cited_in_answer: false }} />);
+    expect(screen.queryByTestId('cited-in-answer')).not.toBeInTheDocument();
+    expect(screen.getByTestId('retrieved-only')).toHaveTextContent(
+      'Retrieved, not cited in the answer',
+    );
+  });
+
   it('handles excerpt toggle when excerpt is long', () => {
     const longExcerptPrecedent = {
       ...mockPrecedent,

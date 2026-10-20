@@ -26,7 +26,46 @@ Set via `LEGALAI_LLM_PROVIDER`:
 
 - `gemini` → `GeminiAnswerAdapter` (`backend/app/services/legal_answer_generation.py`)
 - `groq` → `GroqAnswerAdapter` (`backend/app/services/groq_answer_adapter.py`)
-- anything else (including `ollama`) → a controlled `503 MODEL_PROVIDER_UNAVAILABLE` response. There is **no silent fallback** between providers.
+- anything else (including `ollama`) → a controlled `503 MODEL_PROVIDER_UNAVAILABLE` response.
+
+### Primary and fallback (step 11)
+
+**Groq is the primary and Gemini the fallback**
+(`LEGALAI_LLM_PROVIDER=groq`, `LEGALAI_LLM_FALLBACK_PROVIDER=gemini`).
+`backend/app/services/llm_provider_chain.py` wraps the two adapters in a
+`FallbackAnswerAdapter`. It is an ordinary answer adapter, so the frozen
+generation pipeline is unchanged.
+
+The fallback is tried **only when the primary fails as a provider**:
+- missing key or model name;
+- authentication rejected (401/403);
+- model not found (404);
+- rate limit (429);
+- timeout;
+- upstream 5xx or network error.
+
+It is **never tried because of content**:
+- an answer that fails schema or citation validation;
+- an empty or non-JSON body;
+- a request rejected as too large (the query pipeline already retries that once with reduced context);
+- any other 4xx.
+
+Each adapter keeps its own bounded retries, and the chain adds at most one
+fallback call, never a loop.
+
+The answering backend is recorded in `ModelGenerationMetadata`:
+- `provider` is the backend that produced the answer;
+- `primary_provider`, `fallback_provider` and `fallback_used` describe the chain;
+- `fallback_reason` is the primary's sanitized error code.
+
+That provider is saved as `query_history.generation_backend` and logged on
+every query (`query_timings ... provider=... fallback_used=...`). When
+`LEGALAI_QUERY_DEBUG=true`, it is also returned in the response `debug`
+field. When both providers fail, the fallback's sanitized error is mapped
+to the usual safe API error (table below).
+
+`LEGALAI_LLM_FALLBACK_PROVIDER` empty, `none` or equal to the primary disables
+the fallback.
 
 `GroqAnswerAdapter` lives in its own module, separate from
 `legal_answer_generation.py`, specifically so that adding it does not change
@@ -50,6 +89,9 @@ GEMINI_MODEL=
 GROQ_API_KEY=                      # required if provider=groq
 GROQ_MODEL=openai/gpt-oss-120b     # never hardcoded in code — always read from this variable
 GROQ_BASE_URL=https://api.groq.com/openai/v1   # optional, defaults to the value above
+
+LEGALAI_LLM_FALLBACK_PROVIDER=gemini   # used only on a provider failure of the primary
+LEGALAI_QUERY_DEBUG=false              # true returns per-stage timings and the backend in `debug`
 
 LEGALAI_LLM_TEMPERATURE=0.1        # shared by both providers
 LEGALAI_LLM_TIMEOUT_SECONDS=60.0   # shared by both providers

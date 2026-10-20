@@ -1,5 +1,7 @@
 """Professional and public query API contracts for LegalAI."""
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 from backend.app.models.common import SectionReference
@@ -23,7 +25,9 @@ class ProfessionalPrecedent(BaseModel):
     ``relevance_score`` is the reranker score normalized to 0-1 with a logistic
     sigmoid (``services/professional_brief.py``), or None when the evidence has
     no reranker score. ``reranker_score`` is the raw score. ``excerpt`` is a
-    bounded span of the trusted chunk ``chunk_id``.
+    bounded span of the trusted chunk ``chunk_id``. ``cited_in_answer`` is
+    true when the answer cites this document through a citation that passed
+    validation.
     """
 
     document_id: int | str
@@ -33,6 +37,7 @@ class ProfessionalPrecedent(BaseModel):
     year: int | None = None
     relevance_score: float | None = None
     reranker_score: float | None = None
+    cited_in_answer: bool = False
     excerpt: str | None = None
     source_url: str | None = None
     page_start: int | None = None
@@ -64,6 +69,8 @@ class ProfessionalQueryResponse(BaseModel):
     identified_sections: list[SectionReference]
     precedents: list[ProfessionalPrecedent]
     case_brief: ProfessionalCaseBrief
+    # Per-stage timings and the answering backend; null unless LEGALAI_QUERY_DEBUG is enabled.
+    debug: dict[str, Any] | None = None
 
 
 class PublicTextQueryRequest(BaseModel):
@@ -99,3 +106,5 @@ class PublicQueryResponse(BaseModel):
     sections: list[PublicSection]
     sources: list[PublicSource]
     nextStepGuidance: str
+    # Per-stage timings and the answering backend; null unless LEGALAI_QUERY_DEBUG is enabled.
+    debug: dict[str, Any] | None = None

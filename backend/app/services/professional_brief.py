@@ -232,17 +232,26 @@ def _year(value: Any) -> int | None:
     return int(text[:4]) if len(text) >= 4 and text[:4].isdigit() else None
 
 
-def precedents_from_retrieval(retrieval: Any, *, max_chars: int, query: str | None = None) -> list[ProfessionalPrecedent]:
+def precedents_from_retrieval(
+    retrieval: Any,
+    *,
+    max_chars: int,
+    query: str | None = None,
+    cited_evidence_ids: set[str] | frozenset[str] = frozenset(),
+) -> list[ProfessionalPrecedent]:
     """One precedent per retrieved document, from its best-ranked evidence chunk, in rank order.
 
     Every value comes from the retrieved trusted evidence (``LegalEvidenceChunk``):
     identifiers, case name, court, date, source URL, page/paragraph
     provenance, the chunk text for the excerpt, and the reranker score. The
     excerpt is centred on the passage most relevant to the retrieval query.
+    ``cited_in_answer`` is true when any of the document's retrieved chunks is
+    in ``cited_evidence_ids`` (E# IDs of validated citations).
     """
     if retrieval is None:
         return []
     query = retrieval.query if query is None else query
+    cited_documents = {item.document_id for item in retrieval.evidence if item.citation_id in cited_evidence_ids}
     precedents: list[ProfessionalPrecedent] = []
     seen: set[str] = set()
     for evidence in sorted(retrieval.evidence, key=lambda item: item.rank):
@@ -258,6 +267,7 @@ def precedents_from_retrieval(retrieval: Any, *, max_chars: int, query: str | No
                 year=_year(evidence.judgment_date),
                 relevance_score=normalize_reranker_score(evidence.reranker_score),
                 reranker_score=evidence.reranker_score,
+                cited_in_answer=evidence.document_id in cited_documents,
                 excerpt=precedent_excerpt(evidence.text, query, max_chars) if evidence.text.strip() else None,
                 source_url=evidence.source_url,
                 page_start=evidence.page_start,

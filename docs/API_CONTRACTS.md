@@ -118,7 +118,10 @@ the answer was generated from, one per retrieved document, in rank order:
 | `relevance_score` | `1 / (1 + e^-reranker_score)` (logistic sigmoid, monotonic, 0-1), or `null` when there is no reranker score. Never a constant. |
 | `excerpt` | a verbatim span of the chunk text, at most `PRECEDENT_EXCERPT_MAX_CHARS` (default 400) characters, centred on the passage most relevant to the retrieval query; `...` marks a cut |
 
-The model's `retrieved_authorities` are not turned into precedents.
+The model's `retrieved_authorities` are not turned into precedents. Every
+retrieved document is listed. `cited_in_answer` is `true` when the answer
+cites one of the document's retrieved chunks (E#) through a citation that
+passed citation validation, and `false` when the document was only retrieved.
 
 **Case-brief field sources.** `parties_and_roles`, `chronology`,
 `procedural_considerations` and `evidence_identified` are lists of strings,
@@ -134,9 +137,30 @@ for example `[P2, p. 3]`:
 | `evidence_identified` | brief mode: evidence named in the document by category (Witnesses, Documents, Medical/forensic, Electronic, Recoveries/seizures), `"<categories>: <sentence> [P#, p. N]"` |
 | `limitations` | the model's uncertainties, then the document map's missing-information notes |
 
-Text queries and question-focused PDF queries have no document map, so
-`parties_and_roles`, `chronology` and `evidence_identified` are empty there:
-nothing is inferred from the query text. No field copies another.
+Professional PDF queries build the local document map in both `analysis_mode`
+values. Brief mode sends the map to the model; question mode sends the
+question-focused P# excerpts. Both fill `parties_and_roles`, `chronology`,
+procedural stages and `evidence_identified` from the map. Text queries have
+no document, so those fields are empty: nothing is inferred from the query
+text. No field copies another.
+
+Query history keeps the professional response without any item quoted from
+the uploaded document: P#-referenced items are dropped and a limitation
+notes it. Model content and precedents are kept.
+
+**Debug.** Every query response has a `debug` field, `null` unless the
+backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
+- `endpoint`;
+- `timings_ms`, per stage in milliseconds: `parse_ms`, `document_map_ms`,
+  `query_understanding_ms`, `dense_retrieval_ms`, `bm25_retrieval_ms`,
+  `fusion_ms`, `rerank_ms`, `retrieval_total_ms`, `context_assembly_ms`,
+  `generation_ms` (provider calls, including any fallback),
+  `answer_parse_and_citation_validation_ms` and `total_ms`;
+- `backend`: provider, model, `fallback_used`, primary, fallback and
+  `fallback_reason`.
+
+The same timings and backend are always logged, without query or document
+text. Public responses also gain `debug` (`null` by default).
 
 ## Public Query
 

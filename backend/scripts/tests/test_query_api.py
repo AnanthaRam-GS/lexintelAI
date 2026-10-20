@@ -42,6 +42,13 @@ from backend.app.services.legal_answer_generation import (
     RetrievedAuthority,
 )
 from backend.app.services import professional_brief
+from backend.app.services.legal_answer_generation import ModelProviderError, ModelUnavailableError
+from backend.app.services.legal_citation_validation import (
+    CitationValidationErrorCode,
+    CitationValidationIssue,
+    CitationValidationResult,
+)
+from backend.app.services.llm_provider_chain import FallbackAnswerAdapter
 from backend.app.services.embeddings.base import EmbeddingConfig
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
 from backend.app.services.local_document_map import build_local_document_map
@@ -86,6 +93,7 @@ class QueryApiTests(unittest.TestCase):
                 ],
                 "sources": [{"title": "Example v State", "link": "https://example.test/judgment"}],
                 "nextStepGuidance": "Preserve papers Speak to a lawyer",
+                "debug": None,  # per-stage timings are returned only when LEGALAI_QUERY_DEBUG is enabled
             },
         )
         self.assertNotIn("model_metadata", body)
@@ -755,9 +763,21 @@ class QueryApiTests(unittest.TestCase):
         self.assertIn("/query/professional/pdf", routes)
 
     def test_get_answer_adapter_selects_groq_for_groq_provider(self) -> None:
-        settings = Settings(legalai_llm_provider="groq", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        settings = Settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="", groq_api_key="key", groq_model="openai/gpt-oss-120b")
         adapter = query_api.get_answer_adapter(settings)
         self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
+
+    def test_get_answer_adapter_chains_groq_primary_to_gemini_fallback(self) -> None:
+        settings = Settings(
+            legalai_llm_provider="groq", legalai_llm_fallback_provider="gemini",
+            groq_api_key="key", groq_model="openai/gpt-oss-120b", gemini_api_key="key", gemini_model="fixture-model",
+        )
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, FallbackAnswerAdapter)
+        self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.fallback, GeminiAnswerAdapter)
+        self.assertEqual((adapter.primary_name, adapter.fallback_name), ("groq", "gemini"))
         self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
 
     def test_get_answer_adapter_selects_gemini_for_gemini_provider(self) -> None:
@@ -766,9 +786,10 @@ class QueryApiTests(unittest.TestCase):
         self.assertIsInstance(adapter, GeminiAnswerAdapter)
 
     def test_get_answer_adapter_is_case_insensitive_and_trims_whitespace(self) -> None:
-        settings = Settings(legalai_llm_provider="  GROQ  ", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        settings = Settings(legalai_llm_provider="  GROQ  ", legalai_llm_fallback_provider=" Gemini ", groq_api_key="key", groq_model="openai/gpt-oss-120b")
         adapter = query_api.get_answer_adapter(settings)
-        self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.fallback, GeminiAnswerAdapter)
 
     def test_get_answer_adapter_rejects_ollama_with_controlled_unavailable_error(self) -> None:
         settings = Settings(legalai_llm_provider="ollama")
@@ -784,11 +805,15 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(ctx.exception.status_code, 503)
         self.assertEqual(ctx.exception.detail["code"], "MODEL_PROVIDER_UNAVAILABLE")
 
-    def test_get_answer_adapter_never_silently_falls_back_from_groq_to_gemini(self) -> None:
-        settings = Settings(legalai_llm_provider="groq", groq_api_key="", groq_model="", gemini_api_key="key", gemini_model="fixture-model")
-        adapter = query_api.get_answer_adapter(settings)
-        self.assertIsInstance(adapter, GroqAnswerAdapter)
-        self.assertNotIsInstance(adapter, GeminiAnswerAdapter)
+    def test_get_answer_adapter_never_falls_back_when_no_fallback_is_configured(self) -> None:
+        for disabled in ("", "none", "groq"):
+            settings = Settings(
+                legalai_llm_provider="groq", legalai_llm_fallback_provider=disabled,
+                groq_api_key="", groq_model="", gemini_api_key="key", gemini_model="fixture-model",
+            )
+            adapter = query_api.get_answer_adapter(settings)
+            self.assertIsInstance(adapter, GroqAnswerAdapter)
+            self.assertNotIsInstance(adapter, (GeminiAnswerAdapter, FallbackAnswerAdapter))
 
     def test_professional_pdf_requires_authentication(self) -> None:
         response = self.client.post(
@@ -1345,6 +1370,17 @@ class MockBriefAdapter:
         )
 
 
+class FailingAdapter:
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+        self.calls = 0
+        self.configured_model_id = "failing-model"
+
+    def generate_structured_answer(self, prompt, *, schema, mode):
+        self.calls += 1
+        raise self.error
+
+
 class ProfessionalBriefPipelineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -1523,6 +1559,122 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertTrue(response.precedents[0].excerpt)
 
 
+    # -- Step 11: provider chain, stage timings, question-mode map fields, history privacy --
+
+    def debug_settings(self) -> Settings:
+        return self.settings.model_copy(update={"legalai_query_debug": True})
+
+    def test_debug_returns_every_stage_timing_and_the_backend(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history"):
+            brief = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+            text = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(brief.status_code, 200, brief.text)
+        debug = brief.json()["debug"]
+        self.assertEqual(debug["endpoint"], "professional_pdf_brief")
+        self.assertEqual(list(debug["timings_ms"]), list(query_api.QUERY_STAGES))
+        self.assertTrue(all(value >= 0 for value in debug["timings_ms"].values()))
+        self.assertGreaterEqual(debug["timings_ms"]["total_ms"], debug["timings_ms"]["generation_ms"])
+        self.assertEqual(debug["backend"]["provider"], "mock")
+        text_timings = text.json()["debug"]["timings_ms"]
+        self.assertEqual(set(query_api.QUERY_STAGES) - set(text_timings), {"parse_ms", "document_map_ms"})
+
+    def test_debug_is_off_by_default_but_timings_are_logged(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.assertLogs("legalai.query", level="INFO") as logs:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertIsNone(response.json()["debug"])
+        timing_lines = [line for line in logs.output if "query_timings" in line]
+        self.assertEqual(len(timing_lines), 1)
+        self.assertIn("endpoint=professional_text provider=mock", timing_lines[0])
+        self.assertIn("rerank_ms=", timing_lines[0])
+        self.assertNotIn("Regular bail", timing_lines[0])  # no query text in logs
+
+    def test_question_mode_pdf_fills_document_fields_from_the_map(self) -> None:
+        with patch.object(query_api, "save_query_history"):
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Is the accused entitled to bail?", "analysis_mode": "question"},
+                files=pdf_upload(filename="chargesheet.pdf", body=fixture_pdf_bytes("chargesheet")),
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        brief = response.json()["case_brief"]
+        expectation = expected_brief("chargesheet")
+        for party in expectation["parties"]:
+            self.assertTrue(any(party["name"] in item and item.lower().startswith(party["role"]) for item in brief["parties_and_roles"]))
+        self.assertTrue(set(expectation["dated_events"]) <= {item.split(" - ", 1)[0] for item in brief["chronology"]})
+        self.assertTrue(brief["evidence_identified"])
+        self.assertIn("<PRIVATE_QUERY_DOCUMENT_CONTEXT>", self.adapter.prompts[-1])  # question-focused context, not the map
+        self.assertNotIn("<PRIVATE_DOCUMENT_MAP", self.adapter.prompts[-1])
+
+    def test_history_never_stores_text_quoted_from_the_upload(self) -> None:
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="chargesheet.pdf", body=fixture_pdf_bytes("chargesheet")),
+            )
+        self.assertTrue(response.json()["case_brief"]["parties_and_roles"])
+        saved = save.call_args.kwargs["response_json"]
+        for field in query_api.DOCUMENT_FIELDS:
+            self.assertFalse([item for item in saved["case_brief"][field] if "[P" in item], field)
+        self.assertNotIn("Asha Testwoman", json.dumps(saved))
+        self.assertIn(query_api.HISTORY_REDACTION_NOTE, saved["case_brief"]["limitations"])
+        self.assertEqual(saved["case_brief"]["material_facts"], MOCK_FACTS)  # model content is kept
+
+    def test_provider_failure_falls_back_and_records_the_backend(self) -> None:
+        primary = FailingAdapter(ModelProviderError("GROQ_HTTP_ERROR", "Groq request failed.", http_status=404))
+        fallback = MockBriefAdapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            primary, fallback, primary_name="groq", fallback_name="gemini"
+        )
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual((primary.calls, fallback.calls), (1, 1))
+        backend = response.json()["debug"]["backend"]
+        self.assertEqual(
+            (backend["provider"], backend["fallback_used"], backend["primary_provider"], backend["fallback_reason"]),
+            ("mock", True, "groq", "GROQ_HTTP_ERROR"),
+        )
+        self.assertEqual(save.call_args.kwargs["generation_backend"], "mock")  # the answering backend is recorded
+
+    def test_both_providers_unavailable_returns_a_sanitized_error(self) -> None:
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelUnavailableError("Groq API key and GROQ_MODEL must be configured before live generation.")),
+            FailingAdapter(ModelUnavailableError("Gemini API key and GEMINI_MODEL must be configured before live generation.")),
+            primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 503)
+        # Known defect in the frozen, hash-pinned legal_answer_generation.py: model_unavailable_result()
+        # references an undefined `http_status` and raises NameError, so the pipeline's catch-all
+        # returns QUERY_PIPELINE_UNAVAILABLE instead of MODEL_UNAVAILABLE. The response is still a
+        # sanitized 503 without key or traceback text. Update this assertion when the frozen file is fixed.
+        self.assertEqual(response.json(), {"detail": {"code": "QUERY_PIPELINE_UNAVAILABLE", "message": "The legal query pipeline is temporarily unavailable."}})
+        self.assertNotIn("API key", response.text)
+        self.assertNotIn("Traceback", response.text)
+        save.assert_not_called()
+
+    def test_both_providers_failing_returns_a_sanitized_error(self) -> None:
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelProviderError("GROQ_TIMEOUT", "Groq request timed out.")),
+            FailingAdapter(ModelProviderError("GEMINI_PROVIDER_ERROR", "Gemini request failed.", http_status=503)),
+            primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {"detail": {"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "The legal answer provider is temporarily unavailable."}})
+        self.assertNotIn("Traceback", response.text)
+        save.assert_not_called()
+
+
 class ProfessionalMapperTests(unittest.TestCase):
     """professional_response_from_result, field by field."""
 
@@ -1555,6 +1707,20 @@ class ProfessionalMapperTests(unittest.TestCase):
         precedent = response.precedents[0]
         self.assertEqual((precedent.case_name, precedent.chunk_id), ("Example v State", "doc-1:chunk:0007"))
         self.assertLessEqual(len(precedent.excerpt), 300)
+
+    def test_cited_in_answer_follows_validated_citations(self) -> None:
+        second = evidence("E2", text="Another bail authority.").model_copy(update={"document_id": "doc-2", "chunk_id": "doc-2:chunk:0001", "reranker_score": -1.0})
+        two_documents = retrieval([professional_retrieval().evidence[0], second])
+        response = query_api.professional_response_from_result(professional_result(), retrieval=two_documents)
+        self.assertEqual({p.document_id: p.cited_in_answer for p in response.precedents}, {"doc-1": True, "doc-2": False})
+
+        rejected = professional_result()
+        rejected.citation_validation = CitationValidationResult(
+            valid=False,
+            issues=[CitationValidationIssue(code=CitationValidationErrorCode.METADATA_MISMATCH, message="mismatch", evidence_id="E1", claim_id="C1")],
+        )
+        response = query_api.professional_response_from_result(rejected, retrieval=two_documents)
+        self.assertEqual([p.cited_in_answer for p in response.precedents], [False, False])  # a rejected citation does not count
 
     def test_precedents_ignore_model_authorities(self) -> None:
         response = query_api.professional_response_from_result(professional_result(), retrieval=None)

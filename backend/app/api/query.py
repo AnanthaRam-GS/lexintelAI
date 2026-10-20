@@ -8,6 +8,7 @@ from functools import lru_cache
 import logging
 import re
 import tempfile
+from time import perf_counter
 from pathlib import Path
 from typing import Any, Callable
 
@@ -49,6 +50,7 @@ from backend.app.services.local_document_map import (
     render_local_document_map,
 )
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
+from backend.app.services.llm_provider_chain import build_answer_adapter
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
 from backend.app.services import professional_brief
@@ -90,6 +92,7 @@ class QueryPipelineOutcome:
 
     result: LegalAnswerResult
     retrieval: LegalRetrievalResult | None = None
+    timings: dict[str, float] | None = None
 
 
 class QueryExecutionError(RuntimeError):
@@ -137,15 +140,20 @@ def clear_retrieval_service_cache() -> None:
     _cached_retrieval_service.cache_clear()
 
 
+ANSWER_ADAPTER_FACTORIES = {"gemini": GeminiAnswerAdapter, "groq": GroqAnswerAdapter}
+
+
 def get_answer_adapter(settings: Settings = Depends(get_settings)):
-    provider = settings.legalai_llm_provider.strip().lower()
-    if provider == "gemini":
-        return GeminiAnswerAdapter(settings)
-    if provider == "groq":
-        return GroqAnswerAdapter(settings)
-    # "ollama" and any other unrecognized provider fall through here deliberately:
+    """The configured primary provider, with LEGALAI_LLM_FALLBACK_PROVIDER as a provider-failure fallback.
+
+    See services/llm_provider_chain.py for when the fallback is used.
+    """
+    adapter = build_answer_adapter(settings, ANSWER_ADAPTER_FACTORIES)
+    if adapter is not None:
+        return adapter
+    # "ollama" and any other unrecognized primary provider fall through here deliberately:
     # Ollama has no working live-generation path (see OllamaAnswerAdapter), and an
-    # explicit, controlled 503 is preferred over a silent fallback to another provider.
+    # explicit, controlled 503 is preferred over silently serving from another provider.
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         detail={"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "Configured answer model provider is unavailable."},
@@ -159,11 +167,14 @@ def query_public(
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> PublicQueryResponse:
+    started = perf_counter()
     try:
         outcome = run_frozen_query_pipeline(
             request.text, mode=AnswerMode.PUBLIC, retrieval_service=retrieval_service, adapter=adapter, settings=settings
         )
-        return public_response_from_result(outcome.result)
+        response = public_response_from_result(outcome.result)
+        response.debug = finish_query_diagnostics("public_text", outcome, started=started, settings=settings)
+        return response
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
 
@@ -177,6 +188,7 @@ def query_professional(
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
+    started = perf_counter()
     try:
         outcome = run_frozen_query_pipeline(
             request.text,
@@ -189,6 +201,7 @@ def query_professional(
         response = professional_response_from_result(
             result, retrieval=outcome.retrieval, excerpt_max_chars=settings.precedent_excerpt_max_chars
         )
+        response.debug = finish_query_diagnostics("professional_text", outcome, started=started, settings=settings)
         save_query_history(
             db,
             query_text=request.text,
@@ -215,33 +228,18 @@ async def query_professional_pdf(
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> ProfessionalQueryResponse:
+    started = perf_counter()
     try:
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
+        parse_ms = elapsed_since(started)
         budget = resolve_token_budget(settings)
-        document_map: LocalDocumentMap | None = None
+        # Both modes build the local document map (zero provider calls), so
+        # parties, chronology, procedure and evidence are filled either way.
+        map_started = perf_counter()
+        document_map = build_document_map_or_fail(parsed_pdf, retrieval_service=retrieval_service, settings=settings)
+        document_map_ms = elapsed_since(map_started)
         if analysis_mode.strip().lower() == "brief":
-            # Entirely local (zero provider calls) - see local_document_map.py.
-            # Replaces the previous per-batch Stage-1 generative approach,
-            # which could make 5-10+ Groq calls before the single Stage-2
-            # call on a real multi-page document, exhausting a rate-limited
-            # provider account within one request.
-            dense_provider = getattr(retrieval_service, "dense_provider", None)
-            try:
-                document_map = build_local_document_map(
-                    parsed_pdf.private_chunks,
-                    filename=parsed_pdf.filename,
-                    dense_provider=dense_provider,
-                    token_budget_tokens=settings.private_pdf_input_budget_tokens,
-                )
-            except Exception as exc:
-                # A failure here is local analysis (parsing/NER/ranking), not
-                # a provider or a document-size problem - must not be
-                # mislabeled as either.
-                raise QueryExecutionError(
-                    "LOCAL_DOCUMENT_ANALYSIS_FAILED",
-                    "The document could not be analyzed locally.",
-                    status.HTTP_500_INTERNAL_SERVER_ERROR,
-                ) from exc
+            # The map is the private context: one final provider call, whatever the document length.
             retrieval_query = build_enriched_trusted_query(document_map, fallback_query=query)
             private_context_builder = build_local_map_context_builder(document_map, budget=budget)
         else:
@@ -256,6 +254,7 @@ async def query_professional_pdf(
             adapter=adapter,
             settings=settings,
             private_context_builder=private_context_builder,
+            timings={"parse_ms": parse_ms, "document_map_ms": document_map_ms},
         )
         result = outcome.result
         response = professional_response_from_result(
@@ -265,13 +264,15 @@ async def query_professional_pdf(
             private_chunks=parsed_pdf.private_chunks,
             excerpt_max_chars=settings.precedent_excerpt_max_chars,
         )
+        mode_label = "brief" if analysis_mode.strip().lower() == "brief" else "question"
+        response.debug = finish_query_diagnostics(f"professional_pdf_{mode_label}", outcome, started=started, settings=settings)
         save_query_history(
             db,
             query_text=query,
             mode=PROFESSIONAL_MODE,
             user_id=current_user.id,
             session_id=session_id,
-            response_json=response.model_dump(mode="json"),
+            response_json=history_safe_response(response),
             generation_backend=result.model_metadata.provider if result.model_metadata else None,
         )
         return response
@@ -296,8 +297,10 @@ async def query_public_pdf(
     retrieval_service=Depends(get_retrieval_service),
     adapter=Depends(get_answer_adapter),
 ) -> PublicQueryResponse:
+    started = perf_counter()
     try:
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
+        parse_ms = elapsed_since(started)
         budget = resolve_token_budget(settings)
         # Public PDF is always question-focused: the user explicitly asked a
         # question, so targeted retrieval is preferred over whole-document
@@ -312,8 +315,11 @@ async def query_public_pdf(
             adapter=adapter,
             settings=settings,
             private_context_builder=private_context_builder,
+            timings={"parse_ms": parse_ms},
         )
-        return public_response_from_result(outcome.result)
+        response = public_response_from_result(outcome.result)
+        response.debug = finish_query_diagnostics("public_pdf", outcome, started=started, settings=settings)
+        return response
     except HTTPException:
         raise
     except DocumentParsingError as exc:
@@ -506,6 +512,7 @@ def run_frozen_query_pipeline(
     adapter: Any,
     settings: Settings,
     private_context_builder: Callable[[str], str | None] | None = None,
+    timings: dict[str, float] | None = None,
 ) -> QueryPipelineOutcome:
     """Applies to all four product query paths (public/professional text and
     PDF). Trusted (E#) evidence is bounded to a product-wide budget *before*
@@ -523,9 +530,14 @@ def run_frozen_query_pipeline(
     No further retries, no provider switch, no silent fallback.
     """
     product_budget = resolve_product_context_budget(settings)
+    timings = dict(timings or {})
     try:
+        stage_started = perf_counter()
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
+        timings["query_understanding_ms"] = elapsed_since(stage_started)
+        stage_started = perf_counter()
         retrieval = retrieve_legal_evidence(understanding, retrieval_service=retrieval_service)
+        timings.update(retrieval_stage_timings(retrieval, total_ms=elapsed_since(stage_started)))
         if retrieval.error:
             raise QueryExecutionError("RETRIEVAL_UNAVAILABLE", "The legal evidence index is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -540,6 +552,7 @@ def run_frozen_query_pipeline(
             product_budget=product_budget,
             tier=ContextTier.NORMAL,
             private_context_builder=private_context_builder,
+            timings=timings,
         )
         if result.answer is None and any(
             warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
@@ -554,6 +567,7 @@ def run_frozen_query_pipeline(
                 product_budget=product_budget,
                 tier=ContextTier.REDUCED,
                 private_context_builder=None,
+                timings=timings,
             )
         log_product_context_metrics(
             provider=settings.legalai_llm_provider,
@@ -569,7 +583,7 @@ def run_frozen_query_pipeline(
     except Exception as exc:
         raise QueryExecutionError("QUERY_PIPELINE_UNAVAILABLE", "The legal query pipeline is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE) from exc
     ensure_successful_answer(result)
-    return QueryPipelineOutcome(result=result, retrieval=bounded_retrieval)
+    return QueryPipelineOutcome(result=result, retrieval=bounded_retrieval, timings=timings)
 
 
 def _attempt_generation(
@@ -583,7 +597,10 @@ def _attempt_generation(
     product_budget: ProductContextBudget,
     tier: ContextTier,
     private_context_builder: Callable[[str], str | None] | None,
+    timings: dict[str, float] | None = None,
 ) -> tuple[LegalAnswerResult, ContextTier, Any]:
+    timings = timings if timings is not None else {}
+    stage_started = perf_counter()
     tier_budget = product_budget if tier is ContextTier.NORMAL else product_budget.reduced()
     trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
     bounded_retrieval = bound_trusted_evidence(retrieval, budget_tokens=trusted_budget_tokens)
@@ -597,8 +614,124 @@ def _attempt_generation(
     # retrieval even ran. See backend/app/services/token_budget.py.
     private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
     prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
-    result = generate_legal_answer(understanding, bounded_retrieval, mode=mode, adapter=adapter, prompt=prompt_text)
+    add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
+    timed_adapter = TimedAdapter(adapter) if adapter is not None else None
+    stage_started = perf_counter()
+    result = generate_legal_answer(understanding, bounded_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+    answer_ms = elapsed_since(stage_started)
+    provider_ms = timed_adapter.elapsed_ms if timed_adapter is not None else 0.0
+    add_timing(timings, "generation_ms", provider_ms)
+    # generate_legal_answer is frozen: after the provider call it parses the
+    # structured answer and validates its citations, timed together here.
+    add_timing(timings, "answer_parse_and_citation_validation_ms", max(0.0, answer_ms - provider_ms))
     return result, tier, bounded_retrieval
+
+
+class TimedAdapter:
+    """Pass-through answer adapter that records the time spent in provider calls."""
+
+    def __init__(self, adapter: Any) -> None:
+        self.adapter = adapter
+        self.elapsed_ms = 0.0
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.adapter, name)
+
+    def generate_structured_answer(self, prompt: str, *, schema: Any, mode: Any) -> Any:
+        started = perf_counter()
+        try:
+            return self.adapter.generate_structured_answer(prompt, schema=schema, mode=mode)
+        finally:
+            self.elapsed_ms += elapsed_since(started)
+
+
+def elapsed_since(started: float) -> float:
+    return round((perf_counter() - started) * 1000, 1)
+
+
+def add_timing(timings: dict[str, float], key: str, value: float) -> None:
+    """Add to a stage timing (a reduced-context retry runs some stages twice)."""
+    timings[key] = round(timings.get(key, 0.0) + value, 1)
+
+
+def retrieval_stage_timings(retrieval: Any, *, total_ms: float) -> dict[str, float]:
+    """Retrieval stage timings reported by the frozen retrieval stack."""
+    stage = retrieval.timings
+    return {
+        "dense_retrieval_ms": round(stage.dense_embedding_ms + stage.dense_search_ms, 1),
+        "bm25_retrieval_ms": round(stage.bm25_ms, 1),
+        "fusion_ms": round(stage.rrf_ms, 1),
+        "rerank_ms": round(stage.reranker_ms, 1),
+        "retrieval_total_ms": total_ms,
+    }
+
+
+QUERY_STAGES = (
+    "parse_ms",
+    "document_map_ms",
+    "query_understanding_ms",
+    "dense_retrieval_ms",
+    "bm25_retrieval_ms",
+    "fusion_ms",
+    "rerank_ms",
+    "retrieval_total_ms",
+    "context_assembly_ms",
+    "generation_ms",
+    "answer_parse_and_citation_validation_ms",
+    "total_ms",
+)
+
+
+def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
+    """Which backend produced the answer (never keys or raw provider text)."""
+    metadata = result.model_metadata
+    if metadata is None:
+        return {"provider": None}
+    return {
+        "provider": metadata.provider,
+        "model": metadata.actual_model_id or metadata.configured_model_id,
+        "fallback_used": metadata.fallback_used,
+        "primary_provider": metadata.primary_provider,
+        "fallback_provider": metadata.fallback_provider,
+        "fallback_reason": metadata.fallback_reason,
+    }
+
+
+def finish_query_diagnostics(endpoint: str, outcome: QueryPipelineOutcome, *, started: float, settings: Settings) -> dict[str, Any] | None:
+    """Log per-stage timings and the answering backend; return them as `debug` only when enabled."""
+    timings = dict(outcome.timings or {})
+    timings["total_ms"] = elapsed_since(started)
+    ordered = {key: timings[key] for key in QUERY_STAGES if key in timings}
+    backend = answer_backend(outcome.result)
+    logger.info(
+        "query_timings endpoint=%s provider=%s fallback_used=%s %s",
+        endpoint,
+        backend.get("provider"),
+        backend.get("fallback_used"),
+        " ".join(f"{key}={value}" for key, value in ordered.items()),
+    )
+    if not settings.legalai_query_debug:
+        return None
+    return {"endpoint": endpoint, "timings_ms": ordered, "backend": backend}
+
+
+def build_document_map_or_fail(parsed_pdf: ParsedPrivatePdf, *, retrieval_service: Any, settings: Settings) -> LocalDocumentMap:
+    """Local document map for an uploaded PDF (zero provider calls; see local_document_map.py)."""
+    try:
+        return build_local_document_map(
+            parsed_pdf.private_chunks,
+            filename=parsed_pdf.filename,
+            dense_provider=getattr(retrieval_service, "dense_provider", None),
+            token_budget_tokens=settings.private_pdf_input_budget_tokens,
+        )
+    except Exception as exc:
+        # A failure here is local analysis (parsing/NER/ranking), not a
+        # provider or a document-size problem - must not be mislabeled as either.
+        raise QueryExecutionError(
+            "LOCAL_DOCUMENT_ANALYSIS_FAILED",
+            "The document could not be analyzed locally.",
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ) from exc
 
 
 def log_product_context_metrics(
@@ -771,6 +904,43 @@ def public_response_from_result(result: LegalAnswerResult) -> PublicQueryRespons
     )
 
 
+_PRIVATE_REFERENCE = re.compile(r"\[P\d+(?:, pp?\. [\d-]+)?\]$")
+DOCUMENT_FIELDS = ("parties_and_roles", "chronology", "procedural_considerations", "evidence_identified")
+HISTORY_REDACTION_NOTE = "Details quoted from the uploaded document (parties, chronology, procedure, evidence) are not kept in query history."
+
+
+def history_safe_response(response: ProfessionalQueryResponse) -> dict[str, Any]:
+    """Response JSON for query history, without text quoted from the uploaded PDF.
+
+    History must never store uploaded-document text, so every case-brief item
+    that quotes the document (it ends with a P# reference) is dropped; model
+    content and precedents (trusted corpus) are kept.
+    """
+    payload = response.model_dump(mode="json")
+    brief = payload["case_brief"]
+    redacted = False
+    for field in DOCUMENT_FIELDS:
+        kept = [item for item in brief.get(field) or [] if not _PRIVATE_REFERENCE.search(item)]
+        redacted |= len(kept) != len(brief.get(field) or [])
+        brief[field] = kept
+    if redacted:
+        brief["limitations"] = [*brief["limitations"], HISTORY_REDACTION_NOTE]
+    payload["debug"] = None
+    return payload
+
+
+def validated_cited_evidence_ids(result: LegalAnswerResult) -> set[str]:
+    """E# IDs the answer cites with citations that passed validation (citation_validation issues excluded)."""
+    issues = result.citation_validation.issues if result.citation_validation else []
+    rejected = {(issue.evidence_id, issue.claim_id) for issue in issues}
+    rejected_evidence = {issue.evidence_id for issue in issues if issue.claim_id is None}
+    return {
+        citation.evidence_id
+        for citation in result.citations
+        if (citation.evidence_id, citation.claim_id) not in rejected and citation.evidence_id not in rejected_evidence
+    }
+
+
 def professional_response_from_result(
     result: LegalAnswerResult,
     *,
@@ -798,7 +968,9 @@ def professional_response_from_result(
     limitations += [item for item in professional_brief.document_limitations(document_map) if item not in limitations]
     return ProfessionalQueryResponse(
         identified_sections=section_references(answer.explicit_legal_provisions + answer.potential_additional_provisions),
-        precedents=professional_brief.precedents_from_retrieval(retrieval, max_chars=excerpt_max_chars),
+        precedents=professional_brief.precedents_from_retrieval(
+            retrieval, max_chars=excerpt_max_chars, cited_evidence_ids=validated_cited_evidence_ids(result)
+        ),
         case_brief=ProfessionalCaseBrief(
             summary=answer.issue_summary,
             parties_and_roles=parties,

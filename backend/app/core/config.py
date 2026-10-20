@@ -23,6 +23,11 @@ class Settings(BaseSettings):
 
     gemini_api_key: str = ""
     legalai_llm_provider: str = "gemini"
+    # Fallback answer provider, tried only on a provider failure of the primary
+    # (services/llm_provider_chain.py). Empty or "none" disables it.
+    legalai_llm_fallback_provider: str = "gemini"
+    # Return per-stage query timings and the answering backend in the response `debug` field.
+    legalai_query_debug: bool = False
     gemini_model: str = ""
     legalai_llm_temperature: float = 0.1
     legalai_llm_timeout_seconds: float = 60.0
