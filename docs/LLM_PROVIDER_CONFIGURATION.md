@@ -150,6 +150,18 @@ and message (`services/provider_diagnostics.py`):
 - fields such as Groq's `failed_generation`, prompt text, keys and document
   text are never logged.
 
+**Live result (step 11d; details in `docs/live_runs/LIVE_RUN_SUMMARY.md`).**
+- Effort `low` cut reasoning from about 1,200-1,300 tokens to 48-124.
+- Public answers now fit: P1 and P4 finished (`stop`) at 1,600 and 1,789
+  output tokens, with every citation valid.
+- Professional answers still truncate. R1's professional JSON exceeded 2,048
+  and 2,560 output tokens even at effort `low`, and raising the output limit
+  further leaves too little of the 8,000-token request for evidence. R1-R3,
+  B1-B5 and Q1 are recorded as blocked by provider capacity. They need a higher
+  Groq tier, a working fallback, or a shorter professional output.
+- Gemini retest: one 90 s timeout and one 503 ("high demand"). The order stays
+  Groq primary, Gemini fallback.
+
 ### Prompt v2 (step 11c)
 
 The product uses `legal_answer_prompt_v2.py`. Prompt v1
