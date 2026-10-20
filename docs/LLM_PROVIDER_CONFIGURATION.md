@@ -103,6 +103,53 @@ The finish reason and the prompt version are recorded in
 `ModelGenerationMetadata`, the `query_timings` log line, the `debug` field and
 the history `generation` record.
 
+### Fitting provider limits (step 11d)
+
+**Groq reasoning effort.**
+- `LEGALAI_GROQ_REASONING_EFFORT` (`low`, `medium` or `high`; default `low`)
+  is sent as `reasoning_effort`, only to `openai/gpt-oss-*` models.
+- Groq documents `reasoning_effort` with these three values for
+  `openai/gpt-oss-120b` (https://console.groq.com/docs/reasoning, checked
+  2026-10-20).
+- Reasoning tokens (`usage.completion_tokens_details.reasoning_tokens`) count
+  toward `max_completion_tokens`. They are recorded in `reasoning_tokens` and
+  logged.
+
+**Groq request-size guard.** `LEGALAI_GROQ_MAX_REQUEST_TOKENS` is set to the
+account's per-request limit. Groq's base Developer-plan limit for
+`openai/gpt-oss-120b` is 8K tokens per minute
+(https://console.groq.com/docs/rate-limits); unset disables the guard. With
+Groq as the primary, the pipeline:
+1. estimates the request before sending, as `estimate_tokens(prompt +
+   schema) × LEGALAI_GROQ_TOKEN_ESTIMATE_FACTOR + LEGALAI_LLM_MAX_OUTPUT_TOKENS`;
+2. drops the lowest-ranked trusted evidence items, whole, until it fits, and
+   records the count in `evidence_items_trimmed`;
+3. never drops private (P#) document evidence, and keeps at least one trusted
+   item. If that still does not fit, it returns `413 PDF_CONTEXT_TOO_LARGE`
+   for an uploaded document, otherwise `413 MODEL_PROVIDER_REQUEST_TOO_LARGE`.
+
+The factor defaults to 1.7: on step 11 and 11b live runs, Groq's reported
+`prompt_tokens` were 1.38-1.65 times `estimate_tokens`.
+
+**Gemini thinking and timeout.**
+- `LEGALAI_GEMINI_THINKING` (`low`, `medium` or `high`; default `low`) is
+  sent as `generationConfig.thinkingConfig.thinkingLevel`.
+- Gemini 3.8 Flash supports `low`, `medium` and `high`, and its default is
+  `medium` (https://ai.google.dev/gemini-api/docs/generate-content/thinking).
+- Thinking tokens count toward `maxOutputTokens`; they are recorded from
+  `usageMetadata.thoughtsTokenCount`.
+- `LEGALAI_GEMINI_TIMEOUT_SECONDS` (default 90) replaces the shared timeout
+  for Gemini.
+
+**Provider error capture.** Non-2xx provider responses log one
+`provider_http_error` line with the provider, HTTP status, error type, code
+and message (`services/provider_diagnostics.py`):
+- only `error.type`, `error.code`/`status` and `error.message` are read;
+- the message has key-shaped strings redacted and is truncated to 240
+  characters;
+- fields such as Groq's `failed_generation`, prompt text, keys and document
+  text are never logged.
+
 ### Prompt v2 (step 11c)
 
 The product uses `legal_answer_prompt_v2.py`. Prompt v1
@@ -148,7 +195,12 @@ The change is recorded in
   for the Gemini output limit, truncation detection and the new
   `finish_reason`/`prompt_version` metadata fields;
 - `legal_answer_prompt_v2.py` pinned at `9cdc948c…`;
-- the v1 prompt pin (`5a300bf8…`) is unchanged. The already-generated eval outputs
+- the v1 prompt pin (`5a300bf8…`) is unchanged.
+
+**Step 11d**: `legal_answer_generation.py` re-pinned `c547baf0…` →
+`44a90e1d…`, for the Gemini thinking level and timeout, thought-token and
+error logging, and the `reasoning_tokens` and `evidence_items_trimmed`
+metadata fields. The already-generated eval outputs
 (`legal_answer_eval_outputs.json`) keep the hashes recorded at their run.
 
 `GroqAnswerAdapter` lives in its own module, separate from

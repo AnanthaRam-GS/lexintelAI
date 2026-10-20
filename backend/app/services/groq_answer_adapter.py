@@ -38,10 +38,10 @@ from backend.app.services.legal_answer_generation import (
     ModelUnavailableError,
     elapsed_ms,
 )
-
-
+from backend.app.services.provider_diagnostics import log_provider_http_error
 
 logger = logging.getLogger("legalai.groq")
+
 
 class GroqAnswerAdapter:
     """Product-runtime answer adapter backed by Groq's OpenAI-compatible API."""
@@ -76,6 +76,7 @@ class GroqAnswerAdapter:
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
             "max_completion_tokens": self.settings.legalai_llm_max_output_tokens,
+            **groq_reasoning_options(self.settings),
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -139,6 +140,7 @@ class GroqAnswerAdapter:
             retry_reasons=retry_reasons,
             final_provider_status="SUCCESS",
             finish_reason=finish_reason,
+            reasoning_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
             prompt_tokens=usage.get("prompt_tokens"),
             completion_tokens=usage.get("completion_tokens"),
             total_tokens=usage.get("total_tokens"),
@@ -191,6 +193,19 @@ class GroqAnswerAdapter:
         return f"{base}/chat/completions"
 
 
+# Groq documents reasoning_effort (low | medium | high) for the GPT-OSS models
+# (https://console.groq.com/docs/reasoning); it is sent only to those models.
+GROQ_REASONING_EFFORT_MODELS = ("openai/gpt-oss-",)
+GROQ_REASONING_EFFORTS = {"low", "medium", "high"}
+
+
+def groq_reasoning_options(settings: Any) -> dict[str, str]:
+    effort = (getattr(settings, "legalai_groq_reasoning_effort", "") or "").strip().lower()
+    if effort in GROQ_REASONING_EFFORTS and str(settings.groq_model).startswith(GROQ_REASONING_EFFORT_MODELS):
+        return {"reasoning_effort": effort}
+    return {}
+
+
 def extract_groq_text(body: dict[str, Any]) -> str:
     choices = body.get("choices") or []
     if not choices:
@@ -239,6 +254,7 @@ def sanitized_http_diagnostic(exc: urllib.error.HTTPError) -> SanitizedHttpDiagn
             error = payload.get("error", {}) if isinstance(payload, dict) else {}
             provider_code = safe_string(error.get("type") or error.get("code"))
             provider_message = safe_string(error.get("message")) or provider_message
+            log_provider_http_error("groq", exc.code, payload)
     return SanitizedHttpDiagnostic(
         http_status=exc.code,
         provider_code=provider_code,

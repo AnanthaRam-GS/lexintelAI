@@ -46,11 +46,19 @@
       "new_sha256": "9cdc948cf9a7f5a11c4b0ba30b53a76104436d832e227b5057e9658315ab6790",
       "reason": "New prompt v2 for the product runtime (step 11c): mandatory structured claims tied to evidence IDs, case names copied exactly, and a no-coverage answer when no evidence is relevant. Prompt v1 (legal_answer_prompt.py, 5a300bf8...) stays the frozen baseline of this evaluation and its pin is unchanged.",
       "approved_by": "project owner, step 11c"
+    },
+    {
+      "date": "2026-10-20",
+      "path": "backend/app/services/legal_answer_generation.py",
+      "old_sha256": "c547baf0850dba8b57a812c17b8e47131df6b9c2e23c8d3724c1a1f76cb6cbce",
+      "new_sha256": "44a90e1d7ad1152c7b73506677adeaf57d1f69d7ab2a6bd4c86ef543e0f18c81",
+      "reason": "Provider limits (step 11d): GeminiAnswerAdapter sends generationConfig.thinkingConfig.thinkingLevel (LEGALAI_GEMINI_THINKING, default low) and uses LEGALAI_GEMINI_TIMEOUT_SECONDS (default 90); records thoughtsTokenCount; logs sanitized provider error type/code/message for non-2xx responses. ModelGenerationMetadata gains reasoning_tokens and evidence_items_trimmed. Prompt v1, schemas, parsing and citation validation are unchanged.",
+      "approved_by": "project owner, step 11d"
     }
   ],
   "component_hashes": {
     "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
-    "backend/app/services/legal_answer_generation.py": "c547baf0850dba8b57a812c17b8e47131df6b9c2e23c8d3724c1a1f76cb6cbce",
+    "backend/app/services/legal_answer_generation.py": "44a90e1d7ad1152c7b73506677adeaf57d1f69d7ab2a6bd4c86ef543e0f18c81",
     "backend/app/services/legal_answer_prompt_v2.py": "9cdc948cf9a7f5a11c4b0ba30b53a76104436d832e227b5057e9658315ab6790",
     "backend/app/services/legal_citation_validation.py": "9c072a848f79276b27b158db0a792f30860cb348e5255e32aa0d335a160f63b0",
     "backend/app/services/legal_rag_retrieval.py": "2034acf1bb2b833e33181eff6f747a4dcb7d0801a43c6d45f85f327dfa7b02db",

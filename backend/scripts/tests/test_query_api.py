@@ -1728,6 +1728,59 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertTrue(any("prompt_version=legal_answer_prompt_v2" in line for line in logs.output))
         self.assertIn("<GROUNDING_RULES>", self.adapter.prompts[-1])
 
+    # -- Step 11d: request-size guard --
+
+    def test_size_guard_estimate_includes_schema_factor_and_output_limit(self) -> None:
+        guard = query_api.RequestSizeGuard(ceiling_tokens=8000, max_output_tokens=2048, estimate_factor=1.7)
+        prompt = "word " * 2000
+        schema_tokens = query_api.estimate_tokens(json.dumps(query_api.groq_payload_schema(query_api.ProfessionalLegalBrief)))
+        expected = round((query_api.estimate_tokens(prompt) + schema_tokens) * 1.7) + 2048
+        self.assertEqual(guard.estimated_request_tokens(prompt, AnswerMode.PROFESSIONAL), expected)
+        self.assertEqual(guard.fits(prompt, AnswerMode.PROFESSIONAL), expected <= 8000)
+        self.assertIsNone(query_api.request_size_guard(Settings(legalai_llm_provider="groq", legalai_groq_max_request_tokens=None)))
+        self.assertIsNone(query_api.request_size_guard(Settings(legalai_llm_provider="gemini", legalai_groq_max_request_tokens=8000)))
+        self.assertIsNotNone(query_api.request_size_guard(Settings(legalai_llm_provider="groq", legalai_groq_max_request_tokens=8000)))
+
+    def evidence_limit_guard(self, max_items: int):
+        class Guard:
+            def fits(self, prompt_text, mode):
+                return prompt_text.count("<EVIDENCE id=") <= max_items
+
+        return patch.object(query_api, "request_size_guard", return_value=Guard())
+
+    def test_size_guard_drops_lowest_ranked_trusted_items_first(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(2):
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        prompt = self.adapter.prompts[-1]
+        self.assertEqual(re.findall(r'<EVIDENCE id="(E\d+)">', prompt), ["E1", "E2"])  # top-ranked kept, whole items
+        self.assertGreater(response.json()["debug"]["backend"]["evidence_items_trimmed"], 0)
+        self.assertLessEqual(len(response.json()["precedents"]), 2)  # precedents follow the trimmed evidence
+
+    def test_size_guard_never_drops_private_document_evidence(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(1):
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        prompt = self.adapter.prompts[-1]
+        self.assertEqual(prompt.count("<EVIDENCE id="), 1)
+        self.assertIn("<PRIVATE_DOCUMENT_MAP", prompt)  # the uploaded document's map is intact
+
+    def test_size_guard_errors_when_even_one_item_does_not_fit(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(0):
+            brief = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+            text = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual((brief.status_code, brief.json()["detail"]["code"]), (413, "PDF_CONTEXT_TOO_LARGE"))
+        self.assertEqual((text.status_code, text.json()["detail"]["code"]), (413, "MODEL_PROVIDER_REQUEST_TOO_LARGE"))
+
     def test_both_providers_unavailable_returns_a_sanitized_error(self) -> None:
         app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
             FailingAdapter(ModelUnavailableError("Groq API key and GROQ_MODEL must be configured before live generation.")),

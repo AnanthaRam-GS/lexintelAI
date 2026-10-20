@@ -5,6 +5,7 @@ from __future__ import annotations
 from argparse import Namespace
 from dataclasses import dataclass
 from functools import lru_cache
+import json
 import logging
 import re
 import tempfile
@@ -55,7 +56,7 @@ from backend.app.services.local_document_map import (
     local_map_metrics,
     render_local_document_map,
 )
-from backend.app.services.groq_answer_adapter import GroqAnswerAdapter
+from backend.app.services.groq_answer_adapter import GroqAnswerAdapter, groq_payload_schema
 from backend.app.services.llm_provider_chain import build_answer_adapter
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
@@ -559,6 +560,7 @@ def run_frozen_query_pipeline(
             tier=ContextTier.NORMAL,
             private_context_builder=private_context_builder,
             timings=timings,
+            size_guard=request_size_guard(settings),
         )
         if result.answer is None and any(
             warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
@@ -574,6 +576,7 @@ def run_frozen_query_pipeline(
                 tier=ContextTier.REDUCED,
                 private_context_builder=None,
                 timings=timings,
+                size_guard=request_size_guard(settings),
             )
         log_product_context_metrics(
             provider=settings.legalai_llm_provider,
@@ -605,31 +608,55 @@ def _attempt_generation(
     tier: ContextTier,
     private_context_builder: Callable[[str], str | None] | None,
     timings: dict[str, float] | None = None,
+    size_guard: "RequestSizeGuard | None" = None,
 ) -> tuple[LegalAnswerResult, ContextTier, Any]:
     timings = timings if timings is not None else {}
     stage_started = perf_counter()
     tier_budget = product_budget if tier is ContextTier.NORMAL else product_budget.reduced()
     trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
     bounded_retrieval = bound_trusted_evidence(retrieval, budget_tokens=trusted_budget_tokens)
-
-    # The model and the citation validator see case names without the Indian Kanoon
-    # date suffix (services/case_names.py); precedents keep the full titles.
-    generation_retrieval = normalized_for_generation(bounded_retrieval)
-    packet = build_grounded_evidence_packet(understanding, generation_retrieval)
-    prompt = build_legal_answer_prompt_v2(packet, mode=mode)
-    # The private-context builder (if any) is invoked here, AFTER the
-    # trusted-evidence prompt is fully built, so it can measure that
-    # prompt's real token cost and size the private-PDF budget against
-    # whatever is actually left - not a static guess made before trusted
-    # retrieval even ran. See backend/app/services/token_budget.py.
-    private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
-    prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
+    trimmed = 0
+    while True:
+        # The model and the citation validator see case names without the Indian Kanoon
+        # date suffix (services/case_names.py); precedents keep the full titles.
+        generation_retrieval = normalized_for_generation(bounded_retrieval)
+        packet = build_grounded_evidence_packet(understanding, generation_retrieval)
+        prompt = build_legal_answer_prompt_v2(packet, mode=mode)
+        # The private-context builder (if any) is invoked here, AFTER the
+        # trusted-evidence prompt is fully built, so it can measure that
+        # prompt's real token cost and size the private-PDF budget against
+        # whatever is actually left - not a static guess made before trusted
+        # retrieval even ran. See backend/app/services/token_budget.py.
+        private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
+        prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
+        if size_guard is None or size_guard.fits(prompt_text, mode):
+            break
+        if len(bounded_retrieval.evidence) <= 1:
+            # Private (P#) evidence is never dropped, and one trusted item is the minimum for a grounded answer.
+            if private_document_context:
+                raise QueryExecutionError(
+                    "PDF_CONTEXT_TOO_LARGE",
+                    "The document analysis could not fit within the configured context budget.",
+                    status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                )
+            raise QueryExecutionError(
+                "MODEL_PROVIDER_REQUEST_TOO_LARGE",
+                "The legal research context exceeded the current AI provider capacity.",
+                status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
+        # Drop the lowest-ranked trusted evidence item, whole, and rebuild.
+        ranked = sorted(bounded_retrieval.evidence, key=lambda item: item.rank)
+        bounded_retrieval = bounded_retrieval.model_copy(update={"evidence": ranked[:-1]})
+        trimmed += 1
+    if trimmed:
+        logger.info("request_size_guard trimmed_evidence_items=%d remaining=%d", trimmed, len(bounded_retrieval.evidence))
     add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
     timed_adapter = TimedAdapter(adapter) if adapter is not None else None
     stage_started = perf_counter()
     result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
     if result.model_metadata is not None:
         result.model_metadata.prompt_version = PROMPT_VERSION
+        result.model_metadata.evidence_items_trimmed = trimmed
     answer_ms = elapsed_since(stage_started)
     provider_ms = timed_adapter.elapsed_ms if timed_adapter is not None else 0.0
     add_timing(timings, "generation_ms", provider_ms)
@@ -637,6 +664,39 @@ def _attempt_generation(
     # structured answer and validates its citations, timed together here.
     add_timing(timings, "answer_parse_and_citation_validation_ms", max(0.0, answer_ms - provider_ms))
     return result, tier, bounded_retrieval
+
+
+@dataclass(frozen=True)
+class RequestSizeGuard:
+    """Keeps a Groq request (prompt + structured-output schema + output limit) under the account's per-request ceiling.
+
+    ``estimate_tokens`` undercounts Groq's real prompt tokens by 1.38-1.65x
+    (step 11d calibration on live runs), so the estimate is multiplied by
+    ``estimate_factor`` before it is compared.
+    """
+
+    ceiling_tokens: int
+    max_output_tokens: int
+    estimate_factor: float
+
+    def estimated_request_tokens(self, prompt_text: str, mode: AnswerMode) -> int:
+        schema = PublicLegalAnswer if mode == AnswerMode.PUBLIC else ProfessionalLegalBrief
+        input_tokens = estimate_tokens(prompt_text) + estimate_tokens(json.dumps(groq_payload_schema(schema)))
+        return round(input_tokens * self.estimate_factor) + self.max_output_tokens
+
+    def fits(self, prompt_text: str, mode: AnswerMode) -> bool:
+        return self.estimated_request_tokens(prompt_text, mode) <= self.ceiling_tokens
+
+
+def request_size_guard(settings: Settings) -> RequestSizeGuard | None:
+    """The guard when Groq is the primary provider and LEGALAI_GROQ_MAX_REQUEST_TOKENS is set."""
+    if settings.legalai_llm_provider.strip().lower() != "groq" or not settings.legalai_groq_max_request_tokens:
+        return None
+    return RequestSizeGuard(
+        ceiling_tokens=settings.legalai_groq_max_request_tokens,
+        max_output_tokens=settings.legalai_llm_max_output_tokens,
+        estimate_factor=settings.legalai_groq_token_estimate_factor,
+    )
 
 
 class TimedAdapter:
@@ -708,6 +768,9 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         "fallback_reason": metadata.fallback_reason,
         "finish_reason": metadata.finish_reason,
         "prompt_version": metadata.prompt_version,
+        "reasoning_tokens": metadata.reasoning_tokens,
+        "output_tokens": metadata.completion_tokens,
+        "evidence_items_trimmed": metadata.evidence_items_trimmed,
     }
 
 
@@ -968,7 +1031,10 @@ def history_payload(payload: dict[str, Any], result: LegalAnswerResult) -> dict[
     """History JSON with the generation record (backend, prompt version, finish reason); never debug data."""
     backend = answer_backend(result)
     payload = {**payload, "debug": None}
-    payload["generation"] = {key: backend.get(key) for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used")}
+    payload["generation"] = {
+        key: backend.get(key)
+        for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used", "reasoning_tokens", "evidence_items_trimmed")
+    }
     return payload
 
 

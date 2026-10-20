@@ -161,5 +161,71 @@ class OutputLimitTests(unittest.TestCase):
         self.assertEqual(Settings.model_fields["legalai_llm_max_output_tokens"].default, 2048)
 
 
+class ProviderSettingsTests(unittest.TestCase):
+    """Step 11d: Groq reasoning effort, Gemini thinking level and timeout, reasoning-token records."""
+
+    def test_groq_sends_reasoning_effort_only_to_gpt_oss_models(self) -> None:
+        body = groq_payload()
+        body["choices"][0]["finish_reason"] = "stop"
+        body["usage"]["completion_tokens_details"] = {"reasoning_tokens": 321}
+        cases = {
+            ("openai/gpt-oss-120b", "low"): {"reasoning_effort": "low"},
+            ("openai/gpt-oss-120b", "medium"): {"reasoning_effort": "medium"},
+            ("openai/gpt-oss-120b", ""): {},
+            ("openai/gpt-oss-120b", "extreme"): {},
+            ("llama-3.3-70b-versatile", "low"): {},
+        }
+        for (model, effort), expected in cases.items():
+            with self.subTest(model=model, effort=effort), patch("urllib.request.urlopen", return_value=FakeHttpResponse(body)) as urlopen:
+                settings = Settings(groq_api_key="k", groq_model=model, legalai_groq_reasoning_effort=effort)
+                response = GroqAnswerAdapter(settings).generate_structured_answer("p", schema=ProfessionalLegalBrief, mode=AnswerMode.PROFESSIONAL)
+                sent = json.loads(urlopen.call_args.args[0].data)
+                self.assertEqual({k: v for k, v in sent.items() if k == "reasoning_effort"}, expected)
+                self.assertEqual(response.model_metadata.reasoning_tokens, 321)
+        self.assertEqual(Settings.model_fields["legalai_groq_reasoning_effort"].default, "low")
+
+    def test_gemini_sends_thinking_level_and_uses_its_own_timeout(self) -> None:
+        body = {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": json.dumps({"answer": {}, "summary": "", "claims": []})}]}}],
+                "usageMetadata": {"thoughtsTokenCount": 77}}
+        for thinking, expected in (("low", {"thinkingLevel": "low"}), ("HIGH", {"thinkingLevel": "high"}), ("", None)):
+            with self.subTest(thinking=thinking), patch("urllib.request.urlopen", return_value=FakeHttpResponse(body)) as urlopen:
+                settings = Settings(gemini_api_key="k", gemini_model="gemini-3.8-flash", legalai_gemini_thinking=thinking)
+                adapter = GeminiAnswerAdapter(settings)
+                response = adapter.generate_structured_answer("p", schema=ProfessionalLegalBrief, mode=AnswerMode.PROFESSIONAL)
+                sent = json.loads(urlopen.call_args.args[0].data)
+                self.assertEqual(sent["generationConfig"].get("thinkingConfig"), expected)
+                self.assertEqual(urlopen.call_args.kwargs["timeout"], 90.0)
+                self.assertEqual(response.model_metadata.reasoning_tokens, 77)
+        self.assertEqual(Settings.model_fields["legalai_gemini_thinking"].default, "low")
+
+
+class ProviderErrorLoggingTests(unittest.TestCase):
+    def test_groq_400_logs_type_code_and_sanitized_message_only(self) -> None:
+        import io
+        import urllib.error
+
+        payload = {"error": {"message": "Failed to generate JSON. Please adjust your prompt. key gsk_abcdefghijklmnop",
+                             "type": "invalid_request_error", "code": "json_validate_failed",
+                             "failed_generation": "PRIVATE DOCUMENT TEXT THAT MUST NOT BE LOGGED"}}
+        error = urllib.error.HTTPError("url", 400, "Bad Request", hdrs=None, fp=io.BytesIO(json.dumps(payload).encode()))
+        with patch("urllib.request.urlopen", side_effect=error), self.assertLogs("legalai.provider_errors", "WARNING") as logs:
+            with self.assertRaises(ModelProviderError):
+                GroqAnswerAdapter(Settings(groq_api_key="k", groq_model="openai/gpt-oss-120b")).generate_structured_answer(
+                    "PROMPT TEXT", schema=ProfessionalLegalBrief, mode=AnswerMode.PROFESSIONAL
+                )
+        line = logs.output[0]
+        self.assertIn("provider=groq status=400 type=invalid_request_error code=json_validate_failed", line)
+        self.assertIn("Failed to generate JSON", line)
+        self.assertIn("[redacted]", line)
+        for secret in ("gsk_abcdefghijklmnop", "PRIVATE DOCUMENT TEXT", "PROMPT TEXT"):
+            self.assertNotIn(secret, line)
+
+    def test_message_is_truncated(self) -> None:
+        from backend.app.services.provider_diagnostics import MAX_MESSAGE_CHARS, sanitize_provider_message
+
+        self.assertLessEqual(len(sanitize_provider_message("x" * 1000)), MAX_MESSAGE_CHARS + 3)
+        self.assertEqual(sanitize_provider_message("Bearer abc.def ok"), "[redacted] ok")
+
+
 if __name__ == "__main__":
     unittest.main()

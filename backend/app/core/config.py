@@ -30,6 +30,15 @@ class Settings(BaseSettings):
     legalai_llm_max_retries: int | None = None
     # Output token limit sent to every answer provider; a length stop is a generation failure.
     legalai_llm_max_output_tokens: int = 2048
+    # Groq reasoning effort for gpt-oss models (low | medium | high); empty sends none.
+    legalai_groq_reasoning_effort: str = "low"
+    # Groq per-request token ceiling (the account's tokens-per-minute limit); unset disables the size guard.
+    legalai_groq_max_request_tokens: int | None = None
+    # estimate_tokens() undercounts Groq's real prompt tokens by 1.38-1.65x (step 11d calibration).
+    legalai_groq_token_estimate_factor: float = 1.7
+    # Gemini 3 thinking level (low | medium | high); empty sends none.
+    legalai_gemini_thinking: str = "low"
+    legalai_gemini_timeout_seconds: float = 90.0
     # Return per-stage query timings and the answering backend in the response `debug` field.
     legalai_query_debug: bool = False
     gemini_model: str = ""

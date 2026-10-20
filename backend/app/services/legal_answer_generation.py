@@ -18,6 +18,7 @@ from backend.app.core.config import Settings
 from backend.app.services.legal_citation_validation import CitationValidationResult, validate_legal_answer_citations
 from backend.app.services.legal_query_understanding import LegalQueryUnderstanding
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult
+from backend.app.services.provider_diagnostics import log_provider_http_error
 
 
 LEGAL_ANSWER_SCHEMA_VERSION = "legalai-grounded-answer-v1"
@@ -167,6 +168,10 @@ class ModelGenerationMetadata(BaseModel):
     finish_reason: str | None = None
     # Prompt that produced the answer (set by the product query layer).
     prompt_version: str | None = None
+    # Reasoning/thinking tokens the provider reported (part of the output limit).
+    reasoning_tokens: int | None = None
+    # Trusted evidence items dropped by the request-size guard (set by the product query layer).
+    evidence_items_trimmed: int = 0
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
@@ -249,7 +254,7 @@ class GeminiAnswerAdapter:
     ) -> None:
         self.settings = settings
         self.temperature = settings.legalai_llm_temperature if temperature is None else temperature
-        self.timeout_seconds = settings.legalai_llm_timeout_seconds if timeout_seconds is None else timeout_seconds
+        self.timeout_seconds = settings.legalai_gemini_timeout_seconds if timeout_seconds is None else timeout_seconds
         self.sleep = sleep
 
     @property
@@ -270,6 +275,11 @@ class GeminiAnswerAdapter:
                 "responseSchema": model_payload_schema(schema),
             },
         }
+        thinking = (self.settings.legalai_gemini_thinking or "").strip().lower()
+        if thinking:
+            # Gemini 3 thinking level (generationConfig.thinkingConfig.thinkingLevel); thinking tokens count
+            # toward maxOutputTokens, so a lower level leaves more room for the answer.
+            payload["generationConfig"]["thinkingConfig"] = {"thinkingLevel": thinking}
         body = None
         attempt_count = 0
         for attempt in range(1, self.max_attempts + 1):
@@ -306,6 +316,7 @@ class GeminiAnswerAdapter:
             retry_reasons=retry_reasons,
             final_provider_status="SUCCESS",
             finish_reason=finish_reason,
+            reasoning_tokens=usage.get("thoughtsTokenCount"),
             prompt_tokens=usage.get("promptTokenCount"),
             completion_tokens=usage.get("candidatesTokenCount"),
             total_tokens=usage.get("totalTokenCount"),
@@ -689,6 +700,7 @@ def sanitized_http_diagnostic(exc: urllib.error.HTTPError) -> SanitizedHttpDiagn
             error = payload.get("error", {}) if isinstance(payload, dict) else {}
             provider_code = safe_string(error.get("status") or error.get("code"))
             provider_message = safe_string(error.get("message")) or provider_message
+            log_provider_http_error("gemini", exc.code, payload)
     return SanitizedHttpDiagnostic(
         http_status=exc.code,
         provider_code=provider_code,
