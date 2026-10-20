@@ -164,6 +164,19 @@ text. Public responses also gain `debug` (`null` by default).
 
 ## Public Query
 
+**No-coverage answers (prompt v2).** When no retrieved evidence is relevant,
+the answer starts with "The available sources do not cover this question."
+and the response carries no provisions (`sections: []`), no sources and only
+generic guidance to consult a professional.
+
+**Answer errors.**
+- `502 MODEL_OUTPUT_MISSING_CITATIONS`: the model returned no structured
+  claims (and the answer is not a no-coverage answer).
+- `502 MODEL_OUTPUT_TRUNCATED`: the model stopped at the configured output
+  token limit.
+
+Neither answer is shown, and neither triggers the provider fallback.
+
 **Sources are validated citations only.** `sources[]` (and the fallback
 `sections[]` built when the answer names no provision) come only from
 citations that passed citation validation. If no citation validates,

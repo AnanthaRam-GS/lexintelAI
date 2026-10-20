@@ -38,6 +38,14 @@ Set via `LEGALAI_LLM_PROVIDER`:
 > available: in the step 11 live runs (2026-10-19), every Gemini call returned
 > HTTP 503 or 429. Revert to Gemini primary when it is available again. This
 > is an owner decision (step 11b).
+>
+> **Step 11c re-check (2026-10-20): the deviation stays.** `GEMINI_MODEL` is
+> now `gemini-3.8-flash`. It resolves (models.get: "Gemini 3.8 Flash", a
+> thinking model, 65,536 output tokens), but the 3-call evaluation (R1, P1
+> and brief B2, with Gemini as the only provider) failed all three: two
+> 60-second timeouts and HTTP 503s, 6 provider calls including one retry
+> each. Gemini primary needs all three to return schema-valid JSON, untruncated,
+> within about 15 s.
 `backend/app/services/llm_provider_chain.py` wraps the two adapters in a
 `FallbackAnswerAdapter`. It is an ordinary answer adapter, so the frozen
 generation pipeline is unchanged.
@@ -79,6 +87,43 @@ default (3 attempts). Supervised live runs set it to 1 to bound the provider
 call count. The Groq adapter logs `finish_reason`, `completion_tokens` and
 `reasoning_tokens` for every completion, never content.
 
+### Output limit and truncation (step 11c)
+
+`LEGALAI_LLM_MAX_OUTPUT_TOKENS` (default 2048) is sent to both providers:
+Groq `max_completion_tokens` and Gemini `generationConfig.maxOutputTokens`.
+For reasoning or thinking models it covers reasoning tokens too.
+
+A response that stops at the limit is never presented as complete:
+- Groq `finish_reason=length` raises `GROQ_OUTPUT_TRUNCATED`;
+- Gemini `finishReason=MAX_TOKENS` raises `GEMINI_OUTPUT_TRUNCATED`;
+- the API returns `502 MODEL_OUTPUT_TRUNCATED`;
+- it is a content failure, so the fallback is not tried.
+
+The finish reason and the prompt version are recorded in
+`ModelGenerationMetadata`, the `query_timings` log line, the `debug` field and
+the history `generation` record.
+
+### Prompt v2 (step 11c)
+
+The product uses `legal_answer_prompt_v2.py`. Prompt v1
+(`legal_answer_prompt.py`) is unchanged and remains the frozen baseline of the
+Phase-0 evaluation.
+
+v2 adds three rules:
+- every substantive statement is a structured claim citing evidence IDs;
+- case names are copied exactly;
+- when no evidence is relevant, the answer starts with "The available sources
+  do not cover this question." and gives no general-knowledge legal answer.
+
+The API enforces this:
+- an answer without claims is rejected (`502 MODEL_OUTPUT_MISSING_CITATIONS`),
+  unless it is such a no-coverage answer;
+- a public no-coverage answer carries no provisions, sources or legal steps.
+
+The model and the citation validator see case names without the Indian Kanoon
+date suffix (`services/case_names.py`); stored metadata and the UI keep the
+full title. The validator itself is unchanged.
+
 ### Frozen-file change: `legal_answer_generation.py` re-pinned (2026-10-20)
 
 `model_unavailable_result()` referenced the undefined names `http_status`,
@@ -96,7 +141,14 @@ The prompt, schemas, parsing and citation validation are unchanged.
 
 The change is recorded in
 `data/structured/manifests/legal_answer_eval.json` (`component_hashes` and
-`component_hash_changes`). The already-generated eval outputs
+`component_hash_changes`).
+
+**Step 11c**, recorded the same way:
+- `legal_answer_generation.py` re-pinned again, `7760d55c…` → `c547baf0…`,
+  for the Gemini output limit, truncation detection and the new
+  `finish_reason`/`prompt_version` metadata fields;
+- `legal_answer_prompt_v2.py` pinned at `9cdc948c…`;
+- the v1 prompt pin (`5a300bf8…`) is unchanged. The already-generated eval outputs
 (`legal_answer_eval_outputs.json`) keep the hashes recorded at their run.
 
 `GroqAnswerAdapter` lives in its own module, separate from
