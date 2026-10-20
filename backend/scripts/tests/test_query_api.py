@@ -61,6 +61,18 @@ from backend.scripts.tests.brief_fixtures import expected as expected_brief
 from backend.main import app
 
 
+def mock_claims() -> list[dict]:
+    """One structured claim citing E1, as prompt v2 requires (mocked model output)."""
+    return [
+        {
+            "claim_id": "c1",
+            "text": "The retrieved authority discusses the question.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [{"evidence_id": "E1", "claim_id": "c1", "supported_text": "The retrieved authority discusses the question.", "source_metadata": {}}],
+        }
+    ]
+
+
 class QueryApiTests(unittest.TestCase):
     def setUp(self) -> None:
         self.client = TestClient(app)
@@ -278,7 +290,7 @@ class QueryApiTests(unittest.TestCase):
                     parsed_response={
                         "answer": {"issue_summary": "POCSO overview", "legal_regime": "IPC"},
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -330,7 +342,7 @@ class QueryApiTests(unittest.TestCase):
                             "citations": [],
                         },
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -378,7 +390,7 @@ class QueryApiTests(unittest.TestCase):
                     parsed_response={
                         "answer": {"issue_summary": "ok", "legal_regime": "IPC"},
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -414,7 +426,7 @@ class QueryApiTests(unittest.TestCase):
                 adapter_calls.append(schema.__name__)
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -538,7 +550,7 @@ class QueryApiTests(unittest.TestCase):
                 adapter_calls.append(schema.__name__)
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -584,7 +596,7 @@ class QueryApiTests(unittest.TestCase):
                         answer = {"issue_summary": "ok", "legal_regime": "IPC"}
                     return LegalAnswerModelResponse(
                         raw_response="{}",
-                        parsed_response={"answer": answer, "summary": "ok", "claims": []},
+                        parsed_response={"answer": answer, "summary": "ok", "claims": mock_claims()},
                         model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="m", response_mode=mode),
                     )
 
@@ -673,7 +685,7 @@ class QueryApiTests(unittest.TestCase):
                 captured_prompts.append(estimate_tokens(prompt))
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "IPC"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "IPC"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -1365,7 +1377,7 @@ class MockBriefAdapter:
         }
         return LegalAnswerModelResponse(
             raw_response="{}",
-            parsed_response={"answer": answer, "summary": "MOCK SUMMARY", "claims": []},
+            parsed_response={"answer": answer, "summary": "MOCK SUMMARY", "claims": mock_claims()},
             model_metadata=ModelGenerationMetadata(provider="mock", configured_model_id="mock-model", response_mode=mode),
         )
 
@@ -1648,6 +1660,73 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
             ("mock", True, "groq", "GROQ_HTTP_ERROR"),
         )
         self.assertEqual(save.call_args.kwargs["generation_backend"], "mock")  # the answering backend is recorded
+
+    # -- Step 11c: prompt v2, claims requirement, no-coverage rule, truncation, prompt version --
+
+    def adapter_returning(self, answer: dict, claims: list, summary: str = "ok"):
+        class Adapter:
+            configured_model_id = "fixture"
+            prompts: list[str] = []
+
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                self.prompts.append(prompt)
+                return LegalAnswerModelResponse(
+                    raw_response="{}", parsed_response={"answer": answer, "summary": summary, "claims": claims},
+                    model_metadata=ModelGenerationMetadata(provider="mock", configured_model_id="mock-model", response_mode=mode, finish_reason="stop"),
+                )
+
+        adapter = Adapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: adapter
+        return adapter
+
+    def test_an_answer_without_claims_is_rejected(self) -> None:
+        self.adapter_returning({"issue_summary": "Bail can be granted.", "legal_regime": "ipc_crpc"}, claims=[])
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_MISSING_CITATIONS")
+        save.assert_not_called()
+
+    def test_no_coverage_answer_gives_no_provisions_sources_or_legal_steps(self) -> None:
+        statement = query_api.NO_COVERAGE_STATEMENT
+        adapter = self.adapter_returning(
+            {"summary": f"{statement} A trademark attorney can help.", "possible_legal_provisions": ["Trade Marks Act section 18"],
+             "possible_next_steps": ["File form TM-A"], "citations": []},
+            claims=[], summary=f"{statement} A trademark attorney can help.",
+        )
+        response = self.client.post("/query/public", json={"text": "How do I register a trademark for my bakery?"})
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertTrue(body["explanation"].startswith(statement))
+        self.assertEqual((body["sections"], body["sources"]), ([], []))
+        self.assertEqual(body["nextStepGuidance"], query_api.NO_COVERAGE_GUIDANCE)
+        self.assertNotIn("TM-A", json.dumps(body))
+        self.assertIn("no substantive legal answer", adapter.prompts[-1])  # prompt v2 rule sent to the model
+
+    def test_truncated_output_is_a_generation_failure_without_fallback(self) -> None:
+        fallback = MockBriefAdapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelProviderError("GROQ_OUTPUT_TRUNCATED", "Groq stopped at the output token limit.")),
+            fallback, primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_TRUNCATED")
+        self.assertEqual(fallback.calls, 0)
+        save.assert_not_called()
+
+    def test_prompt_version_is_recorded_in_debug_logs_and_history(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history") as save, self.assertLogs("legalai.query", level="INFO") as logs:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["debug"]["backend"]["prompt_version"], "legal_answer_prompt_v2")
+        generation = save.call_args.kwargs["response_json"]["generation"]
+        self.assertEqual((generation["provider"], generation["prompt_version"]), ("mock", "legal_answer_prompt_v2"))
+        self.assertIsNone(save.call_args.kwargs["response_json"]["debug"])
+        self.assertTrue(any("prompt_version=legal_answer_prompt_v2" in line for line in logs.output))
+        self.assertIn("<GROUNDING_RULES>", self.adapter.prompts[-1])
 
     def test_both_providers_unavailable_returns_a_sanitized_error(self) -> None:
         app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(

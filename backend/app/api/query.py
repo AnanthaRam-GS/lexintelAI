@@ -41,7 +41,13 @@ from backend.app.services.legal_answer_generation import (
     build_grounded_evidence_packet,
     generate_legal_answer,
 )
-from backend.app.services.legal_answer_prompt import build_legal_answer_prompt
+from backend.app.services.case_names import normalized_for_generation
+from backend.app.services.legal_answer_prompt_v2 import (
+    NO_COVERAGE_STATEMENT,
+    PROMPT_VERSION,
+    build_legal_answer_prompt_v2,
+    is_no_coverage_answer,
+)
 from backend.app.services.local_document_map import (
     LocalDocumentMap,
     build_enriched_trusted_query,
@@ -208,7 +214,7 @@ def query_professional(
             mode=PROFESSIONAL_MODE,
             user_id=current_user.id,
             session_id=request.session_id,
-            response_json=response.model_dump(mode="json"),
+            response_json=history_payload(response.model_dump(mode="json"), result),
             generation_backend=result.model_metadata.provider if result.model_metadata else None,
         )
         return response
@@ -272,7 +278,7 @@ async def query_professional_pdf(
             mode=PROFESSIONAL_MODE,
             user_id=current_user.id,
             session_id=session_id,
-            response_json=history_safe_response(response),
+            response_json=history_payload(history_safe_response(response), result),
             generation_backend=result.model_metadata.provider if result.model_metadata else None,
         )
         return response
@@ -583,6 +589,7 @@ def run_frozen_query_pipeline(
     except Exception as exc:
         raise QueryExecutionError("QUERY_PIPELINE_UNAVAILABLE", "The legal query pipeline is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE) from exc
     ensure_successful_answer(result)
+    ensure_answer_has_claims(result)
     return QueryPipelineOutcome(result=result, retrieval=bounded_retrieval, timings=timings)
 
 
@@ -605,8 +612,11 @@ def _attempt_generation(
     trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
     bounded_retrieval = bound_trusted_evidence(retrieval, budget_tokens=trusted_budget_tokens)
 
-    packet = build_grounded_evidence_packet(understanding, bounded_retrieval)
-    prompt = build_legal_answer_prompt(packet, mode=mode)
+    # The model and the citation validator see case names without the Indian Kanoon
+    # date suffix (services/case_names.py); precedents keep the full titles.
+    generation_retrieval = normalized_for_generation(bounded_retrieval)
+    packet = build_grounded_evidence_packet(understanding, generation_retrieval)
+    prompt = build_legal_answer_prompt_v2(packet, mode=mode)
     # The private-context builder (if any) is invoked here, AFTER the
     # trusted-evidence prompt is fully built, so it can measure that
     # prompt's real token cost and size the private-PDF budget against
@@ -617,7 +627,9 @@ def _attempt_generation(
     add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
     timed_adapter = TimedAdapter(adapter) if adapter is not None else None
     stage_started = perf_counter()
-    result = generate_legal_answer(understanding, bounded_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+    result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+    if result.model_metadata is not None:
+        result.model_metadata.prompt_version = PROMPT_VERSION
     answer_ms = elapsed_since(stage_started)
     provider_ms = timed_adapter.elapsed_ms if timed_adapter is not None else 0.0
     add_timing(timings, "generation_ms", provider_ms)
@@ -694,6 +706,8 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         "primary_provider": metadata.primary_provider,
         "fallback_provider": metadata.fallback_provider,
         "fallback_reason": metadata.fallback_reason,
+        "finish_reason": metadata.finish_reason,
+        "prompt_version": metadata.prompt_version,
     }
 
 
@@ -704,10 +718,12 @@ def finish_query_diagnostics(endpoint: str, outcome: QueryPipelineOutcome, *, st
     ordered = {key: timings[key] for key in QUERY_STAGES if key in timings}
     backend = answer_backend(outcome.result)
     logger.info(
-        "query_timings endpoint=%s provider=%s fallback_used=%s %s",
+        "query_timings endpoint=%s provider=%s fallback_used=%s finish_reason=%s prompt_version=%s %s",
         endpoint,
         backend.get("provider"),
         backend.get("fallback_used"),
+        backend.get("finish_reason"),
+        backend.get("prompt_version"),
         " ".join(f"{key}={value}" for key, value in ordered.items()),
     )
     if not settings.legalai_query_debug:
@@ -873,11 +889,39 @@ def query_execution_error_for_provider_codes(codes: set[str]) -> QueryExecutionE
             "The legal answer provider is temporarily unavailable.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
+    if any(code.endswith("_OUTPUT_TRUNCATED") for code in codes):
+        return QueryExecutionError(
+            "MODEL_OUTPUT_TRUNCATED",
+            "The legal answer was cut off before it was complete. Please retry.",
+            status.HTTP_502_BAD_GATEWAY,
+        )
     if any(code.startswith(("GEMINI_", "GROQ_")) for code in codes):
         return QueryExecutionError("MODEL_PROVIDER_ERROR", "The legal answer provider is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE)
     if "MODEL_OUTPUT_VALIDATION_FAILED" in codes:
         return QueryExecutionError("MODEL_OUTPUT_VALIDATION_FAILED", "The legal answer provider returned an invalid structured answer.", status.HTTP_502_BAD_GATEWAY)
     return QueryExecutionError("ANSWER_GENERATION_FAILED", "A grounded legal answer could not be generated.", status.HTTP_502_BAD_GATEWAY)
+
+
+def answer_is_no_coverage(result: LegalAnswerResult) -> bool:
+    """The model stated that the retrieved sources do not cover the question (prompt v2 rule)."""
+    answer = result.answer
+    summaries = [result.summary, getattr(answer, "summary", None), getattr(answer, "issue_summary", None)]
+    return any(is_no_coverage_answer(text) for text in summaries)
+
+
+def ensure_answer_has_claims(result: LegalAnswerResult) -> None:
+    """Prompt v2 requires structured claims; an answer without them is a generation failure.
+
+    The only exception is a no-coverage answer, which by rule has no claims.
+    """
+    if result.claims or answer_is_no_coverage(result):
+        return
+    logger.warning("answer rejected: no structured claims (provider=%s)", result.model_metadata.provider if result.model_metadata else None)
+    raise QueryExecutionError(
+        "MODEL_OUTPUT_MISSING_CITATIONS",
+        "The legal answer did not include the required citations. Please retry.",
+        status.HTTP_502_BAD_GATEWAY,
+    )
 
 
 def ensure_successful_answer(result: LegalAnswerResult) -> None:
@@ -894,6 +938,14 @@ def public_response_from_result(result: LegalAnswerResult) -> PublicQueryRespons
     # Only citations that passed validation may become sources or fallback sections:
     # a citation whose metadata does not match the retrieved evidence is never shown.
     valid_citations = validated_citations(result)
+    if answer_is_no_coverage(result):
+        # The sources do not cover the question: no provisions, sources or legal steps (prompt v2 rule).
+        return PublicQueryResponse(
+            explanation=answer.summary or NO_COVERAGE_STATEMENT,
+            sections=[],
+            sources=[],
+            nextStepGuidance=NO_COVERAGE_GUIDANCE,
+        )
     sections = [public_section(item) for item in answer.possible_legal_provisions]
     if not sections:
         sections = [public_section_from_reference(item) for item in valid_citations]
@@ -910,6 +962,14 @@ def public_response_from_result(result: LegalAnswerResult) -> PublicQueryRespons
 _PRIVATE_REFERENCE = re.compile(r"\[P\d+(?:, pp?\. [\d-]+)?\]$")
 DOCUMENT_FIELDS = ("parties_and_roles", "chronology", "procedural_considerations", "evidence_identified")
 HISTORY_REDACTION_NOTE = "Details quoted from the uploaded document (parties, chronology, procedure, evidence) are not kept in query history."
+
+
+def history_payload(payload: dict[str, Any], result: LegalAnswerResult) -> dict[str, Any]:
+    """History JSON with the generation record (backend, prompt version, finish reason); never debug data."""
+    backend = answer_backend(result)
+    payload = {**payload, "debug": None}
+    payload["generation"] = {key: backend.get(key) for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used")}
+    return payload
 
 
 def history_safe_response(response: ProfessionalQueryResponse) -> dict[str, Any]:
@@ -994,6 +1054,11 @@ def professional_response_from_result(
             recommended_research_questions=answer.recommended_research_questions,
         ),
     )
+
+
+NO_COVERAGE_GUIDANCE = (
+    "LegalAI's sources do not cover this question. Consider asking a qualified professional who handles this area of law."
+)
 
 
 def public_section(text: str) -> PublicSection:

@@ -75,6 +75,7 @@ class GroqAnswerAdapter:
             "model": self.settings.groq_model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
+            "max_completion_tokens": self.settings.legalai_llm_max_output_tokens,
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -110,17 +111,22 @@ class GroqAnswerAdapter:
                 self.sleep(self.backoff_seconds[min(attempt - 1, len(self.backoff_seconds) - 1)])
         if body is None:
             raise ModelProviderError("GROQ_INVALID_RESPONSE", "Groq returned no API response.")
-        text = extract_groq_text(body)
         usage = body.get("usage", {})
         # Completion diagnostics only (no content): whether the output hit a length limit,
         # and how much of the completion budget went to reasoning tokens.
         choice = (body.get("choices") or [{}])[0]
+        finish_reason = choice.get("finish_reason")
         logger.info(
-            "groq_completion finish_reason=%s completion_tokens=%s reasoning_tokens=%s",
-            choice.get("finish_reason"),
+            "groq_completion finish_reason=%s completion_tokens=%s reasoning_tokens=%s max_completion_tokens=%s",
+            finish_reason,
             usage.get("completion_tokens"),
             (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+            self.settings.legalai_llm_max_output_tokens,
         )
+        if finish_reason == "length":
+            # A cut-off answer is never presented as complete (and is not a provider failure, so no fallback).
+            raise ModelProviderError("GROQ_OUTPUT_TRUNCATED", "Groq stopped at the output token limit.")
+        text = extract_groq_text(body)
         metadata = ModelGenerationMetadata(
             provider="groq",
             configured_model_id=self.settings.groq_model,
@@ -132,6 +138,7 @@ class GroqAnswerAdapter:
             retry_count=len(retry_reasons),
             retry_reasons=retry_reasons,
             final_provider_status="SUCCESS",
+            finish_reason=finish_reason,
             prompt_tokens=usage.get("prompt_tokens"),
             completion_tokens=usage.get("completion_tokens"),
             total_tokens=usage.get("total_tokens"),

@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     legalai_llm_fallback_provider: str = "gemini"
     # Optional override of each answer adapter's automatic retries (None keeps the adapter default).
     legalai_llm_max_retries: int | None = None
+    # Output token limit sent to every answer provider; a length stop is a generation failure.
+    legalai_llm_max_output_tokens: int = 2048
     # Return per-stage query timings and the answering backend in the response `debug` field.
     legalai_query_debug: bool = False
     gemini_model: str = ""

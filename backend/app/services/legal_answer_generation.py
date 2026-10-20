@@ -163,6 +163,10 @@ class ModelGenerationMetadata(BaseModel):
     retry_count: int = 0
     retry_reasons: list[str] = Field(default_factory=list)
     final_provider_status: str | None = None
+    # Provider stop reason (e.g. "stop", "STOP"); a length/max-token stop is raised as *_OUTPUT_TRUNCATED.
+    finish_reason: str | None = None
+    # Prompt that produced the answer (set by the product query layer).
+    prompt_version: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
@@ -261,6 +265,7 @@ class GeminiAnswerAdapter:
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {
                 "temperature": self.temperature,
+                "maxOutputTokens": self.settings.legalai_llm_max_output_tokens,
                 "responseMimeType": "application/json",
                 "responseSchema": model_payload_schema(schema),
             },
@@ -283,6 +288,10 @@ class GeminiAnswerAdapter:
                 self.sleep(self.backoff_seconds[min(attempt - 1, len(self.backoff_seconds) - 1)])
         if body is None:
             raise ModelProviderError("GEMINI_INVALID_RESPONSE", "Gemini returned no API response.")
+        finish_reason = gemini_finish_reason(body)
+        if finish_reason == "MAX_TOKENS":
+            # A cut-off answer is never presented as complete (and is not a provider failure, so no fallback).
+            raise ModelProviderError("GEMINI_OUTPUT_TRUNCATED", "Gemini stopped at the output token limit.")
         text = extract_gemini_text(body)
         usage = body.get("usageMetadata", {})
         metadata = ModelGenerationMetadata(
@@ -296,6 +305,7 @@ class GeminiAnswerAdapter:
             retry_count=len(retry_reasons),
             retry_reasons=retry_reasons,
             final_provider_status="SUCCESS",
+            finish_reason=finish_reason,
             prompt_tokens=usage.get("promptTokenCount"),
             completion_tokens=usage.get("candidatesTokenCount"),
             total_tokens=usage.get("totalTokenCount"),
@@ -568,6 +578,11 @@ def model_output_failure_result(
         query_understanding_version=understanding.schema_version,
         retrieval_version=retrieval.retrieval_version,
     )
+
+
+def gemini_finish_reason(body: dict[str, Any]) -> str | None:
+    candidates = body.get("candidates") or []
+    return candidates[0].get("finishReason") if candidates else None
 
 
 def extract_gemini_text(body: dict[str, Any]) -> str:
