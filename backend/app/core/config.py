@@ -34,13 +34,21 @@ class Settings(BaseSettings):
     legalai_groq_reasoning_effort: str = "low"
     # Groq per-request token ceiling (the account's tokens-per-minute limit); unset disables the size guard.
     legalai_groq_max_request_tokens: int | None = None
-    # estimate_tokens() undercounts Groq's real prompt tokens by 1.38-1.65x (step 11d calibration).
-    legalai_groq_token_estimate_factor: float = 1.7
+    # Groq's real prompt tokens are 1.18-1.43x estimate_tokens(prompt + schema) on all 10 recorded live runs;
+    # 1.51 is the worst ratio plus 5% (step 12, backend/scripts/calibrate_request_size_guard.py).
+    legalai_groq_token_estimate_factor: float = 1.51
     # Gemini 3 thinking level (low | medium | high); empty sends none.
     legalai_gemini_thinking: str = "low"
     legalai_gemini_timeout_seconds: float = 90.0
     # Return per-stage query timings and the answering backend in the response `debug` field.
     legalai_query_debug: bool = False
+    # Device for the query embedder and reranker (auto | cpu | mps | cuda); auto uses MPS when torch reports it.
+    legalai_model_device: str = "auto"
+    # Half precision for the reranker on MPS/CUDA (ignored on CPU). The query embedder stays fp32 to match
+    # the fp32 index vectors. Step 12: rankings identical to the frozen benchmark, about 4x faster on MPS.
+    legalai_reranker_fp16: bool = True
+    # Load the query models and run one tiny inference at startup.
+    legalai_model_warmup: bool = True
     gemini_model: str = ""
     legalai_llm_temperature: float = 0.1
     legalai_llm_timeout_seconds: float = 60.0

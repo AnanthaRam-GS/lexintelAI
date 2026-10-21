@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from backend.app.services.embeddings.base import EmbeddingConfig, validate_vectors
+from backend.app.services.model_device import DeviceFallbackModel
 
 
 def resolve_model_name_or_path(model_name: str) -> str:
@@ -40,8 +41,23 @@ class BgeM3EmbeddingProvider:
             from FlagEmbedding import BGEM3FlagModel
         except ImportError as exc:
             raise RuntimeError("FlagEmbedding is required for real BGE-M3 embeddings") from exc
-        self._model = BGEM3FlagModel(resolve_model_name_or_path(config.model_name), use_fp16=False, device=config.device)
+        model_path = resolve_model_name_or_path(config.model_name)
+        # FlagEmbedding takes ``devices``; with none given it picks an accelerator itself.
+        self._runtime = DeviceFallbackModel(
+            "bge-m3",
+            config.device,
+            config.use_fp16,
+            lambda device, use_fp16: BGEM3FlagModel(model_path, use_fp16=use_fp16, devices=device),
+        )
         self._dimension: int | None = config.dimension
+
+    @property
+    def device(self) -> str:
+        return self._runtime.device
+
+    @property
+    def precision(self) -> str:
+        return self._runtime.precision
 
     @property
     def config(self) -> EmbeddingConfig:
@@ -55,12 +71,14 @@ class BgeM3EmbeddingProvider:
         return self._dimension
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        encoded = self._model.encode(
-            texts,
-            batch_size=self._config.batch_size,
-            return_dense=True,
-            return_sparse=False,
-            return_colbert_vecs=False,
+        encoded = self._runtime.run(
+            lambda model: model.encode(
+                texts,
+                batch_size=self._config.batch_size,
+                return_dense=True,
+                return_sparse=False,
+                return_colbert_vecs=False,
+            )
         )
         vectors = encoded["dense_vecs"].tolist()
         if self._config.normalize_embeddings:

@@ -14,6 +14,7 @@ class EmbeddingConfig:
     batch_size: int = 16
     normalize_embeddings: bool = True
     dimension: int | None = None
+    use_fp16: bool = False
 
 
 class EmbeddingProvider(Protocol):
