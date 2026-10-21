@@ -85,9 +85,31 @@ class Settings(BaseSettings):
     indian_kanoon_api_token: str = ""
     indian_kanoon_base_url: str = "https://api.indiankanoon.org"
 
+    # Required outside APP_ENV=test: at least 32 bytes, never the old public default (core/startup_checks.py).
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     jwt_expiry_minutes: int = 60
+    # Development seed accounts (backend/scripts/seed_users.py only); never used by the app.
+    seed_lawyer_password: str = ""
+    seed_admin_password: str = ""
+    # Auth cookie SameSite (lax | strict | none); Secure is set in production, and always with SameSite=None.
+    auth_cookie_samesite: str = "lax"
+
+    # Login throttling (SEC-003): failures within the window lock the account key or the client IP.
+    login_max_failures_per_account: int = 5
+    login_max_failures_per_ip: int = 20
+    login_failure_window_seconds: int = 900
+    login_lockout_seconds: int = 900
+    # Query rate limits (SEC-001): per client IP on public routes, per user on professional routes.
+    public_query_limit_per_minute: int = 5
+    public_query_limit_per_day: int = 100
+    professional_query_limit_per_minute: int = 10
+    professional_query_limit_per_day: int = 300
+    # Global cap on concurrent LLM generations; a request waits up to the timeout for a slot, then gets 503.
+    llm_max_concurrent_generations: int = 4
+    llm_generation_wait_seconds: float = 10.0
+    # Comma-separated proxy IPs/CIDRs whose X-Forwarded-For is trusted; empty trusts no proxy.
+    trusted_proxies: str = ""
 
     inlegalbert_model_path: str = "./models/inlegalbert-finetuned"
     inlegalbert_classification_threshold: float = 0.5
@@ -147,3 +169,9 @@ def resolve_chroma_location(settings: Settings) -> tuple[Path, str]:
     if not persist_dir.is_absolute():
         persist_dir = REPO_ROOT / persist_dir
     return persist_dir, settings.chroma_collection_name
+
+
+def allowed_origins(settings: Settings) -> list[str]:
+    """The browser origins allowed by CORS, and by the Origin/Referer check on cookie-authenticated writes."""
+    configured = [settings.frontend_origin, "http://localhost:3000", "http://127.0.0.1:3000"]
+    return list(dict.fromkeys(origin.strip().rstrip("/") for origin in configured if origin and origin.strip()))

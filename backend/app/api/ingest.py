@@ -54,6 +54,25 @@ def sanitize_filename(filename: str) -> str:
     return cleaned or "document.pdf"
 
 
+UPLOAD_READ_CHUNK_BYTES = 1024 * 1024
+
+
+async def read_upload_within_limit(file: UploadFile, *, max_bytes: int, limit_mb: int) -> bytes:
+    """SEC-008: read the upload in chunks and stop with 413 as soon as it passes the limit.
+
+    At most ``max_bytes`` plus one chunk is ever read, never the whole oversize file.
+    """
+    received = bytearray()
+    while chunk := await file.read(UPLOAD_READ_CHUNK_BYTES):
+        received.extend(chunk)
+        if len(received) > max_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"File size exceeds limit of {limit_mb} MB.",
+            )
+    return bytes(received)
+
+
 @router.post(
     "/upload",
     response_model=IngestionUploadResponse,
@@ -89,18 +108,12 @@ async def upload_corpus_document(
             detail=f"Invalid content type '{file.content_type}'. Must be a PDF document.",
         )
 
-    file_bytes = await file.read()
+    max_bytes = settings.max_upload_size_mb * 1024 * 1024
+    file_bytes = await read_upload_within_limit(file, max_bytes=max_bytes, limit_mb=settings.max_upload_size_mb)
     if len(file_bytes) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Uploaded file is empty.",
-        )
-
-    max_bytes = settings.max_upload_size_mb * 1024 * 1024
-    if len(file_bytes) > max_bytes:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File size exceeds limit of {settings.max_upload_size_mb} MB.",
         )
 
     # Validate PDF magic header signature within the first 1024 bytes per ISO 32000-1

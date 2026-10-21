@@ -14,6 +14,19 @@ describe('classifyPublicAnswerFailure', () => {
     );
   });
 
+  it('maps our own rate limit and busy answers to plain-language kinds, not the quota kind', () => {
+    expect(classifyPublicAnswerFailure(new ApiClientError('wait', 429, 'RATE_LIMITED', 42))).toBe(
+      'rate-limited',
+    );
+    expect(classifyPublicAnswerFailure(new ApiClientError('busy', 503, 'MODEL_BUSY', 15))).toBe(
+      'model-busy',
+    );
+    expect(errorCopy.public.answer['rate-limited'].title).toBe('Please slow down');
+    expect(errorCopy.public.answer['rate-limited'].message).toContain(
+      'Your question is still here',
+    );
+  });
+
   it('maps a bare 429 status without a recognized code to the quota-safe failure kind', () => {
     const error = new ApiClientError('rate limited', 429, 'SOME_OTHER_CODE');
 

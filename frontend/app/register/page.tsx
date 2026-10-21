@@ -32,7 +32,8 @@ export default function RegisterPage() {
     setError('');
     try {
       const response = await authApi.register(fullName.trim(), email.trim(), password);
-      const params = new URLSearchParams({ email: response.user.email });
+      // The response is the same for new and existing emails; the verify page explains both.
+      const params = new URLSearchParams({ email: response.email });
       if (applyAsLawyer) {
         params.set('next', '/lawyer/apply');
       }

@@ -31,10 +31,21 @@ export class ApiClientError extends Error {
     message: string,
     readonly status?: number,
     readonly code?: string,
+    readonly retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = 'ApiClientError';
   }
+}
+
+/** Backend codes for "slow down" answers; their messages are written for end users. */
+const LIMIT_CODES = new Set(['RATE_LIMITED', 'LOGIN_THROTTLED', 'MODEL_BUSY']);
+
+/** The plain-language message for a rate-limit, login-throttle or busy answer, or null for other errors. */
+export function limitMessage(error: unknown): string | null {
+  if (!(error instanceof ApiClientError) || !error.code || !LIMIT_CODES.has(error.code))
+    return null;
+  return error.message;
 }
 
 export async function apiFetch<TResponse>(
@@ -342,6 +353,11 @@ function serviceHealth(value: string): CorpusStats['chromaDb']['status'] {
   return 'down';
 }
 
+function retryAfterSeconds(response: Response): number | undefined {
+  const value = Number(response.headers?.get?.('Retry-After'));
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+}
+
 async function apiError(response: Response): Promise<ApiClientError> {
   const fallback =
     response.status >= 500
@@ -350,7 +366,12 @@ async function apiError(response: Response): Promise<ApiClientError> {
   try {
     const body: unknown = await response.json();
     if (isBackendError(body)) {
-      return new ApiClientError(body.detail.message, response.status, body.detail.code);
+      return new ApiClientError(
+        body.detail.message,
+        response.status,
+        body.detail.code,
+        retryAfterSeconds(response),
+      );
     }
     if (isBackendStringError(body)) {
       return new ApiClientError(body.detail, response.status);

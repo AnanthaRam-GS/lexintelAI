@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
+import { limitMessage } from '../../lib/api';
 import { useAuth } from '../../lib/auth/AuthContext';
 import type { UserRole } from '../../lib/types/api';
 
@@ -17,14 +18,14 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    setHasError(false);
+    setErrorMessage('');
     try {
       const user = await login(email.trim(), password);
       if (!user.email_verified) {
@@ -32,8 +33,9 @@ export function LoginForm() {
         return;
       }
       router.replace(destinationFor(user.role, searchParams.get('next')));
-    } catch {
-      setHasError(true);
+    } catch (caught) {
+      // Throttled sign-ins explain how long to wait; every other failure stays generic.
+      setErrorMessage(limitMessage(caught) ?? LOGIN_ERROR_MESSAGE);
     } finally {
       setIsSubmitting(false);
     }
@@ -56,8 +58,8 @@ export function LoginForm() {
           className="mt-6 space-y-5 rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-component)]"
           onSubmit={(event) => void submit(event)}
         >
-          {hasError ? (
-            <ErrorMessage message={LOGIN_ERROR_MESSAGE} title="Sign-in failed" variant="inline" />
+          {errorMessage ? (
+            <ErrorMessage message={errorMessage} title="Sign-in failed" variant="inline" />
           ) : null}
 
           <div>

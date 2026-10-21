@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
+import { Suspense, useEffect, useState, type FormEvent } from 'react';
 
 import { ErrorMessage } from '../../components/shared/ErrorMessage';
 import { authApi } from '../../lib/api';
@@ -10,6 +10,15 @@ import { authApi } from '../../lib/api';
 const RESEND_SECONDS = 60;
 
 export default function VerifyEmailPage() {
+  // useSearchParams() needs a Suspense boundary for the page to prerender in `next build`.
+  return (
+    <Suspense>
+      <VerifyEmailForm />
+    </Suspense>
+  );
+}
+
+function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') ?? '';
@@ -50,8 +59,9 @@ export default function VerifyEmailPage() {
     setError('');
     setMessage('');
     try {
-      await authApi.resendVerification(email);
-      setMessage('A new verification code has been sent.');
+      const response = await authApi.resendVerification(email);
+      // The same message for every email address, so it never reveals whether an account exists.
+      setMessage(response.message);
       setCooldown(RESEND_SECONDS);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not resend the code.');
@@ -69,6 +79,13 @@ export default function VerifyEmailPage() {
         </h1>
         <p className="text-type-body-sm mt-2 text-[var(--color-muted)]">
           Enter the 6-digit code sent to {email || 'your email'}. Codes expire after 10 minutes.
+        </p>
+        <p className="text-type-body-sm mt-2 text-[var(--color-muted)]">
+          Already have an account with this email? We have emailed you instead of sending a code.{' '}
+          <Link className="font-semibold text-[var(--color-ink)] underline" href="/login">
+            Sign in
+          </Link>
+          .
         </p>
 
         <form

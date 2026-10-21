@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the 10 DB-backed test modules, one process each, against the isolated
+# Run the 11 DB-backed test modules, one process each, against the isolated
 # test database, and write per-module logs plus a summary.
 #
 # Usage:
@@ -32,6 +32,7 @@ MODULES=(
   test_query_api
   test_query_history
   test_registration_lawyer_verification
+  test_security_hardening
   test_structured_data_loaders
   test_vector_indexing
 )

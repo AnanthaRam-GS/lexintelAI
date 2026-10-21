@@ -8,7 +8,9 @@ export type PublicAnswerFailure =
   | 'pdf-too-large'
   | 'pdf-empty'
   | 'model-unavailable'
-  | 'model-quota-exceeded';
+  | 'model-quota-exceeded'
+  | 'rate-limited'
+  | 'model-busy';
 export type AdminRequestFailure = 'network' | 'service' | 'timeout';
 export type AdminFileFailure = 'corrupted' | 'processing' | 'timeout' | 'too-large' | 'unsupported';
 
@@ -51,6 +53,15 @@ export const errorCopy = {
       'model-quota-exceeded': {
         title: 'Usage limit reached',
         message: 'AI answer service has reached its temporary usage limit. Please try again later.',
+      },
+      'rate-limited': {
+        title: 'Please slow down',
+        message:
+          "You've asked several questions in a short time. Wait a little, then try again. Your question is still here.",
+      },
+      'model-busy': {
+        title: 'LegalAI is busy right now',
+        message: 'Many people are asking questions at the moment. Please try again in a minute.',
       },
     } satisfies Record<PublicAnswerFailure, ErrorCopy>,
     loading: {
@@ -151,6 +162,8 @@ export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure
       return 'invalid-pdf';
     if (error.code === 'PDF_PARSE_FAILED' || error.code === 'PDF_CHUNKING_FAILED')
       return 'pdf-empty';
+    if (error.code === 'RATE_LIMITED') return 'rate-limited';
+    if (error.code === 'MODEL_BUSY') return 'model-busy';
     if (error.code === 'MODEL_PROVIDER_QUOTA_EXCEEDED' || error.status === 429)
       return 'model-quota-exceeded';
     if (

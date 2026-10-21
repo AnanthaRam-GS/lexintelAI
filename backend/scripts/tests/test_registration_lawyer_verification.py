@@ -22,12 +22,13 @@ from backend.app.db.session import SessionLocal
 from backend.app.services.email_delivery import EmailDeliveryError, EmailDeliveryService
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
+from backend.scripts.tests.db_test_bootstrap import TEST_SEED_PASSWORDS, TEST_ADMIN_PASSWORD
 
 
 class RegistrationLawyerVerificationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
 
     def setUp(self) -> None:
         self.client = TestClient(app)
@@ -46,23 +47,40 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 201)
         body = response.json()
-        self.assertEqual(body["user"]["email"], self.email)
-        self.assertEqual(body["user"]["role"], "public")
-        self.assertFalse(body["user"]["email_verified"])
+        self.assertEqual(body["email"], self.email)
+        self.assertNotIn("user", body)  # SEC-003: no account data, so new and existing emails look the same
         self.assertNotIn("hashed_password", str(body))
 
         db = SessionLocal()
         try:
             user = db.query(User).filter(User.email == self.email).one()
             self.assertEqual(user.role, "public")
+            self.assertFalse(user.email_verified)
             self.assertNotEqual(user.hashed_password, "Password123!")
         finally:
             db.close()
 
-    def test_duplicate_email_and_short_password_are_rejected(self) -> None:
+    def test_duplicate_email_gets_the_new_account_response_and_a_notice(self) -> None:
+        # SEC-003: no 409; the existing owner is emailed a notice and no second account or code is created.
         payload = {"full_name": "Public User", "email": self.email, "password": "Password123!"}
-        self.assertEqual(self.client.post("/auth/register", json=payload).status_code, 201)
-        self.assertEqual(self.client.post("/auth/register", json=payload).status_code, 409)
+        first = self.client.post("/auth/register", json=payload)
+        with patch("backend.app.api.auth.send_verification_otp") as send_otp, patch(
+            "backend.app.services.email_delivery.EmailDeliveryService.send_account_exists_notice"
+        ) as notice:
+            again = self.client.post("/auth/register", json=dict(payload, password="Different123!"))
+        self.assertEqual((first.status_code, again.status_code), (201, 201))
+        self.assertEqual(again.json(), {**first.json(), "dev_verification_otp": None})
+        self.assertEqual(again.headers.keys(), first.headers.keys())
+        send_otp.assert_not_called()
+        notice.assert_called_once_with(self.email)
+        db = SessionLocal()
+        try:
+            self.assertEqual(db.query(User).filter(User.email == self.email).count(), 1)
+        finally:
+            db.close()
+
+    def test_short_password_is_rejected(self) -> None:
+        payload = {"full_name": "Public User", "email": self.email, "password": "Password123!"}
         weak = dict(payload, email=f"weak-{self.email}", password="short")
         self.assertEqual(self.client.post("/auth/register", json=weak).status_code, 422)
 
@@ -139,8 +157,13 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
     def test_resend_invalidates_previous_otp_and_enforces_cooldown(self) -> None:
         with patch("backend.app.api.auth.generate_email_otp", return_value="111111"), patch("backend.app.api.auth.send_verification_otp"):
             self.client.post("/auth/register", json={"full_name": "Verify Me", "email": self.email, "password": "Password123!"})
-        cooldown = self.client.post("/auth/resend-verification", json={"email": self.email})
-        self.assertEqual(cooldown.status_code, 429)
+        # SEC-003: the cooldown is enforced silently (no new code, no 429) so it reveals nothing.
+        with patch("backend.app.api.auth.send_verification_otp") as cooling_send:
+            cooldown = self.client.post("/auth/resend-verification", json={"email": self.email})
+        self.assertEqual(cooldown.status_code, 200)
+        cooling_send.assert_not_called()
+        unknown = self.client.post("/auth/resend-verification", json={"email": f"nobody-{self.email}"})
+        self.assertEqual(unknown.json(), cooldown.json())
 
         db = SessionLocal()
         try:
@@ -212,7 +235,7 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
         self.assertEqual(public_client.post("/query/professional", json={"text": "bail research"}).status_code, 403)
 
         admin = TestClient(app)
-        self.assertEqual(admin.post("/auth/login", json={"email": "admin@legalai.local", "password": "AdminPassword123!"}).status_code, 200)
+        self.assertEqual(admin.post("/auth/login", json={"email": "admin@legalai.local", "password": TEST_ADMIN_PASSWORD}).status_code, 200)
         approved = admin.post(f"/admin/lawyer-applications/{application.json()['id']}/approve")
         self.assertEqual(approved.status_code, 200)
         self.assertEqual(approved.json()["status"], "VERIFIED")
@@ -247,7 +270,7 @@ class RegistrationLawyerVerificationTests(unittest.TestCase):
             files={"proof": ("proof.pdf", b"%PDF-1.4\n%%EOF", "application/pdf")},
         )
         admin = TestClient(app)
-        admin.post("/auth/login", json={"email": "admin@legalai.local", "password": "AdminPassword123!"})
+        admin.post("/auth/login", json={"email": "admin@legalai.local", "password": TEST_ADMIN_PASSWORD})
         rejected = admin.post(f"/admin/lawyer-applications/{created.json()['id']}/reject", json={"reason": "Details could not be verified."})
         self.assertEqual(rejected.status_code, 200)
         self.assertEqual(public_client.get("/auth/me").json()["role"], "public")

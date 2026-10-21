@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from argparse import Namespace
+from contextlib import nullcontext
 from dataclasses import dataclass
 from functools import lru_cache
 import json
@@ -14,12 +15,21 @@ from time import perf_counter
 from pathlib import Path
 from typing import Any, Callable
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings, resolve_chroma_location
 from backend.app.core.dependencies import require_lawyer_or_admin
+from backend.app.core.rate_limit import (
+    DAY,
+    MINUTE,
+    client_ip,
+    generation_slots,
+    query_limiter,
+    too_many_requests,
+    wait_phrase,
+)
 from backend.app.db.models import User
 from backend.app.db.session import get_db
 from backend.app.models.common import SectionReference
@@ -109,10 +119,11 @@ class QueryPipelineOutcome:
 class QueryExecutionError(RuntimeError):
     """Sanitized query failure for HTTP mapping."""
 
-    def __init__(self, code: str, message: str, status_code: int) -> None:
+    def __init__(self, code: str, message: str, status_code: int, *, retry_after: int | None = None) -> None:
         super().__init__(message)
         self.code = code
         self.status_code = status_code
+        self.retry_after = retry_after
 
 
 def get_settings() -> Settings:
@@ -178,7 +189,46 @@ def get_answer_adapter(settings: Settings = Depends(get_settings)):
     )
 
 
-@router.post("/public", response_model=PublicQueryResponse)
+MODEL_BUSY_RETRY_AFTER_SECONDS = 15
+
+
+def generation_limit(settings: Settings) -> tuple[int, float]:
+    """SEC-001: the process-wide cap on concurrent LLM generations, and how long a request waits for a slot."""
+    return settings.llm_max_concurrent_generations, settings.llm_generation_wait_seconds
+
+
+def enforce_public_query_limit(request: Request, settings: Settings = Depends(get_settings)) -> None:
+    """SEC-001: per-client-IP limits on the anonymous query routes (they trigger paid LLM calls)."""
+    retry_after = query_limiter.hit(
+        f"public:{client_ip(request, settings)}",
+        [(settings.public_query_limit_per_minute, MINUTE), (settings.public_query_limit_per_day, DAY)],
+    )
+    if retry_after is not None:
+        raise too_many_requests(
+            "RATE_LIMITED",
+            f"You've asked several questions in a short time. Please wait {wait_phrase(retry_after)} and try again.",
+            retry_after,
+        )
+
+
+def enforce_professional_query_limit(
+    current_user: User = Depends(require_lawyer_or_admin),
+    settings: Settings = Depends(get_settings),
+) -> None:
+    """SEC-001: per-user limits on the professional query routes (checked after authentication)."""
+    retry_after = query_limiter.hit(
+        f"professional:{current_user.id}",
+        [(settings.professional_query_limit_per_minute, MINUTE), (settings.professional_query_limit_per_day, DAY)],
+    )
+    if retry_after is not None:
+        raise too_many_requests(
+            "RATE_LIMITED",
+            f"You've reached the analysis limit for now. Please wait {wait_phrase(retry_after)} and try again.",
+            retry_after,
+        )
+
+
+@router.post("/public", dependencies=[Depends(enforce_public_query_limit)], response_model=PublicQueryResponse)
 def query_public(
     request: PublicTextQueryRequest,
     settings: Settings = Depends(get_settings),
@@ -197,7 +247,7 @@ def query_public(
         raise http_error(exc) from exc
 
 
-@router.post("/professional", response_model=ProfessionalQueryResponse)
+@router.post("/professional", dependencies=[Depends(enforce_professional_query_limit)], response_model=ProfessionalQueryResponse)
 def query_professional(
     request: ProfessionalTextQueryRequest,
     db: Session = Depends(get_db),
@@ -234,7 +284,7 @@ def query_professional(
         raise http_error(exc) from exc
 
 
-@router.post("/professional/pdf", response_model=ProfessionalQueryResponse)
+@router.post("/professional/pdf", dependencies=[Depends(enforce_professional_query_limit)], response_model=ProfessionalQueryResponse)
 async def query_professional_pdf(
     query: str = Form(..., min_length=1, max_length=5000),
     file: UploadFile = File(...),
@@ -337,7 +387,7 @@ def answer_professional_pdf(
     return response
 
 
-@router.post("/public/pdf", response_model=PublicQueryResponse)
+@router.post("/public/pdf", dependencies=[Depends(enforce_public_query_limit)], response_model=PublicQueryResponse)
 async def query_public_pdf(
     query: str = Form(..., min_length=1, max_length=5000),
     file: UploadFile = File(...),
@@ -570,7 +620,8 @@ def log_private_pdf_metrics(
 
 
 def http_error(exc: QueryExecutionError) -> HTTPException:
-    return HTTPException(status_code=exc.status_code, detail={"code": exc.code, "message": str(exc)})
+    headers = {"Retry-After": str(exc.retry_after)} if exc.retry_after else None
+    return HTTPException(status_code=exc.status_code, detail={"code": exc.code, "message": str(exc)}, headers=headers)
 
 
 def run_frozen_query_pipeline(
@@ -623,6 +674,7 @@ def run_frozen_query_pipeline(
             private_context_builder=private_context_builder,
             timings=timings,
             size_guard=request_size_guard(settings),
+            generation_limit=generation_limit(settings),
         )
         if result.answer is None and any(
             warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
@@ -639,6 +691,7 @@ def run_frozen_query_pipeline(
                 private_context_builder=None,
                 timings=timings,
                 size_guard=request_size_guard(settings),
+                generation_limit=generation_limit(settings),
             )
         log_product_context_metrics(
             provider=settings.legalai_llm_provider,
@@ -671,6 +724,7 @@ def _attempt_generation(
     private_context_builder: Callable[[str], str | None] | None,
     timings: dict[str, float] | None = None,
     size_guard: "RequestSizeGuard | None" = None,
+    generation_limit: tuple[int, float] | None = None,
 ) -> tuple[LegalAnswerResult, ContextTier, Any]:
     timings = timings if timings is not None else {}
     stage_started = perf_counter()
@@ -714,8 +768,17 @@ def _attempt_generation(
         logger.info("request_size_guard trimmed_evidence_items=%d remaining=%d", trimmed, len(bounded_retrieval.evidence))
     add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
     timed_adapter = TimedAdapter(adapter) if adapter is not None else None
-    stage_started = perf_counter()
-    result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+    max_generations, wait_seconds = generation_limit or (0, 0.0)
+    with generation_slots.slot(max_generations, wait_seconds) if generation_limit else nullcontext(True) as acquired:
+        if not acquired:
+            raise QueryExecutionError(
+                "MODEL_BUSY",
+                "Many people are asking questions right now. Please try again in a moment.",
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                retry_after=MODEL_BUSY_RETRY_AFTER_SECONDS,
+            )
+        stage_started = perf_counter()
+        result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
     if result.model_metadata is not None:
         result.model_metadata.prompt_version = PROMPT_VERSION
         result.model_metadata.evidence_items_trimmed = trimmed

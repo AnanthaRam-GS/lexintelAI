@@ -1,6 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { adminIngestionApi, analyticsApi, authApi, historyApi, queryApi } from './api';
+import {
+  adminIngestionApi,
+  analyticsApi,
+  ApiClientError,
+  authApi,
+  historyApi,
+  limitMessage,
+  queryApi,
+} from './api';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -184,6 +192,32 @@ describe('frontend API adapters', () => {
       ],
     });
     expect(stats.keywordIndex).not.toHaveProperty('detail');
+  });
+});
+
+describe('rate limit errors', () => {
+  it('keeps the Retry-After seconds and the plain-language message', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValue({
+        ok: false,
+        status: 429,
+        headers: new Headers({ 'Retry-After': '42' }),
+        json: async () => ({
+          detail: {
+            code: 'RATE_LIMITED',
+            message:
+              "You've asked several questions in a short time. Please wait about a minute and try again.",
+          },
+        }),
+      } as Response),
+    );
+    const error = await queryApi.submitText('What is bail?').catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(ApiClientError);
+    expect((error as ApiClientError).retryAfterSeconds).toBe(42);
+    expect(limitMessage(error)).toContain('Please wait about a minute');
+    expect(limitMessage(new ApiClientError('boom', 500, 'QUERY_PIPELINE_UNAVAILABLE'))).toBeNull();
+    vi.unstubAllGlobals();
   });
 });
 

@@ -2,7 +2,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { authApi } from '../../lib/api';
+import { ApiClientError, authApi } from '../../lib/api';
 import { AuthProvider } from '../../lib/auth/AuthContext';
 import { LoginForm } from './LoginForm';
 
@@ -107,5 +107,32 @@ describe('LoginForm', () => {
       'We could not sign you in. Check your details and try again.',
     );
     expect(screen.getByRole('alert')).not.toHaveTextContent('private-host');
+  });
+
+  it('explains how long to wait when sign-in is throttled', async () => {
+    vi.spyOn(authApi, 'me').mockRejectedValue(new Error('Not authenticated'));
+    vi.spyOn(authApi, 'login').mockRejectedValue(
+      new ApiClientError(
+        'Too many sign-in attempts. Please wait about 15 minutes and try again.',
+        429,
+        'LOGIN_THROTTLED',
+        900,
+      ),
+    );
+    const user = userEvent.setup();
+
+    render(
+      <AuthProvider>
+        <LoginForm />
+      </AuthProvider>,
+    );
+
+    await user.type(screen.getByLabelText('Email'), 'admin@legalai.test');
+    await user.type(screen.getByLabelText('Password'), 'wrong-password');
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Too many sign-in attempts. Please wait about 15 minutes and try again.',
+    );
   });
 });
