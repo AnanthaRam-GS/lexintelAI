@@ -65,6 +65,21 @@ describe('ResponseCard', () => {
     expect(screen.getAllByRole('link', { name: 'Learn more' })).not.toHaveLength(0);
   });
 
+  it('says when no source could be verified instead of showing unverified sources', () => {
+    render(<ResponseCard citations={[]} content={content} mode="public" sections={sections} />);
+
+    expect(screen.queryByRole('heading', { name: 'Sources' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('no-verified-sources')).toHaveTextContent(
+      'We could not verify a source for this answer.',
+    );
+    cleanup();
+
+    render(
+      <ResponseCard citations={citations} content={content} mode="public" sections={sections} />,
+    );
+    expect(screen.queryByTestId('no-verified-sources')).not.toBeInTheDocument();
+  });
+
   it('uses safe external links in both response modes', () => {
     const { rerender } = render(
       <ResponseCard

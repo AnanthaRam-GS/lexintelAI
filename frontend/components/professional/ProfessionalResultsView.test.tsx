@@ -85,7 +85,7 @@ describe('ProfessionalResultsView Component', () => {
     expect(screen.queryByText('Evidence Identified')).not.toBeInTheDocument();
   });
 
-  it('copies a null relevance score as "not available"', async () => {
+  it('copies a null relative relevance as "not ranked"', async () => {
     const writeTextMock = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText: writeTextMock } });
     const [first, ...rest] = mockProfessionalQueryResponse.precedents;
@@ -98,7 +98,7 @@ describe('ProfessionalResultsView Component', () => {
     fireEvent.click(screen.getByRole('button', { name: /Copy Brief/i }));
 
     const copied = writeTextMock.mock.calls[0]?.[0] as string;
-    expect(copied).toContain('Relevance: not available');
+    expect(copied).toContain('Relative relevance: not ranked');
     expect(copied).toContain('[doc:chunk:0001]');
     expect(copied).not.toContain('NaN');
   });

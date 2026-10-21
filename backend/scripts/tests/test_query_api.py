@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
-import math
 import re
 import tempfile
 import unittest
@@ -42,6 +41,13 @@ from backend.app.services.legal_answer_generation import (
     RetrievedAuthority,
 )
 from backend.app.services import professional_brief
+from backend.app.services.legal_answer_generation import ModelProviderError, ModelUnavailableError
+from backend.app.services.legal_citation_validation import (
+    CitationValidationErrorCode,
+    CitationValidationIssue,
+    CitationValidationResult,
+)
+from backend.app.services.llm_provider_chain import FallbackAnswerAdapter
 from backend.app.services.embeddings.base import EmbeddingConfig
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
 from backend.app.services.local_document_map import build_local_document_map
@@ -53,6 +59,18 @@ from backend.scripts import build_vector_index as vector_builder
 from backend.scripts.tests.brief_fixtures import FIXTURE_NAMES, fixture_pdf_bytes, fixture_private_chunks
 from backend.scripts.tests.brief_fixtures import expected as expected_brief
 from backend.main import app
+
+
+def mock_claims() -> list[dict]:
+    """One structured claim citing E1, as prompt v2 requires (mocked model output)."""
+    return [
+        {
+            "claim_id": "c1",
+            "text": "The retrieved authority discusses the question.",
+            "claim_type": "LEGAL_RULE",
+            "citations": [{"evidence_id": "E1", "claim_id": "c1", "supported_text": "The retrieved authority discusses the question.", "source_metadata": {}}],
+        }
+    ]
 
 
 class QueryApiTests(unittest.TestCase):
@@ -86,6 +104,7 @@ class QueryApiTests(unittest.TestCase):
                 ],
                 "sources": [{"title": "Example v State", "link": "https://example.test/judgment"}],
                 "nextStepGuidance": "Preserve papers Speak to a lawyer",
+                "debug": None,  # per-stage timings are returned only when LEGALAI_QUERY_DEBUG is enabled
             },
         )
         self.assertNotIn("model_metadata", body)
@@ -271,7 +290,7 @@ class QueryApiTests(unittest.TestCase):
                     parsed_response={
                         "answer": {"issue_summary": "POCSO overview", "legal_regime": "IPC"},
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -323,7 +342,7 @@ class QueryApiTests(unittest.TestCase):
                             "citations": [],
                         },
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -371,7 +390,7 @@ class QueryApiTests(unittest.TestCase):
                     parsed_response={
                         "answer": {"issue_summary": "ok", "legal_regime": "IPC"},
                         "summary": "ok",
-                        "claims": [],
+                        "claims": mock_claims(),
                     },
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
@@ -407,7 +426,7 @@ class QueryApiTests(unittest.TestCase):
                 adapter_calls.append(schema.__name__)
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "Bail research brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -531,7 +550,7 @@ class QueryApiTests(unittest.TestCase):
                 adapter_calls.append(schema.__name__)
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "BNSS"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -577,7 +596,7 @@ class QueryApiTests(unittest.TestCase):
                         answer = {"issue_summary": "ok", "legal_regime": "IPC"}
                     return LegalAnswerModelResponse(
                         raw_response="{}",
-                        parsed_response={"answer": answer, "summary": "ok", "claims": []},
+                        parsed_response={"answer": answer, "summary": "ok", "claims": mock_claims()},
                         model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="m", response_mode=mode),
                     )
 
@@ -666,7 +685,7 @@ class QueryApiTests(unittest.TestCase):
                 captured_prompts.append(estimate_tokens(prompt))
                 return LegalAnswerModelResponse(
                     raw_response="{}",
-                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "IPC"}, "summary": "ok", "claims": []},
+                    parsed_response={"answer": {"issue_summary": "brief", "legal_regime": "IPC"}, "summary": "ok", "claims": mock_claims()},
                     model_metadata=ModelGenerationMetadata(provider="fixture", configured_model_id="fixture-model", response_mode=mode),
                 )
 
@@ -724,7 +743,8 @@ class QueryApiTests(unittest.TestCase):
         # Precedents come from retrieved evidence: reranker-based score, bounded excerpt, chunk provenance.
         precedent = body["precedents"][0]
         self.assertEqual(precedent["chunk_id"], "doc-1:chunk:0007")
-        self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + 2.718281828459045 ** -2.0), places=5)
+        self.assertIsNone(precedent["relevance_score"])  # a single precedent has no relative relevance
+        self.assertEqual(precedent["reranker_score"], 2.0)
         self.assertLessEqual(len(precedent["excerpt"]), 400)
         self.assertNotEqual(precedent["excerpt"], PROFESSIONAL_EVIDENCE_TEXT)
         pipeline.assert_called_once()
@@ -755,9 +775,21 @@ class QueryApiTests(unittest.TestCase):
         self.assertIn("/query/professional/pdf", routes)
 
     def test_get_answer_adapter_selects_groq_for_groq_provider(self) -> None:
-        settings = Settings(legalai_llm_provider="groq", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        settings = Settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="", groq_api_key="key", groq_model="openai/gpt-oss-120b")
         adapter = query_api.get_answer_adapter(settings)
         self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
+
+    def test_get_answer_adapter_chains_groq_primary_to_gemini_fallback(self) -> None:
+        settings = Settings(
+            legalai_llm_provider="groq", legalai_llm_fallback_provider="gemini",
+            groq_api_key="key", groq_model="openai/gpt-oss-120b", gemini_api_key="key", gemini_model="fixture-model",
+        )
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, FallbackAnswerAdapter)
+        self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.fallback, GeminiAnswerAdapter)
+        self.assertEqual((adapter.primary_name, adapter.fallback_name), ("groq", "gemini"))
         self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
 
     def test_get_answer_adapter_selects_gemini_for_gemini_provider(self) -> None:
@@ -766,9 +798,10 @@ class QueryApiTests(unittest.TestCase):
         self.assertIsInstance(adapter, GeminiAnswerAdapter)
 
     def test_get_answer_adapter_is_case_insensitive_and_trims_whitespace(self) -> None:
-        settings = Settings(legalai_llm_provider="  GROQ  ", groq_api_key="key", groq_model="openai/gpt-oss-120b")
+        settings = Settings(legalai_llm_provider="  GROQ  ", legalai_llm_fallback_provider=" Gemini ", groq_api_key="key", groq_model="openai/gpt-oss-120b")
         adapter = query_api.get_answer_adapter(settings)
-        self.assertIsInstance(adapter, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
+        self.assertIsInstance(adapter.fallback, GeminiAnswerAdapter)
 
     def test_get_answer_adapter_rejects_ollama_with_controlled_unavailable_error(self) -> None:
         settings = Settings(legalai_llm_provider="ollama")
@@ -784,11 +817,15 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(ctx.exception.status_code, 503)
         self.assertEqual(ctx.exception.detail["code"], "MODEL_PROVIDER_UNAVAILABLE")
 
-    def test_get_answer_adapter_never_silently_falls_back_from_groq_to_gemini(self) -> None:
-        settings = Settings(legalai_llm_provider="groq", groq_api_key="", groq_model="", gemini_api_key="key", gemini_model="fixture-model")
-        adapter = query_api.get_answer_adapter(settings)
-        self.assertIsInstance(adapter, GroqAnswerAdapter)
-        self.assertNotIsInstance(adapter, GeminiAnswerAdapter)
+    def test_get_answer_adapter_never_falls_back_when_no_fallback_is_configured(self) -> None:
+        for disabled in ("", "none", "groq"):
+            settings = Settings(
+                legalai_llm_provider="groq", legalai_llm_fallback_provider=disabled,
+                groq_api_key="", groq_model="", gemini_api_key="key", gemini_model="fixture-model",
+            )
+            adapter = query_api.get_answer_adapter(settings)
+            self.assertIsInstance(adapter, GroqAnswerAdapter)
+            self.assertNotIsInstance(adapter, (GeminiAnswerAdapter, FallbackAnswerAdapter))
 
     def test_professional_pdf_requires_authentication(self) -> None:
         response = self.client.post(
@@ -1340,9 +1377,20 @@ class MockBriefAdapter:
         }
         return LegalAnswerModelResponse(
             raw_response="{}",
-            parsed_response={"answer": answer, "summary": "MOCK SUMMARY", "claims": []},
+            parsed_response={"answer": answer, "summary": "MOCK SUMMARY", "claims": mock_claims()},
             model_metadata=ModelGenerationMetadata(provider="mock", configured_model_id="mock-model", response_mode=mode),
         )
+
+
+class FailingAdapter:
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+        self.calls = 0
+        self.configured_model_id = "failing-model"
+
+    def generate_structured_answer(self, prompt, *, schema, mode):
+        self.calls += 1
+        raise self.error
 
 
 class ProfessionalBriefPipelineTests(unittest.TestCase):
@@ -1483,14 +1531,20 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
     def assert_precedents(self, precedents: list[dict], *, name: str) -> None:
         self.assertTrue(precedents, f"{name}: no precedents")
         scores = [p["relevance_score"] for p in precedents]
+        raws = [self.service.reranker_scores[p["chunk_id"]] for p in precedents]
         self.assertGreater(len(set(scores)), 1, f"{name}: relevance scores do not vary: {scores}")
-        self.assertNotIn(1.0, scores)
+        if len(precedents) > 1:
+            # Relative relevance: min-max of the raw reranker scores within this result set.
+            low, high = min(raws), max(raws)
+            self.assertEqual(max(scores), 1.0)
+            self.assertEqual(min(scores), 0.0)
+            for precedent, raw in zip(precedents, raws):
+                self.assertAlmostEqual(precedent["relevance_score"], (raw - low) / (high - low), places=6)
         for precedent in precedents:
             chunk = self.trusted_by_id.get(precedent["chunk_id"])
             self.assertIsNotNone(chunk, f"{name}: precedent chunk {precedent['chunk_id']} is not a trusted chunk")
             raw = self.service.reranker_scores[precedent["chunk_id"]]
             self.assertEqual(precedent["reranker_score"], raw)
-            self.assertAlmostEqual(precedent["relevance_score"], 1 / (1 + math.exp(-raw)), places=6)
             self.assertEqual(precedent["document_id"], chunk["document_id"])
             self.assertEqual(precedent["case_name"], chunk["case_title"])
             self.assertEqual(precedent["source_url"], chunk["source_url"])
@@ -1521,6 +1575,240 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertIsNone(response.precedents[0].relevance_score)
         self.assertIsNone(response.precedents[0].reranker_score)
         self.assertTrue(response.precedents[0].excerpt)
+
+
+    # -- Step 11: provider chain, stage timings, question-mode map fields, history privacy --
+
+    def debug_settings(self) -> Settings:
+        return self.settings.model_copy(update={"legalai_query_debug": True})
+
+    def test_debug_returns_every_stage_timing_and_the_backend(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history"):
+            brief = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+            text = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(brief.status_code, 200, brief.text)
+        debug = brief.json()["debug"]
+        self.assertEqual(debug["endpoint"], "professional_pdf_brief")
+        self.assertEqual(list(debug["timings_ms"]), list(query_api.QUERY_STAGES))
+        self.assertTrue(all(value >= 0 for value in debug["timings_ms"].values()))
+        self.assertGreaterEqual(debug["timings_ms"]["total_ms"], debug["timings_ms"]["generation_ms"])
+        self.assertEqual(debug["backend"]["provider"], "mock")
+        text_timings = text.json()["debug"]["timings_ms"]
+        self.assertEqual(set(query_api.QUERY_STAGES) - set(text_timings), {"parse_ms", "document_map_ms"})
+
+    def test_debug_is_off_by_default_but_timings_are_logged(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.assertLogs("legalai.query", level="INFO") as logs:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertIsNone(response.json()["debug"])
+        timing_lines = [line for line in logs.output if "query_timings" in line]
+        self.assertEqual(len(timing_lines), 1)
+        self.assertIn("endpoint=professional_text provider=mock", timing_lines[0])
+        self.assertIn("rerank_ms=", timing_lines[0])
+        self.assertNotIn("Regular bail", timing_lines[0])  # no query text in logs
+
+    def test_question_mode_pdf_fills_document_fields_from_the_map(self) -> None:
+        with patch.object(query_api, "save_query_history"):
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Is the accused entitled to bail?", "analysis_mode": "question"},
+                files=pdf_upload(filename="chargesheet.pdf", body=fixture_pdf_bytes("chargesheet")),
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        brief = response.json()["case_brief"]
+        expectation = expected_brief("chargesheet")
+        for party in expectation["parties"]:
+            self.assertTrue(any(party["name"] in item and item.lower().startswith(party["role"]) for item in brief["parties_and_roles"]))
+        self.assertTrue(set(expectation["dated_events"]) <= {item.split(" - ", 1)[0] for item in brief["chronology"]})
+        self.assertTrue(brief["evidence_identified"])
+        self.assertIn("<PRIVATE_QUERY_DOCUMENT_CONTEXT>", self.adapter.prompts[-1])  # question-focused context, not the map
+        self.assertNotIn("<PRIVATE_DOCUMENT_MAP", self.adapter.prompts[-1])
+
+    def test_history_never_stores_text_quoted_from_the_upload(self) -> None:
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="chargesheet.pdf", body=fixture_pdf_bytes("chargesheet")),
+            )
+        self.assertTrue(response.json()["case_brief"]["parties_and_roles"])
+        saved = save.call_args.kwargs["response_json"]
+        for field in query_api.DOCUMENT_FIELDS:
+            self.assertFalse([item for item in saved["case_brief"][field] if "[P" in item], field)
+        self.assertNotIn("Asha Testwoman", json.dumps(saved))
+        self.assertIn(query_api.HISTORY_REDACTION_NOTE, saved["case_brief"]["limitations"])
+        self.assertEqual(saved["case_brief"]["material_facts"], MOCK_FACTS)  # model content is kept
+
+    def test_provider_failure_falls_back_and_records_the_backend(self) -> None:
+        primary = FailingAdapter(ModelProviderError("GROQ_HTTP_ERROR", "Groq request failed.", http_status=404))
+        fallback = MockBriefAdapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            primary, fallback, primary_name="groq", fallback_name="gemini"
+        )
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual((primary.calls, fallback.calls), (1, 1))
+        backend = response.json()["debug"]["backend"]
+        self.assertEqual(
+            (backend["provider"], backend["fallback_used"], backend["primary_provider"], backend["fallback_reason"]),
+            ("mock", True, "groq", "GROQ_HTTP_ERROR"),
+        )
+        self.assertEqual(save.call_args.kwargs["generation_backend"], "mock")  # the answering backend is recorded
+
+    # -- Step 11c: prompt v2, claims requirement, no-coverage rule, truncation, prompt version --
+
+    def adapter_returning(self, answer: dict, claims: list, summary: str = "ok"):
+        class Adapter:
+            configured_model_id = "fixture"
+            prompts: list[str] = []
+
+            def generate_structured_answer(self, prompt, *, schema, mode):
+                self.prompts.append(prompt)
+                return LegalAnswerModelResponse(
+                    raw_response="{}", parsed_response={"answer": answer, "summary": summary, "claims": claims},
+                    model_metadata=ModelGenerationMetadata(provider="mock", configured_model_id="mock-model", response_mode=mode, finish_reason="stop"),
+                )
+
+        adapter = Adapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: adapter
+        return adapter
+
+    def test_an_answer_without_claims_is_rejected(self) -> None:
+        self.adapter_returning({"issue_summary": "Bail can be granted.", "legal_regime": "ipc_crpc"}, claims=[])
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_MISSING_CITATIONS")
+        save.assert_not_called()
+
+    def test_no_coverage_answer_gives_no_provisions_sources_or_legal_steps(self) -> None:
+        statement = query_api.NO_COVERAGE_STATEMENT
+        adapter = self.adapter_returning(
+            {"summary": f"{statement} A trademark attorney can help.", "possible_legal_provisions": ["Trade Marks Act section 18"],
+             "possible_next_steps": ["File form TM-A"], "citations": []},
+            claims=[], summary=f"{statement} A trademark attorney can help.",
+        )
+        response = self.client.post("/query/public", json={"text": "How do I register a trademark for my bakery?"})
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertTrue(body["explanation"].startswith(statement))
+        self.assertEqual((body["sections"], body["sources"]), ([], []))
+        self.assertEqual(body["nextStepGuidance"], query_api.NO_COVERAGE_GUIDANCE)
+        self.assertNotIn("TM-A", json.dumps(body))
+        self.assertIn("no substantive legal answer", adapter.prompts[-1])  # prompt v2 rule sent to the model
+
+    def test_truncated_output_is_a_generation_failure_without_fallback(self) -> None:
+        fallback = MockBriefAdapter()
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelProviderError("GROQ_OUTPUT_TRUNCATED", "Groq stopped at the output token limit.")),
+            fallback, primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_TRUNCATED")
+        self.assertEqual(fallback.calls, 0)
+        save.assert_not_called()
+
+    def test_prompt_version_is_recorded_in_debug_logs_and_history(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history") as save, self.assertLogs("legalai.query", level="INFO") as logs:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["debug"]["backend"]["prompt_version"], "legal_answer_prompt_v2")
+        generation = save.call_args.kwargs["response_json"]["generation"]
+        self.assertEqual((generation["provider"], generation["prompt_version"]), ("mock", "legal_answer_prompt_v2"))
+        self.assertIsNone(save.call_args.kwargs["response_json"]["debug"])
+        self.assertTrue(any("prompt_version=legal_answer_prompt_v2" in line for line in logs.output))
+        self.assertIn("<GROUNDING_RULES>", self.adapter.prompts[-1])
+
+    # -- Step 11d: request-size guard --
+
+    def test_size_guard_estimate_includes_schema_factor_and_output_limit(self) -> None:
+        guard = query_api.RequestSizeGuard(ceiling_tokens=8000, max_output_tokens=2048, estimate_factor=1.7)
+        prompt = "word " * 2000
+        schema_tokens = query_api.estimate_tokens(json.dumps(query_api.groq_payload_schema(query_api.ProfessionalLegalBrief)))
+        expected = round((query_api.estimate_tokens(prompt) + schema_tokens) * 1.7) + 2048
+        self.assertEqual(guard.estimated_request_tokens(prompt, AnswerMode.PROFESSIONAL), expected)
+        self.assertEqual(guard.fits(prompt, AnswerMode.PROFESSIONAL), expected <= 8000)
+        self.assertIsNone(query_api.request_size_guard(Settings(legalai_llm_provider="groq", legalai_groq_max_request_tokens=None)))
+        self.assertIsNone(query_api.request_size_guard(Settings(legalai_llm_provider="gemini", legalai_groq_max_request_tokens=8000)))
+        self.assertIsNotNone(query_api.request_size_guard(Settings(legalai_llm_provider="groq", legalai_groq_max_request_tokens=8000)))
+
+    def evidence_limit_guard(self, max_items: int):
+        class Guard:
+            def fits(self, prompt_text, mode):
+                return prompt_text.count("<EVIDENCE id=") <= max_items
+
+        return patch.object(query_api, "request_size_guard", return_value=Guard())
+
+    def test_size_guard_drops_lowest_ranked_trusted_items_first(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = self.debug_settings
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(2):
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        prompt = self.adapter.prompts[-1]
+        self.assertEqual(re.findall(r'<EVIDENCE id="(E\d+)">', prompt), ["E1", "E2"])  # top-ranked kept, whole items
+        self.assertGreater(response.json()["debug"]["backend"]["evidence_items_trimmed"], 0)
+        self.assertLessEqual(len(response.json()["precedents"]), 2)  # precedents follow the trimmed evidence
+
+    def test_size_guard_never_drops_private_document_evidence(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(1):
+            response = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        prompt = self.adapter.prompts[-1]
+        self.assertEqual(prompt.count("<EVIDENCE id="), 1)
+        self.assertIn("<PRIVATE_DOCUMENT_MAP", prompt)  # the uploaded document's map is intact
+
+    def test_size_guard_errors_when_even_one_item_does_not_fit(self) -> None:
+        with patch.object(query_api, "save_query_history"), self.evidence_limit_guard(0):
+            brief = self.client.post(
+                "/query/professional/pdf",
+                data={"query": "Prepare a case brief.", "analysis_mode": "brief"},
+                files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
+            )
+            text = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual((brief.status_code, brief.json()["detail"]["code"]), (413, "PDF_CONTEXT_TOO_LARGE"))
+        self.assertEqual((text.status_code, text.json()["detail"]["code"]), (413, "MODEL_PROVIDER_REQUEST_TOO_LARGE"))
+
+    def test_both_providers_unavailable_returns_a_sanitized_error(self) -> None:
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelUnavailableError("Groq API key and GROQ_MODEL must be configured before live generation.")),
+            FailingAdapter(ModelUnavailableError("Gemini API key and GEMINI_MODEL must be configured before live generation.")),
+            primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 503)
+        # model_unavailable_result() no longer raises NameError (fixed and re-pinned in step 11b),
+        # so an unavailable model maps to MODEL_UNAVAILABLE, not the generic pipeline error.
+        self.assertEqual(response.json(), {"detail": {"code": "MODEL_UNAVAILABLE", "message": "The legal answer model is temporarily unavailable."}})
+        self.assertNotIn("API key", response.text)
+        self.assertNotIn("Traceback", response.text)
+        save.assert_not_called()
+
+    def test_both_providers_failing_returns_a_sanitized_error(self) -> None:
+        app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
+            FailingAdapter(ModelProviderError("GROQ_TIMEOUT", "Groq request timed out.")),
+            FailingAdapter(ModelProviderError("GEMINI_PROVIDER_ERROR", "Gemini request failed.", http_status=503)),
+            primary_name="groq", fallback_name="gemini",
+        )
+        with patch.object(query_api, "save_query_history") as save:
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {"detail": {"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "The legal answer provider is temporarily unavailable."}})
+        self.assertNotIn("Traceback", response.text)
+        save.assert_not_called()
 
 
 class ProfessionalMapperTests(unittest.TestCase):
@@ -1555,6 +1843,35 @@ class ProfessionalMapperTests(unittest.TestCase):
         precedent = response.precedents[0]
         self.assertEqual((precedent.case_name, precedent.chunk_id), ("Example v State", "doc-1:chunk:0007"))
         self.assertLessEqual(len(precedent.excerpt), 300)
+
+    def test_cited_in_answer_follows_validated_citations(self) -> None:
+        second = evidence("E2", text="Another bail authority.").model_copy(update={"document_id": "doc-2", "chunk_id": "doc-2:chunk:0001", "reranker_score": -1.0})
+        two_documents = retrieval([professional_retrieval().evidence[0], second])
+        response = query_api.professional_response_from_result(professional_result(), retrieval=two_documents)
+        self.assertEqual({p.document_id: p.cited_in_answer for p in response.precedents}, {"doc-1": True, "doc-2": False})
+
+        rejected = professional_result()
+        rejected.citation_validation = CitationValidationResult(
+            valid=False,
+            issues=[CitationValidationIssue(code=CitationValidationErrorCode.METADATA_MISMATCH, message="mismatch", evidence_id="E1", claim_id="C1")],
+        )
+        response = query_api.professional_response_from_result(rejected, retrieval=two_documents)
+        self.assertEqual([p.cited_in_answer for p in response.precedents], [False, False])  # a rejected citation does not count
+
+    def test_invalid_citations_never_become_public_sources(self) -> None:
+        valid = query_api.public_response_from_result(public_result())
+        self.assertEqual([source.title for source in valid.sources], ["Example v State"])
+
+        invalid = public_result()
+        invalid.answer.possible_legal_provisions.clear()  # would otherwise fall back to sections built from citations
+        invalid.citation_validation = CitationValidationResult(
+            valid=False,
+            issues=[CitationValidationIssue(code=CitationValidationErrorCode.METADATA_MISMATCH, message="mismatch", evidence_id="E1", claim_id="C1")],
+        )
+        response = query_api.public_response_from_result(invalid)
+        self.assertEqual(response.sources, [])  # no fallback to unvalidated citations, nor to a placeholder source
+        self.assertEqual(response.sections, [])
+        self.assertNotIn("Example v State", response.model_dump_json())
 
     def test_precedents_ignore_model_authorities(self) -> None:
         response = query_api.professional_response_from_result(professional_result(), retrieval=None)

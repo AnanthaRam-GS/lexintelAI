@@ -44,10 +44,32 @@ describe('CitationCard Component', () => {
   });
 
   it('shows "Relevance not available" instead of a percentage when there is no reranker score', () => {
-    render(<CitationCard precedent={{ ...mockPrecedent, relevance_score: null }} />);
+    render(
+      <CitationCard
+        precedent={{ ...mockPrecedent, relevance_score: null, reranker_score: null }}
+      />,
+    );
 
-    expect(screen.getByText('Relevance not available')).toBeInTheDocument();
+    expect(screen.getByTestId('relevance-label')).toHaveTextContent('Relevance not available');
     expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
+  });
+
+  it('labels relative relevance without a number for a single or tied precedent', () => {
+    render(
+      <CitationCard precedent={{ ...mockPrecedent, relevance_score: null, reranker_score: 4.4 }} />,
+    );
+
+    expect(screen.getByTestId('relevance-label')).toHaveTextContent('Relative relevance');
+    expect(screen.getByTestId('relevance-label')).not.toHaveTextContent('%');
+  });
+
+  it('shows the relative relevance percentage with its label', () => {
+    render(
+      <CitationCard precedent={{ ...mockPrecedent, relevance_score: 0.5, reranker_score: 5.0 }} />,
+    );
+
+    expect(screen.getByTestId('relevance-label')).toHaveTextContent('50%');
+    expect(screen.getByTestId('relevance-label')).toHaveTextContent('Relative relevance');
   });
 
   it('shows the excerpt with its trusted chunk ID and single-page pinpoint', () => {
@@ -69,6 +91,18 @@ describe('CitationCard Component', () => {
       screen.getByText(/circumstances from which the conclusion of guilt/),
     ).toBeInTheDocument();
     expect(screen.getByText('p. 2')).toBeInTheDocument();
+  });
+
+  it('marks precedents the answer cites and those it only retrieved', () => {
+    render(<CitationCard precedent={{ ...mockPrecedent, cited_in_answer: true }} />);
+    expect(screen.getByTestId('cited-in-answer')).toHaveTextContent('Cited in answer');
+    cleanup();
+
+    render(<CitationCard precedent={{ ...mockPrecedent, cited_in_answer: false }} />);
+    expect(screen.queryByTestId('cited-in-answer')).not.toBeInTheDocument();
+    expect(screen.getByTestId('retrieved-only')).toHaveTextContent(
+      'Retrieved, not cited in the answer',
+    );
   });
 
   it('handles excerpt toggle when excerpt is long', () => {

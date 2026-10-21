@@ -17,6 +17,7 @@ contract, so the rest of the (frozen) grounded-answer pipeline in
 from __future__ import annotations
 
 import json
+import logging
 import socket
 import time
 import urllib.error
@@ -37,6 +38,9 @@ from backend.app.services.legal_answer_generation import (
     ModelUnavailableError,
     elapsed_ms,
 )
+from backend.app.services.provider_diagnostics import log_provider_http_error
+
+logger = logging.getLogger("legalai.groq")
 
 
 class GroqAnswerAdapter:
@@ -71,6 +75,8 @@ class GroqAnswerAdapter:
             "model": self.settings.groq_model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
+            "max_completion_tokens": self.settings.legalai_llm_max_output_tokens,
+            **groq_reasoning_options(self.settings),
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -106,8 +112,22 @@ class GroqAnswerAdapter:
                 self.sleep(self.backoff_seconds[min(attempt - 1, len(self.backoff_seconds) - 1)])
         if body is None:
             raise ModelProviderError("GROQ_INVALID_RESPONSE", "Groq returned no API response.")
-        text = extract_groq_text(body)
         usage = body.get("usage", {})
+        # Completion diagnostics only (no content): whether the output hit a length limit,
+        # and how much of the completion budget went to reasoning tokens.
+        choice = (body.get("choices") or [{}])[0]
+        finish_reason = choice.get("finish_reason")
+        logger.info(
+            "groq_completion finish_reason=%s completion_tokens=%s reasoning_tokens=%s max_completion_tokens=%s",
+            finish_reason,
+            usage.get("completion_tokens"),
+            (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+            self.settings.legalai_llm_max_output_tokens,
+        )
+        if finish_reason == "length":
+            # A cut-off answer is never presented as complete (and is not a provider failure, so no fallback).
+            raise ModelProviderError("GROQ_OUTPUT_TRUNCATED", "Groq stopped at the output token limit.")
+        text = extract_groq_text(body)
         metadata = ModelGenerationMetadata(
             provider="groq",
             configured_model_id=self.settings.groq_model,
@@ -119,6 +139,8 @@ class GroqAnswerAdapter:
             retry_count=len(retry_reasons),
             retry_reasons=retry_reasons,
             final_provider_status="SUCCESS",
+            finish_reason=finish_reason,
+            reasoning_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
             prompt_tokens=usage.get("prompt_tokens"),
             completion_tokens=usage.get("completion_tokens"),
             total_tokens=usage.get("total_tokens"),
@@ -171,6 +193,19 @@ class GroqAnswerAdapter:
         return f"{base}/chat/completions"
 
 
+# Groq documents reasoning_effort (low | medium | high) for the GPT-OSS models
+# (https://console.groq.com/docs/reasoning); it is sent only to those models.
+GROQ_REASONING_EFFORT_MODELS = ("openai/gpt-oss-",)
+GROQ_REASONING_EFFORTS = {"low", "medium", "high"}
+
+
+def groq_reasoning_options(settings: Any) -> dict[str, str]:
+    effort = (getattr(settings, "legalai_groq_reasoning_effort", "") or "").strip().lower()
+    if effort in GROQ_REASONING_EFFORTS and str(settings.groq_model).startswith(GROQ_REASONING_EFFORT_MODELS):
+        return {"reasoning_effort": effort}
+    return {}
+
+
 def extract_groq_text(body: dict[str, Any]) -> str:
     choices = body.get("choices") or []
     if not choices:
@@ -219,6 +254,7 @@ def sanitized_http_diagnostic(exc: urllib.error.HTTPError) -> SanitizedHttpDiagn
             error = payload.get("error", {}) if isinstance(payload, dict) else {}
             provider_code = safe_string(error.get("type") or error.get("code"))
             provider_message = safe_string(error.get("message")) or provider_message
+            log_provider_http_error("groq", exc.code, payload)
     return SanitizedHttpDiagnostic(
         http_status=exc.code,
         provider_code=provider_code,

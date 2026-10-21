@@ -474,7 +474,11 @@ def _bounded_sentence(sentence: str) -> str:
 
 def _sentences(chunk: PrivateChunk) -> list[str]:
     """Full sentences of a chunk, with PDF line wraps joined and abbreviations kept inside a sentence."""
-    text = _ABBREVIATION.sub(lambda match: f"{match.group(1)}.{_KEEP_SPACE}", _LINE_WRAP.sub(" ", chunk.text))
+    return _split_sentences(chunk.text)
+
+
+def _split_sentences(raw_text: str) -> list[str]:
+    text = _ABBREVIATION.sub(lambda match: f"{match.group(1)}.{_KEEP_SPACE}", _LINE_WRAP.sub(" ", raw_text))
     sentences = []
     for raw in _SENTENCE_SPLIT.split(text):
         sentence = re.sub(r"\s+", " ", raw.replace(_KEEP_SPACE, " ")).strip()
@@ -727,7 +731,8 @@ def _missing_information(
         missing.append("No dated event was identified in the uploaded document.")
     if evidence is not None and not evidence:
         missing.append("No witness, documentary, medical/forensic, electronic or recovery evidence was identified in the uploaded document.")
-    if not by_field.get("medical_forensic_evidence"):
+    detected_medical = evidence is not None and any("medical_forensic" in item.categories for item in evidence)
+    if not by_field.get("medical_forensic_evidence") and not detected_medical:
         missing.append("No medical or forensic evidence excerpt was identified in the uploaded material.")
     if not by_field.get("accused_or_defence_position"):
         missing.append("No accused or defence position excerpt was identified in the uploaded material.")
@@ -757,7 +762,57 @@ _EXCERPT_FIELDS = (
 )
 
 
+class _SentenceRegistry:
+    """Gives each distinct sentence a short id (s1, s2 ...) the first time it is rendered.
+
+    A sentence repeated in a later section is rendered as "see sN" instead of
+    again in full, so the map stays compact and every item keeps its P# reference.
+    """
+
+    def __init__(self) -> None:
+        self._ids: dict[str, int] = {}
+
+    @staticmethod
+    def _key(text: str) -> str:
+        return re.sub(r"\s+", " ", text).strip().removesuffix("...").strip().lower()
+
+    def _lookup(self, text: str) -> int | None:
+        key = self._key(text)
+        if key in self._ids:
+            return self._ids[key]
+        # A bounded (truncated) sentence matches the full sentence it starts.
+        return next((sid for known, sid in self._ids.items() if len(known) > 40 and (key.startswith(known) or known.startswith(key))), None)
+
+    def render(self, text: str) -> str:
+        known = self._lookup(text)
+        if known is not None:
+            return f"see s{known}"
+        sid = len(self._ids) + 1
+        self._ids[self._key(text)] = sid
+        return f"(s{sid}) {text}"
+
+    def strip_known(self, excerpt: str) -> tuple[str, list[int]]:
+        """Excerpt text without already-rendered sentences, and the ids of those removed."""
+        kept: list[str] = []
+        removed: list[int] = []
+        for sentence in _split_sentences(excerpt):
+            known = self._lookup(sentence)
+            if known is None:
+                kept.append(sentence)
+            elif known not in removed:
+                removed.append(known)
+        return " ".join(kept), removed
+
+
 def render_local_document_map(document_map: LocalDocumentMap) -> str:
+    """Render the map for the prompt, without repeating any sentence across sections.
+
+    Structured items (chronology, procedural stages, evidence) render each
+    sentence once with an id (s1 ...); later repeats say "see sN". Excerpt
+    fields list an excerpt once (alias fields point to it) and drop sentences
+    already rendered above, naming their ids. Every item keeps its P# reference.
+    """
+    sentences = _SentenceRegistry()
     lines = [
         f'<PRIVATE_DOCUMENT_MAP document_type="{document_map.document_type}" '
         f'document_type_confidence="{document_map.document_type_confidence}" '
@@ -765,7 +820,8 @@ def render_local_document_map(document_map: LocalDocumentMap) -> str:
         "This is a locally built (no AI-generated summarization), compact map of the "
         "uploaded private document. It describes the document only, is not legal "
         "authority, and any statutory sections below are mentions found explicitly in "
-        "the document text, not verified applicable law.",
+        "the document text, not verified applicable law. Each sentence appears once, "
+        "labelled (sN); later mentions say \"see sN\".",
         "Prepare a substantive professional case-file summary based only on the uploaded-document P# evidence and trusted E# authority. "
         "Explain the factual narrative, parties and roles, chronology, explicit statutory provisions, major evidence, procedural posture, "
         "and unresolved or missing information where supported. Be comprehensive relative to supported evidence; do not pad, speculate, "
@@ -777,37 +833,48 @@ def render_local_document_map(document_map: LocalDocumentMap) -> str:
             name = party.name or "(role only)"
             evidence = f" [{party.private_evidence_id}]" if party.private_evidence_id else ""
             lines.append(f"- {party.role}: {name}{evidence}")
-    if document_map.parties:
+    # The NER summaries repeat the structured sections; render them only when those are empty.
+    if document_map.parties and not document_map.parties_and_roles:
         lines.append("parties: " + "; ".join(document_map.parties))
-    if document_map.important_dates:
+    if document_map.important_dates and not document_map.chronology:
         lines.append("important_dates: " + "; ".join(document_map.important_dates))
     if document_map.chronology:
         lines.append("chronology:")
         for item in document_map.chronology:
             event = f" - {item.event}" if item.event else ""
             evidence = f" [{item.private_evidence_id}]" if item.private_evidence_id else ""
-            context = f": {item.context}" if item.context else ""
+            context = f": {sentences.render(item.context)}" if item.context else ""
             lines.append(f"- {item.date}{event}{evidence}{context}")
     if document_map.procedural_stages:
         lines.append("procedural_stages:")
         for stage in document_map.procedural_stages:
-            lines.append(f"- [{stage.private_evidence_id}] {', '.join(stage.stages)}: {stage.text}")
+            lines.append(f"- [{stage.private_evidence_id}] {', '.join(stage.stages)}: {sentences.render(stage.text)}")
     if document_map.evidence_items:
         lines.append("evidence_identified:")
         for item in document_map.evidence_items:
             categories = ", ".join(EVIDENCE_CATEGORY_LABELS[name] for name in item.categories)
-            lines.append(f"- [{item.private_evidence_id}] {categories}: {item.text}")
+            lines.append(f"- [{item.private_evidence_id}] {categories}: {sentences.render(item.text)}")
     if document_map.explicit_sections:
         lines.append("statutory_sections_explicitly_mentioned: " + "; ".join(document_map.explicit_sections))
     if document_map.explicit_statutes:
         lines.append("statutes_explicitly_mentioned: " + "; ".join(document_map.explicit_statutes))
+    listed: dict[tuple[str, str], str] = {}
     for field_name in _EXCERPT_FIELDS:
         entries: list[MapExcerpt] = getattr(document_map, field_name)
         if not entries:
             continue
         lines.append(f"{field_name}:")
         for entry in entries:
-            lines.append(f'- [{entry.private_evidence_id}, pages {entry.pages}] {entry.excerpt}')
+            reference = f"[{entry.private_evidence_id}, pages {entry.pages}]"
+            first_field = listed.get((entry.private_evidence_id, entry.excerpt))
+            if first_field is not None:
+                lines.append(f"- {reference} same excerpt as {first_field}")
+                continue
+            listed[(entry.private_evidence_id, entry.excerpt)] = field_name
+            remaining, removed = sentences.strip_known(entry.excerpt)
+            also = f" (also {', '.join(f's{sid}' for sid in removed)})" if removed else ""
+            body = remaining if remaining else "all of its sentences are listed above"
+            lines.append(f"- {reference} {body}{also}")
     if document_map.missing_or_unclear_information:
         lines.append("missing_or_unclear_information:")
         for item in document_map.missing_or_unclear_information:

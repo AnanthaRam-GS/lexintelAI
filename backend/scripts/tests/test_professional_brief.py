@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import math
 import sys
 import unittest
 from pathlib import Path
@@ -165,12 +164,14 @@ def retrieval(items: list[LegalEvidenceChunk], query: str = "regular bail custod
 
 
 class PrecedentTests(unittest.TestCase):
-    def test_relevance_is_the_sigmoid_of_the_reranker_score(self) -> None:
-        for score in (-7.5, -1.0, 0.0, 0.3, 4.2, 40.0, -40.0):
-            self.assertAlmostEqual(brief.normalize_reranker_score(score), 1 / (1 + math.exp(-score)), places=6)
-        self.assertLess(brief.normalize_reranker_score(-1.0), brief.normalize_reranker_score(0.3))  # monotonic
-        self.assertIsNone(brief.normalize_reranker_score(None))
-        self.assertIsNone(brief.normalize_reranker_score(float("nan")))
+    def test_relevance_is_relative_within_the_result_set(self) -> None:
+        self.assertEqual(brief.relative_relevance([5.6, 4.4, 5.0]), [1.0, 0.0, 0.5])
+        self.assertEqual(brief.relative_relevance([2.0, None, -1.0]), [1.0, None, 0.0])
+        self.assertEqual(brief.relative_relevance([4.4]), [None])  # one precedent: no relative number
+        self.assertEqual(brief.relative_relevance([3.0, 3.0]), [None, None])  # all equal: no ranking
+        self.assertEqual(brief.relative_relevance([None, None]), [None, None])
+        self.assertEqual(brief.relative_relevance([1.0, float("nan"), 0.0]), [1.0, None, 0.0])
+        self.assertEqual(brief.relative_relevance([]), [])
 
     def test_precedents_come_from_retrieved_metadata_one_per_document(self) -> None:
         items = [evidence(1, score=3.1, document_id="a"), evidence(2, score=-0.4, document_id="b"), evidence(3, score=1.0, document_id="a")]
@@ -182,7 +183,7 @@ class PrecedentTests(unittest.TestCase):
             ("a:chunk:0001", "Case a", "High Court", 2023, "https://example.test/doc", 2, 3, 4, 6),
         )
         self.assertEqual([p.reranker_score for p in precedents], [3.1, -0.4])
-        self.assertEqual([p.relevance_score for p in precedents], [brief.normalize_reranker_score(3.1), brief.normalize_reranker_score(-0.4)])
+        self.assertEqual([p.relevance_score for p in precedents], [1.0, 0.0])  # relative: top 1.0, lowest 0.0
         self.assertEqual(len({p.relevance_score for p in precedents}), 2)
 
     def test_missing_reranker_score_gives_null_relevance(self) -> None:
@@ -201,6 +202,36 @@ class PrecedentTests(unittest.TestCase):
         self.assertIn(excerpt.strip(".").strip(), " ".join(text.split()))
         short = "Bail was granted."
         self.assertEqual(brief.precedent_excerpt(short, "bail", 200), short)
+
+
+class MapCompactionTests(unittest.TestCase):
+    """The rendered document map never repeats a sentence, and every reference resolves."""
+
+    def test_fixture_maps_render_each_sentence_once_with_resolvable_references(self) -> None:
+        import re
+
+        from backend.app.services.local_document_map import render_local_document_map
+        from backend.scripts.tests.brief_fixtures import FIXTURE_NAMES, fixture_private_chunks
+
+        for name in FIXTURE_NAMES:
+            with self.subTest(fixture=name):
+                filename, private_chunks = fixture_private_chunks(name)
+                document_map = build_local_document_map(private_chunks, filename=filename, dense_provider=None, token_budget_tokens=6000)
+                rendered = render_local_document_map(document_map)
+                chunk_ids = {chunk.private_chunk_id for chunk in private_chunks}
+                defined = [int(n) for n in re.findall(r"\(s(\d+)\) ", rendered)]
+                self.assertEqual(defined, list(range(1, len(defined) + 1)))  # ids assigned once, in order
+                bodies = re.findall(r"\(s\d+\) (.+)$", rendered, re.MULTILINE)
+                self.assertEqual(len(bodies), len(set(bodies)), "a sentence is rendered twice in full")
+                for line in rendered.splitlines():
+                    for ref in re.findall(r"\bsee s(\d+)\b|\bs(\d+)\b(?=[,)])", line):
+                        sid = int(next(part for part in ref if part))
+                        self.assertIn(sid, defined, f"{name}: dangling s{sid}")
+                    if line.startswith("- [P") or re.match(r"^- [\d./-]+ ", line):
+                        for evidence_id in re.findall(r"\[(P\d+)", line):
+                            self.assertIn(evidence_id, chunk_ids)
+                for item in document_map.chronology + document_map.procedural_stages + document_map.evidence_items:
+                    self.assertIn(f"[{item.private_evidence_id}", rendered)
 
 
 class FixturePrivacyTests(unittest.TestCase):
