@@ -11,11 +11,12 @@ from backend.app.api.analytics import router as analytics_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.ingest import router as ingest_router
 from backend.app.api.lawyer_verification import router as lawyer_verification_router
-from backend.app.api.query import router as query_router
+from backend.app.api.query import get_retrieval_service, router as query_router
 from backend.app.api.query_history import router as query_history_router
 from backend.app.core.config import Settings
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
+from backend.app.services.query_models import model_status, start_warm_up
 
 settings = Settings()
 logger = logging.getLogger("legalai.startup")
@@ -33,6 +34,9 @@ async def lifespan(_app: FastAPI):
         logger.error("startup stale-job reaper failed: %s", type(exc).__name__)
     finally:
         db.close()
+    if settings.legalai_model_warmup:
+        # Load the query embedder and reranker in the background; /health reports the progress.
+        start_warm_up(get_retrieval_service)
     yield
 
 
@@ -79,4 +83,6 @@ def health_check() -> dict:
             "connected": is_db_connected,
             "status": db_status,
         },
+        # Query embedder and reranker: not_loaded | loading | loaded | failed, with devices once loaded.
+        "models": model_status(),
     }

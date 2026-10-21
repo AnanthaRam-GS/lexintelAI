@@ -1,0 +1,47 @@
+{
+  "label": "mps-fp32",
+  "devices": {
+    "embedder": "mps/fp32",
+    "reranker": "mps/fp32"
+  },
+  "query_ids": [
+    "eval-q001",
+    "eval-q002",
+    "eval-q003",
+    "eval-q004",
+    "eval-q005",
+    "eval-q006",
+    "eval-q007",
+    "eval-q008",
+    "eval-q009",
+    "eval-q010"
+  ],
+  "samples": 30,
+  "rerank_ms": {
+    "p50": 5323.5,
+    "p95": 5917.6,
+    "mean": 5435.5
+  },
+  "retrieval_stages_ms": {
+    "p50": 5404.4,
+    "p95": 6093.9,
+    "mean": 5521.9
+  },
+  "retrieval_wall_ms": {
+    "p50": 5404.6,
+    "p95": 6094.1,
+    "mean": 5522.1
+  },
+  "warm_up": {
+    "status": "loaded",
+    "load_ms": 0.0,
+    "warmup_ms": 2297.0,
+    "devices": {
+      "embedder": "mps/fp32",
+      "reranker": "mps/fp32"
+    },
+    "wall_ms": 6233.5
+  },
+  "torch": "2.14.0",
+  "machine": "arm64"
+}

@@ -1,0 +1,47 @@
+{
+  "label": "mps-reranker-fp16",
+  "devices": {
+    "embedder": "mps/fp32",
+    "reranker": "mps/fp16"
+  },
+  "query_ids": [
+    "eval-q001",
+    "eval-q002",
+    "eval-q003",
+    "eval-q004",
+    "eval-q005",
+    "eval-q006",
+    "eval-q007",
+    "eval-q008",
+    "eval-q009",
+    "eval-q010"
+  ],
+  "samples": 30,
+  "rerank_ms": {
+    "p50": 1883.6,
+    "p95": 2159.9,
+    "mean": 1878.6
+  },
+  "retrieval_stages_ms": {
+    "p50": 1955.7,
+    "p95": 2237.0,
+    "mean": 1955.0
+  },
+  "retrieval_wall_ms": {
+    "p50": 1956.0,
+    "p95": 2237.3,
+    "mean": 1955.3
+  },
+  "warm_up": {
+    "status": "loaded",
+    "load_ms": 0.0,
+    "warmup_ms": 2840.1,
+    "devices": {
+      "embedder": "mps/fp32",
+      "reranker": "mps/fp16"
+    },
+    "wall_ms": 7342.1
+  },
+  "torch": "2.14.0",
+  "machine": "arm64"
+}

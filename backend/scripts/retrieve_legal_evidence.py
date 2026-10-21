@@ -17,11 +17,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from backend.app.services.embeddings.base import EmbeddingConfig
-from backend.app.services.embeddings.bge_m3 import BgeM3EmbeddingProvider
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
+from backend.app.services.query_models import load_query_models
 from backend.app.services.reranking.base import RerankerConfig
-from backend.app.services.reranking.bge import BgeReranker
 from backend.app.services.retrieval.bm25 import Bm25Config, Bm25LexicalIndex, DEFAULT_INDEX_NAME
 from backend.app.services.retrieval.service import HybridConfig, RetrievalService
 from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, ChromaVectorStore
@@ -41,7 +40,19 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def make_service(args: argparse.Namespace) -> RetrievalService:
-    embedding_config = EmbeddingConfig(model_name="BAAI/bge-m3", device="cpu", batch_size=8, normalize_embeddings=True)
+    # ``model_device``/``reranker_fp16`` come from the API settings; this CLI stays on CPU fp32.
+    # The query embedder is always fp32, like the index vectors.
+    device = getattr(args, "model_device", "cpu")
+    use_fp16 = bool(getattr(args, "reranker_fp16", False))
+    embedding_config = EmbeddingConfig(model_name="BAAI/bge-m3", device=device, batch_size=8, normalize_embeddings=True)
+    reranker_config = RerankerConfig(
+        model_name="BAAI/bge-reranker-v2-m3",
+        device=device,
+        batch_size=8,
+        max_length=512,
+        top_k=5,
+        use_fp16=use_fp16,
+    )
     # Read path: open the existing collection (never create it) before loading
     # models, so a missing or wrong-dimension index fails fast.
     vector_store = ChromaVectorStore(
@@ -51,20 +62,13 @@ def make_service(args: argparse.Namespace) -> RetrievalService:
         create_if_missing=False,
         expected_dimension=EXPECTED_EMBEDDING_DIMENSION,
     )
+    models = load_query_models(embedding_config, reranker_config)
     return RetrievalService(
-        dense_provider=BgeM3EmbeddingProvider(embedding_config),
+        dense_provider=models.dense_provider,
         vector_store=vector_store,
         lexical_index=Bm25LexicalIndex(args.bm25_persist_dir, args.index_name, Bm25Config(k1=1.5, b=0.75)),
         hybrid_config=HybridConfig(rrf_k=60, candidate_k=20),
-        reranker=BgeReranker(
-            RerankerConfig(
-                model_name="BAAI/bge-reranker-v2-m3",
-                device="cpu",
-                batch_size=8,
-                max_length=512,
-                top_k=5,
-            )
-        ),
+        reranker=models.reranker,
     )
 
 

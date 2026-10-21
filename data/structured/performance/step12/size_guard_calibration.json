@@ -1,0 +1,162 @@
+{
+  "worst_ratio": 1.4306,
+  "margin": 0.05,
+  "new_factor": 1.51,
+  "current_factor": 1.7,
+  "runs": [
+    {
+      "run": "20261019T140605Z/P1-public-ipc",
+      "mode": "public",
+      "prompt_version": "v1",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 4626,
+      "actual_prompt_tokens": 5446,
+      "ratio": 1.1773,
+      "predicted_at_1_7": 7864,
+      "predicted_new": 6985,
+      "new_minus_actual": 1539,
+      "old_minus_actual": 2418
+    },
+    {
+      "run": "20261019T140605Z/R1-prof-dowry",
+      "mode": "professional",
+      "prompt_version": "v1",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 4917,
+      "actual_prompt_tokens": 6111,
+      "ratio": 1.2428,
+      "predicted_at_1_7": 8359,
+      "predicted_new": 7425,
+      "new_minus_actual": 1314,
+      "old_minus_actual": 2248
+    },
+    {
+      "run": "20261020T053615Z/P2-public-bns",
+      "mode": "public",
+      "prompt_version": "v1",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 4148,
+      "actual_prompt_tokens": 5934,
+      "ratio": 1.4306,
+      "predicted_at_1_7": 7052,
+      "predicted_new": 6263,
+      "new_minus_actual": 329,
+      "old_minus_actual": 1118
+    },
+    {
+      "run": "20261020T053615Z/P3-public-unanswerable",
+      "mode": "public",
+      "prompt_version": "v1",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 4971,
+      "actual_prompt_tokens": 6999,
+      "ratio": 1.408,
+      "predicted_at_1_7": 8451,
+      "predicted_new": 7506,
+      "new_minus_actual": 507,
+      "old_minus_actual": 1452
+    },
+    {
+      "run": "20261020T053615Z/P4-public-pdf-fir",
+      "mode": "public",
+      "prompt_version": "v1",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 5292,
+      "actual_prompt_tokens": 6251,
+      "ratio": 1.1812,
+      "predicted_at_1_7": 8996,
+      "predicted_new": 7991,
+      "new_minus_actual": 1740,
+      "old_minus_actual": 2745
+    },
+    {
+      "run": "20261020T053615Z/R2-prof-anticipatory-bail",
+      "mode": "professional",
+      "prompt_version": "v1",
+      "evidence_items": 3,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 3800,
+      "actual_prompt_tokens": 4808,
+      "ratio": 1.2653,
+      "predicted_at_1_7": 6460,
+      "predicted_new": 5738,
+      "new_minus_actual": 930,
+      "old_minus_actual": 1652
+    },
+    {
+      "run": "20261020T154442Z/P2-public-bns",
+      "mode": "public",
+      "prompt_version": "v2",
+      "evidence_items": 3,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 3096,
+      "actual_prompt_tokens": 4283,
+      "ratio": 1.3834,
+      "predicted_at_1_7": 5263,
+      "predicted_new": 4675,
+      "new_minus_actual": 392,
+      "old_minus_actual": 980
+    },
+    {
+      "run": "20261020T154442Z/P3-public-unanswerable",
+      "mode": "public",
+      "prompt_version": "v2",
+      "evidence_items": 5,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 5167,
+      "actual_prompt_tokens": 7163,
+      "ratio": 1.3863,
+      "predicted_at_1_7": 8784,
+      "predicted_new": 7802,
+      "new_minus_actual": 639,
+      "old_minus_actual": 1621
+    },
+    {
+      "run": "20261020T162033Z/P1-public-ipc",
+      "mode": "public",
+      "prompt_version": "v2",
+      "evidence_items": 2,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 2682,
+      "actual_prompt_tokens": 3241,
+      "ratio": 1.2084,
+      "predicted_at_1_7": 4559,
+      "predicted_new": 4050,
+      "new_minus_actual": 809,
+      "old_minus_actual": 1318
+    },
+    {
+      "run": "20261020T162033Z/P4-public-pdf-fir",
+      "mode": "public",
+      "prompt_version": "v2",
+      "evidence_items": 2,
+      "evidence_matches_capture": true,
+      "estimate_prompt_plus_schema": 2710,
+      "actual_prompt_tokens": 3287,
+      "ratio": 1.2129,
+      "predicted_at_1_7": 4607,
+      "predicted_new": 4092,
+      "new_minus_actual": 805,
+      "old_minus_actual": 1320
+    }
+  ],
+  "replay_11d": {
+    "20261020T162033Z/P1-public-ipc": {
+      "bounded_items": 5,
+      "kept_at_1_7": 2,
+      "kept_at_new": 3
+    },
+    "20261020T162033Z/P4-public-pdf-fir": {
+      "bounded_items": 5,
+      "kept_at_1_7": 2,
+      "kept_at_new": 3
+    }
+  },
+  "ceiling_tokens": 8000,
+  "max_output_tokens": 2048
+}

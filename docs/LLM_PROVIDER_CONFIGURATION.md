@@ -128,8 +128,16 @@ Groq as the primary, the pipeline:
    item. If that still does not fit, it returns `413 PDF_CONTEXT_TOO_LARGE`
    for an uploaded document, otherwise `413 MODEL_PROVIDER_REQUEST_TOO_LARGE`.
 
-The factor defaults to 1.7: on step 11 and 11b live runs, Groq's reported
-`prompt_tokens` were 1.38-1.65 times `estimate_tokens`.
+The factor defaults to 1.51 (step 12 calibration,
+`backend/scripts/calibrate_request_size_guard.py`). The calibration rebuilt the
+exact prompt of all 10 recorded Groq runs, and each one's evidence matched the
+captured chunk IDs. Groq's reported `prompt_tokens` were 1.18-1.43 times
+`estimate_tokens(prompt + schema)`, and 1.51 is the worst ratio plus 5%. No
+recorded run is underestimated; the closest margin is 329 tokens. The earlier
+1.7 (step 11d) came from approximate rebuilds and over-trimmed: P1 and P4 kept
+2 of 5 evidence items, and now keep 3. No local tokenizer for gpt-oss
+(`o200k_harmony`) is available offline, so a fixed factor is used instead of
+exact counting. Details are in `docs/performance/PERFORMANCE_BASELINE.md`.
 
 **Gemini thinking and timeout.**
 - `LEGALAI_GEMINI_THINKING` (`low`, `medium` or `high`; default `low`) is

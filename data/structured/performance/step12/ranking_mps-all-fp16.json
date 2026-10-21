@@ -1,0 +1,1067 @@
+{
+  "label": "mps-fp16",
+  "devices": {
+    "embedder": "mps/fp16",
+    "reranker": "mps/fp16"
+  },
+  "query_count": 30,
+  "top5_identical_count": 30,
+  "changed_queries": [],
+  "unjudged_chunks_in_top15": [],
+  "max_abs_score_diff_vs_frozen": 0.013792,
+  "metrics": {
+    "broad_precision_at_5": 0.873333,
+    "broad_mrr_at_5": 0.961111,
+    "graded_ndcg_at_5": 0.819445,
+    "broad_pooled_recall_at_5": 0.29011,
+    "broad_pooled_recall_at_20": 0.723272,
+    "strict_precision_at_5": 0.633333,
+    "strict_mrr_at_5": 0.895833,
+    "strict_binary_ndcg_at_5": 0.753094
+  },
+  "frozen_metrics": {
+    "broad_precision_at_5": 0.873333,
+    "broad_mrr_at_5": 0.961111,
+    "graded_ndcg_at_5": 0.819445,
+    "broad_pooled_recall_at_5": 0.29011,
+    "broad_pooled_recall_at_20": 0.723272,
+    "strict_precision_at_5": 0.633333,
+    "strict_mrr_at_5": 0.895833,
+    "strict_binary_ndcg_at_5": 0.753094
+  },
+  "metrics_within_tolerance": true,
+  "per_query": [
+    {
+      "query_id": "eval-q001",
+      "top5": [
+        "indian_kanoon:123721856:chunk:0009",
+        "indian_kanoon:156271048:chunk:0010",
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:31029978:chunk:0024",
+        "indian_kanoon:189001274:chunk:0010"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:123721856:chunk:0009",
+        "indian_kanoon:156271048:chunk:0010",
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:31029978:chunk:0024",
+        "indian_kanoon:189001274:chunk:0010"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003972,
+      "top5_scores": [
+        3.841797,
+        3.570312,
+        3.357422,
+        3.058594,
+        3.029297
+      ],
+      "frozen_top5_scores": [
+        3.840541,
+        3.570825,
+        3.356395,
+        3.062141,
+        3.025445
+      ]
+    },
+    {
+      "query_id": "eval-q002",
+      "top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:36195540:chunk:0002",
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:36195540:chunk:0003",
+        "indian_kanoon:36195540:chunk:0004"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:26223875:chunk:0003",
+        "indian_kanoon:36195540:chunk:0002",
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:36195540:chunk:0003",
+        "indian_kanoon:36195540:chunk:0004"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006849,
+      "top5_scores": [
+        5.757812,
+        5.03125,
+        4.710938,
+        4.390625,
+        4.367188
+      ],
+      "frozen_top5_scores": [
+        5.757544,
+        5.032125,
+        4.708031,
+        4.389553,
+        4.368937
+      ]
+    },
+    {
+      "query_id": "eval-q003",
+      "top5": [
+        "indian_kanoon:13518275:chunk:0005",
+        "indian_kanoon:131331418:chunk:0005",
+        "indian_kanoon:176391710:chunk:0010",
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:13518275:chunk:0006"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:13518275:chunk:0005",
+        "indian_kanoon:131331418:chunk:0005",
+        "indian_kanoon:176391710:chunk:0010",
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:13518275:chunk:0006"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.005678,
+      "top5_scores": [
+        5.679688,
+        5.007812,
+        3.191406,
+        2.630859,
+        2.130859
+      ],
+      "frozen_top5_scores": [
+        5.678325,
+        5.007751,
+        3.190571,
+        2.629096,
+        2.130814
+      ]
+    },
+    {
+      "query_id": "eval-q004",
+      "top5": [
+        "indian_kanoon:177113492:chunk:0002",
+        "indian_kanoon:177113492:chunk:0005",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:177113492:chunk:0006",
+        "indian_kanoon:177113492:chunk:0000"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:177113492:chunk:0002",
+        "indian_kanoon:177113492:chunk:0005",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:177113492:chunk:0006",
+        "indian_kanoon:177113492:chunk:0000"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.007898,
+      "top5_scores": [
+        4.179688,
+        3.068359,
+        2.652344,
+        2.402344,
+        1.610352
+      ],
+      "frozen_top5_scores": [
+        4.180445,
+        3.067137,
+        2.655489,
+        2.402187,
+        1.612664
+      ]
+    },
+    {
+      "query_id": "eval-q005",
+      "top5": [
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:47759402:chunk:0001",
+        "indian_kanoon:179828917:chunk:0067",
+        "indian_kanoon:125041151:chunk:0001",
+        "indian_kanoon:31029978:chunk:0024"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:179828917:chunk:0048",
+        "indian_kanoon:47759402:chunk:0001",
+        "indian_kanoon:179828917:chunk:0067",
+        "indian_kanoon:125041151:chunk:0001",
+        "indian_kanoon:31029978:chunk:0024"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003094,
+      "top5_scores": [
+        2.564453,
+        2.365234,
+        2.287109,
+        2.265625,
+        2.154297
+      ],
+      "frozen_top5_scores": [
+        2.56476,
+        2.36648,
+        2.290203,
+        2.266853,
+        2.152503
+      ]
+    },
+    {
+      "query_id": "eval-q006",
+      "top5": [
+        "indian_kanoon:173395727:chunk:0048",
+        "indian_kanoon:173395727:chunk:0053",
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:189001274:chunk:0031",
+        "indian_kanoon:173395727:chunk:0047"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:173395727:chunk:0048",
+        "indian_kanoon:173395727:chunk:0053",
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:189001274:chunk:0031",
+        "indian_kanoon:173395727:chunk:0047"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.007268,
+      "top5_scores": [
+        5.402344,
+        4.800781,
+        4.601562,
+        4.355469,
+        3.900391
+      ],
+      "frozen_top5_scores": [
+        5.405064,
+        4.798248,
+        4.60883,
+        4.357894,
+        3.900388
+      ]
+    },
+    {
+      "query_id": "eval-q007",
+      "top5": [
+        "indian_kanoon:173395727:chunk:0030",
+        "indian_kanoon:125041151:chunk:0003",
+        "indian_kanoon:173395727:chunk:0003",
+        "indian_kanoon:77330685:chunk:0020",
+        "indian_kanoon:173395727:chunk:0031"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:173395727:chunk:0030",
+        "indian_kanoon:125041151:chunk:0003",
+        "indian_kanoon:173395727:chunk:0003",
+        "indian_kanoon:77330685:chunk:0020",
+        "indian_kanoon:173395727:chunk:0031"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.002751,
+      "top5_scores": [
+        5.109375,
+        4.699219,
+        3.765625,
+        3.707031,
+        3.431641
+      ],
+      "frozen_top5_scores": [
+        5.11133,
+        4.69823,
+        3.766859,
+        3.708709,
+        3.433235
+      ]
+    },
+    {
+      "query_id": "eval-q008",
+      "top5": [
+        "indian_kanoon:131331418:chunk:0006",
+        "indian_kanoon:73295342:chunk:0074",
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005",
+        "indian_kanoon:8095700:chunk:0000"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:131331418:chunk:0006",
+        "indian_kanoon:73295342:chunk:0074",
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005",
+        "indian_kanoon:8095700:chunk:0000"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.0129,
+      "top5_scores": [
+        4.816406,
+        3.466797,
+        3.404297,
+        3.148438,
+        2.853516
+      ],
+      "frozen_top5_scores": [
+        4.816072,
+        3.465637,
+        3.403453,
+        3.149542,
+        2.855674
+      ]
+    },
+    {
+      "query_id": "eval-q009",
+      "top5": [
+        "indian_kanoon:24600150:chunk:0023",
+        "indian_kanoon:136781165:chunk:0023",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:136781165:chunk:0029",
+        "indian_kanoon:177113492:chunk:0003"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:24600150:chunk:0023",
+        "indian_kanoon:136781165:chunk:0023",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:136781165:chunk:0029",
+        "indian_kanoon:177113492:chunk:0003"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.010752,
+      "top5_scores": [
+        2.080078,
+        1.885742,
+        1.53125,
+        1.396484,
+        0.568848
+      ],
+      "frozen_top5_scores": [
+        2.081358,
+        1.886732,
+        1.531692,
+        1.397811,
+        0.572855
+      ]
+    },
+    {
+      "query_id": "eval-q010",
+      "top5": [
+        "indian_kanoon:73295342:chunk:0084",
+        "indian_kanoon:178355286:chunk:0034",
+        "indian_kanoon:154171944:chunk:0067",
+        "indian_kanoon:154171944:chunk:0065",
+        "indian_kanoon:154171944:chunk:0066"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:73295342:chunk:0084",
+        "indian_kanoon:178355286:chunk:0034",
+        "indian_kanoon:154171944:chunk:0067",
+        "indian_kanoon:154171944:chunk:0065",
+        "indian_kanoon:154171944:chunk:0066"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.008396,
+      "top5_scores": [
+        4.847656,
+        4.472656,
+        3.556641,
+        3.152344,
+        3.138672
+      ],
+      "frozen_top5_scores": [
+        4.852967,
+        4.473889,
+        3.555967,
+        3.153001,
+        3.141029
+      ]
+    },
+    {
+      "query_id": "eval-q011",
+      "top5": [
+        "indian_kanoon:138227421:chunk:0013",
+        "indian_kanoon:138227421:chunk:0008",
+        "indian_kanoon:138227421:chunk:0007",
+        "indian_kanoon:138227421:chunk:0015",
+        "indian_kanoon:138227421:chunk:0001"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:138227421:chunk:0013",
+        "indian_kanoon:138227421:chunk:0008",
+        "indian_kanoon:138227421:chunk:0007",
+        "indian_kanoon:138227421:chunk:0015",
+        "indian_kanoon:138227421:chunk:0001"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006477,
+      "top5_scores": [
+        2.181641,
+        2.085938,
+        1.539062,
+        1.248047,
+        0.961426
+      ],
+      "frozen_top5_scores": [
+        2.181695,
+        2.088598,
+        1.540374,
+        1.249815,
+        0.963793
+      ]
+    },
+    {
+      "query_id": "eval-q012",
+      "top5": [
+        "indian_kanoon:36195540:chunk:0004",
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:36195540:chunk:0002",
+        "indian_kanoon:83401027:chunk:0004"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:36195540:chunk:0004",
+        "indian_kanoon:26223875:chunk:0004",
+        "indian_kanoon:40368737:chunk:0005",
+        "indian_kanoon:36195540:chunk:0002",
+        "indian_kanoon:83401027:chunk:0004"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003341,
+      "top5_scores": [
+        2.494141,
+        1.891602,
+        1.867188,
+        1.864258,
+        1.838867
+      ],
+      "frozen_top5_scores": [
+        2.494158,
+        1.892923,
+        1.867873,
+        1.86385,
+        1.838013
+      ]
+    },
+    {
+      "query_id": "eval-q013",
+      "top5": [
+        "indian_kanoon:176391710:chunk:0002",
+        "indian_kanoon:15148168:chunk:0001",
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:31369863:chunk:0009",
+        "indian_kanoon:176391710:chunk:0001"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:176391710:chunk:0002",
+        "indian_kanoon:15148168:chunk:0001",
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:31369863:chunk:0009",
+        "indian_kanoon:176391710:chunk:0001"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.004786,
+      "top5_scores": [
+        0.267578,
+        0.184448,
+        0.148193,
+        -0.786621,
+        -0.859863
+      ],
+      "frozen_top5_scores": [
+        0.268545,
+        0.185471,
+        0.147991,
+        -0.784455,
+        -0.856751
+      ]
+    },
+    {
+      "query_id": "eval-q014",
+      "top5": [
+        "indian_kanoon:76377526:chunk:0007",
+        "indian_kanoon:189001274:chunk:0031",
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:24600150:chunk:0019",
+        "indian_kanoon:173395727:chunk:0053"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:76377526:chunk:0007",
+        "indian_kanoon:189001274:chunk:0031",
+        "indian_kanoon:123721856:chunk:0007",
+        "indian_kanoon:24600150:chunk:0019",
+        "indian_kanoon:173395727:chunk:0053"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006586,
+      "top5_scores": [
+        0.983398,
+        0.603027,
+        -0.222534,
+        -0.33374,
+        -0.601562
+      ],
+      "frozen_top5_scores": [
+        0.989984,
+        0.603,
+        -0.219802,
+        -0.332731,
+        -0.60037
+      ]
+    },
+    {
+      "query_id": "eval-q015",
+      "top5": [
+        "indian_kanoon:179828917:chunk:0008",
+        "indian_kanoon:173395727:chunk:0030",
+        "indian_kanoon:77330685:chunk:0020",
+        "indian_kanoon:152313551:chunk:0010",
+        "indian_kanoon:179828917:chunk:0009"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:179828917:chunk:0008",
+        "indian_kanoon:173395727:chunk:0030",
+        "indian_kanoon:77330685:chunk:0020",
+        "indian_kanoon:152313551:chunk:0010",
+        "indian_kanoon:179828917:chunk:0009"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.004409,
+      "top5_scores": [
+        1.628906,
+        1.404297,
+        0.922363,
+        0.85791,
+        0.755859
+      ],
+      "frozen_top5_scores": [
+        1.628272,
+        1.403724,
+        0.924765,
+        0.859477,
+        0.755596
+      ]
+    },
+    {
+      "query_id": "eval-q016",
+      "top5": [
+        "indian_kanoon:40368737:chunk:0008",
+        "indian_kanoon:173395727:chunk:0045",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:136781165:chunk:0003",
+        "indian_kanoon:173395727:chunk:0021"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:40368737:chunk:0008",
+        "indian_kanoon:173395727:chunk:0045",
+        "indian_kanoon:177113492:chunk:0004",
+        "indian_kanoon:136781165:chunk:0003",
+        "indian_kanoon:173395727:chunk:0021"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.010131,
+      "top5_scores": [
+        -1.194336,
+        -1.929688,
+        -2.009766,
+        -2.617188,
+        -2.662109
+      ],
+      "frozen_top5_scores": [
+        -1.193379,
+        -1.930024,
+        -2.014978,
+        -2.617335,
+        -2.664216
+      ]
+    },
+    {
+      "query_id": "eval-q017",
+      "top5": [
+        "indian_kanoon:70774666:chunk:0025",
+        "indian_kanoon:184937779:chunk:0013",
+        "indian_kanoon:179828917:chunk:0023",
+        "indian_kanoon:184937779:chunk:0008",
+        "indian_kanoon:184937779:chunk:0012"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:70774666:chunk:0025",
+        "indian_kanoon:184937779:chunk:0013",
+        "indian_kanoon:179828917:chunk:0023",
+        "indian_kanoon:184937779:chunk:0008",
+        "indian_kanoon:184937779:chunk:0012"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.005524,
+      "top5_scores": [
+        0.557129,
+        -0.08905,
+        -0.197266,
+        -2.021484,
+        -2.269531
+      ],
+      "frozen_top5_scores": [
+        0.561589,
+        -0.088167,
+        -0.191742,
+        -2.020068,
+        -2.269661
+      ]
+    },
+    {
+      "query_id": "eval-q018",
+      "top5": [
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005",
+        "indian_kanoon:176391710:chunk:0009",
+        "indian_kanoon:131331418:chunk:0006",
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:131331418:chunk:0007",
+        "indian_kanoon:44731735:chunk:0005",
+        "indian_kanoon:176391710:chunk:0009",
+        "indian_kanoon:131331418:chunk:0006",
+        "indian_kanoon:44731735:chunk:0003"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006056,
+      "top5_scores": [
+        3.640625,
+        3.611328,
+        3.34375,
+        2.990234,
+        1.920898
+      ],
+      "frozen_top5_scores": [
+        3.641182,
+        3.611934,
+        3.342582,
+        2.990497,
+        1.923189
+      ]
+    },
+    {
+      "query_id": "eval-q019",
+      "top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0003",
+        "indian_kanoon:100558061:chunk:0002",
+        "indian_kanoon:100558061:chunk:0004",
+        "indian_kanoon:100558061:chunk:0001"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0003",
+        "indian_kanoon:100558061:chunk:0002",
+        "indian_kanoon:100558061:chunk:0004",
+        "indian_kanoon:100558061:chunk:0001"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.004483,
+      "top5_scores": [
+        4.230469,
+        3.910156,
+        3.849609,
+        3.75,
+        3.679688
+      ],
+      "frozen_top5_scores": [
+        4.229004,
+        3.910837,
+        3.85037,
+        3.752236,
+        3.679966
+      ]
+    },
+    {
+      "query_id": "eval-q020",
+      "top5": [
+        "indian_kanoon:176391710:chunk:0000",
+        "indian_kanoon:47759402:chunk:0007",
+        "indian_kanoon:47759402:chunk:0000",
+        "indian_kanoon:176391710:chunk:0004",
+        "indian_kanoon:176391710:chunk:0003"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:176391710:chunk:0000",
+        "indian_kanoon:47759402:chunk:0007",
+        "indian_kanoon:47759402:chunk:0000",
+        "indian_kanoon:176391710:chunk:0004",
+        "indian_kanoon:176391710:chunk:0003"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003573,
+      "top5_scores": [
+        4.230469,
+        3.648438,
+        3.300781,
+        2.603516,
+        2.451172
+      ],
+      "frozen_top5_scores": [
+        4.229714,
+        3.649529,
+        3.300403,
+        2.601937,
+        2.450255
+      ]
+    },
+    {
+      "query_id": "eval-q021",
+      "top5": [
+        "indian_kanoon:136492342:chunk:0000",
+        "indian_kanoon:102778545:chunk:0000",
+        "indian_kanoon:47759402:chunk:0007",
+        "indian_kanoon:152313551:chunk:0018",
+        "indian_kanoon:22498132:chunk:0015"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:136492342:chunk:0000",
+        "indian_kanoon:102778545:chunk:0000",
+        "indian_kanoon:47759402:chunk:0007",
+        "indian_kanoon:152313551:chunk:0018",
+        "indian_kanoon:22498132:chunk:0015"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.004161,
+      "top5_scores": [
+        2.414062,
+        1.910156,
+        1.522461,
+        0.709961,
+        -0.128296
+      ],
+      "frozen_top5_scores": [
+        2.413032,
+        1.90646,
+        1.523567,
+        0.708164,
+        -0.127502
+      ]
+    },
+    {
+      "query_id": "eval-q022",
+      "top5": [
+        "indian_kanoon:138227421:chunk:0013",
+        "indian_kanoon:169784101:chunk:0004",
+        "indian_kanoon:169784101:chunk:0001",
+        "indian_kanoon:138227421:chunk:0009",
+        "indian_kanoon:138227421:chunk:0015"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:138227421:chunk:0013",
+        "indian_kanoon:169784101:chunk:0004",
+        "indian_kanoon:169784101:chunk:0001",
+        "indian_kanoon:138227421:chunk:0009",
+        "indian_kanoon:138227421:chunk:0015"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006295,
+      "top5_scores": [
+        3.306641,
+        2.150391,
+        1.375,
+        1.041016,
+        0.884277
+      ],
+      "frozen_top5_scores": [
+        3.308035,
+        2.151169,
+        1.372289,
+        1.043861,
+        0.886353
+      ]
+    },
+    {
+      "query_id": "eval-q023",
+      "top5": [
+        "indian_kanoon:30754679:chunk:0002",
+        "indian_kanoon:156271048:chunk:0005",
+        "indian_kanoon:3493537:chunk:0000",
+        "indian_kanoon:176922161:chunk:0011",
+        "indian_kanoon:179828917:chunk:0000"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:30754679:chunk:0002",
+        "indian_kanoon:156271048:chunk:0005",
+        "indian_kanoon:3493537:chunk:0000",
+        "indian_kanoon:176922161:chunk:0011",
+        "indian_kanoon:179828917:chunk:0000"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003557,
+      "top5_scores": [
+        2.134766,
+        1.094727,
+        0.837891,
+        0.803711,
+        0.705566
+      ],
+      "frozen_top5_scores": [
+        2.13693,
+        1.091847,
+        0.839891,
+        0.801116,
+        0.706835
+      ]
+    },
+    {
+      "query_id": "eval-q024",
+      "top5": [
+        "indian_kanoon:15148168:chunk:0000",
+        "indian_kanoon:188935138:chunk:0021",
+        "indian_kanoon:199957261:chunk:0022",
+        "indian_kanoon:143670565:chunk:0012",
+        "indian_kanoon:100558061:chunk:0007"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:15148168:chunk:0000",
+        "indian_kanoon:188935138:chunk:0021",
+        "indian_kanoon:199957261:chunk:0022",
+        "indian_kanoon:143670565:chunk:0012",
+        "indian_kanoon:100558061:chunk:0007"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006039,
+      "top5_scores": [
+        -2.613281,
+        -3.068359,
+        -3.933594,
+        -3.986328,
+        -4.441406
+      ],
+      "frozen_top5_scores": [
+        -2.615975,
+        -3.068544,
+        -3.927555,
+        -3.991189,
+        -4.435802
+      ]
+    },
+    {
+      "query_id": "eval-q025",
+      "top5": [
+        "indian_kanoon:47759402:chunk:0008",
+        "indian_kanoon:47759402:chunk:0005",
+        "indian_kanoon:47759402:chunk:0006",
+        "indian_kanoon:47759402:chunk:0003",
+        "indian_kanoon:47759402:chunk:0001"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:47759402:chunk:0008",
+        "indian_kanoon:47759402:chunk:0005",
+        "indian_kanoon:47759402:chunk:0006",
+        "indian_kanoon:47759402:chunk:0003",
+        "indian_kanoon:47759402:chunk:0001"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.006503,
+      "top5_scores": [
+        4.363281,
+        3.099609,
+        2.75,
+        1.983398,
+        1.910156
+      ],
+      "frozen_top5_scores": [
+        4.361802,
+        3.09871,
+        2.74724,
+        1.985255,
+        1.909543
+      ]
+    },
+    {
+      "query_id": "eval-q026",
+      "top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0003",
+        "indian_kanoon:100558061:chunk:0002",
+        "indian_kanoon:100558061:chunk:0001",
+        "indian_kanoon:100558061:chunk:0004"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:100558061:chunk:0000",
+        "indian_kanoon:100558061:chunk:0003",
+        "indian_kanoon:100558061:chunk:0002",
+        "indian_kanoon:100558061:chunk:0001",
+        "indian_kanoon:100558061:chunk:0004"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.003411,
+      "top5_scores": [
+        2.589844,
+        2.568359,
+        2.5,
+        2.404297,
+        2.310547
+      ],
+      "frozen_top5_scores": [
+        2.590136,
+        2.569777,
+        2.500995,
+        2.405271,
+        2.310788
+      ]
+    },
+    {
+      "query_id": "eval-q027",
+      "top5": [
+        "indian_kanoon:47759402:chunk:0005",
+        "indian_kanoon:178355286:chunk:0034",
+        "indian_kanoon:178355286:chunk:0035",
+        "indian_kanoon:176922161:chunk:0011",
+        "indian_kanoon:173395727:chunk:0053"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:47759402:chunk:0005",
+        "indian_kanoon:178355286:chunk:0034",
+        "indian_kanoon:178355286:chunk:0035",
+        "indian_kanoon:176922161:chunk:0011",
+        "indian_kanoon:173395727:chunk:0053"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.013792,
+      "top5_scores": [
+        2.265625,
+        -1.110352,
+        -1.169922,
+        -1.181641,
+        -1.694336
+      ],
+      "frozen_top5_scores": [
+        2.265591,
+        -1.112752,
+        -1.169587,
+        -1.179715,
+        -1.692708
+      ]
+    },
+    {
+      "query_id": "eval-q028",
+      "top5": [
+        "indian_kanoon:127989801:chunk:0037",
+        "indian_kanoon:154171944:chunk:0034",
+        "indian_kanoon:127989801:chunk:0026",
+        "indian_kanoon:127989801:chunk:0109",
+        "indian_kanoon:127989801:chunk:0036"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:127989801:chunk:0037",
+        "indian_kanoon:154171944:chunk:0034",
+        "indian_kanoon:127989801:chunk:0026",
+        "indian_kanoon:127989801:chunk:0109",
+        "indian_kanoon:127989801:chunk:0036"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.010762,
+      "top5_scores": [
+        1.12207,
+        1.060547,
+        0.743164,
+        0.706543,
+        -0.770996
+      ],
+      "frozen_top5_scores": [
+        1.125486,
+        1.055668,
+        0.740524,
+        0.709405,
+        -0.773532
+      ]
+    },
+    {
+      "query_id": "eval-q029",
+      "top5": [
+        "indian_kanoon:125041151:chunk:0004",
+        "indian_kanoon:125041151:chunk:0010",
+        "indian_kanoon:125041151:chunk:0008",
+        "indian_kanoon:125041151:chunk:0005",
+        "indian_kanoon:179828917:chunk:0027"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:125041151:chunk:0004",
+        "indian_kanoon:125041151:chunk:0010",
+        "indian_kanoon:125041151:chunk:0008",
+        "indian_kanoon:125041151:chunk:0005",
+        "indian_kanoon:179828917:chunk:0027"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.013413,
+      "top5_scores": [
+        1.692383,
+        1.620117,
+        1.196289,
+        1.15918,
+        0.280762
+      ],
+      "frozen_top5_scores": [
+        1.693699,
+        1.622478,
+        1.199519,
+        1.160374,
+        0.279934
+      ]
+    },
+    {
+      "query_id": "eval-q030",
+      "top5": [
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:14496522:chunk:0003",
+        "indian_kanoon:44731735:chunk:0002",
+        "indian_kanoon:176391710:chunk:0008",
+        "indian_kanoon:15148168:chunk:0001"
+      ],
+      "frozen_top5": [
+        "indian_kanoon:44731735:chunk:0003",
+        "indian_kanoon:14496522:chunk:0003",
+        "indian_kanoon:44731735:chunk:0002",
+        "indian_kanoon:176391710:chunk:0008",
+        "indian_kanoon:15148168:chunk:0001"
+      ],
+      "top5_identical": true,
+      "top5_set_identical": true,
+      "max_abs_score_diff_vs_frozen": 0.007415,
+      "top5_scores": [
+        1.973633,
+        1.81543,
+        1.382812,
+        1.34668,
+        0.89209
+      ],
+      "frozen_top5_scores": [
+        1.974657,
+        1.816122,
+        1.386225,
+        1.347989,
+        0.899504
+      ]
+    }
+  ],
+  "warm_up": {
+    "status": "loaded",
+    "load_ms": 0.0,
+    "warmup_ms": 1370.9,
+    "devices": {
+      "embedder": "mps/fp16",
+      "reranker": "mps/fp16"
+    },
+    "wall_ms": 6666.4
+  },
+  "torch": "2.14.0",
+  "machine": "arm64"
+}

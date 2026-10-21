@@ -14,6 +14,7 @@ class RerankerConfig:
     batch_size: int = 8
     max_length: int = 512
     top_k: int = 5
+    use_fp16: bool = False
     truncation_policy: str = "FlagEmbedding pair tokenizer truncates deterministically to max_length, preserving the query and passage prefix per model tokenizer behavior."
 
 

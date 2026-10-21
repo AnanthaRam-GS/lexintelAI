@@ -648,9 +648,12 @@ def _default_chunker() -> Callable[[dict[str, Any]], list[dict[str, Any]]]:
 
 def _default_embedder() -> Any:
     from backend.app.services.embeddings.base import EmbeddingConfig
+    from backend.app.core.config import Settings
     from backend.app.services.embeddings.bge_m3 import BgeM3EmbeddingProvider
+    from backend.app.services.model_device import resolve_model_device
 
-    return BgeM3EmbeddingProvider(EmbeddingConfig())
+    # Index vectors are always fp32; the device follows LEGALAI_MODEL_DEVICE.
+    return BgeM3EmbeddingProvider(EmbeddingConfig(device=resolve_model_device(Settings().legalai_model_device)))
 
 
 def _prepare_for_chunking(

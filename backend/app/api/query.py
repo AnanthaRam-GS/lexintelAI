@@ -9,11 +9,13 @@ import json
 import logging
 import re
 import tempfile
+import threading
 from time import perf_counter
 from pathlib import Path
 from typing import Any, Callable
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings, resolve_chroma_location
@@ -74,7 +76,9 @@ from backend.app.services.product_context_budget import (
     evidence_metrics,
     resolve_product_context_budget,
 )
+from backend.app.services.model_device import resolve_model_device
 from backend.app.services.query_history import PROFESSIONAL_MODE, save_query_history
+from backend.app.services.query_models import active_model_device
 from backend.app.services.token_budget import TokenBudget, estimate_tokens, resolve_token_budget
 from backend.app.services.vector_store import VectorStoreUnavailable
 from backend.scripts.build_lexical_index import DEFAULT_PERSIST_DIR as BM25_PERSIST_DIR
@@ -123,6 +127,8 @@ def retrieval_service_args(settings: Settings) -> Namespace:
         chroma_persist_dir=chroma_persist_dir,
         index_name=DEFAULT_INDEX_NAME,
         collection=collection,
+        model_device=resolve_model_device(settings.legalai_model_device),
+        reranker_fp16=settings.legalai_reranker_fp16,
     )
 
 
@@ -131,9 +137,14 @@ def _cached_retrieval_service():
     return make_service(retrieval_service_args(Settings()))
 
 
+# Startup warm-up and the first requests may ask for the service at once; build it once.
+_retrieval_service_lock = threading.Lock()
+
+
 def get_retrieval_service():
     try:
-        return _cached_retrieval_service()
+        with _retrieval_service_lock:
+            return _cached_retrieval_service()
     except VectorStoreUnavailable as exc:
         # Not cached by lru_cache, so the next request retries.
         logger.error("retrieval index unavailable code=%s detail=%s", exc.code, exc)
@@ -238,51 +249,20 @@ async def query_professional_pdf(
     started = perf_counter()
     try:
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
-        parse_ms = elapsed_since(started)
-        budget = resolve_token_budget(settings)
-        # Both modes build the local document map (zero provider calls), so
-        # parties, chronology, procedure and evidence are filled either way.
-        map_started = perf_counter()
-        document_map = build_document_map_or_fail(parsed_pdf, retrieval_service=retrieval_service, settings=settings)
-        document_map_ms = elapsed_since(map_started)
-        if analysis_mode.strip().lower() == "brief":
-            # The map is the private context: one final provider call, whatever the document length.
-            retrieval_query = build_enriched_trusted_query(document_map, fallback_query=query)
-            private_context_builder = build_local_map_context_builder(document_map, budget=budget)
-        else:
-            retrieval_query = query
-            private_context_builder = build_question_focused_context_builder(
-                parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
-            )
-        outcome = run_frozen_query_pipeline(
-            retrieval_query,
-            mode=AnswerMode.PROFESSIONAL,
+        # BE-004: mapping, retrieval, reranking and the provider call block, so they run off the event loop.
+        return await run_in_threadpool(
+            answer_professional_pdf,
+            parsed_pdf,
+            query=query,
+            session_id=session_id,
+            analysis_mode=analysis_mode,
+            db=db,
+            current_user=current_user,
+            settings=settings,
             retrieval_service=retrieval_service,
             adapter=adapter,
-            settings=settings,
-            private_context_builder=private_context_builder,
-            timings={"parse_ms": parse_ms, "document_map_ms": document_map_ms},
+            started=started,
         )
-        result = outcome.result
-        response = professional_response_from_result(
-            result,
-            retrieval=outcome.retrieval,
-            document_map=document_map,
-            private_chunks=parsed_pdf.private_chunks,
-            excerpt_max_chars=settings.precedent_excerpt_max_chars,
-        )
-        mode_label = "brief" if analysis_mode.strip().lower() == "brief" else "question"
-        response.debug = finish_query_diagnostics(f"professional_pdf_{mode_label}", outcome, started=started, settings=settings)
-        save_query_history(
-            db,
-            query_text=query,
-            mode=PROFESSIONAL_MODE,
-            user_id=current_user.id,
-            session_id=session_id,
-            response_json=history_payload(history_safe_response(response), result),
-            generation_backend=result.model_metadata.provider if result.model_metadata else None,
-        )
-        return response
     except HTTPException:
         raise
     except DocumentParsingError as exc:
@@ -294,6 +274,67 @@ async def query_professional_pdf(
         ) from exc
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
+
+
+def answer_professional_pdf(
+    parsed_pdf: ParsedPrivatePdf,
+    *,
+    query: str,
+    session_id: str | None,
+    analysis_mode: str,
+    db: Session,
+    current_user: User,
+    settings: Settings,
+    retrieval_service: Any,
+    adapter: Any,
+    started: float,
+) -> ProfessionalQueryResponse:
+    """The blocking part of the professional PDF route (run in the threadpool)."""
+    parse_ms = elapsed_since(started)
+    budget = resolve_token_budget(settings)
+    # Both modes build the local document map (zero provider calls), so
+    # parties, chronology, procedure and evidence are filled either way.
+    map_started = perf_counter()
+    document_map = build_document_map_or_fail(parsed_pdf, retrieval_service=retrieval_service, settings=settings)
+    document_map_ms = elapsed_since(map_started)
+    if analysis_mode.strip().lower() == "brief":
+        # The map is the private context: one final provider call, whatever the document length.
+        retrieval_query = build_enriched_trusted_query(document_map, fallback_query=query)
+        private_context_builder = build_local_map_context_builder(document_map, budget=budget)
+    else:
+        retrieval_query = query
+        private_context_builder = build_question_focused_context_builder(
+            parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
+        )
+    outcome = run_frozen_query_pipeline(
+        retrieval_query,
+        mode=AnswerMode.PROFESSIONAL,
+        retrieval_service=retrieval_service,
+        adapter=adapter,
+        settings=settings,
+        private_context_builder=private_context_builder,
+        timings={"parse_ms": parse_ms, "document_map_ms": document_map_ms},
+    )
+    result = outcome.result
+    response = professional_response_from_result(
+        result,
+        retrieval=outcome.retrieval,
+        document_map=document_map,
+        private_chunks=parsed_pdf.private_chunks,
+        excerpt_max_chars=settings.precedent_excerpt_max_chars,
+    )
+    mode_label = "brief" if analysis_mode.strip().lower() == "brief" else "question"
+    response.debug = finish_query_diagnostics(f"professional_pdf_{mode_label}", outcome, started=started, settings=settings)
+    save_query_history(
+        db,
+        query_text=query,
+        mode=PROFESSIONAL_MODE,
+        user_id=current_user.id,
+        session_id=session_id,
+        response_json=history_payload(history_safe_response(response), result),
+        generation_backend=result.model_metadata.provider if result.model_metadata else None,
+    )
+    return response
 
 
 @router.post("/public/pdf", response_model=PublicQueryResponse)
@@ -307,26 +348,16 @@ async def query_public_pdf(
     started = perf_counter()
     try:
         parsed_pdf = await parse_private_pdf_upload(file, settings=settings)
-        parse_ms = elapsed_since(started)
-        budget = resolve_token_budget(settings)
-        # Public PDF is always question-focused: the user explicitly asked a
-        # question, so targeted retrieval is preferred over whole-document
-        # hierarchical analysis (which is a professional-only capability).
-        private_context_builder = build_question_focused_context_builder(
-            parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
-        )
-        outcome = run_frozen_query_pipeline(
-            query,
-            mode=AnswerMode.PUBLIC,
+        # BE-004: retrieval, reranking and the provider call block, so they run off the event loop.
+        return await run_in_threadpool(
+            answer_public_pdf,
+            parsed_pdf,
+            query=query,
+            settings=settings,
             retrieval_service=retrieval_service,
             adapter=adapter,
-            settings=settings,
-            private_context_builder=private_context_builder,
-            timings={"parse_ms": parse_ms},
+            started=started,
         )
-        response = public_response_from_result(outcome.result)
-        response.debug = finish_query_diagnostics("public_pdf", outcome, started=started, settings=settings)
-        return response
     except HTTPException:
         raise
     except DocumentParsingError as exc:
@@ -338,6 +369,32 @@ async def query_public_pdf(
         ) from exc
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
+
+
+def answer_public_pdf(
+    parsed_pdf: ParsedPrivatePdf, *, query: str, settings: Settings, retrieval_service: Any, adapter: Any, started: float
+) -> PublicQueryResponse:
+    """The blocking part of the public PDF route (run in the threadpool)."""
+    parse_ms = elapsed_since(started)
+    budget = resolve_token_budget(settings)
+    # Public PDF is always question-focused: the user explicitly asked a
+    # question, so targeted retrieval is preferred over whole-document
+    # hierarchical analysis (which is a professional-only capability).
+    private_context_builder = build_question_focused_context_builder(
+        parsed_pdf, query=query, retrieval_service=retrieval_service, settings=settings, budget=budget
+    )
+    outcome = run_frozen_query_pipeline(
+        query,
+        mode=AnswerMode.PUBLIC,
+        retrieval_service=retrieval_service,
+        adapter=adapter,
+        settings=settings,
+        private_context_builder=private_context_builder,
+        timings={"parse_ms": parse_ms},
+    )
+    response = public_response_from_result(outcome.result)
+    response.debug = finish_query_diagnostics("public_pdf", outcome, started=started, settings=settings)
+    return response
 
 
 _PDF_NO_TEXT_MESSAGES = ("no extractable native text", "no parseable text blocks")
@@ -379,15 +436,20 @@ async def parse_private_pdf_upload(file: UploadFile, *, settings: Settings) -> P
     with tempfile.TemporaryDirectory(prefix="legalai_pdf_query_") as temp_dir:
         temp_path = Path(temp_dir) / safe_name
         await write_upload_to_temp(file, temp_path, max_bytes=max_bytes)
-        document = parse_document(temp_path)
-        document["source_file_name"] = safe_name
-        chunks = chunk_document(document)
+        # BE-004: PDF parsing and chunking block, so they run off the event loop.
+        document, chunks = await run_in_threadpool(parse_and_chunk_pdf, temp_path, safe_name)
     return ParsedPrivatePdf(
         filename=safe_name,
         private_chunks=build_private_chunks(chunks),
         page_count=int(document.get("page_count") or 0),
         extracted_text_length=len(str(document.get("text") or "")),
     )
+
+
+def parse_and_chunk_pdf(path: Path, source_file_name: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    document = parse_document(path)
+    document["source_file_name"] = source_file_name
+    return document, chunk_document(document)
 
 
 def build_question_focused_context_builder(
@@ -670,8 +732,8 @@ def _attempt_generation(
 class RequestSizeGuard:
     """Keeps a Groq request (prompt + structured-output schema + output limit) under the account's per-request ceiling.
 
-    ``estimate_tokens`` undercounts Groq's real prompt tokens by 1.38-1.65x
-    (step 11d calibration on live runs), so the estimate is multiplied by
+    ``estimate_tokens`` undercounts Groq's real prompt tokens by 1.18-1.43x
+    (step 12 calibration on all recorded live runs), so the estimate is multiplied by
     ``estimate_factor`` before it is compared.
     """
 
@@ -780,18 +842,21 @@ def finish_query_diagnostics(endpoint: str, outcome: QueryPipelineOutcome, *, st
     timings["total_ms"] = elapsed_since(started)
     ordered = {key: timings[key] for key in QUERY_STAGES if key in timings}
     backend = answer_backend(outcome.result)
+    devices = active_model_device()
     logger.info(
-        "query_timings endpoint=%s provider=%s fallback_used=%s finish_reason=%s prompt_version=%s %s",
+        "query_timings endpoint=%s provider=%s fallback_used=%s finish_reason=%s prompt_version=%s embedder=%s reranker=%s %s",
         endpoint,
         backend.get("provider"),
         backend.get("fallback_used"),
         backend.get("finish_reason"),
         backend.get("prompt_version"),
+        (devices or {}).get("embedder"),
+        (devices or {}).get("reranker"),
         " ".join(f"{key}={value}" for key, value in ordered.items()),
     )
     if not settings.legalai_query_debug:
         return None
-    return {"endpoint": endpoint, "timings_ms": ordered, "backend": backend}
+    return {"endpoint": endpoint, "timings_ms": ordered, "backend": backend, "model_devices": devices}
 
 
 def build_document_map_or_fail(parsed_pdf: ParsedPrivatePdf, *, retrieval_service: Any, settings: Settings) -> LocalDocumentMap:

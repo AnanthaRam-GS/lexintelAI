@@ -157,10 +157,21 @@ backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
   `generation_ms` (provider calls, including any fallback),
   `answer_parse_and_citation_validation_ms` and `total_ms`;
 - `backend`: provider, model, `fallback_used`, primary, fallback and
-  `fallback_reason`.
+  `fallback_reason`;
+- `model_devices`: `{"embedder": "mps/fp32", "reranker": "mps/fp16"}`, the
+  device and precision actually in use (after any CPU fallback), or `null`
+  if the models are not loaded.
 
-The same timings and backend are always logged, without query or document
-text. Public responses also gain `debug` (`null` by default).
+The same timings, backend and devices are always logged, without query or
+document text. Public responses also gain `debug` (`null` by default).
+
+**Health.** `GET /health` also returns `models`:
+- `status`: `not_loaded`, `loading` (startup warm-up running), `loaded` or
+  `failed` (warm-up failed; queries load the models on demand);
+- when loaded: `devices`, plus `load_ms` and `warmup_ms` from the warm-up;
+- `error`: the exception type, when failed.
+
+The top-level `status` still reflects the database only.
 
 ## Public Query
 
