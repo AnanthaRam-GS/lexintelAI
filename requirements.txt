@@ -13,3 +13,8 @@ bcrypt
 python-multipart
 pandas
 psycopg2-binary
+
+# Security floors for transitive dependencies (step 13 pip-audit; see docs/SECURITY.md).
+certifi>=2026.10.19
+aiohttp>=3.14.4
+urllib3>=2.8.0

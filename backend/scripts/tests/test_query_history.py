@@ -19,6 +19,7 @@ from backend.app.db.session import SessionLocal
 from backend.app.services.query_history import list_query_history, save_query_history
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
+from backend.scripts.tests.db_test_bootstrap import TEST_SEED_PASSWORDS, TEST_LAWYER_PASSWORD
 
 MARKER = "R3_HISTORY_TEST"
 SECOND_LAWYER_EMAIL = "lawyer2-r3@legalai.local"
@@ -29,7 +30,7 @@ class TestQueryHistoryServiceAndApi(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
 
     def setUp(self) -> None:
         self.db = SessionLocal()
@@ -137,7 +138,7 @@ class TestQueryHistoryServiceAndApi(unittest.TestCase):
         self.assertEqual(unauthenticated.get("/query/history").status_code, 401)
         self.assertEqual(unauthenticated.get("/query-history").status_code, 401)
 
-        lawyer_client = self._login("lawyer@legalai.local", "LawyerPassword123!")
+        lawyer_client = self._login("lawyer@legalai.local", TEST_LAWYER_PASSWORD)
         # Test contract route /query/history
         contract_resp = lawyer_client.get("/query/history", params={"limit": 20})
         self.assertEqual(contract_resp.status_code, 200)

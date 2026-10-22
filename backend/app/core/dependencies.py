@@ -70,10 +70,12 @@ def get_current_user(
     except ValueError:
         user = db.query(User).filter(User.email == user_id_str).first()
 
-    if user is None:
+    # SEC-004: a missing or deactivated account gets the same generic failure as a bad token.
+    # The role always comes from this DB row, never from the token's claims.
+    if user is None or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Could not validate credentials",
         )
 
     return user

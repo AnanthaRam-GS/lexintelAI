@@ -35,6 +35,7 @@ from __future__ import annotations
 import atexit
 import os
 from pathlib import Path
+import secrets
 import shutil
 import smtplib
 import subprocess
@@ -120,9 +121,30 @@ os.environ["VERIFICATION_DOCUMENT_DIR"] = str(TEMP_VERIFICATION_DIR)
 os.environ["EMAIL_DELIVERY_MODE"] = "console"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
+# APP_ENV=test: a random per-process JWT secret, and the seed-password startup check is skipped.
+os.environ["APP_ENV"] = "test"
+os.environ["JWT_SECRET_KEY"] = ""
+# Generous limits so suites are not throttled; tests of the limits lower them explicitly.
+for variable in (
+    "LOGIN_MAX_FAILURES_PER_ACCOUNT",
+    "LOGIN_MAX_FAILURES_PER_IP",
+    "PUBLIC_QUERY_LIMIT_PER_MINUTE",
+    "PUBLIC_QUERY_LIMIT_PER_DAY",
+    "PROFESSIONAL_QUERY_LIMIT_PER_MINUTE",
+    "PROFESSIONAL_QUERY_LIMIT_PER_DAY",
+):
+    os.environ[variable] = "100000"
 for variable in BLANKED_CREDENTIAL_VARIABLES:
     os.environ[variable] = ""
 
+
+# Seed-user passwords for this test process only: random, never written anywhere (SEC-002).
+TEST_SEED_PASSWORDS = {
+    "lawyer@legalai.local": secrets.token_urlsafe(18),
+    "admin@legalai.local": secrets.token_urlsafe(18),
+}
+TEST_LAWYER_PASSWORD = TEST_SEED_PASSWORDS["lawyer@legalai.local"]
+TEST_ADMIN_PASSWORD = TEST_SEED_PASSWORDS["admin@legalai.local"]
 
 def _network_disabled(*_args, **_kwargs):
     raise RuntimeError("Network access is disabled by the LegalAI DB test bootstrap.")

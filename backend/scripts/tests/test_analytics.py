@@ -32,6 +32,7 @@ from backend.app.services.analytics import (
 )
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
+from backend.scripts.tests.db_test_bootstrap import TEST_SEED_PASSWORDS, TEST_LAWYER_PASSWORD
 
 MARKER = "R3_ANALYTICS_TEST"
 
@@ -41,7 +42,7 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
         cls.client = TestClient(app)
 
     def setUp(self) -> None:
@@ -118,7 +119,7 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
         self.db.query(NcrbStat).filter(NcrbStat.state.like(f"{MARKER}%")).delete(synchronize_session=False)
         self.db.commit()
 
-    def _login(self, email: str = "lawyer@legalai.local", password: str = "LawyerPassword123!") -> TestClient:
+    def _login(self, email: str = "lawyer@legalai.local", password: str = TEST_LAWYER_PASSWORD) -> TestClient:
         client = TestClient(app)
         response = client.post("/auth/login", json={"email": email, "password": password})
         self.assertEqual(response.status_code, 200)
@@ -249,12 +250,12 @@ class TestAnalyticsProducerAndReconciliation(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
 
     def setUp(self) -> None:
         self.db = SessionLocal()
         self.client = TestClient(app)
-        login = self.client.post("/auth/login", json={"email": "lawyer@legalai.local", "password": "LawyerPassword123!"})
+        login = self.client.post("/auth/login", json={"email": "lawyer@legalai.local", "password": TEST_LAWYER_PASSWORD})
         self.assertEqual(login.status_code, 200)
 
     def tearDown(self) -> None:

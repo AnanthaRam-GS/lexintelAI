@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 import os
+import secrets
 import sys
 import unittest
 from pathlib import Path
@@ -19,7 +20,6 @@ if str(REPO_ROOT) not in sys.path:
 from backend.scripts.tests import db_test_bootstrap  # Must stay the first backend import.
 from backend.app.core.security import (
     COOKIE_NAME,
-    DEFAULT_DEV_SECRET,
     create_access_token,
     decode_access_token,
     get_cookie_options,
@@ -30,6 +30,7 @@ from backend.app.core.security import (
 from backend.app.core.config import Settings
 from backend.main import app
 from backend.scripts.seed_users import seed_development_users
+from backend.scripts.tests.db_test_bootstrap import TEST_SEED_PASSWORDS, TEST_LAWYER_PASSWORD, TEST_ADMIN_PASSWORD
 
 
 class TestSecurityUnit(unittest.TestCase):
@@ -75,9 +76,10 @@ class TestSecurityUnit(unittest.TestCase):
         with self.assertRaises(jwt.PyJWTError):
             decode_access_token(tampered)
 
-    def test_development_allows_explicit_dev_jwt_fallback(self) -> None:
+    def test_development_has_no_jwt_fallback(self) -> None:
         settings = Settings(app_env="development", jwt_secret_key="")
-        self.assertEqual(get_jwt_secret(settings), DEFAULT_DEV_SECRET)
+        with self.assertRaisesRegex(RuntimeError, "JWT_SECRET_KEY is not set"):
+            get_jwt_secret(settings)
 
     def test_production_requires_configured_jwt_secret(self) -> None:
         settings = Settings(app_env="production", jwt_secret_key="")
@@ -85,9 +87,15 @@ class TestSecurityUnit(unittest.TestCase):
             get_jwt_secret(settings)
 
     def test_production_uses_configured_jwt_secret(self) -> None:
-        configured_key = "configured-production-test-key"
+        configured_key = secrets.token_urlsafe(48)
         settings = Settings(app_env="production", jwt_secret_key=configured_key)
         self.assertEqual(get_jwt_secret(settings), configured_key)
+
+    def test_test_env_without_secret_uses_a_random_process_secret(self) -> None:
+        settings = Settings(app_env="test", jwt_secret_key="")
+        secret = get_jwt_secret(settings)
+        self.assertGreaterEqual(len(secret), 32)
+        self.assertEqual(get_jwt_secret(settings), secret)
 
     def test_cookie_options(self) -> None:
         opts = get_cookie_options()
@@ -103,7 +111,7 @@ class TestAuthIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         # Ensure test database has development seed users populated
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
         cls.client = TestClient(app)
 
     def test_health_check(self) -> None:
@@ -136,7 +144,7 @@ class TestAuthIntegration(unittest.TestCase):
         client = TestClient(app)
         payload = {
             "email": "lawyer@legalai.local",
-            "password": "LawyerPassword123!",
+            "password": TEST_LAWYER_PASSWORD,
         }
         response = client.post("/auth/login", json=payload)
         self.assertEqual(response.status_code, 200)
@@ -161,7 +169,7 @@ class TestAuthIntegration(unittest.TestCase):
         client = TestClient(app)
         payload = {
             "email": "admin@legalai.local",
-            "password": "AdminPassword123!",
+            "password": TEST_ADMIN_PASSWORD,
         }
         response = client.post("/auth/login", json=payload)
         self.assertEqual(response.status_code, 200)
@@ -203,7 +211,7 @@ class TestAuthIntegration(unittest.TestCase):
         # Login first
         login_resp = client.post(
             "/auth/login",
-            json={"email": "lawyer@legalai.local", "password": "LawyerPassword123!"},
+            json={"email": "lawyer@legalai.local", "password": TEST_LAWYER_PASSWORD},
         )
         self.assertEqual(login_resp.status_code, 200)
         self.assertIn(COOKIE_NAME, client.cookies)

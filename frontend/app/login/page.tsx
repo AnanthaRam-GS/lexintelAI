@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import { AuthProvider } from '../../lib/auth/AuthContext';
 import { LoginForm } from './LoginForm';
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <AuthProvider>
-      <LoginForm />
+      {/* useSearchParams() needs a Suspense boundary for the page to prerender in `next build`. */}
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </AuthProvider>
   );
 }

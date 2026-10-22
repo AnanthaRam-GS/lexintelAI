@@ -13,7 +13,9 @@ from backend.app.api.ingest import router as ingest_router
 from backend.app.api.lawyer_verification import router as lawyer_verification_router
 from backend.app.api.query import get_retrieval_service, router as query_router
 from backend.app.api.query_history import router as query_history_router
-from backend.app.core.config import Settings
+from backend.app.core.config import Settings, allowed_origins
+from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheckMiddleware, max_request_body_bytes
+from backend.app.core.startup_checks import run_startup_security_checks
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
 from backend.app.services.query_models import model_status, start_warm_up
@@ -24,7 +26,9 @@ logger = logging.getLogger("legalai.startup")
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Reap ingestion jobs left non-terminal by a previous process (BE-005)."""
+    """Refuse an insecure configuration (SEC-002, SEC-005), then reap ingestion jobs left non-terminal (BE-005)."""
+    # Raises InsecureConfigurationError, which aborts startup; the message never contains a secret.
+    run_startup_security_checks(settings, SessionLocal)
     db = SessionLocal()
     try:
         reaped = reap_stale_jobs(db, upload_dir=ingest_api.UPLOAD_DIR)
@@ -47,13 +51,9 @@ app = FastAPI(
 )
 
 # CORS Configuration
-configured_origins = [
-    settings.frontend_origin,
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-unique_origins = list(dict.fromkeys(filter(None, configured_origins)))
+unique_origins = allowed_origins(settings)
 
+# Starlette runs the last-added middleware first: body size, then the Origin check, then CORS.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=unique_origins,
@@ -61,6 +61,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# SEC-006: cookie-authenticated writes must come from an allowed origin (see core/request_guards.py).
+app.add_middleware(OriginCheckMiddleware, allowed_origins=unique_origins)
+# SEC-008: reject an oversize body by its Content-Length before reading it.
+app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_request_body_bytes(settings.max_upload_size_mb))
 
 # Router Wiring
 app.include_router(auth_router)

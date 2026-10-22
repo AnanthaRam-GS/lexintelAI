@@ -1035,7 +1035,7 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["detail"]["code"], "INVALID_PDF_HEADER")
 
-        app.dependency_overrides[query_api.get_settings] = lambda: type("SettingsStub", (), {"max_upload_size_mb": 0})()
+        app.dependency_overrides[query_api.get_settings] = lambda: Settings(max_upload_size_mb=0)
         response = self.client.post(
             "/query/professional/pdf",
             data={"query": "Research"},

@@ -39,9 +39,9 @@ class LoginResponse(BaseModel):
 
 
 class RegistrationResponse(BaseModel):
-    """Safe registration response without password material."""
+    """Registration response; identical for new and existing emails (SEC-003), so it carries no account data."""
 
-    user: AuthenticatedUser
+    email: str
     message: str
     email_verification_required: bool = True
     dev_verification_otp: str | None = None

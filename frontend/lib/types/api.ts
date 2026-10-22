@@ -13,8 +13,9 @@ export interface LoginResponse {
   message: string;
 }
 
+/** Identical for new and already-registered emails, so it carries no account data. */
 export interface RegistrationResponse {
-  user: AuthenticatedUser;
+  email: string;
   message: string;
   email_verification_required: boolean;
   dev_verification_otp?: string | null;

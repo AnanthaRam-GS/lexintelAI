@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { queryApi } from '../../../lib/api';
+import { limitMessage, queryApi } from '../../../lib/api';
 import { ErrorMessage, LoadingSpinner } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
@@ -51,6 +51,11 @@ export default function ProfessionalQueryPage() {
       const response = await queryApi.submitText(trimmed);
       setResult(response);
     } catch (err) {
+      const limited = limitMessage(err);
+      if (limited) {
+        setErrorState({ title: 'Please slow down', message: limited });
+        return;
+      }
       setErrorState({
         title: 'Query Analysis Failed',
         message: err instanceof Error ? err.message : 'Unable to complete legal analysis.',

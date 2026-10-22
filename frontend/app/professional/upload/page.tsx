@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ApiClientError, queryApi } from '../../../lib/api';
+import { ApiClientError, limitMessage, queryApi } from '../../../lib/api';
 import { ErrorMessage, LoadingSpinner, UploadDropzone } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
@@ -43,6 +43,11 @@ export default function ProfessionalUploadPage() {
       const response = await queryApi.submitPdf(selectedFile, undefined, undefined, 'brief');
       setResult(response);
     } catch (err) {
+      const limited = limitMessage(err);
+      if (limited) {
+        setErrorState({ title: 'Please slow down', message: limited });
+        return;
+      }
       if (err instanceof ApiClientError && err.status === 429) {
         setErrorState({
           title: 'Usage Limit Reached',

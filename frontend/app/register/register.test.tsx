@@ -22,7 +22,7 @@ describe('RegisterPage', () => {
     const register = vi.spyOn(authApi, 'register').mockResolvedValue({
       email_verification_required: true,
       message: 'ok',
-      user: { id: 1, email: 'public@example.test', role: 'public' },
+      email: 'public@example.test',
     });
     const user = userEvent.setup();
 
@@ -49,7 +49,7 @@ describe('RegisterPage', () => {
     const register = vi.spyOn(authApi, 'register').mockResolvedValue({
       email_verification_required: true,
       message: 'ok',
-      user: { id: 1, email: 'public@example.test', role: 'public' },
+      email: 'public@example.test',
     });
     const user = userEvent.setup();
 

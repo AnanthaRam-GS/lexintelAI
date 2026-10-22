@@ -7,6 +7,7 @@ and HttpOnly cookie configuration helpers.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import secrets
 from typing import Any
 
 import bcrypt
@@ -15,7 +16,9 @@ import jwt
 from backend.app.core.config import Settings
 
 COOKIE_NAME = "access_token"
-DEFAULT_DEV_SECRET = "legalai-development-jwt-secret-key-must-be-at-least-32-bytes-long!"
+COOKIE_SAMESITE_VALUES = {"lax", "strict", "none"}
+# APP_ENV=test only, when no secret is configured: a random secret for this process.
+_TEST_PROCESS_SECRET = secrets.token_urlsafe(48)
 
 
 def _get_settings(settings: Settings | None = None) -> Settings:
@@ -23,13 +26,20 @@ def _get_settings(settings: Settings | None = None) -> Settings:
 
 
 def get_jwt_secret(settings: Settings | None = None) -> str:
-    """Return configured JWT secret or a safe development fallback."""
+    """Return the configured JWT secret; there is no public fallback (SEC-005).
+
+    Outside APP_ENV=test an unset, default or short secret raises. In test, an
+    unset secret is a random per-process value.
+    """
+    from backend.app.core.startup_checks import InsecureConfigurationError, app_env, jwt_secret_problem
+
     s = _get_settings(settings)
-    if s.jwt_secret_key and len(s.jwt_secret_key.strip()) > 0:
-        return s.jwt_secret_key.strip()
-    if s.app_env.casefold() == "production":
-        raise RuntimeError("JWT_SECRET_KEY must be configured in production.")
-    return DEFAULT_DEV_SECRET
+    if app_env(s) == "test" and not (s.jwt_secret_key or "").strip():
+        return _TEST_PROCESS_SECRET
+    problem = jwt_secret_problem(s.jwt_secret_key)
+    if problem and app_env(s) != "test":
+        raise InsecureConfigurationError(f"{problem}; see docs/SECURITY.md.")
+    return s.jwt_secret_key.strip()
 
 
 def hash_password(password: str) -> str:
@@ -104,13 +114,20 @@ def decode_access_token(
 
 
 def get_cookie_options(settings: Settings | None = None) -> dict[str, Any]:
-    """Return standard cookie options for HttpOnly JWT storage."""
+    """Cookie options for the HttpOnly JWT cookie (SEC-006).
+
+    HttpOnly always; an explicit SameSite (AUTH_COOKIE_SAMESITE, default lax);
+    Secure in production, and always with SameSite=None (browsers require it).
+    """
     s = _get_settings(settings)
+    samesite = (s.auth_cookie_samesite or "lax").strip().lower()
+    if samesite not in COOKIE_SAMESITE_VALUES:
+        samesite = "lax"
     is_production = s.app_env.casefold() == "production"
     return {
         "httponly": True,
-        "secure": is_production,
-        "samesite": "lax",
+        "secure": is_production or samesite == "none",
+        "samesite": samesite,
         "path": "/",
         "max_age": s.jwt_expiry_minutes * 60,
     }

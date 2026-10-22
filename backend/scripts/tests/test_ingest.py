@@ -45,6 +45,7 @@ from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, INDE
 from backend.main import app
 from backend.scripts import build_lexical_index, enrich_index_metadata, verify_store_consistency
 from backend.scripts.seed_users import seed_development_users
+from backend.scripts.tests.db_test_bootstrap import TEST_SEED_PASSWORDS, TEST_LAWYER_PASSWORD, TEST_ADMIN_PASSWORD
 
 
 class FailingVectorStore:
@@ -276,13 +277,13 @@ class TestIngestionEndpoints(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
 
     def get_admin_client(self) -> TestClient:
         client = TestClient(app)
         res = client.post(
             "/auth/login",
-            json={"email": "admin@legalai.local", "password": "AdminPassword123!"},
+            json={"email": "admin@legalai.local", "password": TEST_ADMIN_PASSWORD},
         )
         assert res.status_code == 200
         return client
@@ -291,7 +292,7 @@ class TestIngestionEndpoints(unittest.TestCase):
         client = TestClient(app)
         res = client.post(
             "/auth/login",
-            json={"email": "lawyer@legalai.local", "password": "LawyerPassword123!"},
+            json={"email": "lawyer@legalai.local", "password": TEST_LAWYER_PASSWORD},
         )
         assert res.status_code == 200
         return client
@@ -450,7 +451,7 @@ class TestIngestionReliability(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        seed_development_users()
+        seed_development_users(TEST_SEED_PASSWORDS)
 
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
@@ -793,7 +794,7 @@ class TestIngestionReliability(unittest.TestCase):
         self.db.query(Document).filter(Document.id == self.baseline.document_id).update({"checksum": checksum})
         self.db.commit()
         client = TestClient(app)
-        self.assertEqual(client.post("/auth/login", json={"email": "admin@legalai.local", "password": "AdminPassword123!"}).status_code, 200)
+        self.assertEqual(client.post("/auth/login", json={"email": "admin@legalai.local", "password": TEST_ADMIN_PASSWORD}).status_code, 200)
         jobs_before = self.db.query(IngestionJob).count()
 
         response = client.post(
@@ -860,7 +861,7 @@ class TestIngestionReliability(unittest.TestCase):
         job = create_ingestion_job(self.db)
         self.age_job(job, "EXTRACTING", 120)
         client = TestClient(app)
-        client.post("/auth/login", json={"email": "admin@legalai.local", "password": "AdminPassword123!"})
+        client.post("/auth/login", json={"email": "admin@legalai.local", "password": TEST_ADMIN_PASSWORD})
         response = client.get(f"/ingest/status/{job.id}")
         self.assertEqual(response.status_code, 200)
         body = response.json()

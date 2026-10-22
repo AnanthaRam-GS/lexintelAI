@@ -23,12 +23,51 @@ Registration is public and creates `public` users only:
 { "email": "user@example.com", "password": "minimum-length-password", "full_name": "Optional Name" }
 ```
 
-`POST /auth/register` returns the created public user and sends a six-digit
-email verification OTP. Role injection from the client is ignored. OTPs are
-hashed before persistence, expire after the configured window, are single-use,
-and are attempt-limited. `POST /auth/verify-email` accepts `{ "email": "...",
+`POST /auth/register` sends a six-digit email verification OTP to a new
+address. Role injection from the client is ignored. OTPs are hashed before
+persistence, expire after the configured window, are single-use, and are
+attempt-limited. `POST /auth/verify-email` accepts `{ "email": "...",
 "otp": "123456" }`; `POST /auth/resend-verification` accepts `{ "email": "..."
 }` and supersedes previous active OTPs after the configured cooldown.
+
+**No account enumeration (step 13, SEC-003).** These responses do not reveal
+whether an email has an account:
+- `POST /auth/register` always returns **201**
+  `{ "email", "message", "email_verification_required", "dev_verification_otp" }`
+  with the same message. It no longer returns `user`, and it never returns 409.
+  For an email that already has an account, no account or code is created;
+  instead the owner is emailed an "account already exists" notice.
+  `dev_verification_otp` is only ever set for a new account, and only with
+  `APP_ENV` development/test and `EXPOSE_DEV_VERIFICATION_TOKENS=true`.
+- `POST /auth/resend-verification` always returns **200**
+  `{ "email_verified": false, "message": "If this email needs verification, a new code has been sent." }`
+  for unknown, already-verified and cooling-down emails alike. It no longer
+  returns 429 `OTP_RESEND_COOLDOWN` or `expires_at`; the cooldown is enforced
+  silently.
+- `POST /auth/verify-email` answers an unknown email with the same
+  **400** `INVALID_OR_EXPIRED_OTP` as an expired code.
+- `POST /auth/login` returns the same **401** `"Invalid email or password"` for
+  an unknown email, a wrong password and a deactivated account (SEC-004). It
+  verifies against a dummy hash for unknown emails, so timing matches.
+
+**Login throttling (SEC-003).** Failed logins are counted per email and per
+client IP (`LOGIN_MAX_FAILURES_PER_ACCOUNT`, default 5;
+`LOGIN_MAX_FAILURES_PER_IP`, default 20; within
+`LOGIN_FAILURE_WINDOW_SECONDS`, default 900). Once either limit is reached,
+login returns **429** with a `Retry-After` header and
+`{"detail": {"code": "LOGIN_THROTTLED", "message": "Too many sign-in attempts. Please wait ..."}}`
+until `LOGIN_LOCKOUT_SECONDS` (default 900) pass, even with the right password.
+Unknown emails are throttled exactly like real ones. A successful login clears
+the email's count.
+
+**Sessions.** Every authenticated request reloads the user from PostgreSQL.
+A missing or deactivated user (`is_active = 0`) gets **401**
+`"Could not validate credentials"`, the same as an invalid token, and the role
+always comes from the database, never from the token's `role` claim. The cookie
+is `HttpOnly`, has an explicit `SameSite` (`AUTH_COOKIE_SAMESITE`, default
+`lax`), and is `Secure` in production. Cookie-authenticated `POST`, `PUT`,
+`PATCH` and `DELETE` requests from an origin outside the CORS allow-list get
+**403** `CSRF_ORIGIN_REJECTED` (see `docs/SECURITY.md`).
 
 Email delivery is abstracted behind `EMAIL_DELIVERY_MODE`. `smtp` uses
 `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`,
@@ -246,6 +285,10 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
 `needs_reconciliation` if cleanup could not finish. The full design is in
 `docs/INGESTION_RELIABILITY.md`.
 
+- `POST /ingest/upload` returns **413** (was 400) when the file is larger than
+  `MAX_UPLOAD_SIZE_MB`. The file is read in 1 MB chunks and reading stops as
+  soon as the limit is passed. Any request whose `Content-Length` exceeds the
+  limit plus 1 MB is answered **413** `REQUEST_TOO_LARGE` before its body is read.
 - `POST /ingest/upload` returns **409**
   `{"detail": {"code": "DOCUMENT_ALREADY_INGESTED", "message": "...", "document_id": <id>}}`
   when a document with the same file SHA-256 exists, before any write.
@@ -317,6 +360,28 @@ Data sources, production methods and reconciliation are described in
 - **`ncrb-stats` `case_count`** is `null` when NCRB reports no count. It is
   never `0` for missing data.
 - **Empty data:** every endpoint returns `200 []`, never an error.
+
+## Rate Limits And Capacity (step 13, SEC-001)
+
+All limits are in-memory, per process (see `docs/SECURITY.md`).
+
+- `POST /query/public` and `POST /query/public/pdf` share a per-client-IP budget:
+  `PUBLIC_QUERY_LIMIT_PER_MINUTE` (default 5) and `PUBLIC_QUERY_LIMIT_PER_DAY`
+  (default 100).
+- `POST /query/professional` and `POST /query/professional/pdf` share a
+  per-user budget: `PROFESSIONAL_QUERY_LIMIT_PER_MINUTE` (default 10) and
+  `PROFESSIONAL_QUERY_LIMIT_PER_DAY` (default 300). Authentication is checked
+  first, so an anonymous call gets 401 and is not counted.
+- Over a limit, the route returns **429** with `Retry-After` (seconds) and
+  `{"detail": {"code": "RATE_LIMITED", "message": "... Please wait about N minutes and try again."}}`.
+  The request never reaches retrieval or the answer provider.
+- At most `LLM_MAX_CONCURRENT_GENERATIONS` (default 4) answer generations run
+  at once per process. A request waits up to `LLM_GENERATION_WAIT_SECONDS`
+  (default 10) for a slot, then gets **503** with `Retry-After: 15` and
+  `{"detail": {"code": "MODEL_BUSY", "message": "Many people are asking questions right now. Please try again in a moment."}}`.
+- The client IP is the TCP peer. `X-Forwarded-For` is used only when the peer
+  is listed in `TRUSTED_PROXIES` (IPs or CIDRs); then the right-most entry that
+  is not itself a trusted proxy is the client.
 
 ## Error Format
 
