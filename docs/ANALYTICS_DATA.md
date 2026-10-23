@@ -43,7 +43,7 @@ statutory text.
 
 ### NCRB statistics
 
-`data/processed/ncrb/ncrb_stats_2024_complete.csv` (6,139 rows), from National
+`data/processed/ncrb/ncrb_stats_2024_v2.csv` (6,201 rows, since step 15), from National
 Crime Records Bureau, *Crime in India 2024*, Volume I, **Table 1A.4**
 (IPC/BNS crimes, crime head-wise and State/UT-wise). Full provenance and
 extraction notes are in `data/raw/ncrb/SOURCES.md` and
@@ -89,7 +89,8 @@ verbatim, because they name a group of provisions, not one section.
 | NCRB | (year, state, offense_category, ipc_section); changed counts, BNS head or aggregate flag are updated | 0 changes |
 
 Rows in the database that are no longer in the source are reported
-(`db_rows_not_in_source`), never deleted.
+(`db_rows_not_in_source`), never deleted, unless `load_ncrb.py --prune` is passed (step 15). That deletes the
+source year's rows that are not in the source, in the same transaction.
 
 ### Results on the dev database (2026-10-18)
 
@@ -103,6 +104,26 @@ Rows in the database that are no longer in the source are reported
 
 After migration 0008 the NCRB reload updated 5,120 existing rows (BNS head
 and/or aggregate flag) and inserted none; the second run made 0 changes.
+
+### NCRB correction (step 15, 2026-10-23)
+
+The original `ncrb_stats_2024_complete.csv` did not add up. It had mislabelled heads, an invented head list from
+table page 48 on, a dropped State/UT row and cell errors. It was replaced by a table-aware re-extraction from the
+official PDF, `ncrb_stats_2024_v2.csv`, which passes every arithmetic check and matches Table 1A.1. Details are in
+`docs/analytics/NCRB_CORRECTION.md`.
+
+| Dev database, step 15 | NCRB |
+|---|---:|
+| CSV rows | 6,201 |
+| Rejected | 0 |
+| Inserted / updated / deleted (`--prune`) | 3,901 / 589 / 3,839 |
+| Loaded rows | **6,201** |
+| Second run changes | 0 |
+| `case_count` NULL | 0 |
+| Rows with `bns_section` | 5,460 |
+| Default `/analytics/ncrb-stats` sum (non-aggregate) | 3,544,608 = the printed all-India total |
+
+The figures in the sections below describe the original 6,139-row load and are kept for the record.
 
 ### Data-quality notes
 

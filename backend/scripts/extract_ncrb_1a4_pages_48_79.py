@@ -5,11 +5,17 @@ from pathlib import Path
 import hashlib
 from datetime import datetime
 
+# SUPERSEDED (step 15): use backend/scripts/extract_ncrb_table.py, which extracts all 79 table pages
+# from the full volume and is validated by backend/scripts/validate_ncrb_table.py. This script's output
+# mislabelled crime heads; see docs/analytics/NCRB_CORRECTION.md. Kept for the record.
+#
 # Configuration
 PDF_PATH = Path(r'data/raw/ncrb/vol1-crimeinindia2024.pdf')
 OUTPUT_DIR = Path('data/processed/ncrb')
-START_PDF_PAGE = 93
-END_PDF_PAGE = 124
+# Table pages 48-79 are PDF pages 95-126 in the Volume I file recorded in data/raw/ncrb/SOURCES.md
+# (sha256 5c119c90...); this script originally assumed 93-124.
+START_PDF_PAGE = 95
+END_PDF_PAGE = 126
 START_TABLE_PAGE = 48
 
 # Existing files to verify (must remain unchanged)

@@ -2,6 +2,9 @@
 
 Checks file existence, schema conformity, missing values, duplicates,
 numerical consistency, state/UT coverage, crime-head coverage, and aggregates.
+
+SUPERSEDED (step 15): it checks the old pages 1-47 outputs. The corrected data is
+data/processed/ncrb/ncrb_stats_2024_v2.csv, validated by validate_ncrb_table.py.
 """
 
 import sys
@@ -21,7 +24,8 @@ def validate_table_1a4() -> Dict[str, Any]:
     # -------------------------------------------------------------
     # A. File Existence
     # -------------------------------------------------------------
-    pdf_path = "data/raw/ncrb/crime_in_india_2024_volume1_table_1A4.pdf"
+    # The 47-page extract is superseded by the full Volume I (data/raw/ncrb/SOURCES.md).
+    pdf_path = "data/raw/ncrb/vol1-crimeinindia2024.pdf"
     raw_path = "data/processed/ncrb/ncrb_2024_table_1A4_raw.csv"
     std_path = "data/processed/ncrb/ncrb_stats_2024.csv"
 
