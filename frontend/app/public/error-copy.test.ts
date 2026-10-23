@@ -14,6 +14,16 @@ describe('classifyPublicAnswerFailure', () => {
     );
   });
 
+  it('maps the OCR errors to plain-language scanned-document kinds', () => {
+    expect(classifyPublicAnswerFailure(new ApiClientError('cap', 422, 'OCR_LIMIT_EXCEEDED'))).toBe(
+      'ocr-too-many-pages',
+    );
+    expect(classifyPublicAnswerFailure(new ApiClientError('no ocr', 503, 'OCR_UNAVAILABLE'))).toBe(
+      'ocr-unavailable',
+    );
+    expect(errorCopy.public.answer['ocr-unavailable'].message).toContain('selectable text');
+  });
+
   it('maps our own rate limit and busy answers to plain-language kinds, not the quota kind', () => {
     expect(classifyPublicAnswerFailure(new ApiClientError('wait', 429, 'RATE_LIMITED', 42))).toBe(
       'rate-limited',

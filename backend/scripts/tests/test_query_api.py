@@ -104,6 +104,7 @@ class QueryApiTests(unittest.TestCase):
                 ],
                 "sources": [{"title": "Example v State", "link": "https://example.test/judgment"}],
                 "nextStepGuidance": "Preserve papers Speak to a lawyer",
+                "limitations": [],  # document caveats such as low-confidence OCR; none for a text question
                 "debug": None,  # per-stage timings are returned only when LEGALAI_QUERY_DEBUG is enabled
             },
         )
@@ -896,7 +897,7 @@ class QueryApiTests(unittest.TestCase):
         chunks = private_chunks("PUBLIC PDF BODY relevant arrest material")
         seen_paths: list[Path] = []
 
-        def capture_path(path: Path):
+        def capture_path(path: Path, **_kwargs):  # parse_document(path, ocr_profile=...)
             captured = Path(path)
             self.assertTrue(captured.exists())
             seen_paths.append(captured)
@@ -1085,7 +1086,7 @@ class QueryApiTests(unittest.TestCase):
         app.dependency_overrides[get_current_user] = lambda: user(role="lawyer")
         seen_paths: list[Path] = []
 
-        def capture_path(path: Path):
+        def capture_path(path: Path, **_kwargs):  # parse_document(path, ocr_profile=...)
             captured = Path(path)
             self.assertTrue(captured.exists())
             seen_paths.append(captured)

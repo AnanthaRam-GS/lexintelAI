@@ -180,6 +180,24 @@ describe('ResponseCard', () => {
     });
   });
 
+  it('shows document limitations as a note in public answers, and nothing when there are none', () => {
+    const note =
+      'Parts of this document were read by OCR with low confidence, so it may contain errors.';
+    render(
+      <ResponseCard
+        citations={citations}
+        content={content}
+        limitations={[note]}
+        mode="public"
+        sections={[]}
+      />,
+    );
+    expect(screen.getByRole('note')).toHaveTextContent(note);
+    cleanup();
+    render(<ResponseCard citations={citations} content={content} mode="public" sections={[]} />);
+    expect(screen.queryByTestId('document-limitations')).toBeNull();
+  });
+
   it('renders response paragraphs as text instead of raw HTML', () => {
     render(<ResponseCard citations={[]} content={content} mode="public" sections={[]} />);
 

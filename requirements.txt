@@ -13,6 +13,9 @@ bcrypt
 python-multipart
 pandas
 psycopg2-binary
+# OCR fallback for scanned PDFs; also needs the Tesseract binary (docs/OCR.md).
+pytesseract==0.3.13
+pillow==13.0.0
 
 # Security floors for transitive dependencies (step 13 pip-audit; see docs/SECURITY.md).
 certifi>=2026.10.19

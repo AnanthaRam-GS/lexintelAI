@@ -19,6 +19,7 @@ from sqlalchemy import (
     Column,
     Date,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -44,6 +45,10 @@ class Document(Base):
         CheckConstraint(
             "review_decision IS NULL OR review_decision IN ('CONFIRMED', 'CORRECTED', 'REJECTED')",
             name="check_documents_review_decision",
+        ),
+        CheckConstraint(
+            "extraction_method IS NULL OR extraction_method IN ('native', 'ocr', 'mixed')",
+            name="check_documents_extraction_method",
         ),
         Index(
             "uq_documents_source_document_key",
@@ -73,6 +78,10 @@ class Document(Base):
     # Per outcome field: {"rule": ..., "chunk_id": ...} for every non-null outcome value.
     outcome_evidence = Column(JSON, nullable=True)
     outcome_method = Column(String(64), nullable=True)
+    # How the text was extracted (migration 0009): native | ocr | mixed; NULL for documents ingested before OCR.
+    extraction_method = Column(String(20), nullable=True)
+    ocr_pages = Column(JSON, nullable=True)  # page numbers read by OCR
+    ocr_mean_confidence = Column(Float, nullable=True)  # word-weighted mean Tesseract confidence, 0-100
     # Human review of produced sections/outcomes; REVIEWED documents are never re-produced.
     review_status = Column(String(20), nullable=False, default="UNREVIEWED", server_default="UNREVIEWED")
     review_decision = Column(String(20), nullable=True)  # CONFIRMED | CORRECTED | REJECTED

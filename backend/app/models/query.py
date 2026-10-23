@@ -107,5 +107,7 @@ class PublicQueryResponse(BaseModel):
     sections: list[PublicSection]
     sources: list[PublicSource]
     nextStepGuidance: str
+    # Caveats about the uploaded document, e.g. low-confidence OCR (public PDF only; empty otherwise).
+    limitations: list[str] = Field(default_factory=list)
     # Per-stage timings and the answering backend; null unless LEGALAI_QUERY_DEBUG is enabled.
     debug: dict[str, Any] | None = None

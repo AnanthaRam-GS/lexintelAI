@@ -43,7 +43,7 @@ from backend.app.models.query import (
     PublicTextQueryRequest,
 )
 from backend.app.services.chunker import DocumentChunkingError, chunk_document
-from backend.app.services.document_parser import DocumentParsingError, parse_document
+from backend.app.services.document_parser import DocumentParsingError, OcrLimitExceeded, OcrUnavailable, parse_document
 from backend.app.services.legal_answer_generation import (
     AnswerMode,
     GeminiAnswerAdapter,
@@ -373,6 +373,9 @@ def answer_professional_pdf(
         private_chunks=parsed_pdf.private_chunks,
         excerpt_max_chars=settings.precedent_excerpt_max_chars,
     )
+    for limitation in ocr_limitations(parsed_pdf):
+        if limitation not in response.case_brief.limitations:
+            response.case_brief.limitations.append(limitation)
     mode_label = "brief" if analysis_mode.strip().lower() == "brief" else "question"
     response.debug = finish_query_diagnostics(f"professional_pdf_{mode_label}", outcome, started=started, settings=settings)
     save_query_history(
@@ -443,6 +446,7 @@ def answer_public_pdf(
         timings={"parse_ms": parse_ms},
     )
     response = public_response_from_result(outcome.result)
+    response.limitations = [*response.limitations, *ocr_limitations(parsed_pdf)]
     response.debug = finish_query_diagnostics("public_pdf", outcome, started=started, settings=settings)
     return response
 
@@ -455,6 +459,24 @@ def http_exception_for_pdf_parsing_error(exc: DocumentParsingError) -> HTTPExcep
     one that parsed fine but simply has no extractable text, e.g. a
     scanned/image-only PDF (PDF_NO_TEXT) - both currently raise the same
     `DocumentParsingError` type, so the distinction is made on message."""
+    if isinstance(exc, OcrLimitExceeded):
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "code": "OCR_LIMIT_EXCEEDED",
+                "message": "This scanned document is too long to read here. Upload up to "
+                f"{Settings().ocr_max_pages_query} scanned pages, or a PDF with selectable text.",
+            },
+        )
+    if isinstance(exc, OcrUnavailable):
+        return HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "code": "OCR_UNAVAILABLE",
+                "message": "This looks like a scanned document, and text recognition is not available right now. "
+                "Try a PDF with selectable text, or try again later.",
+            },
+        )
     message = str(exc)
     if any(marker in message for marker in _PDF_NO_TEXT_MESSAGES):
         return HTTPException(
@@ -478,6 +500,20 @@ class ParsedPrivatePdf:
     private_chunks: list[PrivateChunk]
     page_count: int
     extracted_text_length: int
+    # Extraction provenance from parse_document: method, OCR'd pages, per-page OCR confidence.
+    extraction: dict[str, Any] | None = None
+
+
+OCR_LOW_CONFIDENCE_LIMITATION = (
+    "Parts of this document were read by OCR (text recognition from a scan) with low confidence, "
+    "so names, dates and figures taken from it may contain errors. Check them against the original."
+)
+
+
+def ocr_limitations(parsed_pdf: "ParsedPrivatePdf") -> list[str]:
+    """The OCR limitation when any OCR'd page is below OCR_LOW_CONFIDENCE_THRESHOLD; never hidden."""
+    extraction = parsed_pdf.extraction or {}
+    return [OCR_LOW_CONFIDENCE_LIMITATION] if extraction.get("ocr_pages") and extraction.get("ocr_low_confidence") else []
 
 
 async def parse_private_pdf_upload(file: UploadFile, *, settings: Settings) -> ParsedPrivatePdf:
@@ -493,11 +529,13 @@ async def parse_private_pdf_upload(file: UploadFile, *, settings: Settings) -> P
         private_chunks=build_private_chunks(chunks),
         page_count=int(document.get("page_count") or 0),
         extracted_text_length=len(str(document.get("text") or "")),
+        extraction=document.get("extraction"),
     )
 
 
 def parse_and_chunk_pdf(path: Path, source_file_name: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    document = parse_document(path)
+    # Query-time uploads use the small OCR page cap and time budget (OCR_MAX_PAGES_QUERY).
+    document = parse_document(path, ocr_profile="query")
     document["source_file_name"] = source_file_name
     return document, chunk_document(document)
 

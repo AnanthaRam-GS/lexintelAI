@@ -47,7 +47,7 @@ if __package__ in {None, ""}:
 from backend.app.services.judgment_outcomes import ALLOWED_VALUES, FIELDS  # noqa: E402
 from backend.scripts.reconcile_common import alembic_version, resolve_database  # noqa: E402
 
-REQUIRED_REVISION = "0008_ncrb_bns_review"
+REQUIRED_REVISION = "0009_document_extraction"
 DECISIONS = ("CONFIRMED", "CORRECTED", "REJECTED")
 NOT_ACTIONABLE = ("", "UNREVIEWED", "REVIEWED")
 PRODUCED_STATUSES = ("unknown", "ambiguous")  # what the CSV shows for a field with no stored value

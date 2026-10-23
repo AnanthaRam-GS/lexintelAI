@@ -79,11 +79,19 @@ describe('toPublicResponseCardProps', () => {
         },
       ],
       citations: [{ title: 'India Code', sourceUrl: 'https://www.indiacode.nic.in/' }],
+      limitations: [],
     });
     expect(props.sections[0]).not.toHaveProperty('confidence');
     expect(props.citations[0]).not.toHaveProperty('court');
     expect(props.citations[0]).not.toHaveProperty('year');
     expect(props.citations[0]).not.toHaveProperty('excerpt');
+  });
+
+  it('passes document limitations such as low-confidence OCR through to the card', () => {
+    const note = 'Parts of this document were read by OCR with low confidence.';
+    expect(
+      toPublicResponseCardProps({ ...responseFixture, limitations: [note] }).limitations,
+    ).toEqual([note]);
   });
 
   it('keeps same-URL public sections distinct without duplicate-key warnings after parent rerenders', async () => {

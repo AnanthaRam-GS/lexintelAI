@@ -79,7 +79,9 @@ NON_TERMINAL_STATUSES = (
 
 SAFE_MESSAGES = {
     "PARSE_FAILED": "The PDF could not be read.",
-    "PDF_NO_TEXT": "The PDF has no extractable text. Scanned PDFs are not supported.",
+    "PDF_NO_TEXT": "The PDF has no extractable text, even after OCR.",
+    "OCR_LIMIT_EXCEEDED": "The scanned document has more pages than OCR allows, or OCR ran out of time.",
+    "OCR_UNAVAILABLE": "The PDF needs OCR (it is scanned), but OCR is not available on the server.",
     "CHUNKING_FAILED": "The document text could not be split into chunks.",
     "EMBEDDING_FAILED": "Embeddings could not be generated for this document.",
     "DUPLICATE_DOCUMENT": "This document has already been ingested.",
@@ -354,6 +356,7 @@ def process_ingestion_job(
                     file_path=file_path,
                     checksum=checksum,
                     source_document_key=key,
+                    **extraction_columns(extracted),
                 )
                 document.chunks = [pg_chunk(chunk) for chunk in chunks]
                 db.add(document)
@@ -634,6 +637,17 @@ def _advance(db: Session, job: IngestionJob, status: IngestionStatus, progress: 
     db.commit()
 
 
+def extraction_columns(extracted: dict[str, Any]) -> dict[str, Any]:
+    """documents.extraction_method / ocr_pages / ocr_mean_confidence from parse_document's provenance."""
+    extraction = extracted.get("extraction") or {}
+    method = extraction.get("document_method")
+    return {
+        "extraction_method": method if method in ("native", "ocr", "mixed") else None,
+        "ocr_pages": list(extraction.get("ocr_pages") or []) or None,
+        "ocr_mean_confidence": extraction.get("ocr_mean_confidence"),
+    }
+
+
 def _default_parser() -> Callable[[str], dict[str, Any]]:
     from backend.app.services.document_parser import parse_document
 
@@ -709,6 +723,8 @@ def _upload_document_key(job_id: str, upload_dir: Path | None) -> str | None:
 def _code_for(stage: str, exc: Exception) -> str:
     from backend.app.services.document_parser import DocumentParsingError
 
+    if isinstance(exc, DocumentParsingError) and exc.code in ("OCR_LIMIT_EXCEEDED", "OCR_UNAVAILABLE"):
+        return exc.code
     if isinstance(exc, DocumentParsingError) and "no extractable" in str(exc).lower():
         return "PDF_NO_TEXT"
     return STAGE_ERROR_CODES.get(stage, "INGESTION_FAILED")

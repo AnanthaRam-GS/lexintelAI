@@ -26,4 +26,6 @@ export interface ResponseCardProps {
   content: AnswerContent;
   citations: Citation[];
   sections: LegalSection[];
+  /** Caveats about the uploaded document, e.g. low-confidence OCR; shown as a note above the answer. */
+  limitations?: string[];
 }

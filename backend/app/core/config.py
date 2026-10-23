@@ -136,6 +136,23 @@ class Settings(BaseSettings):
     # Ingestion jobs still non-terminal after this long are reaped to FAILED.
     ingestion_stale_job_minutes: int = 30
 
+    # OCR fallback for scanned PDF pages (services/ocr.py; docs/OCR.md).
+    ocr_enabled: bool = True
+    # A page whose native text is shorter than this, and which contains an image, is OCR'd.
+    ocr_min_chars_per_page: int = 50
+    ocr_dpi: int = 300
+    ocr_language: str = "eng"
+    # Pages that may be OCR'd per document: query-time uploads are interactive, so the cap is small.
+    ocr_max_pages_query: int = 10
+    ocr_max_pages_ingestion: int = 200
+    ocr_page_timeout_seconds: float = 30.0
+    ocr_document_timeout_seconds_query: float = 90.0
+    ocr_document_timeout_seconds_ingestion: float = 1800.0
+    # Mean Tesseract word confidence (0-100) below which an OCR'd page is flagged as possibly inaccurate.
+    ocr_low_confidence_threshold: float = 80.0
+    # Optional path to the tesseract binary; empty uses PATH.
+    tesseract_cmd: str = ""
+
     max_upload_size_mb: int = 10
     max_query_length: int = 5000
     verification_document_dir: str = "./data/private/lawyer_verification"
