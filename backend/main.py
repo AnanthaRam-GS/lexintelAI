@@ -18,6 +18,7 @@ from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheck
 from backend.app.core.startup_checks import run_startup_security_checks
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
+from backend.app.services.ocr import tesseract_status
 from backend.app.services.query_models import model_status, start_warm_up
 
 settings = Settings()
@@ -89,4 +90,6 @@ def health_check() -> dict:
         },
         # Query embedder and reranker: not_loaded | loading | loaded | failed, with devices once loaded.
         "models": model_status(),
+        # Tesseract OCR for scanned PDFs: available, version, languages (or the reason it is unavailable).
+        "ocr": tesseract_status(settings),
     }

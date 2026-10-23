@@ -20,5 +20,6 @@ export function toPublicResponseCardProps(response: PublicQueryResponse): Respon
       title: item.title,
       sourceUrl: item.link,
     })),
+    limitations: response.limitations ?? [],
   };
 }

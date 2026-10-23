@@ -164,6 +164,7 @@ function PublicResponse({
   content,
   citations,
   sections,
+  limitations = [],
   headingId,
 }: Omit<ResponseCardProps, 'mode'> & { headingId: string }) {
   return (
@@ -177,6 +178,21 @@ function PublicResponse({
           {content.heading}
         </h2>
       </header>
+
+      {limitations.length > 0 ? (
+        <section
+          aria-label="About your document"
+          className="text-type-body-sm mt-5 rounded-[var(--radius-compact)] border border-[var(--color-border)] bg-[var(--color-surface-subtle)] p-4 text-[var(--color-body)]"
+          data-testid="document-limitations"
+          role="note"
+        >
+          <ul className="space-y-2">
+            {limitations.map((limitation) => (
+              <li key={limitation}>{limitation}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section aria-label="Explanation" className="mt-6 space-y-5">
         {content.paragraphs.map((paragraph, index) => (

@@ -91,6 +91,8 @@ export interface PublicQueryResponse {
   sections: Array<{ title: string; explanation: string; link: string }>;
   sources: Array<{ title: string; link: string }>;
   nextStepGuidance: string;
+  /** Caveats about an uploaded document (for example low-confidence OCR); empty for text questions. */
+  limitations?: string[];
   debug?: QueryDebugInfo | null;
 }
 

@@ -261,6 +261,27 @@ citations remain restricted to trusted-corpus evidence.
 The public response contains a plain-language explanation, cited statutory
 sections, and public-facing sources.
 
+## Scanned PDFs: OCR (step 14, RAG-005)
+
+Both PDF query routes and admin ingestion read scanned pages with Tesseract
+OCR (`docs/OCR.md`). A page is OCR'd when its native text is shorter than
+`OCR_MIN_CHARS_PER_PAGE` and it contains an image.
+
+- **New response field:** `PublicQueryResponse.limitations` (list of strings,
+  default `[]`). Like `case_brief.limitations` in the professional response, it
+  carries the OCR warning when any OCR'd page has a mean Tesseract confidence
+  below `OCR_LOW_CONFIDENCE_THRESHOLD` (default 80): "Parts of this document were
+  read by OCR (text recognition from a scan) with low confidence, so names, dates
+  and figures taken from it may contain errors. Check them against the original."
+- **422 `OCR_LIMIT_EXCEEDED`:** more pages need OCR than `OCR_MAX_PAGES_QUERY`
+  (default 10), or OCR exceeded its page or document time limit. Nothing partial
+  is answered.
+- **503 `OCR_UNAVAILABLE`:** pages need OCR but Tesseract (or its language data)
+  is not available. Text PDFs are unaffected.
+- `PDF_NO_TEXT` now means no text even after OCR.
+- `GET /health` adds `ocr`: `{enabled, available, version, languages, language}`,
+  or `{available: false, reason}`.
+
 ## Corpus Ingestion
 
 Corpus ingestion is admin-only and separate from professional or public query
@@ -293,7 +314,9 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
   `{"detail": {"code": "DOCUMENT_ALREADY_INGESTED", "message": "...", "document_id": <id>}}`
   when a document with the same file SHA-256 exists, before any write.
 - `GET /ingest/status/{job_id}` keeps its fields. `error` is a sanitized
-  message. New optional fields: `error_code` (for example
+  message. Since step 14 an `error_code` can also be `OCR_LIMIT_EXCEEDED`
+  (more than `OCR_MAX_PAGES_INGESTION`, default 200, or a timeout) or
+  `OCR_UNAVAILABLE`. New optional fields: `error_code` (for example
   `LEXICAL_INDEX_FAILED`, `DUPLICATE_DOCUMENT`, `STALE_JOB`, and since step 9
   `ANALYTICS_FAILED`) and
   `needs_reconciliation` (boolean). Jobs stuck in a non-terminal state past
@@ -307,6 +330,10 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
   `reconciliation_job_count` (integer) and `reconciliation_jobs` (the 20 most
   recent jobs with `needs_reconciliation`: `job_id`, `error_code`,
   `error_message`, `completed_at`).
+- Since step 14 a completed ingestion records `documents.extraction_method`
+  (`native`, `ocr`, `mixed`), `documents.ocr_pages` and
+  `documents.ocr_mean_confidence` (migration `0009_document_extraction`; NULL
+  for earlier documents). Chroma and BM25 metadata are unchanged.
 - Since step 9 a completed admin ingestion also writes the document's
   `document_sections`, outcome columns and index metadata
   (`docs/INDEX_METADATA.md`) in the same all-or-nothing write.

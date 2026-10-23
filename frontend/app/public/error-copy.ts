@@ -10,7 +10,9 @@ export type PublicAnswerFailure =
   | 'model-unavailable'
   | 'model-quota-exceeded'
   | 'rate-limited'
-  | 'model-busy';
+  | 'model-busy'
+  | 'ocr-too-many-pages'
+  | 'ocr-unavailable';
 export type AdminRequestFailure = 'network' | 'service' | 'timeout';
 export type AdminFileFailure = 'corrupted' | 'processing' | 'timeout' | 'too-large' | 'unsupported';
 
@@ -58,6 +60,16 @@ export const errorCopy = {
         title: 'Please slow down',
         message:
           "You've asked several questions in a short time. Wait a little, then try again. Your question is still here.",
+      },
+      'ocr-too-many-pages': {
+        title: 'This scanned document is too long',
+        message:
+          'Scanned pages are read one by one, so we can only take a few here. Upload fewer pages, or a PDF with selectable text.',
+      },
+      'ocr-unavailable': {
+        title: "We couldn't read this scanned document",
+        message:
+          'This looks like a scan, and text recognition is not available right now. Try a PDF with selectable text, or try again later.',
       },
       'model-busy': {
         title: 'LegalAI is busy right now',
@@ -162,6 +174,8 @@ export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure
       return 'invalid-pdf';
     if (error.code === 'PDF_PARSE_FAILED' || error.code === 'PDF_CHUNKING_FAILED')
       return 'pdf-empty';
+    if (error.code === 'OCR_LIMIT_EXCEEDED') return 'ocr-too-many-pages';
+    if (error.code === 'OCR_UNAVAILABLE') return 'ocr-unavailable';
     if (error.code === 'RATE_LIMITED') return 'rate-limited';
     if (error.code === 'MODEL_BUSY') return 'model-busy';
     if (error.code === 'MODEL_PROVIDER_QUOTA_EXCEEDED' || error.status === 429)
