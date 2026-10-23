@@ -11,7 +11,7 @@ same database:
 | /analytics/outcome-distribution | per (statute section, court_level): distinct documents in each outcome bucket, offence provisions only |
 | /analytics/section-cooccurrence | self-join of document_sections, distinct documents per label pair, offence provisions only |
 | /analytics/ipc-bns-map | every ipc_bns_mapping row |
-| /analytics/ncrb-stats | every ncrb_stats row WHERE NOT is_aggregate |
+| /analytics/ncrb-stats | every ncrb_stats row WHERE NOT is_aggregate, section label lists included |
 
 "Offence provisions only": the distinct (statute, section) pairs in
 document_sections are classified once with ``services/provision_types.py``,
@@ -131,11 +131,16 @@ def sql_results(cursor: Any, offence: set[tuple[str, str]]) -> dict[str, Any]:
 
     cursor.execute(
         """SELECT year, state, offense_category, ipc_section, bns_section, case_count, conviction_count, acquittal_count,
-                  is_aggregate, aggregate_type
+                  is_aggregate, aggregate_type, ipc_section_labels, bns_section_labels
            FROM ncrb_stats WHERE NOT is_aggregate"""
     )
-    results["/analytics/ncrb-stats"] = Counter(tuple(row) for row in cursor.fetchall())
+    results["/analytics/ncrb-stats"] = Counter((*row[:10], labels_key(row[10]), labels_key(row[11])) for row in cursor.fetchall())
     return results
+
+
+def labels_key(labels: list[str] | None) -> tuple[str, ...] | None:
+    """A JSON label list as a hashable tuple; NULL stays None."""
+    return None if labels is None else tuple(labels)
 
 
 def ncrb_profile(cursor: Any) -> dict[str, Any]:
@@ -143,10 +148,18 @@ def ncrb_profile(cursor: Any) -> dict[str, Any]:
     cursor.execute("SELECT coalesce(aggregate_type, 'base'), count(*), sum(case_count) FROM ncrb_stats GROUP BY 1 ORDER BY 1")
     by_type = {row[0]: {"rows": row[1], "sum_case_count": int(row[2] or 0)} for row in cursor.fetchall()}
     cursor.execute(
-        "SELECT count(*) FILTER (WHERE bns_section IS NOT NULL), sum(case_count), sum(case_count) FILTER (WHERE NOT is_aggregate) FROM ncrb_stats"
+        """SELECT count(*) FILTER (WHERE bns_section IS NOT NULL), sum(case_count), sum(case_count) FILTER (WHERE NOT is_aggregate),
+                  count(*) FILTER (WHERE ipc_section_labels IS NOT NULL OR bns_section_labels IS NOT NULL)
+           FROM ncrb_stats"""
     )
-    with_bns, all_sum, base_sum = cursor.fetchone()
-    return {"by_type": by_type, "rows_with_bns_section": with_bns, "sum_case_count_all_rows": int(all_sum or 0), "sum_case_count_non_aggregate": int(base_sum or 0)}
+    with_bns, all_sum, base_sum, with_labels = cursor.fetchone()
+    return {
+        "by_type": by_type,
+        "rows_with_bns_section": with_bns,
+        "rows_with_section_labels": with_labels,
+        "sum_case_count_all_rows": int(all_sum or 0),
+        "sum_case_count_non_aggregate": int(base_sum or 0),
+    }
 
 
 def endpoint_results(client: Any) -> dict[str, Any]:
@@ -170,6 +183,7 @@ def endpoint_results(client: Any) -> dict[str, Any]:
         (
             r["year"], r["state"], r["offense_category"], r["ipc_section"], r["bns_section"],
             r["case_count"], r["conviction_count"], r["acquittal_count"], r["is_aggregate"], r["aggregate_type"],
+            labels_key(r["ipc_section_labels"]), labels_key(r["bns_section_labels"]),
         )
         for r in raw[ENDPOINTS[4]]
     )

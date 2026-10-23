@@ -9,11 +9,15 @@ from __future__ import annotations
 
 from collections import defaultdict
 from itertools import combinations
+import re
 
-from sqlalchemy import func
+from sqlalchemy import cast, func, or_
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
 from backend.app.db.models import Document, DocumentSection, IpcBnsMapping, NcrbStat
+from backend.app.services.ncrb_display import display_offense_category
+from backend.app.services.ncrb_sections import section_labels
 from backend.app.services.provision_types import is_offence
 from backend.app.models.analytics import (
     IpcBnsMappingRow,
@@ -353,7 +357,19 @@ def get_ncrb_stats(
     if offense_category is not None:
         query = query.filter(func.lower(NcrbStat.offense_category) == offense_category.lower())
     if ipc_section is not None:
-        query = query.filter(NcrbStat.ipc_section == ipc_section)
+        labels = ncrb_filter_labels(ipc_section)
+        if not labels:
+            return []
+        # Match the parsed labels, not the printed text: "IPC 305" finds the "305/306" rows.
+        query = query.filter(
+            or_(
+                *[
+                    cast(column, JSONB).contains([label])
+                    for label in labels
+                    for column in (NcrbStat.ipc_section_labels, NcrbStat.bns_section_labels)
+                ]
+            )
+        )
 
     rows = query.order_by(
         NcrbStat.year.desc(),
@@ -373,6 +389,17 @@ def get_ncrb_stats(
             acquittal_count=row.acquittal_count,
             is_aggregate=bool(row.is_aggregate),
             aggregate_type=row.aggregate_type,
+            ipc_section_labels=row.ipc_section_labels,
+            bns_section_labels=row.bns_section_labels,
+            display_offense_category=display_offense_category(row.offense_category),
         )
         for row in rows
     ]
+
+
+def ncrb_filter_labels(value: str) -> list[str]:
+    """Labels for an NCRB section filter: "IPC 305", "BNS 103", or a bare "305" (IPC, the parameter's statute)."""
+    match = re.fullmatch(r"\s*(IPC|BNS)\s+(.+?)\s*", value, flags=re.IGNORECASE)
+    statute, text = (match.group(1).upper(), match.group(2)) if match else ("IPC", value)
+    labels, _unparsed = section_labels(text, statute)
+    return labels

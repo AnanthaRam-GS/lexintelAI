@@ -187,5 +187,132 @@ no mismatches.
 ## Not changed
 
 - **IPC↔BNS mapping:** `backend/scripts/build_ipc_bns_mapping.py` still reads the old CSV's IPC section labels to
-  build `ipc_bns_mapping`. That data was not regenerated in this step.
+  build `ipc_bns_mapping`. That data was not regenerated in this step, or in step 15b (see below).
 - The old CSVs and reports under `data/processed/ncrb/` are kept unchanged for this diff.
+
+## Step 15b follow-ups
+
+### Display-label overrides
+
+`offense_category` keeps every crime head exactly as printed. `backend/app/services/ncrb_display.py` holds a
+display label, used only for UI display. The API returns `offense_category` (raw) and `display_offense_category`
+side by side. An override is added only for an evident printing error, with evidence.
+
+| Printed head (raw, unchanged) | Display label | Evidence |
+|---|---|---|
+| `Rioting - n) ElectriState/UT/Power Supply Disputes` | `Rioting - n) Electricity/Power Supply Disputes` | see below |
+
+Evidence for the override:
+- PDF page 95 (table page 48) is the only page of the 604-page volume that contains "ElectriState/UT".
+- The State/UT-wise table was derived from the City-wise one by replacing "City" with "State/UT".
+- The City-wise Table 1A.4 in the same volume (PDF page 207) prints "n) ElectriCity/Power Supply Disputes".
+- The 2023 edition (`TABLE1A4.xlsx`) prints "Electricity/Power Supply Disputes".
+
+I scanned all 159 heads for the same artefact ("State/UT" inside a word) and for other evident misprints and found no
+other case. No other override is made.
+
+### Section labels
+
+`ipc_section` and `bns_section` keep the printed text ("305/306", "64-68,70-71 r/w 62"). Migration
+`0010_ncrb_section_labels` adds the JSON columns `ipc_section_labels` and `bns_section_labels`. `load_ncrb.py` fills
+them with statute-qualified labels in the `document_sections` form ("IPC 305", "BNS 103"), via
+`backend/app/services/ncrb_sections.py`.
+
+Parsing rules:
+- **Section form:** `judgment_sections.canonical_section`, with subsections dropped ("103(1)" → "BNS 103"), and the
+  range check `SECTION_RANGES` (IPC ≤ 511, BNS ≤ 358).
+- **Separators:** `/`, `,`, `&`, `and`, `or`, `r/w`. Read-with sections are listed, as in `document_sections`.
+- **Ranges:** expanded only when ascending and at most 60 sections long ("379-382", "64 to 71"). Letter ranges expand
+  the suffix ("171E to 171I" → 171E…171I).
+- **Ignored:** "IT Act" (printed truncated as "IT" on two pages) and "other Crimes", since they name no IPC/BNS
+  section.
+- **Everything else** is reported as unparsed and never guessed.
+
+The `ipc_section` filter of `/analytics/ncrb-stats` (and `/analytics/ncrb`) matches these lists. It accepts
+"IPC 305", "BNS 108", or a bare "305", which means IPC.
+
+| Corrected table (6,201 rows) | Rows |
+|---|---:|
+| With any label list | 5,616 |
+| With IPC labels | 4,680 |
+| With BNS labels | 5,460 |
+| With neither (no section printed: totals and group heads) | 585 |
+| "305/306" (Abetment of Suicide), matched by "IPC 305" and by "IPC 306" | 39 |
+
+**Unparsed notations (2, left without labels for that field):**
+
+| Field | Printed | Head | Why |
+|---|---|---|---|
+| IPC | `447-252` | Criminal Trespass | descending range, evidently a misprint (perhaps 447-452); not guessed |
+| BNS | `326(G)` | Arson | a single capital in brackets: it could be a suffix or a sub-clause; `canonical_section` rejects it, as for judgments |
+
+For those rows the other parts of the field still parse: Arson keeps "BNS 326" (from "326(f)") and "BNS 327", and
+Criminal Trespass keeps its BNS labels.
+
+### IPC↔BNS mapping: source, dependency and cross-check
+
+**Status: UNREVIEWED.** The mapping needs legal review before being relied on. It was not regenerated in step 15b.
+
+**Source and logic** (`backend/scripts/build_ipc_bns_mapping.py`):
+- The pairs come from the NCRB CYTRAIN correspondence table (`SectionTableBNS.html`), with BNS descriptions from the
+  CYTRAIN BNS text (`ChaptersBNS.html`).
+- The universe of IPC labels comes from the old, wrong `ncrb_stats_2024_complete.csv`. For each label, the script
+  matches the label's components against the IPC references of the CYTRAIN rows.
+- The script fetches with TLS certificate verification disabled (`ssl._create_unverified_context`). That should be
+  fixed when it is next run.
+
+**Dependency.** The current mapping (370 rows: 367 DIRECT, 3 REPEALED; 73 IPC labels) depends on the old CSV. All 73
+labels are old-CSV labels, including labels from invented heads, for example "161-165, 165A r/w 511".
+
+The corrected table has 79 IPC labels:
+- 37 appear verbatim in the mapping;
+- 42 do not. Some differ only in notation ("305/306" vs "305, 306"); others are heads whose labels were lost under
+  the old invented ones ("379-382", "384-389", "406-409", "411-414", "153A");
+- 36 mapping labels are not in the corrected table.
+
+The mapping CSV keeps only the label and the descriptions, not the CYTRAIN row codes, so it cannot be remapped
+offline.
+
+**Regeneration blocked.** `cytrain.ncrb.gov.in` resolves, but HTTPS and HTTP connections time out. This was tried
+three times during step 15b (2026-10-23), while `www.ncrb.gov.in` answered. No other source was substituted.
+
+**Cross-check of the current mapping against the pairs printed in the PDF** (Table 1A.4 IPC and BNS columns): 29
+pairs checked, **22 match, 7 have no mapping row.**
+
+| Result | IPC → BNS (printed head) |
+|---|---|
+| match | 302→103 (Murder a), 304B→80 (Dowry Death), 498A→85 (Cruelty by Husband; mapping also gives 86), 376→64 (Rape), 420→318 (Cheating), 304→105, 307→109, 304A→106, 306→108, 354D→78, 354C→77, 509→79, 354→74, 354A→75, 364→140, 364A→140, 188→223, 419→319, 326A→124, 143→189, 147→191, 313→89 |
+| **no mapping row** | 384→308 (Extortion), 406→316 (Criminal Breach of Trust), 392→309 (Robbery), 396→310 (Dacoity with Murder), 379→303 (Theft), 411→317 (Stolen Property), 153A→196 (Promoting enmity) |
+| not a pair | Murder b) "Murder by Group" prints BNS 103(2) with no IPC section |
+
+No mapping row contradicts a printed pair. The 7 gaps are IPC sections that the old CSV filed under invented heads,
+so the builder never looked them up.
+
+### Old head names
+
+The 94 head names found only in the old CSV were searched across all 647 tracked files. Nothing depends on them at
+runtime:
+- the frontend renders `offense_category` from the API, with no hard-coded heads;
+- there are no saved filters or configurations containing head names;
+- the remaining hits are the superseded `extract_ncrb_1a4_pages_48_79.py`, statute names in corpus manifests and
+  `query_analysis.py`, mapping description text, the 2023 workbook, tests that use label strings deliberately, docs
+  history, and a frontend co-occurrence mock ("IPC 506 (Criminal Intimidation)").
+
+### Reload (step 15b)
+
+No count, crime head or section text changed. Only the two label columns were filled.
+
+| Stage | Result |
+|---|---|
+| Backup `~/legalai_backups/20261023T181735Z` | verified: checksums, store copies, and a `--clean` restore into `legalai_rehearsal` matching all 12 tables |
+| Rehearsal: `alembic upgrade head` | 0009 → 0010; `alembic check`: no new upgrade operations |
+| Rehearsal: `load_ipc_bns.py` dry run, run, second run | 0 inserted each time (370 existing) |
+| Rehearsal: `load_ncrb.py --prune` dry run, run, second run | dry run and run 5,616 updated (labels) / 585 unchanged / 0 inserted / 0 deleted; second run 0 changes; unparsed `IPC: 447-252`, `BNS: 326(G)` |
+| Rehearsal: `verify_analytics.py` | RECONCILED (5 of 5, label lists included); default NCRB sum 3,544,608 |
+| Rehearsal: store verifier | CONSISTENT |
+| Dev: dry runs | identical to the rehearsal (mapping before the migration, NCRB after it, as on the rehearsal) |
+| Dev: `alembic upgrade head` | 0009 → 0010; `alembic check`: no new upgrade operations |
+| Dev: runs, second runs | identical to the rehearsal; second runs 0 changes |
+| Dev: `verify_analytics.py` | RECONCILED; default NCRB sum 3,544,608 |
+| Dev: store verifier | CONSISTENT; Chroma (21 tables) and BM25 identical to the backup copies; every table count unchanged |
+| Dev: `/analytics/ncrb-stats?ipc_section=IPC 305` | 36 rows, all "Abetment of Suicide" `305/306` (39 with `include_aggregates=true`); the same for `IPC 306`, `305` and `BNS 108` |

@@ -137,10 +137,17 @@ export interface IpcBnsMappingRow {
 export interface NcrbStatPoint {
   year: number;
   state: string;
+  /** The crime head exactly as NCRB printed it. */
   offense_category: string;
+  /** Label for display; differs from offense_category only for a documented printing error. */
+  display_offense_category?: string | null;
+  /** Section text exactly as printed, e.g. "305/306". */
   ipc_section?: string | null;
   /** BNS head NCRB reports next to the IPC head, when it has one. */
   bns_section?: string | null;
+  /** Parsed statute-qualified sections, e.g. ["IPC 305", "IPC 306"]; null when none parse. */
+  ipc_section_labels?: string[] | null;
+  bns_section_labels?: string[] | null;
   /** Null when NCRB reports no count for the row. */
   case_count: number | null;
   conviction_count?: number | null;

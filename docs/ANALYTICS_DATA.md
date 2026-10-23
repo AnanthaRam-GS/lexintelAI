@@ -41,6 +41,11 @@ Reconcile the endpoints with direct SQL using
 All were accessed 2026-09-04. The mapping is a comparative reference, not
 statutory text.
 
+**Status: UNREVIEWED, pending legal review (step 15b).** The IPC labels it maps were taken from the old, wrong
+NCRB CSV. Seven pairs printed in the corrected table have no mapping row (for example IPC 379 → BNS 303). It
+could not be regenerated, because the CYTRAIN source was unreachable. The details and the cross-check are in
+`docs/analytics/NCRB_CORRECTION.md`.
+
 ### NCRB statistics
 
 `data/processed/ncrb/ncrb_stats_2024_v2.csv` (6,201 rows, since step 15), from National
@@ -80,6 +85,11 @@ The loaders collapse whitespace and join hyphenated letter suffixes
 (`366-B` → `366B`), the same convention as `document_sections`. Crime-head
 groupings such as `147-151`, `376 r/w 511` or `64-68,70-71 r/w 62` are kept
 verbatim, because they name a group of provisions, not one section.
+
+Since step 15b, `load_ncrb.py` also stores the parsed lists `ipc_section_labels` and `bns_section_labels`, for
+example "305/306" → `["IPC 305", "IPC 306"]`, in the `document_sections` form. The NCRB section filter matches
+these lists. Unparseable notations are reported (`unparsed_section_notations`), not guessed. The rules and counts
+are in `docs/analytics/NCRB_CORRECTION.md`.
 
 ### Idempotence
 

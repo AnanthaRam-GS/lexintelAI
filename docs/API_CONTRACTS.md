@@ -386,6 +386,16 @@ Data sources, production methods and reconciliation are described in
   for a base row). The same applies to `/analytics/ncrb`.
 - **`ncrb-stats` `case_count`** is `null` when NCRB reports no count. It is
   never `0` for missing data.
+- **`ncrb-stats` section labels and display label** (step 15b):
+  - `ipc_section` and `bns_section` are the printed text ("305/306");
+  - `ipc_section_labels` and `bns_section_labels` are the parsed statute-qualified lists (`["IPC 305", "IPC 306"]`),
+    or `null` when nothing parses;
+  - `offense_category` is the crime head exactly as printed;
+  - `display_offense_category` is the label to show, which differs only for a documented printing error
+    (`docs/analytics/NCRB_CORRECTION.md`).
+
+  The `ipc_section` query parameter matches the label lists. It accepts "IPC 305", "BNS 108", or a bare "305",
+  which means IPC. A value that does not parse returns `[]`. The same applies to `/analytics/ncrb`.
 - **Empty data:** every endpoint returns `200 []`, never an error.
 
 ## Rate Limits And Capacity (step 13, SEC-001)

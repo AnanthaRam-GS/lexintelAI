@@ -278,6 +278,32 @@ class TestLoaderValidation(unittest.TestCase):
         again = load_ncrb_stats(self.db, corrected, prune=True)
         self.assertEqual((again["inserted"], again["updated"], again["deleted"]), (0, 0, 0))
 
+    def test_ncrb_section_filter_matches_parsed_labels_and_display_label(self) -> None:
+        # Step 15b: "IPC 305" finds the printed "305/306" row; the printed text is kept as is.
+        from backend.app.services.analytics import get_ncrb_stats
+
+        state = f"{MARKER} Filter State"
+        stats = load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [
+            ncrb_row(state=state, offense_category="Abetment of Suicide", ipc_section="305/306", bns_section="107/108"),
+            ncrb_row(state=state, offense_category="Rioting - n) ElectriState/UT/Power Supply Disputes", ipc_section="147-151",
+                     bns_section="190, 189(6)"),
+        ]))
+        self.assertEqual(stats["notes"]["rows_with_section_labels"], 2)
+        row = self.db.query(NcrbStat).filter_by(state=state, offense_category="Abetment of Suicide").one()
+        self.assertEqual((row.ipc_section, row.ipc_section_labels, row.bns_section_labels), ("305/306", ["IPC 305", "IPC 306"], ["BNS 107", "BNS 108"]))
+        found = lambda value: sorted(p.offense_category for p in get_ncrb_stats(self.db, state=state, ipc_section=value))  # noqa: E731
+        self.assertEqual(found("IPC 305"), ["Abetment of Suicide"])
+        self.assertEqual(found("306"), ["Abetment of Suicide"])  # a bare section means IPC
+        self.assertEqual(found("BNS 108"), ["Abetment of Suicide"])
+        self.assertEqual(found("BNS 189"), ["Rioting - n) ElectriState/UT/Power Supply Disputes"])  # "189(6)" -> BNS 189
+        self.assertEqual(found("IPC 999"), [])
+        point = get_ncrb_stats(self.db, state=state, ipc_section="IPC 147")[0]
+        self.assertEqual((point.offense_category, point.display_offense_category),
+                         ("Rioting - n) ElectriState/UT/Power Supply Disputes", "Rioting - n) Electricity/Power Supply Disputes"))
+        unparsed = load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [ncrb_row(state=state, offense_category="Criminal Trespass", ipc_section="447-252")]))
+        self.assertEqual(unparsed["unparsed_section_notations"], ["IPC: 447-252"])
+        self.assertIsNone(self.db.query(NcrbStat).filter_by(state=state, offense_category="Criminal Trespass").one().ipc_section_labels)
+
     def test_ncrb_aggregate_type_follows_the_tables_own_labels(self) -> None:
         self.assertEqual(aggregate_type("TOTAL STATE(S)", "Murder"), "state_total")
         self.assertEqual(aggregate_type("TOTAL UT(S)", "Murder (Total a+b+c)"), "ut_total")

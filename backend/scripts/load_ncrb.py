@@ -31,6 +31,12 @@ extraction with fixed crime-head names replaces the old rows instead of
 leaving them beside the new ones. Without it, such rows are only counted
 (``db_rows_not_in_source``). Rows of other years are never touched.
 
+Section labels (step 15b, migration 0010): ``ipc_section_labels`` and
+``bns_section_labels`` hold the statute-qualified sections parsed from the
+printed text ("305/306" -> ["IPC 305", "IPC 306"]; services/ncrb_sections.py)
+for filtering. A notation that cannot be parsed is reported in
+``unparsed_section_notations`` and never guessed.
+
 Usage:
     .venv/bin/python backend/scripts/load_ncrb.py --database-url-env DATABASE_URL [--dry-run] [--prune] [--confirm-dev]
 """
@@ -53,6 +59,7 @@ from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from backend.app.db.models import NcrbStat
+from backend.app.services.ncrb_sections import row_labels
 from backend.scripts.load_ipc_bns import normalize_section_field
 
 # Step 15: the table-aware re-extraction (backend/scripts/extract_ncrb_table.py); the old
@@ -69,7 +76,7 @@ REQUIRED_COLUMNS = {
 }
 FIELD_LIMITS = {"state": 100, "offense_category": 150, "ipc_section": 100, "bns_section": 100}
 COUNT_FIELDS = ("case_count", "conviction_count", "acquittal_count")
-UPDATE_FIELDS = COUNT_FIELDS + ("bns_section", "is_aggregate", "aggregate_type")
+UPDATE_FIELDS = COUNT_FIELDS + ("bns_section", "is_aggregate", "aggregate_type", "ipc_section_labels", "bns_section_labels")
 
 # Table 1A.4's own total rows and total heads.
 TOTAL_STATE_ROWS = {"TOTAL STATE(S)": "state_total", "TOTAL UT(S)": "ut_total", "TOTAL ALL INDIA": "all_india_total"}
@@ -148,6 +155,7 @@ def load_ncrb_stats(
     updated = 0
     skipped_existing = 0
     seen_in_file: dict[tuple, dict] = {}
+    unparsed_notations: set[str] = set()
 
     for raw in source_rows:
         state = _blank_to_none(raw.get("state"))
@@ -170,6 +178,7 @@ def load_ncrb_stats(
             rejected["negative_count"] += 1
             continue
         kind = aggregate_type(state, offense_category)
+        ipc_labels, bns_labels, unparsed_notes = row_labels(ipc_section, bns_section)
         parsed = {
             "year": year,
             "state": state,
@@ -179,6 +188,8 @@ def load_ncrb_stats(
             **counts,
             "is_aggregate": kind is not None,
             "aggregate_type": kind,
+            "ipc_section_labels": ipc_labels,
+            "bns_section_labels": bns_labels,
         }
         if any(parsed[name] and len(parsed[name]) > limit for name, limit in FIELD_LIMITS.items()):
             rejected["field_too_long"] += 1
@@ -198,6 +209,11 @@ def load_ncrb_stats(
             notes["bns_section_stored"] += 1
         if kind:
             notes[f"aggregate_{kind}"] += 1
+        if ipc_labels or bns_labels:
+            notes["rows_with_section_labels"] += 1
+        for note in unparsed_notes:
+            notes["unparsed_section_fragments"] += 1
+            unparsed_notations.add(note)
 
         current = existing.get(key)
         if current is None:
@@ -235,6 +251,7 @@ def load_ncrb_stats(
         "rejected": dict(sorted(rejected.items())),
         "notes": dict(sorted(notes.items())),
         "db_rows_not_in_source": len(set(existing) - set(seen_in_file)),
+        "unparsed_section_notations": sorted(unparsed_notations),
         "deleted": len(stale) if prune and not dry_run else 0,
         "would_delete": len(stale) if prune else 0,
     }
