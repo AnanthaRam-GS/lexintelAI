@@ -89,10 +89,9 @@ describe('fetchPublicQuery', () => {
       ok: false,
       status: 422,
       json: async () => ({
-        detail: {
-          code: 'INVALID_QUERY_REQUEST',
-          message: 'The request could not be completed.',
-        },
+        error: 'The request could not be completed.',
+        code: 'INVALID_QUERY_REQUEST',
+        detail: null,
       }),
     } as Response);
 
@@ -106,10 +105,9 @@ describe('fetchPublicQuery', () => {
       ok: false,
       status: 503,
       json: async () => ({
-        detail: {
-          code: 'MODEL_UNAVAILABLE',
-          message: 'The legal answer model is temporarily unavailable.',
-        },
+        error: 'The legal answer model is temporarily unavailable.',
+        code: 'MODEL_UNAVAILABLE',
+        detail: null,
       }),
     } as Response);
 

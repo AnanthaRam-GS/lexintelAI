@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ApiClientError } from '../../lib/api';
+import { ApiClientError, apiFetch } from '../../lib/api';
 
 import { classifyPublicAnswerFailure, errorCopy } from './error-copy';
 
@@ -85,5 +85,36 @@ describe('classifyPublicAnswerFailure', () => {
     const error = new Error('unexpected');
 
     expect(classifyPublicAnswerFailure(error)).toBe('service');
+  });
+});
+
+describe('backend error bodies to public copy', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('classifies the unified {error, code, detail} body by its code', async () => {
+    const cases: [number, string, ReturnType<typeof classifyPublicAnswerFailure>][] = [
+      [413, 'PDF_TOO_LARGE', 'pdf-too-large'],
+      [400, 'INVALID_PDF_HEADER', 'invalid-pdf'],
+      [422, 'PDF_CHUNKING_FAILED', 'pdf-empty'],
+      [422, 'OCR_LIMIT_EXCEEDED', 'ocr-too-many-pages'],
+      [503, 'OCR_UNAVAILABLE', 'ocr-unavailable'],
+      [429, 'RATE_LIMITED', 'rate-limited'],
+      [503, 'MODEL_BUSY', 'model-busy'],
+      [503, 'MODEL_UNAVAILABLE', 'model-unavailable'],
+      [500, 'INTERNAL_ERROR', 'service'],
+    ];
+    for (const [status, code, kind] of cases) {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn<typeof fetch>().mockResolvedValue({
+          ok: false,
+          status,
+          headers: new Headers(),
+          json: async () => ({ error: 'server message', code, detail: null }),
+        } as Response),
+      );
+      const caught = await apiFetch('/query/public').catch((error: unknown) => error);
+      expect([code, classifyPublicAnswerFailure(caught)]).toEqual([code, kind]);
+    }
   });
 });

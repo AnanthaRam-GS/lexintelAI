@@ -146,8 +146,8 @@ class ScannedBriefTests(query_tests.ProfessionalBriefPipelineTests):
             with self.subTest(path=path):
                 response = self.upload("over_cap_scanned.pdf", path=path)
                 self.assertEqual(response.status_code, 422)
-                self.assertEqual(response.json()["detail"]["code"], "OCR_LIMIT_EXCEEDED")
-                self.assertIn("up to 10 scanned pages", response.json()["detail"]["message"])
+                self.assertEqual(response.json()["code"], "OCR_LIMIT_EXCEEDED")
+                self.assertIn("up to 10 scanned pages", response.json()["error"])
         self.assertEqual(self.adapter.calls, calls_before)
 
     def test_missing_tesseract_returns_ocr_unavailable(self) -> None:
@@ -156,9 +156,9 @@ class ScannedBriefTests(query_tests.ProfessionalBriefPipelineTests):
         with patch.dict(os.environ, {"TESSERACT_CMD": "/nonexistent/legalai/tesseract"}):
             response = self.upload("fir_scanned.pdf")
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()["detail"]["code"], "OCR_UNAVAILABLE")
+        self.assertEqual(response.json()["code"], "OCR_UNAVAILABLE")
         self.assertNotIn("nonexistent", response.text)
-        self.assertIn("scanned document", response.json()["detail"]["message"])
+        self.assertIn("scanned document", response.json()["error"])
 
 
 @REQUIRES_TESSERACT

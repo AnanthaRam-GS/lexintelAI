@@ -186,7 +186,7 @@ def client_ip(request: Request, settings: Settings) -> str:
 def too_many_requests(code: str, message: str, retry_after: int) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        detail={"code": code, "message": message},
+        detail={"code": code, "message": message, "retry_after": retry_after},
         headers={"Retry-After": str(retry_after)},
     )
 

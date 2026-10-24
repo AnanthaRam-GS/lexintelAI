@@ -318,10 +318,7 @@ async def query_professional_pdf(
     except DocumentParsingError as exc:
         raise http_exception_for_pdf_parsing_error(exc) from exc
     except DocumentChunkingError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={"code": "PDF_CHUNKING_FAILED", "message": str(exc)},
-        ) from exc
+        raise pdf_chunking_failed() from exc
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
 
@@ -416,10 +413,7 @@ async def query_public_pdf(
     except DocumentParsingError as exc:
         raise http_exception_for_pdf_parsing_error(exc) from exc
     except DocumentChunkingError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={"code": "PDF_CHUNKING_FAILED", "message": str(exc)},
-        ) from exc
+        raise pdf_chunking_failed() from exc
     except QueryExecutionError as exc:
         raise http_error(exc) from exc
 
@@ -449,6 +443,14 @@ def answer_public_pdf(
     response.limitations = [*response.limitations, *ocr_limitations(parsed_pdf)]
     response.debug = finish_query_diagnostics("public_pdf", outcome, started=started, settings=settings)
     return response
+
+
+def pdf_chunking_failed() -> HTTPException:
+    """BE-003: DocumentChunkingError messages are for developers ("Parsed document is missing document_id.")."""
+    return HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail={"code": "PDF_CHUNKING_FAILED", "message": "This document could not be split into readable sections."},
+    )
 
 
 _PDF_NO_TEXT_MESSAGES = ("no extractable native text", "no parseable text blocks")
@@ -659,7 +661,8 @@ def log_private_pdf_metrics(
 
 def http_error(exc: QueryExecutionError) -> HTTPException:
     headers = {"Retry-After": str(exc.retry_after)} if exc.retry_after else None
-    return HTTPException(status_code=exc.status_code, detail={"code": exc.code, "message": str(exc)}, headers=headers)
+    extra = {"retry_after": exc.retry_after} if exc.retry_after else {}
+    return HTTPException(status_code=exc.status_code, detail={"code": exc.code, "message": str(exc), **extra}, headers=headers)
 
 
 def run_frozen_query_pipeline(
@@ -741,7 +744,11 @@ def run_frozen_query_pipeline(
     except QueryExecutionError:
         raise
     except ValueError as exc:
-        raise QueryExecutionError("INVALID_QUERY_REQUEST", str(exc), status.HTTP_422_UNPROCESSABLE_ENTITY) from exc
+        # BE-003: the ValueError can come from anywhere in the pipeline, so its text is logged, never returned.
+        logger.warning("invalid query request: %s", type(exc).__name__)
+        raise QueryExecutionError(
+            "INVALID_QUERY_REQUEST", "This question could not be processed. Please rephrase it and try again.", status.HTTP_422_UNPROCESSABLE_ENTITY
+        ) from exc
     except Exception as exc:
         raise QueryExecutionError("QUERY_PIPELINE_UNAVAILABLE", "The legal query pipeline is temporarily unavailable.", status.HTTP_503_SERVICE_UNAVAILABLE) from exc
     ensure_successful_answer(result)

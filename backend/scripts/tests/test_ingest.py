@@ -328,7 +328,8 @@ class TestIngestionEndpoints(unittest.TestCase):
             data={"doc_type": "judgment"},
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("must have a .pdf extension", res.json()["detail"])
+        self.assertEqual(res.json()["code"], "INVALID_PDF_EXTENSION")
+        self.assertIn("must have a .pdf extension", res.json()["error"])
 
     def test_upload_fake_pdf_missing_magic_header_rejected(self) -> None:
         admin_client = self.get_admin_client()
@@ -339,7 +340,8 @@ class TestIngestionEndpoints(unittest.TestCase):
             data={"doc_type": "judgment"},
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("Missing '%PDF-' header", res.json()["detail"])
+        self.assertEqual(res.json()["code"], "INVALID_PDF_HEADER")
+        self.assertIn("Missing '%PDF-' header", res.json()["error"])
 
     def test_upload_incompatible_content_type_rejected(self) -> None:
         admin_client = self.get_admin_client()
@@ -350,7 +352,9 @@ class TestIngestionEndpoints(unittest.TestCase):
             data={"doc_type": "judgment"},
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("Invalid content type", res.json()["detail"])
+        self.assertEqual(res.json()["code"], "INVALID_PDF_MIME_TYPE")
+        self.assertIn("Invalid content type", res.json()["error"])
+        self.assertNotIn("text/plain", res.json()["error"])  # BE-003: the client-supplied value is not echoed
 
     def test_upload_empty_file_rejected(self) -> None:
         admin_client = self.get_admin_client()
@@ -361,7 +365,8 @@ class TestIngestionEndpoints(unittest.TestCase):
             data={"doc_type": "judgment"},
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("empty", res.json()["detail"])
+        self.assertEqual(res.json()["code"], "EMPTY_UPLOAD")
+        self.assertIn("empty", res.json()["error"])
 
     def test_upload_success_creates_single_queued_job(self) -> None:
         admin_client = self.get_admin_client()
@@ -402,7 +407,8 @@ class TestIngestionEndpoints(unittest.TestCase):
         admin_client = self.get_admin_client()
         res = admin_client.get("/ingest/status/nonexistent-uuid-99999")
         self.assertEqual(res.status_code, 404)
-        self.assertIn("not found", res.json()["detail"])
+        self.assertEqual(res.json()["code"], "INGESTION_JOB_NOT_FOUND")
+        self.assertIn("not found", res.json()["error"])
 
     def test_status_for_existing_job(self) -> None:
         admin_client = self.get_admin_client()
@@ -804,8 +810,8 @@ class TestIngestionReliability(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 409)
-        self.assertEqual(response.json()["detail"]["code"], "DOCUMENT_ALREADY_INGESTED")
-        self.assertEqual(response.json()["detail"]["document_id"], self.baseline.document_id)
+        self.assertEqual(response.json()["code"], "DOCUMENT_ALREADY_INGESTED")
+        self.assertEqual(response.json()["detail"], {"document_id": self.baseline.document_id})
         self.assertEqual(self.db.query(IngestionJob).count(), jobs_before)
         self.assertEqual(list(ingest_api.UPLOAD_DIR.glob("*again.pdf")) if ingest_api.UPLOAD_DIR.exists() else [], [])
         self.assertEqual(self.store_counts(), (2, 2, 2))

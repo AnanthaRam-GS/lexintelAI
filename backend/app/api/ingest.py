@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings
 from backend.app.core.dependencies import require_admin
+from backend.app.core.errors import api_error
 from backend.app.db.models import User
 from backend.app.db.session import get_db
 from backend.app.models.ingest import (
@@ -66,10 +67,7 @@ async def read_upload_within_limit(file: UploadFile, *, max_bytes: int, limit_mb
     while chunk := await file.read(UPLOAD_READ_CHUNK_BYTES):
         received.extend(chunk)
         if len(received) > max_bytes:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=f"File size exceeds limit of {limit_mb} MB.",
-            )
+            raise api_error(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "PDF_TOO_LARGE", f"File size exceeds limit of {limit_mb} MB.", limit_mb=limit_mb)
     return bytes(received)
 
 
@@ -92,10 +90,7 @@ async def upload_corpus_document(
     """Accept an administrator-supplied PDF for ingestion into the shared corpus."""
     filename = file.filename or ""
     if not filename.lower().endswith(".pdf"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded file must have a .pdf extension.",
-        )
+        raise api_error(status.HTTP_400_BAD_REQUEST, "INVALID_PDF_EXTENSION", "Uploaded file must have a .pdf extension.")
 
     content_type = (file.content_type or "").lower().strip()
     if content_type and content_type not in {
@@ -103,25 +98,16 @@ async def upload_corpus_document(
         "application/x-pdf",
         "application/octet-stream",
     }:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid content type '{file.content_type}'. Must be a PDF document.",
-        )
+        raise api_error(status.HTTP_400_BAD_REQUEST, "INVALID_PDF_MIME_TYPE", "Invalid content type. Must be a PDF document.")
 
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
     file_bytes = await read_upload_within_limit(file, max_bytes=max_bytes, limit_mb=settings.max_upload_size_mb)
     if len(file_bytes) == 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded file is empty.",
-        )
+        raise api_error(status.HTTP_400_BAD_REQUEST, "EMPTY_UPLOAD", "Uploaded file is empty.")
 
     # Validate PDF magic header signature within the first 1024 bytes per ISO 32000-1
     if not file_bytes.startswith(b"%PDF-") and b"%PDF-" not in file_bytes[:1024]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid PDF file: Missing '%PDF-' header signature.",
-        )
+        raise api_error(status.HTTP_400_BAD_REQUEST, "INVALID_PDF_HEADER", "Invalid PDF file: Missing '%PDF-' header signature.")
 
     checksum = hashlib.sha256(file_bytes).hexdigest()
     # DATA-003: reject a known document before saving the upload, creating a
@@ -182,10 +168,7 @@ def get_job_status(
         logger.error("stale-job reaper failed during status read: %s", type(exc).__name__)
     job = get_ingestion_job(db=db, job_id=job_id)
     if not job:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Ingestion job '{job_id}' not found.",
-        )
+        raise api_error(status.HTTP_404_NOT_FOUND, "INGESTION_JOB_NOT_FOUND", "Ingestion job not found.", job_id=job_id)
 
     chunk_count = get_job_chunk_count(db=db, document_id=job.document_id)
 

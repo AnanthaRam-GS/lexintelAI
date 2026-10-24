@@ -187,7 +187,7 @@ class TestAuthIntegration(unittest.TestCase):
         }
         response = client.post("/auth/login", json=payload)
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json()["detail"], "Invalid email or password")
+        self.assertEqual(response.json(), {"error": "Invalid email or password", "code": "INVALID_CREDENTIALS", "detail": None})
         self.assertNotIn(COOKIE_NAME, response.cookies)
 
     def test_login_nonexistent_email(self) -> None:
@@ -198,13 +198,13 @@ class TestAuthIntegration(unittest.TestCase):
         }
         response = client.post("/auth/login", json=payload)
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json()["detail"], "Invalid email or password")
+        self.assertEqual(response.json(), {"error": "Invalid email or password", "code": "INVALID_CREDENTIALS", "detail": None})
 
     def test_unauthenticated_access_to_me(self) -> None:
         client = TestClient(app)
         response = client.get("/auth/me")
         self.assertEqual(response.status_code, 401)
-        self.assertIn("credentials", response.json()["detail"].lower())
+        self.assertEqual(response.json(), {"error": "Please sign in to continue.", "code": "NOT_AUTHENTICATED", "detail": None})
 
     def test_logout_clears_cookie(self) -> None:
         client = TestClient(app)
@@ -245,7 +245,7 @@ class TestAuthIntegration(unittest.TestCase):
         with self.assertRaises(HTTPException) as cm:
             require_admin(lawyer_user)
         self.assertEqual(cm.exception.status_code, 403)
-        self.assertIn("Operation not permitted for role 'lawyer'", cm.exception.detail)
+        self.assertEqual(cm.exception.detail, {"code": "FORBIDDEN", "message": "You do not have access to this feature."})
 
 
 db_test_bootstrap.isolate_test_cases(globals())

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from backend.app.core.dependencies import require_lawyer_or_admin
+from backend.app.core.errors import api_error
 from backend.app.db.models import User
 from backend.app.db.session import get_db
 from backend.app.models.analytics import (
@@ -28,7 +29,8 @@ router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 
 def _handle_filter_error(exc: AnalyticsFilterError) -> None:
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    # AnalyticsFilterError messages are written for the user ("Invalid year: must be between 1900 and 2100.").
+    raise api_error(status.HTTP_400_BAD_REQUEST, "INVALID_ANALYTICS_FILTER", str(exc)) from exc
 
 
 @router.get("/offence-frequency", response_model=list[OffenseFrequencyPoint], operation_id="get_offence_frequency")

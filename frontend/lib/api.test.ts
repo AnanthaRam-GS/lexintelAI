@@ -204,11 +204,10 @@ describe('rate limit errors', () => {
         status: 429,
         headers: new Headers({ 'Retry-After': '42' }),
         json: async () => ({
-          detail: {
-            code: 'RATE_LIMITED',
-            message:
-              "You've asked several questions in a short time. Please wait about a minute and try again.",
-          },
+          error:
+            "You've asked several questions in a short time. Please wait about a minute and try again.",
+          code: 'RATE_LIMITED',
+          detail: { retry_after: 42 },
         }),
       } as Response),
     );
@@ -248,3 +247,129 @@ function professionalResponse() {
     },
   };
 }
+
+describe('unified error contract (BE-003)', () => {
+  function errorResponse(status: number, body: unknown, headers: Record<string, string> = {}) {
+    return {
+      ok: false,
+      status,
+      headers: new Headers(headers),
+      json: async () => body,
+    } as Response;
+  }
+
+  async function failure(response: Response): Promise<ApiClientError> {
+    vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(response));
+    const caught = await queryApi.submitText('What is bail?').catch((error: unknown) => error);
+    expect(caught).toBeInstanceOf(ApiClientError);
+    return caught as ApiClientError;
+  }
+
+  it('reads error, code and detail from every error body', async () => {
+    const validation = await failure(
+      errorResponse(422, {
+        error: 'Some of the submitted information is missing or invalid.',
+        code: 'VALIDATION_ERROR',
+        detail: { fields: [{ field: 'body.text', message: 'Field required', type: 'missing' }] },
+      }),
+    );
+    expect(validation.message).toBe('Some of the submitted information is missing or invalid.');
+    expect([validation.status, validation.code]).toEqual([422, 'VALIDATION_ERROR']);
+    expect(validation.detail).toEqual({
+      fields: [{ field: 'body.text', message: 'Field required', type: 'missing' }],
+    });
+
+    const duplicate = await failure(
+      errorResponse(409, {
+        error: 'This document has already been ingested.',
+        code: 'DOCUMENT_ALREADY_INGESTED',
+        detail: { document_id: 7 },
+      }),
+    );
+    expect([duplicate.code, duplicate.detail]).toEqual([
+      'DOCUMENT_ALREADY_INGESTED',
+      { document_id: 7 },
+    ]);
+
+    const signedOut = await failure(
+      errorResponse(401, {
+        error: 'Please sign in to continue.',
+        code: 'NOT_AUTHENTICATED',
+        detail: null,
+      }),
+    );
+    expect([signedOut.message, signedOut.code, signedOut.detail]).toEqual([
+      'Please sign in to continue.',
+      'NOT_AUTHENTICATED',
+      undefined,
+    ]);
+  });
+
+  it('keeps the request ID of a 500 and shows only the generic message', async () => {
+    const internal = await failure(
+      errorResponse(
+        500,
+        {
+          error: 'Something went wrong on our side. Please try again in a moment.',
+          code: 'INTERNAL_ERROR',
+          detail: { request_id: 'req-123' },
+        },
+        { 'X-Request-ID': 'req-123' },
+      ),
+    );
+    expect(internal.message).toBe(
+      'Something went wrong on our side. Please try again in a moment.',
+    );
+    expect([internal.code, internal.requestId, internal.detail]).toEqual([
+      'INTERNAL_ERROR',
+      'req-123',
+      { request_id: 'req-123' },
+    ]);
+  });
+
+  it('gives the plain-language limit message for MODEL_BUSY with its Retry-After', async () => {
+    const busy = await failure(
+      errorResponse(
+        503,
+        {
+          error: 'Many people are asking questions right now. Please try again in a moment.',
+          code: 'MODEL_BUSY',
+          detail: { retry_after: 15 },
+        },
+        { 'Retry-After': '15' },
+      ),
+    );
+    expect(busy.retryAfterSeconds).toBe(15);
+    expect(limitMessage(busy)).toBe(
+      'Many people are asking questions right now. Please try again in a moment.',
+    );
+  });
+
+  it('does not read the retired {detail: {code, message}} or {detail: string} shapes', async () => {
+    const retired = await failure(
+      errorResponse(429, { detail: { code: 'RATE_LIMITED', message: 'old shape' } }),
+    );
+    expect([retired.code, retired.message]).toEqual([
+      undefined,
+      'The request could not be completed.',
+    ]);
+    const retiredString = await failure(errorResponse(400, { detail: 'old string' }));
+    expect(retiredString.message).toBe('The request could not be completed.');
+  });
+
+  it('falls back to a safe message when a proxy answers without JSON', async () => {
+    const proxy = await failure({
+      ok: false,
+      status: 502,
+      headers: new Headers(),
+      json: async () => {
+        throw new SyntaxError('Unexpected token <');
+      },
+    } as unknown as Response);
+    expect([proxy.status, proxy.code, proxy.message]).toEqual([
+      502,
+      undefined,
+      'The LegalAI service is temporarily unavailable.',
+    ]);
+  });
+});

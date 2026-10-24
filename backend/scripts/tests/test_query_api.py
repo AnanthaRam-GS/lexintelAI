@@ -131,7 +131,7 @@ class QueryApiTests(unittest.TestCase):
             response = self.client.post("/query/public", json={"text": "Help"})
 
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_UNAVAILABLE")
+        self.assertEqual(response.json()["code"], "MODEL_UNAVAILABLE")
         self.assertNotIn("api-key", str(response.json()).lower())
 
     def test_public_query_maps_gemini_rate_limit_to_quota_safe_429(self) -> None:
@@ -147,7 +147,7 @@ class QueryApiTests(unittest.TestCase):
             response = self.client.post("/query/public", json={"text": "Help"})
 
         self.assertEqual(response.status_code, 429)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(response.json()["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
         self.assertNotIn("api-key", str(response.json()).lower())
         self.assertNotIn("gemini", str(response.json()).lower())
 
@@ -259,7 +259,7 @@ class QueryApiTests(unittest.TestCase):
             del app.dependency_overrides[query_api.get_answer_adapter]
 
         self.assertEqual(response.status_code, 413)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_REQUEST_TOO_LARGE")
+        self.assertEqual(response.json()["code"], "MODEL_PROVIDER_REQUEST_TOO_LARGE")
         self.assertNotIn("live-fixture-key", str(response.json()))
 
     def _large_retrieval_fixture(self, item_word_count: int = 700) -> "LegalRetrievalResult":
@@ -483,7 +483,7 @@ class QueryApiTests(unittest.TestCase):
             del app.dependency_overrides[query_api.get_answer_adapter]
 
         self.assertEqual(response.status_code, 429)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(response.json()["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
         self.assertEqual(adapter_calls, 1, "no automatic retry on quota exhaustion")
 
     def test_local_document_analysis_failure_is_not_mislabeled_as_a_provider_or_size_problem(self) -> None:
@@ -504,7 +504,7 @@ class QueryApiTests(unittest.TestCase):
             del app.dependency_overrides[get_current_user]
 
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["detail"]["code"], "LOCAL_DOCUMENT_ANALYSIS_FAILED")
+        self.assertEqual(response.json()["code"], "LOCAL_DOCUMENT_ANALYSIS_FAILED")
         self.assertNotIn("local analysis exploded", str(response.json()))
 
     def test_professional_pdf_whole_document_brief_mode_enriches_the_trusted_retrieval_query(self) -> None:
@@ -965,7 +965,7 @@ class QueryApiTests(unittest.TestCase):
             del app.dependency_overrides[query_api.get_answer_adapter]
 
         self.assertEqual(response.status_code, 429)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
+        self.assertEqual(response.json()["code"], "MODEL_PROVIDER_QUOTA_EXCEEDED")
 
     def test_public_query_maps_groq_upstream_5xx_to_unavailable_end_to_end(self) -> None:
         settings = Settings(legalai_llm_provider="groq", groq_api_key="live-fixture-key", groq_model="openai/gpt-oss-120b")
@@ -979,7 +979,7 @@ class QueryApiTests(unittest.TestCase):
             del app.dependency_overrides[query_api.get_answer_adapter]
 
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_PROVIDER_UNAVAILABLE")
+        self.assertEqual(response.json()["code"], "MODEL_PROVIDER_UNAVAILABLE")
         self.assertNotIn("live-fixture-key", str(response.json()))
 
     def test_public_pdf_query_runs_through_groq_and_preserves_private_context(self) -> None:
@@ -1018,7 +1018,7 @@ class QueryApiTests(unittest.TestCase):
             files=pdf_upload(filename="note.txt"),
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["detail"]["code"], "INVALID_PDF_EXTENSION")
+        self.assertEqual(response.json()["code"], "INVALID_PDF_EXTENSION")
 
         response = self.client.post(
             "/query/professional/pdf",
@@ -1026,7 +1026,7 @@ class QueryApiTests(unittest.TestCase):
             files=pdf_upload(content_type="text/plain"),
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["detail"]["code"], "INVALID_PDF_MIME_TYPE")
+        self.assertEqual(response.json()["code"], "INVALID_PDF_MIME_TYPE")
 
         response = self.client.post(
             "/query/professional/pdf",
@@ -1034,7 +1034,7 @@ class QueryApiTests(unittest.TestCase):
             files=pdf_upload(body=b"not a pdf"),
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["detail"]["code"], "INVALID_PDF_HEADER")
+        self.assertEqual(response.json()["code"], "INVALID_PDF_HEADER")
 
         app.dependency_overrides[query_api.get_settings] = lambda: Settings(max_upload_size_mb=0)
         response = self.client.post(
@@ -1043,7 +1043,7 @@ class QueryApiTests(unittest.TestCase):
             files=pdf_upload(),
         )
         self.assertEqual(response.status_code, 413)
-        self.assertEqual(response.json()["detail"]["code"], "PDF_TOO_LARGE")
+        self.assertEqual(response.json()["code"], "PDF_TOO_LARGE")
 
     def test_professional_pdf_maps_no_extractable_text_distinctly_from_parse_failure(self) -> None:
         app.dependency_overrides[get_db] = lambda: Mock()
@@ -1060,7 +1060,7 @@ class QueryApiTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.json()["detail"]["code"], "PDF_NO_TEXT")
+        self.assertEqual(response.json()["code"], "PDF_NO_TEXT")
         save_history.assert_not_called()
 
     def test_professional_pdf_maps_genuine_parse_failure_distinctly_from_no_text(self) -> None:
@@ -1078,7 +1078,7 @@ class QueryApiTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.json()["detail"]["code"], "PDF_PARSE_FAILED")
+        self.assertEqual(response.json()["code"], "PDF_PARSE_FAILED")
         save_history.assert_not_called()
 
     def test_professional_pdf_cleans_temp_file_on_success_and_failure(self) -> None:
@@ -1685,7 +1685,7 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         with patch.object(query_api, "save_query_history") as save:
             response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
         self.assertEqual(response.status_code, 502)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_MISSING_CITATIONS")
+        self.assertEqual(response.json()["code"], "MODEL_OUTPUT_MISSING_CITATIONS")
         save.assert_not_called()
 
     def test_no_coverage_answer_gives_no_provisions_sources_or_legal_steps(self) -> None:
@@ -1713,7 +1713,7 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         with patch.object(query_api, "save_query_history") as save:
             response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
         self.assertEqual(response.status_code, 502)
-        self.assertEqual(response.json()["detail"]["code"], "MODEL_OUTPUT_TRUNCATED")
+        self.assertEqual(response.json()["code"], "MODEL_OUTPUT_TRUNCATED")
         self.assertEqual(fallback.calls, 0)
         save.assert_not_called()
 
@@ -1779,8 +1779,8 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
                 files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")),
             )
             text = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
-        self.assertEqual((brief.status_code, brief.json()["detail"]["code"]), (413, "PDF_CONTEXT_TOO_LARGE"))
-        self.assertEqual((text.status_code, text.json()["detail"]["code"]), (413, "MODEL_PROVIDER_REQUEST_TOO_LARGE"))
+        self.assertEqual((brief.status_code, brief.json()["code"]), (413, "PDF_CONTEXT_TOO_LARGE"))
+        self.assertEqual((text.status_code, text.json()["code"]), (413, "MODEL_PROVIDER_REQUEST_TOO_LARGE"))
 
     def test_both_providers_unavailable_returns_a_sanitized_error(self) -> None:
         app.dependency_overrides[query_api.get_answer_adapter] = lambda: FallbackAnswerAdapter(
@@ -1793,7 +1793,7 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         # model_unavailable_result() no longer raises NameError (fixed and re-pinned in step 11b),
         # so an unavailable model maps to MODEL_UNAVAILABLE, not the generic pipeline error.
-        self.assertEqual(response.json(), {"detail": {"code": "MODEL_UNAVAILABLE", "message": "The legal answer model is temporarily unavailable."}})
+        self.assertEqual(response.json(), {"error": "The legal answer model is temporarily unavailable.", "code": "MODEL_UNAVAILABLE", "detail": None})
         self.assertNotIn("API key", response.text)
         self.assertNotIn("Traceback", response.text)
         save.assert_not_called()
@@ -1807,7 +1807,7 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         with patch.object(query_api, "save_query_history") as save:
             response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json(), {"detail": {"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "The legal answer provider is temporarily unavailable."}})
+        self.assertEqual(response.json(), {"error": "The legal answer provider is temporarily unavailable.", "code": "MODEL_PROVIDER_UNAVAILABLE", "detail": None})
         self.assertNotIn("Traceback", response.text)
         save.assert_not_called()
 

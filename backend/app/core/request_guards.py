@@ -17,10 +17,10 @@ in the upload routes.
 
 from __future__ import annotations
 
-import json
 from typing import Any, Awaitable, Callable
 from urllib.parse import urlsplit
 
+from backend.app.core.errors import send_error
 from backend.app.core.security import COOKIE_NAME
 
 UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
@@ -54,13 +54,7 @@ def request_origin(headers: dict[str, str]) -> str | None:
 
 
 async def _json_response(send: Send, status: int, code: str, message: str) -> None:
-    body = json.dumps({"detail": {"code": code, "message": message}}).encode("utf-8")
-    await send({
-        "type": "http.response.start",
-        "status": status,
-        "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())],
-    })
-    await send({"type": "http.response.body", "body": body})
+    await send_error(send, status, code, message)
 
 
 class OriginCheckMiddleware:

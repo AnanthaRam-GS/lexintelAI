@@ -55,14 +55,14 @@ client IP (`LOGIN_MAX_FAILURES_PER_ACCOUNT`, default 5;
 `LOGIN_MAX_FAILURES_PER_IP`, default 20; within
 `LOGIN_FAILURE_WINDOW_SECONDS`, default 900). Once either limit is reached,
 login returns **429** with a `Retry-After` header and
-`{"detail": {"code": "LOGIN_THROTTLED", "message": "Too many sign-in attempts. Please wait ..."}}`
+`{"error": "Too many sign-in attempts. Please wait ...", "code": "LOGIN_THROTTLED", "detail": {"retry_after": N}}`
 until `LOGIN_LOCKOUT_SECONDS` (default 900) pass, even with the right password.
 Unknown emails are throttled exactly like real ones. A successful login clears
 the email's count.
 
 **Sessions.** Every authenticated request reloads the user from PostgreSQL.
 A missing or deactivated user (`is_active = 0`) gets **401**
-`"Could not validate credentials"`, the same as an invalid token, and the role
+`INVALID_SESSION`, the same body as an invalid token, and the role
 always comes from the database, never from the token's `role` claim. The cookie
 is `HttpOnly`, has an explicit `SameSite` (`AUTH_COOKIE_SAMESITE`, default
 `lax`), and is `Secure` in production. Cookie-authenticated `POST`, `PUT`,
@@ -311,7 +311,7 @@ PostgreSQL, Chroma and BM25. A `FAILED` job leaves nothing behind, or sets
   soon as the limit is passed. Any request whose `Content-Length` exceeds the
   limit plus 1 MB is answered **413** `REQUEST_TOO_LARGE` before its body is read.
 - `POST /ingest/upload` returns **409**
-  `{"detail": {"code": "DOCUMENT_ALREADY_INGESTED", "message": "...", "document_id": <id>}}`
+  `{"error": "This document has already been ingested.", "code": "DOCUMENT_ALREADY_INGESTED", "detail": {"document_id": <id>}}`
   when a document with the same file SHA-256 exists, before any write.
 - `GET /ingest/status/{job_id}` keeps its fields. `error` is a sanitized
   message. Since step 14 an `error_code` can also be `OCR_LIMIT_EXCEEDED`
@@ -410,25 +410,135 @@ All limits are in-memory, per process (see `docs/SECURITY.md`).
   `PROFESSIONAL_QUERY_LIMIT_PER_DAY` (default 300). Authentication is checked
   first, so an anonymous call gets 401 and is not counted.
 - Over a limit, the route returns **429** with `Retry-After` (seconds) and
-  `{"detail": {"code": "RATE_LIMITED", "message": "... Please wait about N minutes and try again."}}`.
+  `{"error": "... Please wait about N minutes and try again.", "code": "RATE_LIMITED", "detail": {"retry_after": N}}`.
   The request never reaches retrieval or the answer provider.
 - At most `LLM_MAX_CONCURRENT_GENERATIONS` (default 4) answer generations run
   at once per process. A request waits up to `LLM_GENERATION_WAIT_SECONDS`
   (default 10) for a slot, then gets **503** with `Retry-After: 15` and
-  `{"detail": {"code": "MODEL_BUSY", "message": "Many people are asking questions right now. Please try again in a moment."}}`.
+  `{"error": "Many people are asking questions right now. Please try again in a moment.", "code": "MODEL_BUSY", "detail": {"retry_after": 15}}`.
 - The client IP is the TCP peer. `X-Forwarded-For` is used only when the peer
   is listed in `TRUSTED_PROXIES` (IPs or CIDRs); then the right-most entry that
   is not itself a trusted proxy is the client.
 
 ## Error Format
 
+Every error response (any status ≥ 400, from any route, middleware or the framework) has this body (step 16,
+BE-003; `backend/app/core/errors.py`):
+
 ```json
 {
-  "error": "...",
-  "code": "...",
-  "detail": "..."
+  "error": "Some of the submitted information is missing or invalid.",
+  "code": "VALIDATION_ERROR",
+  "detail": {"fields": [{"field": "body.email", "message": "Field required", "type": "missing"}]}
 }
 ```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `error` | string | A safe, human-readable message. It never contains a stack trace, a file path, a submitted value or the text of an unexpected exception. |
+| `code` | string | The stable machine code, `UPPER_SNAKE_CASE`. Clients branch on `code`, never on `error`. |
+| `detail` | object or `null` | Optional structured data, listed per code below. `null` when there is none. |
+
+- Every response, success or error, carries an **`X-Request-ID`** header. An incoming `X-Request-ID` of 1–64
+  characters from `A-Z a-z 0-9 . _ -` is reused; anything else is replaced by a generated one. `legalai.*` log
+  lines written while the request is handled end in `[request_id=...]`.
+- Headers that belong to an error are kept: `Retry-After` on rate limits and `MODEL_BUSY`, `Allow` on 405.
+- A **500** is always `INTERNAL_ERROR` with a generic `error` and `detail: {"request_id": ...}`. The exception is
+  logged with the same request ID, never returned. The 500 is produced inside CORS, so a browser can read it.
+- Request validation is `VALIDATION_ERROR` with the failing fields. The submitted values are not echoed.
+- `backend/scripts/tests/test_error_contract.py` calls every registered route in every way it can fail and checks
+  this shape. It also rejects an `HTTPException` without a `{code, message}` dict, and a `JSONResponse` built
+  outside `core/errors.py`.
+
+### Error-code catalogue
+
+`detail` is `null` unless a field is listed.
+
+**Framework and cross-cutting**
+
+| Code | Status | Meaning | `detail` |
+|---|---|---|---|
+| `VALIDATION_ERROR` | 422 | Request body, query or form fields are missing or invalid. | `fields`: list of `{field, message, type}` (`field` like `body.email`) |
+| `NOT_FOUND` | 404 | No such path. | |
+| `METHOD_NOT_ALLOWED` | 405 | The path exists but not for this method (`Allow` header lists the methods). | |
+| `INTERNAL_ERROR` | 500 | Unexpected server error. | `request_id` |
+| `REQUEST_TOO_LARGE` | 413 | `Content-Length` over the upload limit plus 1 MB; rejected before the body is read. | |
+| `CSRF_ORIGIN_REJECTED` | 403 | Cookie-authenticated write from an origin that is not allowed. | |
+| `BAD_REQUEST`, `CONFLICT`, `UNSUPPORTED_MEDIA_TYPE`, `SERVICE_UNAVAILABLE`, `HTTP_<status>` | as named | Fallback for an `HTTPException` raised without a code (e.g. by a library). No route raises these. | |
+
+**Authentication and access**
+
+| Code | Status | Meaning | `detail` |
+|---|---|---|---|
+| `NOT_AUTHENTICATED` | 401 | No session cookie or bearer token. | |
+| `SESSION_EXPIRED` | 401 | The session token has expired. | |
+| `INVALID_SESSION` | 401 | Invalid token, token without a subject, or a missing or deactivated account (one body for all, SEC-004). | |
+| `FORBIDDEN` | 403 | Signed in, but the role may not use this route. The role is not named. | |
+| `INVALID_CREDENTIALS` | 401 | `POST /auth/login`: wrong email or password, or a deactivated account. | |
+| `LOGIN_THROTTLED` | 429 | Too many failed sign-ins for this email or IP; `Retry-After` set. | `retry_after` (seconds) |
+| `WEAK_PASSWORD` | 422 | Registration password blank or padded with whitespace. | |
+| `INVALID_EMAIL` | 422 | Registration email is not a valid address. | |
+| `EMAIL_DELIVERY_FAILED` | 503 | The verification email could not be sent. | |
+| `INVALID_OTP` | 422 / 400 | 422: the code is not all digits. 400: the code is wrong. | |
+| `INVALID_OR_EXPIRED_OTP` | 400 | No active code for this email (an unknown email gets the same answer, SEC-003), or it expired. | |
+| `OTP_ATTEMPTS_EXCEEDED` | 429 | Too many attempts for this code; request a new one (no `Retry-After`). | |
+
+**Lawyer verification**
+
+| Code | Status | Meaning |
+|---|---|---|
+| `ALREADY_VERIFIED` | 409 | The account is already a verified lawyer. |
+| `EMAIL_VERIFICATION_REQUIRED` | 403 | Verify the email before applying. |
+| `APPLICATION_ALREADY_PENDING` | 409 | An application is already pending. |
+| `INVALID_PROOF_TYPE` | 400 | Proof is not a PDF, PNG or JPEG. |
+| `INVALID_PROOF_HEADER` | 400 | Proof file content does not match its declared type. |
+| `PROOF_TOO_LARGE` | 413 | Proof file over the upload limit. |
+| `APPLICATION_NOT_FOUND` | 404 | No such application. |
+| `APPLICATION_ALREADY_VERIFIED` | 409 | Approve on an application that is already verified. |
+| `APPLICATION_NOT_APPROVABLE`, `APPLICATION_NOT_REJECTABLE`, `APPLICATION_NOT_REVIEWABLE` | 409 | The application is not in a reviewable state. |
+| `REJECTION_REASON_REQUIRED`, `RESUBMISSION_REASON_REQUIRED` | 422 | The review action needs a reason. |
+
+**Uploads: corpus ingestion (`/ingest/*`) and query PDFs (`/query/*/pdf`)**
+
+| Code | Status | Meaning | `detail` |
+|---|---|---|---|
+| `INVALID_PDF_EXTENSION` | 400 | The file name does not end in `.pdf`. | |
+| `INVALID_PDF_MIME_TYPE` | 400 | The declared content type is not a PDF. | |
+| `EMPTY_UPLOAD` | 400 | The file is empty. | |
+| `INVALID_PDF_HEADER` | 400 | No `%PDF-` signature. | |
+| `PDF_TOO_LARGE` | 413 | Over `MAX_UPLOAD_SIZE_MB`. | `limit_mb` (ingestion only) |
+| `DOCUMENT_ALREADY_INGESTED` | 409 | A document with the same SHA-256 is already in the corpus. | `document_id` |
+| `INGESTION_JOB_NOT_FOUND` | 404 | `GET /ingest/status/{job_id}`: no such job. | `job_id` |
+| `PDF_PARSE_FAILED` | 422 | The PDF could not be read. | |
+| `PDF_NO_TEXT` | 422 | The PDF has no readable text. | |
+| `PDF_CHUNKING_FAILED` | 422 | The text could not be split into sections. | |
+| `OCR_LIMIT_EXCEEDED` | 422 | A scanned PDF over the OCR page limit. | |
+| `OCR_UNAVAILABLE` | 503 | A scanned PDF, and Tesseract is not available. | |
+| `PDF_CONTEXT_TOO_LARGE` | 413 | The document's extracted context is too large for one answer. | |
+| `LOCAL_DOCUMENT_ANALYSIS_FAILED` | 500 | The local document map could not be built. | |
+
+**Queries (`/query/*`)**
+
+| Code | Status | Meaning | `detail` |
+|---|---|---|---|
+| `RATE_LIMITED` | 429 | Per-IP (public) or per-user (professional) query limit; `Retry-After` set. | `retry_after` (seconds) |
+| `MODEL_BUSY` | 503 | All answer-generation slots busy; `Retry-After: 15`. | `retry_after` |
+| `INVALID_QUERY_REQUEST` | 422 | The question could not be processed. | |
+| `QUERY_PIPELINE_UNAVAILABLE` | 503 | The query pipeline failed unexpectedly. | |
+| `RETRIEVAL_UNAVAILABLE`, `RETRIEVAL_INDEX_UNAVAILABLE` | 503 | The evidence index is unavailable. | |
+| `INSUFFICIENT_RETRIEVED_AUTHORITY` | 424 | Not enough retrieved authority for a grounded answer. | |
+| `MODEL_UNAVAILABLE` | 503 | No answer model is configured or reachable. | |
+| `MODEL_PROVIDER_UNAVAILABLE`, `MODEL_PROVIDER_ERROR`, `MODEL_PROVIDER_TIMEOUT`, `MODEL_PROVIDER_AUTH_ERROR` | 503 | The answer provider failed. | |
+| `MODEL_PROVIDER_QUOTA_EXCEEDED` | 429 | The provider's own usage limit was reached. | |
+| `MODEL_PROVIDER_REQUEST_TOO_LARGE` | 413 | The request is too large for the provider. | |
+| `MODEL_OUTPUT_VALIDATION_FAILED`, `MODEL_OUTPUT_MISSING_CITATIONS`, `MODEL_OUTPUT_TRUNCATED`, `PUBLIC_SCHEMA_MISMATCH`, `PROFESSIONAL_SCHEMA_MISMATCH`, `ANSWER_GENERATION_FAILED` | 502 | The provider's answer was invalid or incomplete. | |
+
+**Analytics and history**
+
+| Code | Status | Meaning |
+|---|---|---|
+| `INVALID_ANALYTICS_FILTER` | 400 | An analytics filter value is invalid (`error` says which). |
+| `INVALID_HISTORY_REQUEST` | 400 | The history request is invalid. |
 
 ## Contract-First Development
 
