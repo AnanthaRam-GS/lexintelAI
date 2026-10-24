@@ -13,7 +13,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from backend.app.services.judgment_sections import canonical_section
 from backend.app.services.ncrb_display import DISPLAY_OVERRIDES, display_offense_category
-from backend.app.services.ncrb_sections import row_labels, section_labels
+from backend.app.services.ncrb_sections import NOTATION_OVERRIDES, row_labels, section_labels
 from backend.scripts.load_ipc_bns import normalize_section_field
 
 V2_CSV = REPO_ROOT / "data/processed/ncrb/ncrb_stats_2024_v2.csv"
@@ -41,10 +41,16 @@ class SectionLabelTests(unittest.TestCase):
                 self.assertEqual(section_labels(text, statute), (expected, []))
 
     def test_unparseable_notation_is_reported_not_guessed(self) -> None:
-        self.assertEqual(section_labels("447-252", "IPC"), ([], ["447-252"]))  # a descending range as printed
-        self.assertEqual(section_labels("326(f),326(G) & 327(2)", "BNS"), (["BNS 326", "BNS 327"], ["326(G)"]))
+        self.assertEqual(section_labels("447-152", "IPC"), ([], ["447-152"]))  # a descending range
+        self.assertEqual(section_labels("326(G)", "BNS"), ([], ["326(G)"]))  # a capital in brackets, outside an override
         self.assertEqual(section_labels("600", "IPC"), ([], ["600"]))  # out of the IPC range (511)
         self.assertEqual(row_labels(None, None), (None, None, []))
+
+    def test_documented_misprints_are_parsed_in_their_corrected_form(self) -> None:
+        self.assertEqual(set(NOTATION_OVERRIDES), {("IPC", "447-252"), ("BNS", "326(f),326(G) & 327(2)")})
+        self.assertEqual(section_labels("447-252", "IPC"), ([f"IPC {n}" for n in range(447, 453)], []))
+        self.assertEqual(section_labels("326(f),326(G) & 327(2)", "BNS"), (["BNS 326", "BNS 327"], []))
+        self.assertEqual(section_labels("447-252", "BNS"), ([], ["447-252"]))  # an override is per statute
 
     def test_labels_use_the_document_sections_form(self) -> None:
         for raw in ("0302", "498a", "103(1)", "498A"):
@@ -57,7 +63,9 @@ class SectionLabelTests(unittest.TestCase):
         for row in rows:
             _ipc, _bns, notes = row_labels(normalize_section_field(row["ipc_section"]), normalize_section_field(row["bns_section"]))
             unparsed.update(notes)
-        self.assertEqual(unparsed, {"IPC: 447-252", "BNS: 326(G)"})
+        self.assertEqual(unparsed, set())  # the two printed misprints are covered by NOTATION_OVERRIDES
+        printed = {(statute, normalize_section_field(row[f"{statute.lower()}_section"])) for row in rows for statute in ("IPC", "BNS")}
+        self.assertLessEqual(set(NOTATION_OVERRIDES), printed)  # every override key is a field as printed
 
 
 class DisplayOverrideTests(unittest.TestCase):
