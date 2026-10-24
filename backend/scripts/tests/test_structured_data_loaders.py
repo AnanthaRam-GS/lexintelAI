@@ -300,9 +300,17 @@ class TestLoaderValidation(unittest.TestCase):
         point = get_ncrb_stats(self.db, state=state, ipc_section="IPC 147")[0]
         self.assertEqual((point.offense_category, point.display_offense_category),
                          ("Rioting - n) ElectriState/UT/Power Supply Disputes", "Rioting - n) Electricity/Power Supply Disputes"))
-        unparsed = load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [ncrb_row(state=state, offense_category="Criminal Trespass", ipc_section="447-252")]))
-        self.assertEqual(unparsed["unparsed_section_notations"], ["IPC: 447-252"])
-        self.assertIsNone(self.db.query(NcrbStat).filter_by(state=state, offense_category="Criminal Trespass").one().ipc_section_labels)
+        # A documented misprint keeps its printed text and is filtered by its corrected sections.
+        stats = load_ncrb_stats(self.db, self.csv(NCRB_FIELDS, [
+            ncrb_row(state=state, offense_category="Criminal Trespass", ipc_section="447-252"),
+            ncrb_row(state=state, offense_category="Unparsed Head", ipc_section="447-152"),
+        ]))
+        self.assertEqual(stats["unparsed_section_notations"], ["IPC: 447-152"])
+        trespass = self.db.query(NcrbStat).filter_by(state=state, offense_category="Criminal Trespass").one()
+        self.assertEqual((trespass.ipc_section, trespass.ipc_section_labels), ("447-252", [f"IPC {n}" for n in range(447, 453)]))
+        self.assertEqual(found("IPC 450"), ["Criminal Trespass"])
+        self.assertEqual(found("IPC 252"), [])
+        self.assertIsNone(self.db.query(NcrbStat).filter_by(state=state, offense_category="Unparsed Head").one().ipc_section_labels)
 
     def test_ncrb_aggregate_type_follows_the_tables_own_labels(self) -> None:
         self.assertEqual(aggregate_type("TOTAL STATE(S)", "Murder"), "state_total")

@@ -226,6 +226,8 @@ Parsing rules:
   the suffix ("171E to 171I" → 171E…171I).
 - **Ignored:** "IT Act" (printed truncated as "IT" on two pages) and "other Crimes", since they name no IPC/BNS
   section.
+- **Documented misprints** (`NOTATION_OVERRIDES`, below) are parsed in their corrected form. The printed text is still
+  stored.
 - **Everything else** is reported as unparsed and never guessed.
 
 The `ipc_section` filter of `/analytics/ncrb-stats` (and `/analytics/ncrb`) matches these lists. It accepts
@@ -234,20 +236,40 @@ The `ipc_section` filter of `/analytics/ncrb-stats` (and `/analytics/ncrb`) matc
 | Corrected table (6,201 rows) | Rows |
 |---|---:|
 | With any label list | 5,616 |
-| With IPC labels | 4,680 |
+| With IPC labels | 4,719 (4,680 before the Criminal Trespass override) |
 | With BNS labels | 5,460 |
 | With neither (no section printed: totals and group heads) | 585 |
 | "305/306" (Abetment of Suicide), matched by "IPC 305" and by "IPC 306" | 39 |
 
-**Unparsed notations (2, left without labels for that field):**
+**Notation overrides.** Step 15b left two printed notations unparsed. Both are now documented misprints, approved
+2026-10-24, and handled the same way as the display override. `ipc_section` and `bns_section` keep the printed
+text; only the label lists use the corrected form. No unparsed notation remains in the table.
 
-| Field | Printed | Head | Why |
-|---|---|---|---|
-| IPC | `447-252` | Criminal Trespass | descending range, evidently a misprint (perhaps 447-452); not guessed |
-| BNS | `326(G)` | Arson | a single capital in brackets: it could be a suffix or a sub-clause; `canonical_section` rejects it, as for judgments |
+| Field | Printed (stored as is) | Parsed as | Head | Labels |
+|---|---|---|---|---|
+| IPC | `447-252` | `447-452` | Criminal Trespass | IPC 447 … IPC 452 (was none) |
+| BNS | `326(f),326(G) & 327(2)` | `326(f),326(g) & 327(2)` | Arson | BNS 326, BNS 327 (unchanged; "326(G)" no longer reported) |
 
-For those rows the other parts of the field still parse: Arson keeps "BNS 326" (from "326(f)") and "BNS 327", and
-Criminal Trespass keeps its BNS labels.
+Evidence for `447-252` → `447-452`:
+- "447-252" is a descending range, so as printed it names no section.
+- It is printed the same way on PDF page 124 (State/UT-wise 1A.4), page 236 (City-wise 1A.4) and page 595 (the
+  crime-head annex). It is NCRB's own notation carried through the volume, not an extraction error.
+- IPC 447–452 are the criminal trespass and house-trespass sections. The BNS column prints 329(3), which is in BNS
+  329 (criminal trespass and house-trespass).
+- IPC 252 is a coin offence (IPC Chapter XII). The same table already prints it under "Counterfeiting - a)
+  Counterfeit Coin" (`231-235, 237, 238-240 & 242-254`), so it cannot belong to Criminal Trespass.
+- The 2023 edition (`data/raw/2023/TABLE1A4.xlsx`) prints "Criminal Trespass (Sec.447 to 452 IPC)".
+
+Evidence for `326(G)` → `326(g)`:
+- It is printed as a capital on PDF pages 123, 235, 267, 270 and 595, always next to a lower-case "326(f)".
+- The clauses of BNS 326 are lower case, (a) to (g). The Mischief head in the same table prints
+  `326(a)(b)(c)(d)`.
+- BNS 326(g) is mischief by fire or explosive substance, which is arson.
+- Only the letter case is changed; no meaning is inferred. Section labels drop clauses, so the label is
+  "BNS 326" either way.
+
+Without an override, `section_labels` still rejects a single capital in brackets, as `canonical_section` does for
+judgments.
 
 ### IPC↔BNS mapping: source, dependency and cross-check
 
@@ -275,6 +297,12 @@ offline.
 
 **Regeneration blocked.** `cytrain.ncrb.gov.in` resolves, but HTTPS and HTTP connections time out. This was tried
 three times during step 15b (2026-10-23), while `www.ncrb.gov.in` answered. No other source was substituted.
+
+**Decision (2026-10-24).** PR #64 goes in with the mapping marked UNREVIEWED. A later data step will:
+- add the 7 missing pairs straight from the printed IPC/BNS columns of the NCRB PDF, a source already held;
+- retry CYTRAIN once, with certificate verification turned back on.
+
+The BPR&D comparative PDF is not approved as a source, since it has not been verified.
 
 **Cross-check of the current mapping against the pairs printed in the PDF** (Table 1A.4 IPC and BNS columns): 29
 pairs checked, **22 match, 7 have no mapping row.**
@@ -316,3 +344,17 @@ No count, crime head or section text changed. Only the two label columns were fi
 | Dev: `verify_analytics.py` | RECONCILED; default NCRB sum 3,544,608 |
 | Dev: store verifier | CONSISTENT; Chroma (21 tables) and BM25 identical to the backup copies; every table count unchanged |
 | Dev: `/analytics/ncrb-stats?ipc_section=IPC 305` | 36 rows, all "Abetment of Suicide" `305/306` (39 with `include_aggregates=true`); the same for `IPC 306`, `305` and `BNS 108` |
+
+### Reload (notation overrides, 2026-10-24)
+
+Only the IPC label lists of the 39 Criminal Trespass rows changed. The Arson labels were already `BNS 326`,
+`BNS 327`. No count, head or printed section text changed.
+
+| Stage | Result |
+|---|---|
+| Backup `~/legalai_backups/20261024T032842Z` | verified: checksums, store copies, and a `--clean` restore into `legalai_rehearsal` matching all 12 tables |
+| Rehearsal (at 0010) | mapping: 0 changes in all three runs. NCRB `--prune`: dry run and run 39 updated / 6,162 unchanged / 0 inserted / 0 deleted; second run 0 changes; no unparsed notations |
+| Rehearsal: `verify_analytics.py` / store verifier | RECONCILED (default NCRB sum 3,544,608) / CONSISTENT |
+| Dev: dry runs, runs, second runs | each identical to the rehearsal; second runs 0 changes |
+| Dev: `verify_analytics.py` / store verifier | RECONCILED (3,544,608) / CONSISTENT; Chroma (21 tables) and BM25 identical to the backup copies; every table count unchanged |
+| Dev: filter | `IPC 447`, `IPC 450`, `IPC 452`: the 36 Criminal Trespass rows. `IPC 252`: only "Counterfeiting - a) Counterfeit Coin". `BNS 326`: Arson and Mischief |
