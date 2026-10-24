@@ -32,6 +32,10 @@ export class ApiClientError extends Error {
     readonly status?: number,
     readonly code?: string,
     readonly retryAfterSeconds?: number,
+    /** Structured `detail` of the error body, e.g. `{ document_id }` or `{ fields: [...] }`. */
+    readonly detail?: Record<string, unknown>,
+    /** The `X-Request-ID` the backend answered with, for support. */
+    readonly requestId?: string,
   ) {
     super(message);
     this.name = 'ApiClientError';
@@ -358,48 +362,46 @@ function retryAfterSeconds(response: Response): number | undefined {
   return Number.isFinite(value) && value > 0 ? value : undefined;
 }
 
+/** The one error body every backend error uses (docs/API_CONTRACTS.md, "Error Format"). */
+interface BackendError {
+  error: string;
+  code: string;
+  detail?: Record<string, unknown> | null;
+}
+
 async function apiError(response: Response): Promise<ApiClientError> {
-  const fallback =
-    response.status >= 500
-      ? 'The LegalAI service is temporarily unavailable.'
-      : 'The request could not be completed.';
+  const requestId = response.headers?.get?.('X-Request-ID') ?? undefined;
   try {
     const body: unknown = await response.json();
     if (isBackendError(body)) {
       return new ApiClientError(
-        body.detail.message,
+        body.error,
         response.status,
-        body.detail.code,
+        body.code,
         retryAfterSeconds(response),
+        body.detail ?? undefined,
+        requestId,
       );
     }
-    if (isBackendStringError(body)) {
-      return new ApiClientError(body.detail, response.status);
-    }
   } catch {
-    return new ApiClientError(fallback, response.status);
+    // Not JSON: a proxy or network layer answered, not the API.
   }
-  return new ApiClientError(fallback, response.status);
+  // Only a response that did not come from the API lacks the body, so there is no code to branch on.
+  const fallback =
+    response.status >= 500
+      ? 'The LegalAI service is temporarily unavailable.'
+      : 'The request could not be completed.';
+  return new ApiClientError(fallback, response.status, undefined, undefined, undefined, requestId);
 }
 
-function isBackendStringError(value: unknown): value is { detail: string } {
+function isBackendError(value: unknown): value is BackendError {
+  if (!value || typeof value !== 'object') return false;
+  const { error, code, detail } = value as Record<string, unknown>;
   return (
-    !!value &&
-    typeof value === 'object' &&
-    'detail' in value &&
-    typeof (value as { detail?: unknown }).detail === 'string'
-  );
-}
-
-function isBackendError(value: unknown): value is { detail: { code: string; message: string } } {
-  if (!value || typeof value !== 'object' || !('detail' in value)) {
-    return false;
-  }
-  const detail = (value as { detail: unknown }).detail;
-  return (
-    !!detail &&
-    typeof detail === 'object' &&
-    typeof (detail as { code?: unknown }).code === 'string' &&
-    typeof (detail as { message?: unknown }).message === 'string'
+    typeof error === 'string' &&
+    typeof code === 'string' &&
+    (detail === undefined ||
+      detail === null ||
+      (typeof detail === 'object' && !Array.isArray(detail)))
   );
 }

@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings
 from backend.app.core.dependencies import get_current_user
+from backend.app.core.errors import api_error
 from backend.app.core.rate_limit import client_ip, login_throttle, too_many_requests, wait_phrase
 from backend.app.core.security import (
     COOKIE_NAME,
@@ -233,10 +234,7 @@ def login(
             window_seconds=settings.login_failure_window_seconds,
             lockout_seconds=settings.login_lockout_seconds,
         )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=INVALID_LOGIN_MESSAGE,
-        )
+        raise api_error(status.HTTP_401_UNAUTHORIZED, "INVALID_CREDENTIALS", INVALID_LOGIN_MESSAGE)
     login_throttle.record_success(account_key)
 
     # Role is derived directly from PostgreSQL user record

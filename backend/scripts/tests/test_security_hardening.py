@@ -227,7 +227,8 @@ class InactiveUserTests(SecurityTestCase):
             with self.subTest(path=path):
                 response = getattr(client, method)(path, **({"json": {"text": "bail"}} if method == "post" else {}))
                 self.assertEqual(response.status_code, 401)
-                self.assertEqual(response.json()["detail"], "Could not validate credentials")
+                # SEC-004: the same body as a bad or expired-subject token.
+                self.assertEqual(response.json(), {"error": "Your session is not valid. Please sign in again.", "code": "INVALID_SESSION", "detail": None})
 
 
 class LoginThrottleTests(SecurityTestCase):
@@ -246,7 +247,7 @@ class LoginThrottleTests(SecurityTestCase):
             statuses = [status for status, _body, _retry in results[user.email]]
             self.assertEqual(statuses, [401, 401, 401, 429])
             last = TestClient(app).post("/auth/login", json={"email": user.email, "password": "wrong-password"})
-            self.assertEqual(last.json()["detail"]["code"], "LOGIN_THROTTLED")
+            self.assertEqual(last.json()["code"], "LOGIN_THROTTLED")
             self.assertLessEqual(int(last.headers["retry-after"]), 600)
             self.assertGreater(int(last.headers["retry-after"]), 590)
 
@@ -358,8 +359,8 @@ class QueryRateLimitTests(SecurityTestCase):
             statuses = [client.post("/query/public", json={"text": "What is bail?"}).status_code for _ in range(3)]
             limited = client.post("/query/public", json={"text": "What is bail?"})
         self.assertEqual(statuses, [200, 200, 429])
-        self.assertEqual(limited.json()["detail"]["code"], "RATE_LIMITED")
-        self.assertIn("Please wait", limited.json()["detail"]["message"])
+        self.assertEqual(limited.json()["code"], "RATE_LIMITED")
+        self.assertIn("Please wait", limited.json()["error"])
         self.assertTrue(1 <= int(limited.headers["retry-after"]) <= 60)
         self.assertEqual(self.adapter_class.calls, 2)  # the limited requests never reached the provider
 
@@ -380,7 +381,7 @@ class QueryRateLimitTests(SecurityTestCase):
             other = client_for(lawyer_b).post("/query/professional", json={"text": "bail under section 437"})
         self.assertNotEqual(first.status_code, 429)
         self.assertEqual(second.status_code, 429)
-        self.assertEqual(second.json()["detail"]["code"], "RATE_LIMITED")
+        self.assertEqual(second.json()["code"], "RATE_LIMITED")
         self.assertIn("retry-after", second.headers)
         self.assertNotEqual(other.status_code, 429)
 
@@ -408,7 +409,7 @@ class QueryRateLimitTests(SecurityTestCase):
         statuses = sorted(status for status, _body, _retry in results)
         self.assertEqual(statuses, [200, 200, 503, 503])
         busy = [body for status, body, _retry in results if status == 503]
-        self.assertTrue(all(body["detail"]["code"] == "MODEL_BUSY" for body in busy))
+        self.assertTrue(all(body["code"] == "MODEL_BUSY" for body in busy))
         self.assertTrue(all(retry == str(query_api.MODEL_BUSY_RETRY_AFTER_SECONDS) for status, _b, retry in results if status == 503))
         self.assertEqual(self.adapter_class.peak, 2)
         self.assertEqual(self.adapter_class.calls, 2)
@@ -421,7 +422,7 @@ class CsrfOriginTests(SecurityTestCase):
         user, _ = make_user(role="lawyer")
         evil = client_for(user).post("/auth/logout", headers={"Origin": "https://evil.example"})
         self.assertEqual(evil.status_code, 403)
-        self.assertEqual(evil.json()["detail"]["code"], "CSRF_ORIGIN_REJECTED")
+        self.assertEqual(evil.json()["code"], "CSRF_ORIGIN_REJECTED")
         referer = client_for(user).post("/auth/logout", headers={"Referer": "https://evil.example/page"})
         self.assertEqual(referer.status_code, 403)
         null_origin = client_for(user).post("/auth/logout", headers={"Origin": "null"})

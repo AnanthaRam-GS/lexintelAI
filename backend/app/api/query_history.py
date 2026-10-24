@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from backend.app.core.dependencies import require_lawyer_or_admin
+from backend.app.core.errors import api_error
 from backend.app.db.models import User
 from backend.app.db.session import get_db
 from backend.app.models.history import QueryHistoryItem
@@ -29,5 +30,6 @@ def get_query_history(
     try:
         rows = list_query_history(db, user_id=current_user.id, limit=limit)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        # list_query_history raises only its own fixed messages ("limit must be between 1 and 50.").
+        raise api_error(status.HTTP_400_BAD_REQUEST, "INVALID_HISTORY_REQUEST", str(exc)) from exc
     return [QueryHistoryItem.model_validate(row) for row in rows]

@@ -601,6 +601,12 @@ describe('IngestionWorkspace', () => {
     });
     const view = render(<IngestionWorkspace />);
     await act(async () => Promise.resolve());
+    // jsdom dispatches the `storage` event of every sessionStorage write with setTimeout(fn, 0)
+    // (jsdom/lib/jsdom/living/webstorage/Storage-impl.js). Under fake timers those are counted too:
+    // one from the setup write above and one from the component persisting the polled job. Run them,
+    // so the count below is the component's own timers. It schedules no 0 ms timer of its own.
+    vi.advanceTimersByTime(0);
+    // One inactivity deadline (15 s) and one next poll (2.5 s) for the single active job.
     expect(vi.getTimerCount()).toBe(2);
 
     view.unmount();

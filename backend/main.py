@@ -14,6 +14,12 @@ from backend.app.api.lawyer_verification import router as lawyer_verification_ro
 from backend.app.api.query import get_retrieval_service, router as query_router
 from backend.app.api.query_history import router as query_history_router
 from backend.app.core.config import Settings, allowed_origins
+from backend.app.core.errors import (
+    RequestIdMiddleware,
+    UnhandledErrorMiddleware,
+    install_error_handlers,
+    install_request_id_logging,
+)
 from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheckMiddleware, max_request_body_bytes
 from backend.app.core.startup_checks import run_startup_security_checks
 from backend.app.db.session import SessionLocal, check_db_connection
@@ -51,10 +57,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# BE-003: every error response is {error, code, detail} (see core/errors.py and docs/API_CONTRACTS.md).
+install_error_handlers(app)
+install_request_id_logging()
+
 # CORS Configuration
 unique_origins = allowed_origins(settings)
 
-# Starlette runs the last-added middleware first: body size, then the Origin check, then CORS.
+# Starlette runs the last-added middleware first: request ID, body size, the Origin check, CORS, then the
+# unhandled-error middleware, which is inside CORS so a 500 still carries the CORS headers.
+app.add_middleware(UnhandledErrorMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=unique_origins,
@@ -66,6 +78,7 @@ app.add_middleware(
 app.add_middleware(OriginCheckMiddleware, allowed_origins=unique_origins)
 # SEC-008: reject an oversize body by its Content-Length before reading it.
 app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_request_body_bytes(settings.max_upload_size_mb))
+app.add_middleware(RequestIdMiddleware)
 
 # Router Wiring
 app.include_router(auth_router)
