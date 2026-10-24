@@ -392,3 +392,7 @@ class NcrbStat(Base):
     # State/UT/all-India totals and the table's own subtotal heads (see load_ncrb.aggregate_type).
     is_aggregate = Column(Boolean, nullable=False, default=False, server_default=false(), index=True)
     aggregate_type = Column(String(32), nullable=True)
+    # Statute-qualified labels parsed from the printed section text, for filtering (migration 0010):
+    # "305/306" -> ["IPC 305", "IPC 306"]; NULL when nothing parseable is printed. See services/ncrb_sections.py.
+    ipc_section_labels = Column(JSON, nullable=True)
+    bns_section_labels = Column(JSON, nullable=True)

@@ -56,5 +56,12 @@ This dataset documents authoritative IPC-to-BNS section correspondences used for
 - NEW: New BNS provision created without a direct IPC antecedent.
 - NO_DIRECT_EQUIVALENT: The source indicates no direct legal equivalent.
 
+## Review status (step 15b, 2026-10-23)
+
+**UNREVIEWED: pending legal review.** `build_ipc_bns_mapping.py` took its IPC labels from the old
+`ncrb_stats_2024_complete.csv`, which was found to be wrong and was replaced in step 15. Seven section pairs
+printed in the corrected NCRB table have no row here. Regeneration from CYTRAIN is blocked while
+`cytrain.ncrb.gov.in` is unreachable. See `docs/analytics/NCRB_CORRECTION.md`.
+
 ## Data quality note
 This dataset is a legal-mapping reference for Phase 0.4 analytics ingestion. It is not a substitute for full statutory interpretation or a final legal opinion. It intentionally excludes unsupported or uncertain mappings rather than guessing.

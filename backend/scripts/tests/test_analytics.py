@@ -94,6 +94,7 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
             state=f"{MARKER} State",
             offense_category=f"{MARKER} Murder",
             ipc_section="302",
+            ipc_section_labels=["IPC 302"],  # as load_ncrb stores it; the section filter matches these
             case_count=12,
             conviction_count=4,
             acquittal_count=2,

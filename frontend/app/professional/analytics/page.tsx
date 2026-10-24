@@ -569,8 +569,16 @@ export default function ProfessionalAnalyticsPage() {
                     className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-[var(--color-brass)] uppercase tracking-wider">
-                        {stat.year} · {stat.offense_category}
+                      <span
+                        className="text-xs font-bold text-[var(--color-brass)] uppercase tracking-wider"
+                        title={
+                          stat.display_offense_category &&
+                          stat.display_offense_category !== stat.offense_category
+                            ? `As printed by NCRB: ${stat.offense_category}`
+                            : undefined
+                        }
+                      >
+                        {stat.year} · {stat.display_offense_category ?? stat.offense_category}
                       </span>
                       {stat.ipc_section && (
                         <span className="rounded bg-[var(--color-surface-subtle)] px-1.5 py-0.5 font-mono text-[0.6875rem]">

@@ -7,8 +7,9 @@ ipc_section) keys within the file with different counts. Every rejected row
 is counted by reason; no row is dropped silently. An exact repeat of a row is
 loaded once and noted as ``exact_duplicate_in_file``.
 
-Missing values stay NULL. A blank case_count (41 source rows) is stored as
-NULL, never 0, and is reported as ``case_count_not_reported``. Table 1A.4
+Missing values stay NULL. A blank case_count is stored as NULL, never 0,
+and is reported as ``case_count_not_reported`` (the step 15 re-extraction,
+``ncrb_stats_2024_v2.csv``, has none: every cell is printed). Table 1A.4
 reports no conviction or acquittal counts, so those columns are NULL for
 every row. The BNS head (``bns_section``) is stored next to the IPC head
 (migration 0008). Aggregate rows (state/UT/all-India totals and the table's
@@ -24,8 +25,20 @@ are inserted, keys whose counts, BNS head or aggregate flag changed are
 updated, and identical rows are left alone. A second run makes 0 changes and
 never duplicates.
 
+``--prune`` (step 15) also deletes the database rows of the source's year(s)
+whose key is not in the source, in the same transaction, so a corrected
+extraction with fixed crime-head names replaces the old rows instead of
+leaving them beside the new ones. Without it, such rows are only counted
+(``db_rows_not_in_source``). Rows of other years are never touched.
+
+Section labels (step 15b, migration 0010): ``ipc_section_labels`` and
+``bns_section_labels`` hold the statute-qualified sections parsed from the
+printed text ("305/306" -> ["IPC 305", "IPC 306"]; services/ncrb_sections.py)
+for filtering. A notation that cannot be parsed is reported in
+``unparsed_section_notations`` and never guessed.
+
 Usage:
-    .venv/bin/python backend/scripts/load_ncrb.py --database-url-env DATABASE_URL [--dry-run] [--confirm-dev]
+    .venv/bin/python backend/scripts/load_ncrb.py --database-url-env DATABASE_URL [--dry-run] [--prune] [--confirm-dev]
 """
 
 from __future__ import annotations
@@ -46,9 +59,12 @@ from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from backend.app.db.models import NcrbStat
+from backend.app.services.ncrb_sections import row_labels
 from backend.scripts.load_ipc_bns import normalize_section_field
 
-DEFAULT_CSV_PATH = REPO_ROOT / "data/processed/ncrb/ncrb_stats_2024_complete.csv"
+# Step 15: the table-aware re-extraction (backend/scripts/extract_ncrb_table.py); the old
+# ncrb_stats_2024_complete.csv is kept only for the diff (docs/analytics/NCRB_CORRECTION.md).
+DEFAULT_CSV_PATH = REPO_ROOT / "data/processed/ncrb/ncrb_stats_2024_v2.csv"
 REQUIRED_COLUMNS = {
     "year",
     "state",
@@ -60,7 +76,7 @@ REQUIRED_COLUMNS = {
 }
 FIELD_LIMITS = {"state": 100, "offense_category": 150, "ipc_section": 100, "bns_section": 100}
 COUNT_FIELDS = ("case_count", "conviction_count", "acquittal_count")
-UPDATE_FIELDS = COUNT_FIELDS + ("bns_section", "is_aggregate", "aggregate_type")
+UPDATE_FIELDS = COUNT_FIELDS + ("bns_section", "is_aggregate", "aggregate_type", "ipc_section_labels", "bns_section_labels")
 
 # Table 1A.4's own total rows and total heads.
 TOTAL_STATE_ROWS = {"TOTAL STATE(S)": "state_total", "TOTAL UT(S)": "ut_total", "TOTAL ALL INDIA": "all_india_total"}
@@ -113,6 +129,7 @@ def load_ncrb_stats(
     csv_path: Path | None = None,
     *,
     dry_run: bool = False,
+    prune: bool = False,
 ) -> dict:
     """Upsert NCRB statistics rows from the processed project CSV."""
     path = Path(csv_path) if csv_path else DEFAULT_CSV_PATH
@@ -138,6 +155,7 @@ def load_ncrb_stats(
     updated = 0
     skipped_existing = 0
     seen_in_file: dict[tuple, dict] = {}
+    unparsed_notations: set[str] = set()
 
     for raw in source_rows:
         state = _blank_to_none(raw.get("state"))
@@ -160,6 +178,7 @@ def load_ncrb_stats(
             rejected["negative_count"] += 1
             continue
         kind = aggregate_type(state, offense_category)
+        ipc_labels, bns_labels, unparsed_notes = row_labels(ipc_section, bns_section)
         parsed = {
             "year": year,
             "state": state,
@@ -169,6 +188,8 @@ def load_ncrb_stats(
             **counts,
             "is_aggregate": kind is not None,
             "aggregate_type": kind,
+            "ipc_section_labels": ipc_labels,
+            "bns_section_labels": bns_labels,
         }
         if any(parsed[name] and len(parsed[name]) > limit for name, limit in FIELD_LIMITS.items()):
             rejected["field_too_long"] += 1
@@ -188,6 +209,11 @@ def load_ncrb_stats(
             notes["bns_section_stored"] += 1
         if kind:
             notes[f"aggregate_{kind}"] += 1
+        if ipc_labels or bns_labels:
+            notes["rows_with_section_labels"] += 1
+        for note in unparsed_notes:
+            notes["unparsed_section_fragments"] += 1
+            unparsed_notations.add(note)
 
         current = existing.get(key)
         if current is None:
@@ -200,11 +226,16 @@ def load_ncrb_stats(
         else:
             skipped_existing += 1
 
+    source_years = {key[0] for key in seen_in_file}
+    stale = [row for key, row in existing.items() if key not in seen_in_file and key[0] in source_years]
     if not dry_run:
+        if prune:
+            for row in stale:
+                db.delete(row)
         if pending:
             # Insert through the Table so column defaults never turn NULL into 0.
             db.execute(insert(NcrbStat.__table__), pending)
-        if pending or updated:
+        if pending or updated or (prune and stale):
             db.commit()
     else:
         db.rollback()
@@ -220,6 +251,9 @@ def load_ncrb_stats(
         "rejected": dict(sorted(rejected.items())),
         "notes": dict(sorted(notes.items())),
         "db_rows_not_in_source": len(set(existing) - set(seen_in_file)),
+        "unparsed_section_notations": sorted(unparsed_notations),
+        "deleted": len(stale) if prune and not dry_run else 0,
+        "would_delete": len(stale) if prune else 0,
     }
 
 
@@ -230,6 +264,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--csv", dest="csv_path", type=Path, default=DEFAULT_CSV_PATH)
     parser.add_argument("--database-url-env", required=True, help="Name of the env var holding the target database URL.")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--prune", action="store_true", help="delete rows of the source's year(s) that are not in the source")
     parser.add_argument("--confirm-dev", action="store_true")
     args = parser.parse_args(argv)
 
@@ -240,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
     engine = create_engine(url)
     db = sessionmaker(bind=engine)()
     try:
-        stats = load_ncrb_stats(db, args.csv_path, dry_run=args.dry_run)
+        stats = load_ncrb_stats(db, args.csv_path, dry_run=args.dry_run, prune=args.prune)
     finally:
         db.close()
         engine.dispose()

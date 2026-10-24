@@ -53,3 +53,8 @@ class NcrbStatPoint(BaseModel):
     acquittal_count: int | None = None
     is_aggregate: bool = False
     aggregate_type: str | None = None
+    # Step 15b: statute-qualified labels parsed from the printed section text ("IPC 305"), used by the
+    # section filter, and a UI label that differs from the printed head only for an evident printing error.
+    ipc_section_labels: list[str] | None = None
+    bns_section_labels: list[str] | None = None
+    display_offense_category: str | None = None

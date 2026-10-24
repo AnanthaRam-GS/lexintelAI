@@ -125,6 +125,40 @@ describe('Professional Analytics Dashboard', () => {
     expect(card).toHaveTextContent('Total Cases—');
   });
 
+  it('shows the NCRB display label and keeps the printed head available', async () => {
+    const printed = 'Rioting - n) ElectriState/UT/Power Supply Disputes';
+    vi.spyOn(analyticsApi, 'getNcrbStats').mockResolvedValue([
+      {
+        year: 2024,
+        state: 'Override State',
+        offense_category: printed,
+        display_offense_category: 'Rioting - n) Electricity/Power Supply Disputes',
+        ipc_section: '147-151',
+        ipc_section_labels: ['IPC 147', 'IPC 148', 'IPC 149', 'IPC 150', 'IPC 151'],
+        case_count: 3,
+      },
+      {
+        year: 2024,
+        state: 'Plain State',
+        offense_category: 'Murder - a) Murder',
+        display_offense_category: 'Murder - a) Murder',
+        ipc_section: '302',
+        case_count: 5,
+      },
+    ]);
+    render(<ProfessionalAnalyticsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tab-offense-trends')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /NCRB Statistics/i }));
+
+    const label = screen.getByText(/Electricity\/Power Supply Disputes/);
+    expect(label).toHaveAttribute('title', `As printed by NCRB: ${printed}`);
+    expect(screen.queryByText(/ElectriState/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Murder - a\) Murder/)).not.toHaveAttribute('title');
+  });
+
   it('labels the offence-only default and the NCRB aggregate exclusion', async () => {
     render(<ProfessionalAnalyticsPage />);
 
