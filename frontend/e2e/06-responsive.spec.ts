@@ -15,6 +15,8 @@ test.describe('responsive layout', () => {
       client: document.documentElement.clientWidth,
     }));
     expect(widths.scroll).toBeLessThanOrEqual(widths.client);
+    // TEMPORARY (step 17 acceptance): fail on purpose to show the trace and screenshot artifacts. Reverted next.
+    await expect(page.getByText('This text is not on the page')).toBeVisible({ timeout: 2_000 });
 
     const box = (await input.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
