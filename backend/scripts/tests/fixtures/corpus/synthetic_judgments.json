@@ -1,0 +1,83 @@
+{
+  "notice": "SYNTHETIC TEST CORPUS - NOT REAL JUDGMENTS. Every case name, court, party, date and fact below was invented for software testing (docs/TESTING.md). Statute section numbers are real so that the extractors have something to find.",
+  "documents": [
+    {
+      "key": "0001",
+      "case_title": "Synthetic: Arjun Fictional vs State of Samplestan (bail in a murder case)",
+      "court": {"court_name": "High Court of Samplestan (synthetic)", "court_level": "high_court"},
+      "decision_date": "2024-02-12",
+      "offence_family": "homicide",
+      "legal_regime": "mixed_or_transition",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The applicant Arjun Fictional seeks regular bail. He is accused of murder under Section 302 IPC, now Section 103 BNS, read with Section 34 IPC, and has been in custody for three years while the trial has not progressed.",
+        "Bail in a murder case is not refused merely because the offence is grave. Long custody, the slow pace of the trial, the absence of any attempt to influence witnesses and the parity with a co-accused already released are relevant to bail under Section 439 CrPC, now Section 483 BNSS.",
+        "Considering the long custody and the stage of the trial, the bail application is allowed. Bail is granted on a personal bond with two sureties, and the applicant shall appear on every date of hearing."
+      ]
+    },
+    {
+      "key": "0002",
+      "case_title": "Synthetic: Kavya Example vs State of Fictionaland (quashing a cheating FIR)",
+      "court": {"court_name": "High Court of Fictionaland (synthetic)", "court_level": "high_court"},
+      "decision_date": "2023-08-30",
+      "offence_family": "cheating_and_fraud",
+      "legal_regime": "ipc_crpc",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The petitioner asks the court to quash an FIR alleging cheating under Section 420 IPC and criminal breach of trust under Section 406 IPC. The dispute arose from a commercial agreement for the supply of goods.",
+        "A purely civil dispute about the breach of a contract does not become cheating unless dishonest intention existed at the very beginning of the transaction. The inherent power under Section 482 CrPC, now Section 528 BNSS, may be used to quash proceedings that are an abuse of the process of the court.",
+        "The complaint shows no dishonest inducement at the inception of the agreement. The petition is allowed and the FIR and all proceedings arising from it are quashed."
+      ]
+    },
+    {
+      "key": "0003",
+      "case_title": "Synthetic: State of Samplestan vs Rohan Placeholder (dowry death appeal)",
+      "court": {"court_name": "Supreme Court of Samplestan (synthetic)", "court_level": "supreme_court"},
+      "decision_date": "2022-11-04",
+      "offence_family": "dowry_and_domestic_cruelty",
+      "legal_regime": "ipc_crpc",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The accused husband was convicted by the trial court for dowry death under Section 304B IPC and for cruelty under Section 498A IPC. Under the new code these are Section 80 BNS and Section 85 BNS.",
+        "The presumption under Section 113B of the Evidence Act arises only when the prosecution proves that the woman was subjected to cruelty or harassment for dowry soon before her death. The statements of her parents and the letters she wrote establish a continuing demand for dowry.",
+        "The findings of the trial court are well founded. We uphold the conviction under Section 304B IPC and Section 498A IPC. The appeal is dismissed."
+      ]
+    },
+    {
+      "key": "0004",
+      "case_title": "Synthetic: Imran Sampleton vs State of Fictionaland (robbery and theft appeal)",
+      "court": {"court_name": "Sessions Court, Fictionalpur (synthetic)", "court_level": "district_or_sessions"},
+      "decision_date": "2024-06-18",
+      "offence_family": "theft_and_robbery",
+      "legal_regime": "bns_bnss",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The appellant challenges his conviction for robbery under Section 309(4) BNS and theft under Section 303 BNS, which replace Section 392 IPC and Section 379 IPC.",
+        "The only evidence connecting the appellant is a test identification parade held two months after the incident without explanation for the delay, and a recovery of a mobile phone from an open place accessible to all. Such evidence does not prove robbery beyond reasonable doubt.",
+        "The prosecution has failed to prove the identity of the robber. The appeal is allowed, the conviction is set aside and the appellant is acquitted of all charges."
+      ]
+    },
+    {
+      "key": "0005",
+      "case_title": "Synthetic: Neha Example vs State of Samplestan (abetment of suicide)",
+      "court": {"court_name": "High Court of Samplestan (synthetic)", "court_level": "high_court"},
+      "decision_date": "2025-01-20",
+      "offence_family": "other",
+      "legal_regime": "mixed_or_transition",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The petitioner was charged with abetment of suicide under Section 306 IPC, now Section 108 BNS, after a colleague died and left a note naming her among others.",
+        "Abetment of suicide needs instigation, a conspiracy or intentional aid as defined in Section 107 IPC. Words spoken in anger during a workplace quarrel, without any intention that the deceased should end his life, do not amount to instigation.",
+        "The material collected does not disclose the ingredients of abetment. The petition is allowed and the charge sheet and the proceedings before the trial court are quashed."
+      ]
+    },
+    {
+      "key": "0006",
+      "case_title": "Synthetic: Vikram Fictional vs State of Fictionaland (criminal conspiracy and bail)",
+      "court": {"court_name": "High Court of Fictionaland (synthetic)", "court_level": "high_court"},
+      "decision_date": "2025-03-07",
+      "offence_family": "conspiracy_common_intention",
+      "legal_regime": "bns_bnss",
+      "passages": [
+        "SYNTHETIC TEST JUDGMENT. The applicant is accused of criminal conspiracy under Section 61 BNS, which replaces Section 120B IPC, together with cheating under Section 318 BNS. He seeks regular bail after long custody of two years.",
+        "An agreement between the accused to commit an offence is the essence of criminal conspiracy. At the stage of bail the court does not weigh the evidence in detail, but the nature of the accusation, the period of custody and the likelihood of the trial ending soon are considered under Section 483 BNSS.",
+        "The applicant has been in custody for two years and the charge sheet names forty witnesses. Bail is granted subject to conditions, including that the applicant shall not leave the State without permission."
+      ]
+    }
+  ]
+}

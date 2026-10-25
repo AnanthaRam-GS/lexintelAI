@@ -7,5 +7,11 @@ export default defineConfig([
   ...nextCoreWebVitals,
   ...nextTypeScript,
   prettier,
-  globalIgnores(['.next/**', 'node_modules/**', 'coverage/**']),
+  globalIgnores([
+    '.next/**',
+    'node_modules/**',
+    'coverage/**',
+    'playwright-report/**',
+    'test-results/**',
+  ]),
 ]);

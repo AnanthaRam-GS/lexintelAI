@@ -4,6 +4,7 @@
   outside ``APP_ENV=test``. (In test, an unset secret becomes a random per-process one.)
 - Outside development and test, no user may have a password that verifies against
   a historical seed password.
+- ``LEGALAI_E2E_FAKE_PROVIDERS`` (test fakes for browser end-to-end runs) is refused outside ``APP_ENV=test``.
 
 Errors never include the secret, any password or any email; only counts and user IDs.
 """
@@ -79,7 +80,17 @@ def validate_no_seed_passwords(settings: Settings, session_factory: Callable[[],
         )
 
 
+def validate_e2e_fake_providers(settings: Settings) -> None:
+    """The end-to-end fake providers (step 17) exist only for APP_ENV=test; any other environment refuses them."""
+    if settings.legalai_e2e_fake_providers and app_env(settings) != "test":
+        raise InsecureConfigurationError(
+            "LEGALAI_E2E_FAKE_PROVIDERS is set outside APP_ENV=test. It replaces retrieval and the answer model with "
+            "test fakes and must never be enabled in development or production; unset it."
+        )
+
+
 def run_startup_security_checks(settings: Settings, session_factory: Callable[[], Any]) -> None:
+    validate_e2e_fake_providers(settings)
     validate_jwt_secret(settings)
     validate_no_seed_passwords(settings, session_factory)
     logger.info("startup_security_checks passed app_env=%s", app_env(settings))

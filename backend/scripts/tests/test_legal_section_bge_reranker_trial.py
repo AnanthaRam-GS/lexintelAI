@@ -30,6 +30,14 @@ from backend.scripts.evaluate_legal_section_bge_reranker_trial import (
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
+
+def _snapshot_available() -> bool:
+    try:
+        model_snapshot_path()
+    except RuntimeError:
+        return False
+    return True
+
 class LegalSectionBgeRerankerTrialTests(unittest.TestCase):
     def load_payload(self) -> dict:
         return json.loads(
@@ -44,7 +52,10 @@ class LegalSectionBgeRerankerTrialTests(unittest.TestCase):
         self.assertEqual(payload["model"]["tokenizer"], "XLMRobertaTokenizer")
         self.assertEqual(payload["model"]["max_sequence_length"], MAX_LENGTH)
         self.assertTrue(payload["model"]["local_only_loading"])
-        self.assertEqual(model_snapshot_path().name, payload["model"]["revision"])
+
+    @unittest.skipUnless(_snapshot_available(), "local-only: needs the BGE reranker snapshot in the local Hugging Face cache (CI downloads no models)")
+    def test_local_snapshot_matches_the_recorded_revision(self) -> None:
+        self.assertEqual(model_snapshot_path().name, self.load_payload()["model"]["revision"])
 
     def test_trial_design_preserves_query_representation_and_bounded_universe(self) -> None:
         payload = self.load_payload()

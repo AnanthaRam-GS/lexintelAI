@@ -1,0 +1,14 @@
+# DB-backed test modules (backend/scripts/tests), one per line. They need TEST_DATABASE_URL (docs/TESTING.md).
+# run_db_suites.sh runs exactly these; run_nondb_suites.sh runs every other test_*.py module.
+test_analytics
+test_auth
+test_document_processing_services
+test_ingest
+test_integration_readiness_smoke
+test_ocr_pipeline
+test_query_api
+test_query_history
+test_registration_lawyer_verification
+test_security_hardening
+test_structured_data_loaders
+test_vector_indexing

@@ -1,0 +1,165 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# No secrets are used. No job calls an LLM provider, downloads a model, or reads the real corpus (docs/TESTING.md).
+env:
+  LANG: C.UTF-8
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  backend-unit:
+    name: backend-unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-backend
+        with:
+          tesseract: "true"
+      - name: Non-DB test suites
+        env:
+          LEGALAI_SKIP_VECTOR_TESTS: "1"
+        run: |
+          set -o pipefail
+          backend/scripts/dev/run_nondb_suites.sh -v 2>&1 | tee nondb.log
+      - name: OCR tests ran (not skipped)
+        run: |
+          if grep -q "Tesseract OCR is not available" nondb.log; then
+            echo "OCR tests were skipped: Tesseract is missing" >&2
+            exit 1
+          fi
+          grep -E "^Ran [0-9]+ tests" nondb.log
+          grep -cE "skipped 'local-only" nondb.log || true
+
+  backend-db:
+    name: backend-db
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: legalai
+          POSTGRES_PASSWORD: legalai-ci-only # throwaway service container, not a secret
+          POSTGRES_DB: legalai_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U legalai -d legalai_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql://legalai:legalai-ci-only@localhost:5432/legalai_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-backend
+        with:
+          tesseract: "true"
+      - name: Validate and migrate the test database
+        run: python -m backend.scripts.tests.db_test_bootstrap
+      - name: DB-backed test suites (as docs/TESTING.md)
+        run: backend/scripts/dev/run_db_suites.sh "$RUNNER_TEMP/db_suites"
+      - name: Upload DB suite logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-suite-logs
+          path: ${{ runner.temp }}/db_suites
+          retention-days: 14
+
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npx tsc --noEmit
+      - run: npm run test:run
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: legalai
+          POSTGRES_PASSWORD: legalai-ci-only # throwaway service container, not a secret
+          POSTGRES_DB: legalai_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U legalai -d legalai_e2e"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://legalai:legalai-ci-only@localhost:5432/legalai_e2e
+      E2E_MODE: fake
+      E2E_PYTHON: python
+      E2E_SKIP_BUILD: "1"
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-backend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+      - name: Install Chromium for Playwright
+        working-directory: frontend
+        run: |
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Build the frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      - name: Browser journeys (fake providers, synthetic fixture corpus)
+        run: LEGALAI_E2E_STATE_DIR="$RUNNER_TEMP/e2e-state" backend/scripts/e2e/run_e2e.sh
+      - name: Upload Playwright report, traces and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 14

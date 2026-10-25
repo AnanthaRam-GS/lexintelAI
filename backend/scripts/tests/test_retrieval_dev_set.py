@@ -9,6 +9,7 @@ from pathlib import Path
 
 from backend.scripts.build_retrieval_dev_set import DEV_POOL_VERSION, DEV_VERSION
 from backend.scripts.build_vector_index import load_chunks
+from backend.scripts.tests.local_corpus import requires_local_corpus
 
 ROOT = Path(__file__).resolve().parents[3]
 MANIFEST_DIR = ROOT / "data/structured/manifests"
@@ -30,6 +31,7 @@ class RetrievalDevSetTest(unittest.TestCase):
         self.assertTrue(all(query["development_version"] == DEV_VERSION for query in self.queries))
         self.assertTrue(all(query["prior_benchmark_similarity"] != "near_duplicate" for query in self.queries))
 
+    @requires_local_corpus
     def test_support_and_no_exact_benchmark_duplicates(self) -> None:
         chunk_ids = {chunk["chunk_id"] for chunk in load_chunks()}
         benchmark_texts = {query["query_text"].strip().lower() for query in self.benchmark_queries}
@@ -38,6 +40,7 @@ class RetrievalDevSetTest(unittest.TestCase):
         self.assertTrue(all(query["supporting_chunk_ids"] for query in self.queries))
         self.assertTrue(all(chunk_id in chunk_ids for query in self.queries for chunk_id in query["supporting_chunk_ids"]))
 
+    @requires_local_corpus
     def test_candidates_are_unique_and_in_trusted_corpus(self) -> None:
         chunk_ids = {chunk["chunk_id"] for chunk in load_chunks()}
         keys = [(row["query_id"], row["chunk_id"]) for row in self.judgments]

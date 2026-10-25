@@ -5,10 +5,12 @@ from the repository root. Frontend tests live in `frontend` and run with Vitest.
 
 The Python suites are split in two:
 
-- **Non-DB suites** (55 modules) use mocks, fixtures, and temporary
-  directories only.
-- **DB-backed suites** (10 modules) write to PostgreSQL. They run only against
-  an isolated test database through `backend/scripts/tests/db_test_bootstrap.py`.
+- **Non-DB suites** use mocks, fixtures, and temporary directories only.
+- **DB-backed suites** (the 12 modules in `backend/scripts/dev/db_test_modules.txt`) write to PostgreSQL. They run
+  only against an isolated test database through `backend/scripts/tests/db_test_bootstrap.py`.
+
+Every test runs from a clean checkout (CI, below). Nothing reads `.env`, the real corpus, the stores or the model
+cache, except the local-only tests listed under "Local-only tests".
 
 Never point the DB-backed suites at the development database. Before this
 bootstrap existed, test runs left users, ingestion jobs, and lawyer
@@ -124,6 +126,8 @@ Skip the vector-index module explicitly:
 LEGALAI_SKIP_VECTOR_TESTS=1 .venv/bin/python -m unittest backend.scripts.tests.test_vector_indexing
 ```
 
+The module list is `backend/scripts/dev/db_test_modules.txt`; `run_db_suites.sh` reads it.
+
 Run the DB-backed suites in a separate process from the non-DB suites. If any
 module imports `backend.app.db.session` before the bootstrap in the same
 process, the bootstrap refuses to run because the engine is already bound to
@@ -132,19 +136,29 @@ DB-backed suites.
 
 ## Run the non-DB suites
 
-From the repository root, run every module except the 10 above:
+Every `test_*.py` module not listed in `db_test_modules.txt`, in one process (extra arguments go to unittest):
 
 ```bash
-bash -c '
-DB=" test_analytics test_auth test_document_processing_services test_ingest test_integration_readiness_smoke test_query_api test_query_history test_registration_lawyer_verification test_structured_data_loaders test_vector_indexing "
-mods=()
-for f in backend/scripts/tests/test_*.py; do
-  b=$(basename "$f" .py)
-  [[ "$DB" == *" $b "* ]] || mods+=("backend.scripts.tests.$b")
-done
-.venv/bin/python -m unittest "${mods[@]}"
-'
+backend/scripts/dev/run_nondb_suites.sh        # or: backend/scripts/dev/run_nondb_suites.sh -v
 ```
+
+## Local-only tests
+
+Five tests need files that a clean checkout does not have. Four check committed manifests against the real
+trusted-judgment chunks in `data/processed/judgment_chunks` (gitignored Indian Kanoon text) and carry
+`@requires_local_corpus` (`backend/scripts/tests/local_corpus.py`); one needs the local model cache. Each is skipped,
+with its reason, when the files are absent (CI):
+
+| Test | Checks |
+|---|---|
+| `test_retrieval_evaluation.test_query_manifest_is_balanced_and_corpus_supported` | the 30 evaluation queries have corpus support |
+| `test_retrieval_eval_human_labels.test_chunk_query_and_judgment_keys_are_valid` | every labelled chunk ID exists in the corpus |
+| `test_retrieval_dev_set.test_support_and_no_exact_benchmark_duplicates` | dev-set support chunks exist in the corpus |
+| `test_retrieval_dev_set.test_candidates_are_unique_and_in_trusted_corpus` | dev-set candidates exist in the corpus |
+| `test_legal_section_bge_reranker_trial.test_local_snapshot_matches_the_recorded_revision` | the local BGE reranker snapshot is the recorded revision (needs the Hugging Face cache; skipped without it) |
+
+Tests that need corpus-shaped data use the synthetic fixture corpus instead
+(`backend/scripts/tests/fixture_corpus.py`, `fixtures/corpus/synthetic_judgments.json`: six invented judgments).
 
 ## Frontend checks
 
@@ -157,7 +171,7 @@ npx tsc --noEmit --incremental false
 ```
 
 Avoid `next build` for routine checks: it rewrites the tracked
-`frontend/next-env.d.ts`.
+`frontend/next-env.d.ts`. Vitest does not collect `frontend/e2e/` (Playwright journeys).
 
 ## Verifying that a run left development state untouched
 
@@ -208,3 +222,100 @@ takes the database URL from `DATABASE_URL` or `.env` and never prints it.
   session), Chroma (SQLite `mode=ro&immutable=1`) and BM25, and writes
   `docs/reconciliation/inventory.json` and `INVENTORY_REPORT.md`. Use
   `--chroma-dir`, `--bm25-file` and `--output-dir` to point it at copies.
+
+## Continuous integration (`.github/workflows/ci.yml`)
+
+Runs on every pull request and on pushes to `main`. It needs no secrets: no job calls an LLM provider, downloads a
+model (`HF_HUB_OFFLINE=1`), or reads the real corpus or stores.
+
+| Job | What it runs |
+|---|---|
+| `backend-unit` | Python 3.14 (`actions/setup-python`), Tesseract from apt, `run_nondb_suites.sh -v` with `LEGALAI_SKIP_VECTOR_TESTS=1`; fails if the OCR tests were skipped |
+| `backend-db` | a `postgres:18` service with the `legalai_test` database, `TEST_DATABASE_URL` set, the bootstrap check, then `run_db_suites.sh` exactly as above; logs uploaded on failure |
+| `frontend` | Node 22, `npm ci`, ESLint, Prettier check, `tsc --noEmit`, Vitest, `next build` |
+| `e2e` | `postgres:18` with `legalai_e2e`, Chromium, `next build`, then `run_e2e.sh` in fake mode; the Playwright report, traces, screenshots and videos are uploaded on failure (artifact `playwright-artifacts`) |
+
+The backend install (`.github/actions/setup-backend`) installs torch from the CPU wheel index, then
+`pip install -r requirements.txt -c requirements.lock`. pip and npm downloads and the Playwright browser are cached.
+The Postgres password in the workflow belongs to a throwaway service container.
+
+## End-to-end browser tests (`frontend/e2e`)
+
+Playwright journeys against the real backend and frontend: public questions (text, out of scope, FIR upload),
+registration with OTP and a wrong password, the lawyer workspace (precedents, FIR brief, history, the five
+analytics tabs), admin (store health, an ingest that raises the corpus count, a duplicate upload), access control
+and a 375 px layout. One worker; traces, screenshots and video are kept on failure in `frontend/test-results`, the
+HTML report in `frontend/playwright-report`.
+
+### Fake mode (CI and local)
+
+`LEGALAI_E2E_FAKE_PROVIDERS=1` (with `APP_ENV=test` only) wires `backend/app/testing/e2e.py`:
+
+- a deterministic answer model that cites the retrieved evidence, or gives the no-coverage answer when no evidence
+  shares enough of the question's words; a bag-of-words hashing embedder (1024 dimensions) and a word-overlap
+  reranker; no model files and no network;
+- Chroma, BM25 and uploads in the run's own directory (`LEGALAI_E2E_STATE_DIR`); the repository's stores are refused.
+
+The startup check refuses the flag outside `APP_ENV=test`, and `backend/main.py` never imports `backend/app/testing`
+without it (`test_e2e_fake_mode.py` proves both, including starting the app with `APP_ENV=production`).
+
+`backend/scripts/e2e/setup_e2e.py` prepares the run: it migrates a `*_e2e` database, loads the synthetic fixture
+corpus into PostgreSQL, Chroma and BM25, loads the committed IPC-BNS and NCRB CSVs, runs the analytics producer,
+renders the upload fixtures (the synthetic FIR, and a synthetic judgment with a per-run line), and creates an admin
+and a lawyer account with passwords generated for that run (written only to `<state>/accounts.json`, mode 600).
+
+```bash
+createdb -h /tmp -p 5432 -O user legalai_e2e      # once
+DATABASE_URL='postgresql://<user>:<password>@localhost:5432/legalai_e2e' backend/scripts/e2e/run_e2e.sh
+```
+
+`run_e2e.sh` runs the setup, then `npx playwright test` (extra arguments are passed on, e.g. `--headed` or a spec
+file). Playwright starts uvicorn and the frontend. Options: `E2E_SKIP_BUILD=1` reuses an existing `.next` build;
+`E2E_NEXT_DEV=1` serves with `next dev` for machines that cannot reach Google Fonts during `next build`.
+`next build` and `next dev` may rewrite `frontend/next-env.d.ts` (and `next dev` the block in `frontend/AGENTS.md`):
+restore them before committing.
+
+### Local real mode
+
+The same journeys against real retrieval on this machine, without touching the development database or stores:
+
+```bash
+REHEARSAL_DATABASE_URL='postgresql://<user>:<password>@localhost:5432/legalai_rehearsal' \
+  backend/scripts/e2e/run_e2e_local_real.sh [--backup <dir>] [--real-llm] [--keep-state]
+```
+
+It makes (or uses) a `backup_dev_state.sh` backup, verifies it and restores it into `legalai_rehearsal` with
+`--clean`, copies the backup's Chroma and BM25 stores into a temporary state directory, and runs `run_e2e.sh` with
+`E2E_MODE=real`: BGE-M3 and the BGE reranker from the local model cache (MPS when available), the fake LLM unless
+`--real-llm` is given (that one uses provider quota). Test accounts, history and the ingested fixture go into the
+rehearsal database and the store copies only.
+
+Real mode runs with `LEGALAI_MODEL_WARMUP=false`. With warm-up on, the warm-up thread's BGE-M3 inference on MPS
+overlapped the first request's and the backend died with a segmentation fault in the model forward pass (step 17;
+faulthandler showed the `legalai-model-warmup` thread). Inference on one MPS model is not serialised; that is a
+product issue to fix separately, not a test setting.
+
+## Updating `requirements.lock`
+
+`requirements.txt` is the top-level list; `requirements.lock` pins everything it resolves to and is used as pip
+constraints (`pip install -r requirements.txt -c requirements.lock`). To change a dependency:
+
+1. Edit `requirements.txt`.
+2. In a fresh venv: `python -m pip install -r requirements.txt` (no `-c`, so the change resolves).
+3. Run every suite (non-DB, DB, frontend, e2e).
+4. Regenerate the lock from that venv, keeping the header comment:
+   `{ sed -n '/^#/p' requirements.lock; python -m pip freeze --exclude-editable; } > requirements.lock.new && mv requirements.lock.new requirements.lock`
+5. Commit both files together.
+
+## Making the CI jobs required on `main`
+
+In GitHub: **Settings → Rules → Rulesets → New ruleset → New branch ruleset** (or the classic **Settings → Branches →
+Add branch protection rule**):
+
+1. Name it (e.g. `main`), set **Enforcement status** to *Active*, and under **Target branches** add *Include default
+   branch* (or the pattern `main`).
+2. Enable **Require a pull request before merging**.
+3. Enable **Require status checks to pass**, tick **Require branches to be up to date before merging**, and add the
+   four checks by name: `backend-unit`, `backend-db`, `frontend`, `e2e` (they appear in the search box once the
+   workflow has run on a pull request).
+4. Optionally enable **Block force pushes**, then **Create**.

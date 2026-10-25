@@ -22,6 +22,7 @@ from backend.app.services.retrieval.evaluation import (
 )
 from backend.app.services.vector_store import RetrievalResult
 from backend.scripts.build_vector_index import load_chunks
+from backend.scripts.tests.local_corpus import requires_local_corpus
 
 
 class FakeRetriever:
@@ -57,6 +58,7 @@ class FakeRetriever:
 
 
 class RetrievalEvaluationTest(unittest.TestCase):
+    @requires_local_corpus
     def test_query_manifest_is_balanced_and_corpus_supported(self) -> None:
         chunks = load_chunks()
         queries = build_query_manifest(chunks)

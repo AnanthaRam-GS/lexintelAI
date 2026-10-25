@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the 12 DB-backed test modules, one process each, against the isolated
+# Run the DB-backed test modules (db_test_modules.txt), one process each, against the isolated
 # test database, and write per-module logs plus a summary.
 #
 # Usage:
@@ -21,22 +21,12 @@ OUT_DIR="$1"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 PYTHON="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
+[ -x "$PYTHON" ] || PYTHON="$(command -v python)"  # CI has no .venv
 export PYTHONDONTWRITEBYTECODE=1
 
-MODULES=(
-  test_analytics
-  test_auth
-  test_document_processing_services
-  test_ingest
-  test_integration_readiness_smoke
-  test_ocr_pipeline
-  test_query_api
-  test_query_history
-  test_registration_lawyer_verification
-  test_security_hardening
-  test_structured_data_loaders
-  test_vector_indexing
-)
+# The module list is shared with run_nondb_suites.sh.
+MODULES=()
+while IFS= read -r line; do MODULES+=("$line"); done < <(grep -vE '^[[:space:]]*(#|$)' "$REPO_ROOT/backend/scripts/dev/db_test_modules.txt")
 
 cd "$REPO_ROOT"
 for module in "${MODULES[@]}"; do

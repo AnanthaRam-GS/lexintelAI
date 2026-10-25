@@ -11,7 +11,34 @@ from backend.app.services.embeddings.base import EmbeddingConfig
 from backend.app.services.retrieval.bm25 import Bm25Config, Bm25LexicalIndex, LEXICAL_INDEX_VERSION, tokenize_legal_text
 from backend.app.services.retrieval.service import HybridConfig, RetrievalService, reciprocal_rank_fusion
 from backend.app.services.vector_store import RetrievalResult
-from backend.scripts import build_vector_index as builder
+
+
+# Every field of a chunk written by the legal chunker, with synthetic values.
+CHUNK_TEMPLATE: dict[str, object] = {
+    "chunk_id": "fixture:0001:chunk:0000",
+    "document_id": "fixture:0001",
+    "provider": "fixture",
+    "source_document_id": "0001",
+    "source_url": "https://example.invalid/fixture/0001",
+    "case_title": "Fixture State v. Example",
+    "court": {"court_name": "Fixture High Court", "court_level": "high_court"},
+    "decision_date": "2024-01-15",
+    "decision_year": 2024,
+    "effective_offence_family": "homicide",
+    "effective_legal_regime": "ipc_crpc",
+    "chunk_index": 0,
+    "paragraph_start": 0,
+    "paragraph_end": 3,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_path": [],
+    "text_source_type": "pdf_native",
+    "raw_sha256": "0" * 64,
+    "chunk_text": "fixture text",
+    "estimated_token_count": 3,
+    "normalizer_version": "legalai-judgment-normalizer-v1",
+    "chunker_version": "legalai-legal-chunker-v1",
+}
 
 
 class FakeDenseProvider:
@@ -38,8 +65,7 @@ class FakeVectorStore:
 
 class RetrievalFoundationTest(unittest.TestCase):
     def chunk(self, chunk_id: str, text: str, family: str = "homicide") -> dict[str, object]:
-        row = builder.load_chunks(limit=1)[0]
-        row = dict(row)
+        row = dict(CHUNK_TEMPLATE)  # a synthetic row in the chunker's schema; the real corpus is not needed
         row.update(
             {
                 "chunk_id": chunk_id,
