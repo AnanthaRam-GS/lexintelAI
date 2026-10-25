@@ -28,6 +28,7 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from backend.app.services.inference_lock import InferenceBusy
 from backend.app.services.token_budget import estimate_tokens
 
 PRIVATE_EVIDENCE_ID_PREFIX = "P"
@@ -111,6 +112,8 @@ def _dense_scores(query: str, chunks: list[PrivateChunk], dense_provider: Any) -
     try:
         query_vector = dense_provider.embed_query(query)
         chunk_vectors = dense_provider.embed_documents([chunk.text for chunk in chunks])
+    except InferenceBusy:
+        raise  # the model lock was busy: answer MODEL_BUSY, never silently switch to lexical scoring
     except Exception:
         # Defensive: an embedding failure must fall back to lexical scoring,
         # not fail the whole PDF request.

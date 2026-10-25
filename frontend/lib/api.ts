@@ -43,7 +43,7 @@ export class ApiClientError extends Error {
 }
 
 /** Backend codes for "slow down" answers; their messages are written for end users. */
-const LIMIT_CODES = new Set(['RATE_LIMITED', 'LOGIN_THROTTLED', 'MODEL_BUSY']);
+const LIMIT_CODES = new Set(['RATE_LIMITED', 'LOGIN_THROTTLED', 'MODEL_BUSY', 'MODELS_LOADING']);
 
 /** The plain-language message for a rate-limit, login-throttle or busy answer, or null for other errors. */
 export function limitMessage(error: unknown): string | null {

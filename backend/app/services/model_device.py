@@ -5,12 +5,17 @@ otherwise CPU), ``cpu``, ``mps`` or ``cuda``. A requested accelerator that is
 not available resolves to CPU with a warning. If loading or inference fails on
 an accelerator, the model is reloaded on CPU with a warning and the call is
 retried, so a device problem never fails a query.
+
+Every load and every inference holds the process-wide model lock
+(``inference_lock.inference_slot``): two inferences never run at once (step 18).
 """
 
 from __future__ import annotations
 
 import logging
 from typing import Any, Callable, TypeVar
+
+from backend.app.services.inference_lock import inference_slot
 
 logger = logging.getLogger("legalai.models")
 
@@ -64,25 +69,28 @@ class DeviceFallbackModel:
         self.device = device
         self.use_fp16 = use_fp16 and device != "cpu"
         self.fallback_reason: str | None = None
-        try:
-            self.model = load(device, self.use_fp16)
-        except Exception as exc:
-            if device == "cpu":
-                raise
-            self._fall_back(exc, stage="load")
+        with inference_slot(name):  # loading moves weights to the device
+            try:
+                self.model = load(device, self.use_fp16)
+            except Exception as exc:
+                if device == "cpu":
+                    raise
+                self._fall_back(exc, stage="load")
 
     @property
     def precision(self) -> str:
         return precision_for(self.device, self.use_fp16)
 
     def run(self, call: Callable[[Any], T]) -> T:
-        try:
-            return call(self.model)
-        except Exception as exc:
-            if self.device == "cpu":
-                raise
-            self._fall_back(exc, stage="inference")
-            return call(self.model)
+        # The lock is taken before the try: InferenceBusy (a timeout) must not trigger the CPU fallback.
+        with inference_slot(self.name):
+            try:
+                return call(self.model)
+            except Exception as exc:
+                if self.device == "cpu":
+                    raise
+                self._fall_back(exc, stage="inference")
+                return call(self.model)
 
     def _fall_back(self, exc: Exception, *, stage: str) -> None:
         logger.warning(

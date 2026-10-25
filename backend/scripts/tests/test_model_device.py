@@ -185,7 +185,7 @@ class ModelConstructionTests(unittest.TestCase):
 
         with self.assertLogs("legalai.models", "ERROR"):
             status = query_models.warm_up_query_models(unavailable)
-        self.assertEqual(status, {"status": "failed", "error": "RuntimeError"})
+        self.assertEqual(status, {"status": "failed", "error": "RuntimeError", "warm_up": "failed", "inference": {"active": 0, "waiting": 0}})
 
 
 class HealthTests(unittest.TestCase):
@@ -202,11 +202,13 @@ class HealthTests(unittest.TestCase):
             return asyncio.run(call())
 
     def test_health_reports_model_loading_state(self) -> None:
-        self.assertEqual(self.health()["models"], {"status": "not_loaded"})
+        # warm_up and inference (step 18): the warm-up state and the model lock's holders and waiters.
+        self.assertEqual(self.health()["models"], {"status": "not_loaded", "warm_up": "not_started", "inference": {"active": 0, "waiting": 0}})
         query_models._set_status(status="loading")
-        self.assertEqual(self.health()["models"], {"status": "loading"})
+        self.assertEqual(self.health()["models"], {"status": "loading", "warm_up": "loading", "inference": {"active": 0, "waiting": 0}})
         query_models._set_status(status="loaded", load_ms=1.0, warmup_ms=2.0)
         self.assertEqual(self.health()["models"]["status"], "loaded")
+        self.assertEqual(self.health()["models"]["warm_up"], "ready")
 
 
 QUERY_SECONDS = 1.0

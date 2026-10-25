@@ -7,6 +7,7 @@ import { IngestionProgress, type IngestionJob } from '../../../components/shared
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 import { adminIngestionApi } from '../../../lib/api';
 import {
+  alreadyIngestedDocumentId,
   MAX_ACTIVE_INGESTION_JOBS,
   progressForStage,
   readPersistedIngestionJobs,
@@ -24,6 +25,7 @@ import {
 } from './ingestion-model';
 import {
   classifyRequestFailure,
+  duplicateDocumentCopy,
   errorCopy,
   toAdminFileFailure,
   type AdminFileFailure,
@@ -113,6 +115,10 @@ export function IngestionWorkspace() {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitFailure, setSubmitFailure] = useState<AdminRequestFailure | null>(null);
+  // DOCUMENT_ALREADY_INGESTED: the existing document's ID (null when the server sent none).
+  const [duplicateDocument, setDuplicateDocument] = useState<{ documentId: number | null } | null>(
+    null,
+  );
   const [jobs, setJobs] = useState<IngestionJob[]>([]);
   const [fileFailures, setFileFailures] = useState<Record<string, AdminFileFailure>>({});
   // The server's sanitized message and error code for a failed job.
@@ -323,6 +329,7 @@ export function IngestionWorkspace() {
     if (!canSubmitBatch(drafts, isConfirmed, isSubmitting) || exceedsActiveJobCapacity) return;
     setIsSubmitting(true);
     setSubmitFailure(null);
+    setDuplicateDocument(null);
 
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const submitController = new AbortController();
@@ -368,7 +375,12 @@ export function IngestionWorkspace() {
         const timedOut =
           caught instanceof AdminSubmitTimeoutError ||
           submitController.signal.reason instanceof AdminSubmitTimeoutError;
-        setSubmitFailure(timedOut ? 'timeout' : classifyRequestFailure(caught));
+        const duplicateId = timedOut ? undefined : alreadyIngestedDocumentId(caught);
+        if (duplicateId !== undefined) {
+          setDuplicateDocument({ documentId: duplicateId });
+        } else {
+          setSubmitFailure(timedOut ? 'timeout' : classifyRequestFailure(caught));
+        }
       }
     } finally {
       if (timeout) clearTimeout(timeout);
@@ -518,6 +530,14 @@ export function IngestionWorkspace() {
               <ErrorMessage
                 message={errorCopy.admin.submit[submitFailure].message}
                 title={errorCopy.admin.submit[submitFailure].title}
+                variant="banner"
+              />
+            ) : null}
+
+            {duplicateDocument ? (
+              <ErrorMessage
+                message={duplicateDocumentCopy(duplicateDocument.documentId).message}
+                title={duplicateDocumentCopy(duplicateDocument.documentId).title}
                 variant="banner"
               />
             ) : null}

@@ -4,7 +4,11 @@ The models are cached by configuration, separately from the retrieval service,
 so rebuilding the service after an ingestion update reuses the loaded models.
 At startup ``warm_up_query_models`` loads them and runs one tiny inference, so
 the first query's stage timings contain no model load. ``model_status`` reports
-the state for ``/health``.
+the state for ``/health``: ``warm_up`` is ``loading``, ``ready``, ``failed`` or
+``not_started`` (warm-up disabled), and ``inference`` counts the calls holding and
+waiting for the process-wide model lock (``inference_lock.py``). The warm-up's own
+model calls wait for that lock without a time limit; a query that cannot get it in
+time during the warm-up is answered ``MODELS_LOADING``.
 """
 
 from __future__ import annotations
@@ -16,6 +20,7 @@ from time import perf_counter
 from typing import Any, Callable
 
 from backend.app.services.embeddings.base import EmbeddingConfig
+from backend.app.services.inference_lock import inference_status, wait_for_inference
 from backend.app.services.reranking.base import RerankerConfig
 
 logger = logging.getLogger("legalai.models")
@@ -84,14 +89,24 @@ def _set_status(**values: Any) -> None:
         _status = values
 
 
+WARM_UP_STATES = {"loading": "loading", "loaded": "ready", "failed": "failed"}
+
+
+def warm_up_in_progress() -> bool:
+    with _status_lock:
+        return _status.get("status") == "loading"
+
+
 def model_status() -> dict[str, Any]:
     with _status_lock:
         status = dict(_status)
+    status["warm_up"] = WARM_UP_STATES.get(status["status"], "not_started")
     devices = active_model_device()
     if devices is not None:
         status["devices"] = devices
         if status["status"] == "not_loaded":  # loaded on demand by a query (warm-up disabled)
             status["status"] = "loaded"
+    status["inference"] = inference_status()
     return status
 
 
@@ -99,15 +114,16 @@ def warm_up_query_models(get_service: Callable[[], Any]) -> dict[str, Any]:
     """Load the retrieval service (and its models), then run one tiny embed and rerank."""
     _set_status(status="loading")
     try:
-        started = perf_counter()
-        service = get_service()
-        load_ms = round((perf_counter() - started) * 1000, 1)
-        started = perf_counter()
-        service.dense_provider.embed_query(WARMUP_QUERY)
-        score_texts = getattr(service.reranker, "score_texts", None)
-        if score_texts is not None:
-            score_texts(WARMUP_QUERY, [WARMUP_PASSAGE])
-        warmup_ms = round((perf_counter() - started) * 1000, 1)
+        with wait_for_inference():  # background work: wait for the model lock without a limit
+            started = perf_counter()
+            service = get_service()
+            load_ms = round((perf_counter() - started) * 1000, 1)
+            started = perf_counter()
+            service.dense_provider.embed_query(WARMUP_QUERY)
+            score_texts = getattr(service.reranker, "score_texts", None)
+            if score_texts is not None:
+                score_texts(WARMUP_QUERY, [WARMUP_PASSAGE])
+            warmup_ms = round((perf_counter() - started) * 1000, 1)
     except Exception as exc:  # never block startup; queries load the models on demand
         logger.error("query_models_warmup_failed error=%s", type(exc).__name__)
         _set_status(status="failed", error=type(exc).__name__)

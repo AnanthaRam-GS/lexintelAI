@@ -290,10 +290,24 @@ It makes (or uses) a `backup_dev_state.sh` backup, verifies it and restores it i
 `--real-llm` is given (that one uses provider quota). Test accounts, history and the ingested fixture go into the
 rehearsal database and the store copies only.
 
-Real mode runs with `LEGALAI_MODEL_WARMUP=false`. With warm-up on, the warm-up thread's BGE-M3 inference on MPS
-overlapped the first request's and the backend died with a segmentation fault in the model forward pass (step 17;
-faulthandler showed the `legalai-model-warmup` thread). Inference on one MPS model is not serialised; that is a
-product issue to fix separately, not a test setting.
+Real mode runs with the startup warm-up on, as in production. (Step 17 had to turn it off: concurrent inference on
+MPS crashed the backend. Step 18 serialises every model call; see `docs/performance/PERFORMANCE_BASELINE.md`.)
+
+### Model concurrency stress (local only)
+
+`backend/scripts/dev/stress_inference.py` starts the backend with real models (MPS when available), the warm-up on and
+the fake LLM, then sends 10 simultaneous professional queries during the warm-up, 3 more rounds of 10, and 5
+sequential ones, per repetition; it reports crashes (exit signal, faulthandler stacks) and latency percentiles. Prepare
+`legalai_rehearsal` and a state directory with store copies and accounts as for local real mode, then:
+
+```bash
+APP_ENV=test DATABASE_URL=<legalai_rehearsal url> .venv/bin/python backend/scripts/dev/stress_inference.py \
+  --state-dir <state> --repetitions 5 --out <dir>          # --device cpu, --no-warmup, --inference-timeout N
+```
+
+`test_inference_stress_local.py` runs it as a test (0 crashes, every response 200) when
+`LEGALAI_RUN_LOCAL_STRESS=1` and `LEGALAI_STRESS_STATE_DIR` are set; otherwise, and in CI, it is skipped with that
+reason. The lock itself is covered without models by `test_inference_lock.py`.
 
 ## Updating `requirements.lock`
 

@@ -125,3 +125,21 @@ const normalizePersistedRecords = (value: unknown): PersistedIngestionJob[] => {
   }
   return records;
 };
+
+/** The upload error code for a file whose SHA-256 is already in the corpus (409; docs/API_CONTRACTS.md). */
+export const DOCUMENT_ALREADY_INGESTED = 'DOCUMENT_ALREADY_INGESTED';
+
+/**
+ * For a DOCUMENT_ALREADY_INGESTED upload error: the existing document's ID from `detail.document_id`
+ * (null if the server did not send one). For any other error: undefined.
+ */
+export function alreadyIngestedDocumentId(error: unknown): number | null | undefined {
+  if (!error || typeof error !== 'object') return undefined;
+  const { code, detail } = error as { code?: unknown; detail?: unknown };
+  if (code !== DOCUMENT_ALREADY_INGESTED) return undefined;
+  const documentId =
+    detail && typeof detail === 'object'
+      ? (detail as { document_id?: unknown }).document_id
+      : undefined;
+  return typeof documentId === 'number' && Number.isInteger(documentId) ? documentId : null;
+}

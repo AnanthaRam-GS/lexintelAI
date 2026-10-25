@@ -208,7 +208,9 @@ document text. Public responses also gain `debug` (`null` by default).
 - `status`: `not_loaded`, `loading` (startup warm-up running), `loaded` or
   `failed` (warm-up failed; queries load the models on demand);
 - when loaded: `devices`, plus `load_ms` and `warmup_ms` from the warm-up;
-- `error`: the exception type, when failed.
+- `error`: the exception type, when failed;
+- `warm_up` (step 18): `loading`, `ready`, `failed`, or `not_started` (warm-up disabled);
+- `inference` (step 18): `{active, waiting}`, the model calls holding and waiting for the process-wide model lock.
 
 The top-level `status` still reflects the database only.
 
@@ -416,6 +418,10 @@ All limits are in-memory, per process (see `docs/SECURITY.md`).
   at once per process. A request waits up to `LLM_GENERATION_WAIT_SECONDS`
   (default 10) for a slot, then gets **503** with `Retry-After: 15` and
   `{"error": "Many people are asking questions right now. Please try again in a moment.", "code": "MODEL_BUSY", "detail": {"retry_after": 15}}`.
+- Local model calls (query embedder, reranker, ingestion embedder, warm-up) run one at a time per process (step 18).
+  A query waits up to `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (default 30) for the models, then gets **503** with
+  `Retry-After`: `MODELS_LOADING` (`Retry-After: 10`) while the startup warm-up is running, otherwise `MODEL_BUSY`
+  (`Retry-After: 15`), same body shape as above.
 - The client IP is the TCP peer. `X-Forwarded-For` is used only when the peer
   is listed in `TRUSTED_PROXIES` (IPs or CIDRs); then the right-most entry that
   is not itself a trusted proxy is the client.
@@ -442,7 +448,7 @@ BE-003; `backend/app/core/errors.py`):
 - Every response, success or error, carries an **`X-Request-ID`** header. An incoming `X-Request-ID` of 1–64
   characters from `A-Z a-z 0-9 . _ -` is reused; anything else is replaced by a generated one. `legalai.*` log
   lines written while the request is handled end in `[request_id=...]`.
-- Headers that belong to an error are kept: `Retry-After` on rate limits and `MODEL_BUSY`, `Allow` on 405.
+- Headers that belong to an error are kept: `Retry-After` on rate limits, `MODEL_BUSY` and `MODELS_LOADING`, `Allow` on 405.
 - A **500** is always `INTERNAL_ERROR` with a generic `error` and `detail: {"request_id": ...}`. The exception is
   logged with the same request ID, never returned. The 500 is produced inside CORS, so a browser can read it.
 - Request validation is `VALIDATION_ERROR` with the failing fields. The submitted values are not echoed.
@@ -522,7 +528,8 @@ BE-003; `backend/app/core/errors.py`):
 | Code | Status | Meaning | `detail` |
 |---|---|---|---|
 | `RATE_LIMITED` | 429 | Per-IP (public) or per-user (professional) query limit; `Retry-After` set. | `retry_after` (seconds) |
-| `MODEL_BUSY` | 503 | All answer-generation slots busy; `Retry-After: 15`. | `retry_after` |
+| `MODEL_BUSY` | 503 | All answer-generation slots busy, or the local models stayed busy past `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS`; `Retry-After: 15`. | `retry_after` |
+| `MODELS_LOADING` | 503 | The local models are still warming up at startup and were not free in time; `Retry-After: 10` (step 18). | `retry_after` |
 | `INVALID_QUERY_REQUEST` | 422 | The question could not be processed. | |
 | `QUERY_PIPELINE_UNAVAILABLE` | 503 | The query pipeline failed unexpectedly. | |
 | `RETRIEVAL_UNAVAILABLE`, `RETRIEVAL_INDEX_UNAVAILABLE` | 503 | The evidence index is unavailable. | |

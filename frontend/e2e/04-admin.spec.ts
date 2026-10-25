@@ -55,18 +55,25 @@ test.describe('admin', () => {
     await expectHealthyStores(page);
   });
 
-  test('uploading the same PDF again is refused as a duplicate', async ({ page }) => {
+  test('uploading the same PDF again shows the already-in-the-corpus message', async ({ page }) => {
     const before = await documentCount(page);
     const upload = page.waitForResponse((r) => r.url().endsWith('/ingest/upload'));
     await submitIngest(page);
 
     const response = await upload;
     expect(response.status()).toBe(409);
-    expect(((await response.json()) as { code: string }).code).toBe('DOCUMENT_ALREADY_INGESTED');
-    // The workspace has no duplicate-specific copy; it shows its submission failure alert and starts no job.
-    await expect(
-      page.getByRole('region', { name: 'Select documents and metadata' }).getByRole('alert'),
-    ).toBeVisible();
+    const body = (await response.json()) as { code: string; detail: { document_id: number } };
+    expect(body.code).toBe('DOCUMENT_ALREADY_INGESTED');
+    expect(Number.isInteger(body.detail.document_id)).toBe(true);
+    // A clear duplicate message with the existing document's ID, not the generic submission failure.
+    const alert = page
+      .getByRole('region', { name: 'Select documents and metadata' })
+      .getByRole('alert');
+    await expect(alert).toContainText('This document is already in the corpus');
+    await expect(alert).toContainText(
+      `The same file was ingested earlier as document ID ${body.detail.document_id}, so nothing was added.`,
+    );
+    await expect(alert).not.toContainText('was not started');
     await expect(page.getByTestId('ingestion-jobs')).toHaveCount(0);
     expect(await documentCount(page)).toBe(before);
   });

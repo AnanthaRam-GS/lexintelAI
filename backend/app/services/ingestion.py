@@ -50,6 +50,7 @@ from sqlalchemy.orm import Session
 from backend.app.core.config import Settings, resolve_chroma_location
 from backend.app.db.models import Chunk, Document, IngestionJob
 from backend.app.db.session import SessionLocal, check_db_connection
+from backend.app.services.inference_lock import wait_for_inference
 from backend.scripts.produce_analytics_data import desired_sections, new_stats, produce_document
 from backend.app.models.ingest import (
     CorpusStatsResponse,
@@ -313,8 +314,10 @@ def process_ingestion_job(
 
         _advance(db, job, IngestionStatus.EMBEDDING, 60)
         stage = "embed"
-        provider = embedding_provider or _default_embedder()
-        vectors = provider.embed_documents([chunk["chunk_text"] for chunk in chunks])
+        # Background work: wait for the process-wide model lock without a limit (inference_lock.py).
+        with wait_for_inference():
+            provider = embedding_provider or _default_embedder()
+            vectors = provider.embed_documents([chunk["chunk_text"] for chunk in chunks])
         if len(vectors) != len(chunks):
             raise IngestionError("EMBEDDING_FAILED")
 

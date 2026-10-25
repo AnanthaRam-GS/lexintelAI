@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     legalai_reranker_fp16: bool = True
     # Load the query models and run one tiny inference at startup.
     legalai_model_warmup: bool = True
+    # Step 18: how long a request waits for the process-wide model lock (inference_lock.py) before it is answered
+    # MODEL_BUSY / MODELS_LOADING with Retry-After. Warm-up and ingestion wait without a limit.
+    legalai_inference_lock_timeout_seconds: float = 30.0
     # Test only (step 17): deterministic providers for browser end-to-end runs (backend/app/testing/e2e.py).
     # Refused at startup unless APP_ENV=test.
     legalai_e2e_fake_providers: bool = False
