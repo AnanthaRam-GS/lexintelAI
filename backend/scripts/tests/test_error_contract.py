@@ -123,6 +123,10 @@ def sweep(test_app: Any) -> tuple[list[str], dict[str, set[int]]]:
 
 class ErrorContractTestCase(unittest.TestCase):
     def setUp(self) -> None:
+        # Scoped to each test (a module-level os.environ change would leak into other suites in the same process).
+        env = patch.dict(os.environ, {"APP_ENV": "test"})
+        env.start()
+        self.addCleanup(env.stop)
         reset_limits()
         self.addCleanup(reset_limits)
         app.dependency_overrides[get_db] = lambda: _NoDatabase()

@@ -22,6 +22,9 @@ env/
 
 # Node / Next.js
 node_modules/
+# Playwright output (traces, screenshots, HTML report)
+frontend/playwright-report/
+frontend/test-results/
 .next/
 out/
 dist/

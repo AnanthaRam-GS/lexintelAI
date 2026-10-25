@@ -21,7 +21,7 @@ from backend.app.core.errors import (
     install_request_id_logging,
 )
 from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheckMiddleware, max_request_body_bytes
-from backend.app.core.startup_checks import run_startup_security_checks
+from backend.app.core.startup_checks import run_startup_security_checks, validate_e2e_fake_providers
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
 from backend.app.services.ocr import tesseract_status
@@ -79,6 +79,14 @@ app.add_middleware(OriginCheckMiddleware, allowed_origins=unique_origins)
 # SEC-008: reject an oversize body by its Content-Length before reading it.
 app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_request_body_bytes(settings.max_upload_size_mb))
 app.add_middleware(RequestIdMiddleware)
+
+# Test only (step 17): browser end-to-end runs. Refused here, before anything is imported, outside APP_ENV=test,
+# and again by the startup checks; the module is never imported otherwise.
+if settings.legalai_e2e_fake_providers:
+    validate_e2e_fake_providers(settings)
+    from backend.app.testing.e2e import install_e2e_providers
+
+    install_e2e_providers(app, settings)
 
 # Router Wiring
 app.include_router(auth_router)

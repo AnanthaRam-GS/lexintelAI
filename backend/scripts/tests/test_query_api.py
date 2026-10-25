@@ -55,9 +55,9 @@ from backend.app.services.reranking.mock import DeterministicMockReranker
 from backend.app.services.retrieval.bm25 import Bm25LexicalIndex
 from backend.app.services.retrieval.service import HybridConfig, RetrievalService
 from backend.app.services.vector_store import EXPECTED_EMBEDDING_DIMENSION, INDEX_VERSION, JsonVectorStore, metadata_for_chroma
-from backend.scripts import build_vector_index as vector_builder
 from backend.scripts.tests.brief_fixtures import FIXTURE_NAMES, fixture_pdf_bytes, fixture_private_chunks
 from backend.scripts.tests.brief_fixtures import expected as expected_brief
+from backend.scripts.tests.fixture_corpus import fixture_chunks, fixture_document_ids
 from backend.main import app
 
 
@@ -1326,13 +1326,8 @@ def professional_result() -> LegalAnswerResult:
 # stores with a deterministic mock reranker; mocked LLM. No live provider.
 # ---------------------------------------------------------------------------
 
-TRUSTED_DOCUMENTS = (
-    "indian_kanoon:87917455",
-    "indian_kanoon:136492342",
-    "indian_kanoon:6939849",
-    "indian_kanoon:1291057",
-    "indian_kanoon:163450772",
-)
+# The synthetic fixture corpus (fixture_corpus.py), so the brief pipeline runs from a clean checkout.
+TRUSTED_DOCUMENTS = fixture_document_ids()
 MOCK_FACTS = ["MOCK FACT: the dispute concerns the events described in the uploaded document."]
 MOCK_POSTURE = ["MOCK POSTURE: the matter is at the stage described in the uploaded document."]
 _REFERENCE = re.compile(r"\[(P\d+)(?:, pp?\. [\d-]+)?\]$")
@@ -1399,7 +1394,7 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.tmp = tempfile.TemporaryDirectory()
         root = Path(cls.tmp.name)
-        cls.trusted = [chunk for chunk in vector_builder.load_chunks() if chunk["document_id"] in TRUSTED_DOCUMENTS]
+        cls.trusted = [chunk for chunk in fixture_chunks() if chunk["document_id"] in TRUSTED_DOCUMENTS]
         embedder = DeterministicMockEmbeddingProvider(EmbeddingConfig(model_name="deterministic-mock", dimension=EXPECTED_EMBEDDING_DIMENSION))
         store = JsonVectorStore(root / "chroma", "brief_test", {"index_version": INDEX_VERSION})
         store.upsert_chunks(

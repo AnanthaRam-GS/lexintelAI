@@ -137,7 +137,7 @@ class LegalQueryUnderstandingTests(unittest.TestCase):
     def test_cli_outputs_json_without_retrieval_or_model_dependency(self) -> None:
         completed = subprocess.run(
             [
-                str(REPO_ROOT / ".venv/bin/python"),
+                sys.executable,  # the running interpreter: CI has no .venv
                 "backend/scripts/analyze_legal_query_understanding.py",
                 "Section 302 IPC murder bail before Sessions Court",
             ],

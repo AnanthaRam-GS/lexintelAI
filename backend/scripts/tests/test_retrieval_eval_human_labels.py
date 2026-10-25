@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from backend.scripts.build_vector_index import load_chunks
+from backend.scripts.tests.local_corpus import requires_local_corpus
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,6 +38,7 @@ class RetrievalEvalHumanLabelsTest(unittest.TestCase):
         self.assertTrue(all(row["reviewer"] == "Ananthu" for row in self.judgments))
         self.assertTrue(all(row["reviewed_at"] for row in self.judgments))
 
+    @requires_local_corpus
     def test_chunk_query_and_judgment_keys_are_valid(self) -> None:
         query_ids = {query["query_id"] for query in self.queries}
         chunk_ids = {chunk["chunk_id"] for chunk in load_chunks()}

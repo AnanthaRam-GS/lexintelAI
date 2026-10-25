@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     legalai_reranker_fp16: bool = True
     # Load the query models and run one tiny inference at startup.
     legalai_model_warmup: bool = True
+    # Test only (step 17): deterministic providers for browser end-to-end runs (backend/app/testing/e2e.py).
+    # Refused at startup unless APP_ENV=test.
+    legalai_e2e_fake_providers: bool = False
     gemini_model: str = ""
     legalai_llm_temperature: float = 0.1
     legalai_llm_timeout_seconds: float = 60.0

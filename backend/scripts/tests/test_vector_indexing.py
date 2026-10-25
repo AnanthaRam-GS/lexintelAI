@@ -15,6 +15,7 @@ from backend.app.services.embeddings.base import EmbeddingConfig, validate_vecto
 from backend.app.services.embeddings.mock import DeterministicMockEmbeddingProvider
 from backend.app.services.vector_store import INDEX_VERSION, ChromaVectorStore, JsonVectorStore, metadata_for_chroma
 from backend.scripts import build_vector_index as builder
+from backend.scripts.tests.fixture_corpus import fixture_chunks
 
 
 def setUpModule() -> None:
@@ -161,7 +162,8 @@ class VectorIndexingTest(unittest.TestCase):
             self.assertEqual(result["final_collection_count"], 0)
 
     def test_dry_run_uses_real_chunk_outputs_without_embedding(self) -> None:
-        chunks = builder.load_chunks(limit=3)
+        # Chunks in the chunker's real output schema, from the synthetic fixture corpus (no gitignored files).
+        chunks = fixture_chunks()[:3]
         summary = builder.dry_run_summary(chunks, "collection", Path("chroma_store"), EmbeddingConfig())
         self.assertEqual(summary["expected_chunks"], 3)
         self.assertFalse(summary["would_mutate_vector_store"])
