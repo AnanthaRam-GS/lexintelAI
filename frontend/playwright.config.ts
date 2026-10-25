@@ -11,6 +11,8 @@ const frontendDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(frontendDir, '..');
 const python = process.env.E2E_PYTHON ?? path.join(repoRoot, '.venv/bin/python');
 const realMode = process.env.E2E_MODE === 'real';
+// E2E_REUSE_SERVERS=1: use an API and frontend that are already running (local debugging only).
+const reuseServers = !!process.env.E2E_REUSE_SERVERS && !process.env.CI;
 
 export default defineConfig({
   testDir: './e2e',
@@ -36,7 +38,7 @@ export default defineConfig({
       cwd: repoRoot,
       url: 'http://127.0.0.1:8000/health',
       timeout: realMode ? 300_000 : 120_000,
-      reuseExistingServer: false,
+      reuseExistingServer: reuseServers,
       stdout: 'pipe',
       stderr: 'pipe',
     },
@@ -51,7 +53,7 @@ export default defineConfig({
       cwd: frontendDir,
       url: 'http://localhost:3000',
       timeout: 300_000,
-      reuseExistingServer: false,
+      reuseExistingServer: reuseServers,
       env: { NEXT_PUBLIC_API_BASE_URL: 'http://localhost:8000' },
     },
   ],

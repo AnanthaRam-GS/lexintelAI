@@ -144,9 +144,10 @@ backend/scripts/dev/run_nondb_suites.sh        # or: backend/scripts/dev/run_non
 
 ## Local-only tests
 
-Four tests check committed manifests against the real trusted-judgment chunks in
-`data/processed/judgment_chunks` (gitignored Indian Kanoon text). They carry `@requires_local_corpus`
-(`backend/scripts/tests/local_corpus.py`) and are skipped, with that reason, when the chunks are absent (CI):
+Five tests need files that a clean checkout does not have. Four check committed manifests against the real
+trusted-judgment chunks in `data/processed/judgment_chunks` (gitignored Indian Kanoon text) and carry
+`@requires_local_corpus` (`backend/scripts/tests/local_corpus.py`); one needs the local model cache. Each is skipped,
+with its reason, when the files are absent (CI):
 
 | Test | Checks |
 |---|---|
@@ -154,6 +155,7 @@ Four tests check committed manifests against the real trusted-judgment chunks in
 | `test_retrieval_eval_human_labels.test_chunk_query_and_judgment_keys_are_valid` | every labelled chunk ID exists in the corpus |
 | `test_retrieval_dev_set.test_support_and_no_exact_benchmark_duplicates` | dev-set support chunks exist in the corpus |
 | `test_retrieval_dev_set.test_candidates_are_unique_and_in_trusted_corpus` | dev-set candidates exist in the corpus |
+| `test_legal_section_bge_reranker_trial.test_local_snapshot_matches_the_recorded_revision` | the local BGE reranker snapshot is the recorded revision (needs the Hugging Face cache; skipped without it) |
 
 Tests that need corpus-shaped data use the synthetic fixture corpus instead
 (`backend/scripts/tests/fixture_corpus.py`, `fixtures/corpus/synthetic_judgments.json`: six invented judgments).
@@ -287,6 +289,11 @@ It makes (or uses) a `backup_dev_state.sh` backup, verifies it and restores it i
 `E2E_MODE=real`: BGE-M3 and the BGE reranker from the local model cache (MPS when available), the fake LLM unless
 `--real-llm` is given (that one uses provider quota). Test accounts, history and the ingested fixture go into the
 rehearsal database and the store copies only.
+
+Real mode runs with `LEGALAI_MODEL_WARMUP=false`. With warm-up on, the warm-up thread's BGE-M3 inference on MPS
+overlapped the first request's and the backend died with a segmentation fault in the model forward pass (step 17;
+faulthandler showed the `legalai-model-warmup` thread). Inference on one MPS model is not serialised; that is a
+product issue to fix separately, not a test setting.
 
 ## Updating `requirements.lock`
 

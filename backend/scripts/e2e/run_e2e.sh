@@ -47,7 +47,9 @@ export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 if [ "$MODE" = "fake" ]; then
   export LEGALAI_E2E_RETRIEVAL=fake LEGALAI_MODEL_WARMUP=false
 else
-  export LEGALAI_E2E_RETRIEVAL=real
+  # No warm-up: its background inference on MPS can overlap the first request's and crash the process with a
+  # segmentation fault (concurrent use of one MPS model; found in step 17, see docs/TESTING.md).
+  export LEGALAI_E2E_RETRIEVAL=real LEGALAI_MODEL_WARMUP=false
 fi
 if [ "${E2E_REAL_LLM:-0}" = "1" ]; then
   export LEGALAI_E2E_LLM=real
