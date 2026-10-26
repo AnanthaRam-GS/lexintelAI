@@ -419,7 +419,7 @@ pairs. **They are not loaded**, because the schema cannot hold them without gues
   string). The PDF gives no change type and CYTRAIN, which would, is unreachable.
 - The table has no column for a row's source, so the PDF attribution would be lost.
 
-**Proposed migration 0011 (needs your approval):** add `ipc_bns_mapping.source` (text, NOT NULL, backfilled
+**Proposed migration 0011 (approved 2026-10-26; implemented in step 19b, below):** add `ipc_bns_mapping.source` (text, NOT NULL, backfilled
 `CYTRAIN SectionTableBNS (2026-09-04)` for the 370 existing rows), `source_page` (integer, nullable) and make
 `change_type` nullable; the API returns `change_type: null` for PDF-sourced rows, the contract and the frontend's IPC-BNS
 tab (which lower-cases `change_type`) handle null, and the loader accepts a blank change type only for rows whose source is
@@ -432,5 +432,56 @@ Every row remains **UNREVIEWED** pending legal review. Three kinds of entries ar
 | Kind | Where | Status |
 |---|---|---|
 | CYTRAIN correspondence rows | `ipc_bns_mapping.csv`, loaded (370) | UNREVIEWED; IPC lookup list from the old CSV (step 15b) |
-| NCRB PDF-printed pairs | `ipc_bns_pdf_pair_candidates.csv` (68), not loaded | UNREVIEWED; awaiting the schema decision |
+| NCRB PDF-printed pairs | `ipc_bns_pdf_pair_candidates.csv` (68), loaded in step 19b as `NCRB_CII_2024_T1A4` | UNREVIEWED; `change_type` NULL |
 | NCRB overrides | `ncrb_display.py`, `ncrb_sections.NOTATION_OVERRIDES` | approved misprint corrections, listed above |
+
+## Step 19b: source-attributed mapping (migration 0011, 2026-10-26)
+
+`ipc_bns_mapping` now records where each row comes from:
+
+| Column | Meaning |
+|---|---|
+| `source` | `CYTRAIN` (the CYTRAIN correspondence table; all 370 rows before 0011, backfilled) or `NCRB_CII_2024_T1A4` (a correspondence printed in NCRB Crime in India 2024, Vol. I, Table 1A.4). NOT NULL, check-constrained to these two values. |
+| `source_page` | The printed table page of an NCRB row; NULL for CYTRAIN rows. |
+| `change_type` | Now nullable, but a database check (`ck_ipc_bns_mapping_change_type_source`) allows NULL only for a non-CYTRAIN row. |
+
+**A NULL `change_type` means "not specified by the source".** NCRB prints which IPC and BNS sections a crime head
+counts, not whether a provision was carried over directly, split or merged, so no change type is recorded for those
+rows. None is assumed. The API returns `null`, the `change_type` filter selects them with `NOT_SPECIFIED`, and the
+IPC-BNS tab shows "Not specified".
+
+| Rows by source | Rows | `change_type` NULL |
+|---|---:|---:|
+| `CYTRAIN` | 370 | 0 |
+| `NCRB_CII_2024_T1A4` | 68 | 68 |
+| **Total** | **438** | 68 |
+
+- **Loading** (`load_ipc_bns.py --source all|cytrain|ncrb`): NCRB rows are keyed on (source, IPC group, BNS section,
+  printed head). A total head and its sub-head can print the same sections (e.g. "Burglary (Total a+b)" and
+  "Burglary - a) Day Burglary"), and each is its own printed correspondence: 68 rows, 51 distinct section pairs.
+- **No collisions:** a row whose (IPC, BNS) pair already exists under the other source would be reported and skipped,
+  and no CYTRAIN row is ever changed. None of the 68 collides.
+- **The 7 named pairs**, with table pages: 379-382→303 (p. 52), 384-389→308 (p. 57), 392/394/397→309 (p. 57),
+  396→310 (p. 59), 406-409→316 (p. 61), 411-414→317 (p. 61), 153A→196 (p. 50).
+- **Group-label rows are not split.** 228 of the printed sections the CYTRAIN rows "cover" rest only on group IPC labels
+  inherited from the old CSV (step 19). Splitting them needs CYTRAIN's own row codes, which are unreachable; they are left
+  as they are.
+- **Review:** the whole mapping, both sources, remains UNREVIEWED for legal review.
+- **Downgrade** of 0011 refuses while NCRB rows exist (their change type cannot be restored to NOT NULL without
+  inventing one); delete them first, then reload them from the candidates file after re-upgrading.
+
+### Reload (step 19b)
+
+| Stage | Result |
+|---|---|
+| Backup `~/legalai_backups/20261026T053621Z` | verified: checksums, store copies, and a `--clean` restore into `legalai_rehearsal` matching all 12 tables |
+| Migration 0011 | upgrade, downgrade (refused while NCRB rows exist; then succeeds) and re-upgrade tested on `legalai_test`; `alembic check` clean |
+| Rehearsal: `alembic upgrade head` | 0010 → 0011 |
+| Rehearsal: `load_ipc_bns.py` dry run, run, second run | CYTRAIN 0 / 0 / 0 inserted (370 existing); NCRB would insert 68, inserted 68, then 0; 0 collisions |
+| Rehearsal: `load_ncrb.py --prune` | 0 changes in all three runs |
+| Rehearsal: `verify_analytics.py` | RECONCILED; `ipc-bns-map` 438 rows (CYTRAIN 370, NCRB 68; 68 NULL change types); NCRB sum 3,544,608 |
+| Rehearsal: store verifier | CONSISTENT |
+| Dev: migration, dry runs | 0010 → 0011; dry runs identical to the rehearsal |
+| Dev: runs, second runs | identical to the rehearsal; second runs 0 changes |
+| Dev: `verify_analytics.py` / store verifier | RECONCILED (same figures) / CONSISTENT |
+| Dev: other changes | only `ipc_bns_mapping` changed (370 → 438); every other table count unchanged; Chroma and BM25 identical to the backup |

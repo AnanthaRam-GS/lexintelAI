@@ -378,6 +378,15 @@ Data sources, production methods and reconciliation are described in
   and liability-linking provisions (e.g. IPC 34, 149, 511) are left out.
   Query parameter `include_all_sections=true` (default `false`) returns
   every cited section.
+- **`ipc-bns-map` rows** (step 19b, migration 0011; also `/analytics/ipc-bns`):
+  `{ipc_section, ipc_description, bns_section, bns_description, change_type, source, source_page}`.
+  - `source`: `CYTRAIN` (the NCRB/CYTRAIN correspondence table) or `NCRB_CII_2024_T1A4` (a correspondence printed in
+    NCRB Crime in India 2024, Vol. I, Table 1A.4); `source_page` is the printed table page of an NCRB row, else `null`.
+  - `change_type`: `DIRECT`, `SPLIT`, `MERGED`, `REPEALED`, `NO_DIRECT_EQUIVALENT`, or **`null`** when the source gives
+    none (NCRB rows only; a CYTRAIN row always has one, enforced by a database check). It is never guessed.
+  - Filters: `ipc_section`, `bns_section` (exact), `change_type` (a value above, or `NOT_SPECIFIED` for `null`),
+    `source` (either source). An unknown value is `400 INVALID_ANALYTICS_FILTER`.
+  - Every row is UNREVIEWED for legal review (`docs/analytics/NCRB_CORRECTION.md`).
 - **`ncrb-stats` aggregate rows excluded by default.** State/UT/all-India
   total rows and subtotal or group-total crime heads are left out, so sums
   over the response do not double count. Query parameter

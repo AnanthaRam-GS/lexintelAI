@@ -12,3 +12,4 @@ test_registration_lawyer_verification
 test_security_hardening
 test_structured_data_loaders
 test_vector_indexing
+test_ipc_bns_sources

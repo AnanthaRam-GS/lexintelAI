@@ -52,6 +52,12 @@ row and no exact contradiction. Rows for them, with PDF attribution, are prepare
 `data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv` but not loaded until the schema can record their source
 and an unknown change type (proposed migration in `NCRB_CORRECTION.md`).
 
+Step 19b (migration 0011): the mapping now has 438 rows: 370 `source = CYTRAIN` and 68
+`source = NCRB_CII_2024_T1A4` with `source_page` (the printed table page). A NULL `change_type` means the source gives
+none (NCRB rows only; enforced by a database check). It is never guessed. The whole mapping remains UNREVIEWED for
+legal review, and the CYTRAIN group-label rows are not split (that needs CYTRAIN). Details:
+`docs/analytics/NCRB_CORRECTION.md`.
+
 ### NCRB statistics
 
 `data/processed/ncrb/ncrb_stats_2024_v2.csv` (6,201 rows, since step 15), from National

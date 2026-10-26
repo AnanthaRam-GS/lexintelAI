@@ -75,5 +75,13 @@ test.describe('lawyer workspace', () => {
     }
     await page.getByRole('button', { name: /IPC-BNS Map/i }).click();
     await expect(page.getByTestId('tab-ipc-bns')).toContainText('302');
+    // A pair printed in NCRB Table 1A.4 (migration 0011): its source page and no change type.
+    await page.getByPlaceholder('Search section or description...').fill('153A');
+    const enmity = page
+      .getByTestId('tab-ipc-bns')
+      .getByRole('row')
+      .filter({ hasText: 'Table 1A.4' });
+    await expect(enmity.first()).toContainText('NCRB 2024, Table 1A.4, p. 50');
+    await expect(enmity.first()).toContainText('Not specified');
   });
 });

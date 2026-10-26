@@ -34,6 +34,9 @@ ALLOWED_CHANGE_TYPES = {
     "REPEALED",
     "NO_DIRECT_EQUIVALENT",
 }
+# The change_type filter value for rows without a change type (NCRB-printed pairs; migration 0011).
+CHANGE_TYPE_NOT_SPECIFIED = "NOT_SPECIFIED"
+MAPPING_SOURCES = {"CYTRAIN", "NCRB_CII_2024_T1A4"}
 
 CONVICTED_LABELS = {
     "convicted",
@@ -293,26 +296,36 @@ def get_ipc_bns_mappings(
     ipc_section: str | None = None,
     bns_section: str | None = None,
     change_type: str | None = None,
+    source: str | None = None,
 ) -> list[IpcBnsMappingRow]:
-    """Return IPC-BNS mapping rows, optionally filtered."""
+    """Return IPC-BNS mapping rows, optionally filtered. change_type=NOT_SPECIFIED selects rows without one."""
     ipc_section = _optional_filter_text(ipc_section, "ipc_section")
     bns_section = _optional_filter_text(bns_section, "bns_section")
     change_type = _optional_filter_text(change_type, "change_type")
+    source = _optional_filter_text(source, "source")
     if change_type is not None:
         change_type = change_type.upper()
-        if change_type not in ALLOWED_CHANGE_TYPES:
-            allowed = ", ".join(sorted(ALLOWED_CHANGE_TYPES))
+        if change_type not in ALLOWED_CHANGE_TYPES | {CHANGE_TYPE_NOT_SPECIFIED}:
+            allowed = ", ".join(sorted(ALLOWED_CHANGE_TYPES | {CHANGE_TYPE_NOT_SPECIFIED}))
             raise AnalyticsFilterError(
                 f"Invalid change_type: must be one of {allowed}."
             )
+    if source is not None:
+        source = source.upper()
+        if source not in MAPPING_SOURCES:
+            raise AnalyticsFilterError(f"Invalid source: must be one of {', '.join(sorted(MAPPING_SOURCES))}.")
 
     query = db.query(IpcBnsMapping)
     if ipc_section is not None:
         query = query.filter(IpcBnsMapping.ipc_section == ipc_section)
     if bns_section is not None:
         query = query.filter(IpcBnsMapping.bns_section == bns_section)
-    if change_type is not None:
+    if change_type == CHANGE_TYPE_NOT_SPECIFIED:
+        query = query.filter(IpcBnsMapping.change_type.is_(None))
+    elif change_type is not None:
         query = query.filter(IpcBnsMapping.change_type == change_type)
+    if source is not None:
+        query = query.filter(IpcBnsMapping.source == source)
 
     rows = query.order_by(IpcBnsMapping.ipc_section, IpcBnsMapping.bns_section, IpcBnsMapping.id).all()
     return [
@@ -322,6 +335,8 @@ def get_ipc_bns_mappings(
             bns_section=row.bns_section,
             bns_description=row.bns_description,
             change_type=row.change_type,
+            source=row.source,
+            source_page=row.source_page,
         )
         for row in rows
     ]

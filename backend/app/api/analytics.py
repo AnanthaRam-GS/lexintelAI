@@ -85,7 +85,8 @@ def section_cooccurrence(
 def ipc_bns_mapping(
     ipc_section: str | None = Query(None),
     bns_section: str | None = Query(None),
-    change_type: str | None = Query(None),
+    change_type: str | None = Query(None, description="A change type, or NOT_SPECIFIED for rows without one."),
+    source: str | None = Query(None, description="CYTRAIN or NCRB_CII_2024_T1A4."),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_lawyer_or_admin),
 ) -> list[IpcBnsMappingRow]:
@@ -96,6 +97,7 @@ def ipc_bns_mapping(
             ipc_section=ipc_section,
             bns_section=bns_section,
             change_type=change_type,
+            source=source,
         )
     except AnalyticsFilterError as exc:
         _handle_filter_error(exc)

@@ -37,7 +37,11 @@ class IpcBnsMappingRow(BaseModel):
     ipc_description: str
     bns_section: str | None = None
     bns_description: str | None = None
-    change_type: str
+    # None for a row whose source gives no change type (an NCRB-printed pair); never guessed (step 19b).
+    change_type: str | None = None
+    # CYTRAIN or NCRB_CII_2024_T1A4; source_page is the printed table page of an NCRB row.
+    source: str
+    source_page: int | None = None
 
 
 class NcrbStatPoint(BaseModel):

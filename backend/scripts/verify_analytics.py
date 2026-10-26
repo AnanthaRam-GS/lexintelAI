@@ -10,7 +10,7 @@ same database:
 | /analytics/offense-frequency | count(distinct document) per (statute section, year), offence provisions only |
 | /analytics/outcome-distribution | per (statute section, court_level): distinct documents in each outcome bucket, offence provisions only |
 | /analytics/section-cooccurrence | self-join of document_sections, distinct documents per label pair, offence provisions only |
-| /analytics/ipc-bns-map | every ipc_bns_mapping row |
+| /analytics/ipc-bns-map | every ipc_bns_mapping row, source and source_page included |
 | /analytics/ncrb-stats | every ncrb_stats row WHERE NOT is_aggregate, section label lists included |
 
 "Offence provisions only": the distinct (statute, section) pairs in
@@ -126,7 +126,9 @@ def sql_results(cursor: Any, offence: set[tuple[str, str]]) -> dict[str, Any]:
     )
     results["/analytics/section-cooccurrence"] = Counter({(row[0], row[1]): row[2] for row in cursor.fetchall()})
 
-    cursor.execute("SELECT ipc_section, ipc_description, bns_section, bns_description, change_type FROM ipc_bns_mapping")
+    cursor.execute(
+        "SELECT ipc_section, ipc_description, bns_section, bns_description, change_type, source, source_page FROM ipc_bns_mapping"
+    )
     results["/analytics/ipc-bns-map"] = Counter(tuple(row) for row in cursor.fetchall())
 
     cursor.execute(
@@ -177,7 +179,8 @@ def endpoint_results(client: Any) -> dict[str, Any]:
     }
     results["/analytics/section-cooccurrence"] = Counter({(r["section_a"], r["section_b"]): r["count"] for r in raw[ENDPOINTS[2]]})
     results["/analytics/ipc-bns-map"] = Counter(
-        (r["ipc_section"], r["ipc_description"], r["bns_section"], r["bns_description"], r["change_type"]) for r in raw[ENDPOINTS[3]]
+        (r["ipc_section"], r["ipc_description"], r["bns_section"], r["bns_description"], r["change_type"], r["source"], r["source_page"])
+        for r in raw[ENDPOINTS[3]]
     )
     results["/analytics/ncrb-stats"] = Counter(
         (
@@ -200,6 +203,13 @@ def summarize(path: str, result: Any) -> dict[str, Any]:
         return {"rows": len(result), "sum_count": sum(result.values())}
     if path == "/analytics/ncrb-stats":
         return {"rows": sum(result.values()), "sum_case_count": sum((key[5] or 0) * n for key, n in result.items())}
+    if path == "/analytics/ipc-bns-map":
+        by_source: dict[str, int] = {}
+        null_change_type = 0
+        for key, n in result.items():
+            by_source[key[5]] = by_source.get(key[5], 0) + n
+            null_change_type += n if key[4] is None else 0
+        return {"rows": sum(result.values()), "by_source": dict(sorted(by_source.items())), "change_type_null": null_change_type}
     return {"rows": sum(result.values())}
 
 

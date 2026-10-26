@@ -88,6 +88,7 @@ class TestAnalyticsServicesAndApi(unittest.TestCase):
             bns_section="101",
             bns_description="Test BNS murder mapping",
             change_type="DIRECT",
+            source="CYTRAIN",
         )
         self.ncrb = NcrbStat(
             year=2024,
@@ -379,7 +380,7 @@ class TestAnalyticsProducerAndReconciliation(unittest.TestCase):
     def test_endpoints_reconcile_with_direct_sql(self) -> None:
         self.seed_corpus()
         produce(self.db, dry_run=False)
-        self.db.add(IpcBnsMapping(ipc_section="302", ipc_description="Murder", bns_section="103", bns_description="Murder", change_type="DIRECT"))
+        self.db.add(IpcBnsMapping(ipc_section="302", ipc_description="Murder", bns_section="103", bns_description="Murder", change_type="DIRECT", source="CYTRAIN"))
         self.db.add(NcrbStat(year=2024, state=f"{MARKER} State", offense_category="Murder", ipc_section="302", case_count=None, conviction_count=None, acquittal_count=None))
         self.db.commit()
 

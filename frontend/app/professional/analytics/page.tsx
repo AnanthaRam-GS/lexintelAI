@@ -22,6 +22,7 @@ import type {
   OutcomeDistributionPoint,
   SectionCooccurrencePoint,
 } from '../../../lib/types/api';
+import { CHANGE_TYPE_NOT_SPECIFIED_LABEL, ipcBnsSourceLabel } from '../../../lib/types/api';
 
 type AnalyticsTab =
   'offense-trends' | 'outcome-distribution' | 'section-cooccurrence' | 'ipc-bns' | 'ncrb-stats';
@@ -143,7 +144,8 @@ export default function ProfessionalAnalyticsPage() {
         row.ipc_description.toLowerCase().includes(term) ||
         (row.bns_section && row.bns_section.toLowerCase().includes(term)) ||
         (row.bns_description && row.bns_description.toLowerCase().includes(term)) ||
-        row.change_type.toLowerCase().includes(term),
+        (row.change_type ?? CHANGE_TYPE_NOT_SPECIFIED_LABEL).toLowerCase().includes(term) ||
+        ipcBnsSourceLabel(row).toLowerCase().includes(term),
     );
   }, [ipcBnsData, bnsSearchTerm]);
 
@@ -485,6 +487,7 @@ export default function ProfessionalAnalyticsPage() {
                       <th className="px-4 py-3">BNS Provision</th>
                       <th className="px-4 py-3">BNS Reformulation</th>
                       <th className="px-4 py-3">Nature of Change</th>
+                      <th className="px-4 py-3">Source</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--color-border)]">
@@ -503,9 +506,25 @@ export default function ProfessionalAnalyticsPage() {
                           {row.bns_description || 'N/A'}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3">
-                          <span className="rounded-full bg-[var(--color-surface-subtle)] border border-[var(--color-border)] px-2 py-0.5 text-[0.6875rem] font-medium text-[var(--color-body)]">
-                            {row.change_type}
-                          </span>
+                          {row.change_type ? (
+                            <span className="rounded-full bg-[var(--color-surface-subtle)] border border-[var(--color-border)] px-2 py-0.5 text-[0.6875rem] font-medium text-[var(--color-body)]">
+                              {row.change_type}
+                            </span>
+                          ) : (
+                            <span
+                              className="rounded-full border border-dashed border-[var(--color-border)] px-2 py-0.5 text-[0.6875rem] font-medium text-[var(--color-muted)]"
+                              data-testid="change-type-not-specified"
+                              title="The source prints this correspondence without a change type; none is assumed."
+                            >
+                              {CHANGE_TYPE_NOT_SPECIFIED_LABEL}
+                            </span>
+                          )}
+                        </td>
+                        <td
+                          className="whitespace-nowrap px-4 py-3 text-[var(--color-muted)]"
+                          data-testid="mapping-source"
+                        >
+                          {ipcBnsSourceLabel(row)}
                         </td>
                       </tr>
                     ))}
