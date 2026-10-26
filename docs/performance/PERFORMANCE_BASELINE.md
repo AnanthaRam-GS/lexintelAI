@@ -99,12 +99,65 @@ Generation times are unchanged.
 
 All are under the 15 s target, which the professional runs previously only just met.
 
+## Concurrency: one model call at a time (step 18)
+
+**Problem.** Model inference runs in the request threadpool (BE-004), and nothing serialised it. On MPS, two
+inferences at once crash the process with a segmentation fault inside the BGE-M3 forward pass
+(`modeling_xlm_roberta.py create_position_ids_from_input_ids`). Reproduced with
+`backend/scripts/dev/stress_inference.py` (real models, fake LLM, `legalai_rehearsal` restored with `--clean`, store
+copies):
+
+| Before the fix | Crashed | Evidence |
+|---|---:|---|
+| Warm-up on + 10 simultaneous professional queries | **10 of 10** (SIGSEGV) | faulthandler: up to 11 threads in the BGE-M3 forward at once (10 requests + `legalai-model-warmup`); in another crash 8 in BGE-M3 and 4 in the reranker's `compute_score` |
+| Warm-up off + 10 simultaneous queries | **3 of 3** (SIGSEGV) | up to 10 request threads in the BGE-M3 forward; no warm-up thread |
+
+So concurrent queries alone crash the backend, not only the warm-up race. The step 12 note above (an fp16 benchmark
+attempt that "ended without output") may have been the same crash.
+
+**Fix.** `backend/app/services/inference_lock.py`: one process-wide (reentrant) lock. `DeviceFallbackModel` holds it
+for every model load and every inference, so the query embedder, the reranker, the ingestion embedder and the warm-up
+never run at once. A request waits at most `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (default 30) and then gets 503
+`MODELS_LOADING` (during the warm-up, `Retry-After: 10`) or `MODEL_BUSY` (`Retry-After: 15`). The warm-up and
+ingestion wait without a limit. `/health` reports `models.warm_up` (`loading`/`ready`/`failed`/`not_started`) and
+`models.inference` (`active`, `waiting`). Model outputs, precision, devices, ranking, `top_k` and candidates are
+unchanged: the 30-query ranking check gives 30/30 identical top-5 on MPS (embedder fp32, reranker fp16; max |score −
+frozen| 0.013792, as in step 12) and on CPU (difference 0.0), with every metric equal to the frozen value.
+
+**After the fix (MPS, warm-up on).** 5 repetitions × (10 simultaneous queries at startup + 3 rounds of 10 + 5
+sequential): **0 crashes, 225 of 225 responses 200**.
+
+| MPS, professional text queries, fake LLM | p50 | p95 | max |
+|---|---:|---:|---:|
+| Single request (sequential, n = 25) | 1.58 s | 1.66 s | — |
+| 10 concurrent, first round (overlaps the 4.1 s load + 1.8 s warm-up; n = 50) | 11.9 s | 19.4 s | 20.8 s |
+| 10 concurrent, later rounds (n = 150) | 7.75 s | 15.9 s | 16.4 s |
+
+Under 10 concurrent queries the last one waits for the nine before it (about 10 × 1.5 s), which is what p95 shows.
+Before the fix the same load crashed every time, so there is no "before" latency on MPS.
+
+**Why on every device, and the CPU cost.** CPU inference is thread-safe, but PyTorch already spreads one inference
+over every core, so concurrent inferences only compete for them. Measured on CPU (1 repetition each, lock timeout
+raised to 300 s so that every request waits):
+
+| CPU, 10 concurrent | Later rounds p50 | p95 | Single request |
+|---|---:|---:|---:|
+| Before (no lock) | 118.8 s | 124.7 s | 10.2 s |
+| After (lock) | 51.2 s | 100.8 s | 10.0 s |
+
+Serialising halves the median and lowers p95; single-request latency is unchanged. With the default 30 s timeout on
+CPU, measured: a burst of 10 simultaneous queries had 4 answered (9–39 s) and 6 answered `MODEL_BUSY` with
+`Retry-After: 15` after 31–35 s, in both rounds, instead of all ten waiting about two minutes. Raise
+`LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` to make CPU requests wait longer instead. CPU is a fallback here; the
+deployed configuration is MPS, where 10 concurrent queries all finish well inside the default timeout.
+
 ## Warm-up
 
 At startup the server answers `/health` straight away with `models.status = "loading"`, which becomes `"loaded"` with
 `load_ms`, `warmup_ms` and the devices. If warm-up fails, `/health` shows `"failed"` and queries load the models on
 demand. The models are cached separately from the retrieval service, so the rebuild after an ingestion update reuses
-them. A lock stops warm-up and the first request from loading them twice.
+them. A lock stops warm-up and the first request from loading them twice. Since step 18 a query that arrives during the warm-up waits for the model lock (or gets `MODELS_LOADING` after
+`LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS`); it never runs a model at the same time as the warm-up.
 
 The first query after startup was measured through the real app with a stub answer adapter (no LLM call):
 

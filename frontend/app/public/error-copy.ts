@@ -11,6 +11,7 @@ export type PublicAnswerFailure =
   | 'model-quota-exceeded'
   | 'rate-limited'
   | 'model-busy'
+  | 'models-loading'
   | 'ocr-too-many-pages'
   | 'ocr-unavailable';
 export type AdminRequestFailure = 'network' | 'service' | 'timeout';
@@ -74,6 +75,10 @@ export const errorCopy = {
       'model-busy': {
         title: 'LegalAI is busy right now',
         message: 'Many people are asking questions at the moment. Please try again in a minute.',
+      },
+      'models-loading': {
+        title: 'LegalAI is still starting up',
+        message: 'The legal search is getting ready. Please try again in a few seconds.',
       },
     } satisfies Record<PublicAnswerFailure, ErrorCopy>,
     loading: {
@@ -157,6 +162,17 @@ export const errorCopy = {
   },
 } as const;
 
+/** Copy for an upload refused because the same file is already in the corpus (DOCUMENT_ALREADY_INGESTED). */
+export function duplicateDocumentCopy(documentId: number | null): ErrorCopy {
+  return {
+    title: 'This document is already in the corpus',
+    message:
+      documentId === null
+        ? 'The same file was ingested earlier, so nothing was added. Remove it from this batch to continue.'
+        : `The same file was ingested earlier as document ID ${documentId}, so nothing was added. Remove it from this batch to continue.`,
+  };
+}
+
 export function classifyRequestFailure(error: unknown): AdminRequestFailure {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return 'network';
   if (error instanceof TypeError) return 'network';
@@ -178,6 +194,7 @@ export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure
     if (error.code === 'OCR_UNAVAILABLE') return 'ocr-unavailable';
     if (error.code === 'RATE_LIMITED') return 'rate-limited';
     if (error.code === 'MODEL_BUSY') return 'model-busy';
+    if (error.code === 'MODELS_LOADING') return 'models-loading';
     if (error.code === 'MODEL_PROVIDER_QUOTA_EXCEEDED' || error.status === 429)
       return 'model-quota-exceeded';
     if (

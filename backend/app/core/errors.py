@@ -131,7 +131,16 @@ async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSON
     return JSONResponse(internal_error_body(request_id), status_code=500, headers=headers)
 
 
+async def _inference_busy_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Step 18: the process-wide model lock was not free in time (services/inference_lock.py)."""
+    body = error_body(exc.code, exc.message, {"retry_after": exc.retry_after})  # type: ignore[attr-defined]
+    return JSONResponse(body, status_code=503, headers={"Retry-After": str(exc.retry_after)})  # type: ignore[attr-defined]
+
+
 def install_error_handlers(app: FastAPI) -> None:
+    from backend.app.services.inference_lock import InferenceBusy
+
+    app.add_exception_handler(InferenceBusy, _inference_busy_handler)
     app.add_exception_handler(StarletteHTTPException, _http_exception_handler)
     app.add_exception_handler(RequestValidationError, _validation_exception_handler)
     app.add_exception_handler(Exception, _unhandled_exception_handler)

@@ -332,6 +332,47 @@ describe('IngestionWorkspace', () => {
     expect(document.body).not.toHaveTextContent('private-bucket');
   });
 
+  it('says a duplicate upload is already in the corpus, with the existing document ID', async () => {
+    const user = userEvent.setup();
+    // What lib/api throws for a 409 {code: DOCUMENT_ALREADY_INGESTED, detail: {document_id}}.
+    const duplicate = Object.assign(new Error('This document has already been ingested.'), {
+      name: 'ApiClientError',
+      status: 409,
+      code: 'DOCUMENT_ALREADY_INGESTED',
+      detail: { document_id: 42 },
+    });
+    vi.mocked(uploadDocumentMock).mockRejectedValue(duplicate);
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('again.pdf'));
+
+    await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('This document is already in the corpus');
+    expect(alert).toHaveTextContent(
+      'The same file was ingested earlier as document ID 42, so nothing was added.',
+    );
+    expect(alert).not.toHaveTextContent('was not started');
+    expect(screen.getAllByRole('alert')).toHaveLength(1); // not also the generic submission failure
+    expect(screen.getByLabelText('Document type for again.pdf')).toBeInTheDocument();
+    expect(screen.queryByTestId('ingestion-jobs')).not.toBeInTheDocument();
+  });
+
+  it('says a duplicate is already in the corpus even without a document ID', async () => {
+    const user = userEvent.setup();
+    vi.mocked(uploadDocumentMock).mockRejectedValue(
+      Object.assign(new Error('duplicate'), { code: 'DOCUMENT_ALREADY_INGESTED', detail: null }),
+    );
+    render(<IngestionWorkspace />);
+    await configureValidBatch(user, pdfFile('again.pdf'));
+
+    await user.click(screen.getByRole('button', { name: 'Start ingestion' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('This document is already in the corpus');
+    expect(alert).toHaveTextContent('The same file was ingested earlier, so nothing was added.');
+  });
+
   it('retains the batch when the submission response is not aligned', async () => {
     const user = userEvent.setup();
     vi.mocked(uploadDocumentMock).mockResolvedValue({ jobIds: [] });

@@ -20,6 +20,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings, resolve_chroma_location
+from backend.app.services.inference_lock import InferenceBusy
 from backend.app.core.dependencies import require_lawyer_or_admin
 from backend.app.core.rate_limit import (
     DAY,
@@ -741,8 +742,8 @@ def run_frozen_query_pipeline(
             retrieval=bounded_retrieval,
             result=result,
         )
-    except QueryExecutionError:
-        raise
+    except (QueryExecutionError, InferenceBusy):
+        raise  # InferenceBusy: answered MODEL_BUSY / MODELS_LOADING by the error handler (inference_lock.py)
     except ValueError as exc:
         # BE-003: the ValueError can come from anywhere in the pipeline, so its text is logged, never returned.
         logger.warning("invalid query request: %s", type(exc).__name__)
@@ -976,6 +977,8 @@ def build_document_map_or_fail(parsed_pdf: ParsedPrivatePdf, *, retrieval_servic
             dense_provider=getattr(retrieval_service, "dense_provider", None),
             token_budget_tokens=settings.private_pdf_input_budget_tokens,
         )
+    except InferenceBusy:
+        raise  # the model lock was busy, not a local-analysis failure
     except Exception as exc:
         # A failure here is local analysis (parsing/NER/ranking), not a
         # provider or a document-size problem - must not be mislabeled as either.

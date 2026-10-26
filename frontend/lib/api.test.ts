@@ -216,6 +216,12 @@ describe('rate limit errors', () => {
     expect((error as ApiClientError).retryAfterSeconds).toBe(42);
     expect(limitMessage(error)).toContain('Please wait about a minute');
     expect(limitMessage(new ApiClientError('boom', 500, 'QUERY_PIPELINE_UNAVAILABLE'))).toBeNull();
+    // Step 18: the models are still warming up; its message is written for end users too.
+    expect(
+      limitMessage(
+        new ApiClientError('The legal search is still starting up.', 503, 'MODELS_LOADING'),
+      ),
+    ).toBe('The legal search is still starting up.');
     vi.unstubAllGlobals();
   });
 });
