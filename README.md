@@ -38,7 +38,7 @@ IDs, text and metadata; `verify_store_consistency.py` checks this. For more deta
 | Node.js / npm | 22 (tested 22.23.2 / npm 10.9) | CI uses Node 22 |
 | PostgreSQL | 18 (tested 18.6) | a role that can create databases, or databases created for you |
 | Tesseract OCR | 5 (tested 5.5.3) with English data | `brew install tesseract`; on Ubuntu, `apt install tesseract-ocr tesseract-ocr-eng`. Only needed for scanned PDFs ([docs/OCR.md](docs/OCR.md)) |
-| Disk | about 7 GB free | BGE-M3 (4.3 GB) and the BGE reranker (2.2 GB) in the Hugging Face cache |
+| Disk | 7 GB or more free | The Hugging Face cache: the model files the app uses take 4.3 GB for BGE-M3 and 2.2 GB for the BGE reranker; a full repository download is larger |
 
 The setup is developed on macOS on Apple Silicon. The query embedder and reranker use the GPU through MPS when
 `LEGALAI_MODEL_DEVICE=auto` (the default), and fall back to CPU elsewhere. Linux works on CPU. CI runs on Ubuntu.
@@ -125,6 +125,7 @@ manifests that describe it are committed.
   `data/processed/judgment_chunks/`:
 
   ```bash
+  mkdir -p data/processed/judgment_chunks
   cp /path/to/shared/judgment_chunks/*.json data/processed/judgment_chunks/
   ```
 
