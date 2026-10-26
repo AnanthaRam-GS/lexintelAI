@@ -347,6 +347,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--real", action="store_true", help="Use real local BGE-M3 if available.")
     parser.add_argument("--smoke", action="store_true", help="Load real BGE-M3 and embed a tiny validation set.")
     parser.add_argument("--semantic-qa", action="store_true", help="Run seven semantic sanity queries and write docs/VECTOR_INDEX_QA.md.")
+    parser.add_argument("--summary-out", type=Path, default=VECTOR_SUMMARY, help="Where to write the build summary (default: the committed manifest).")
+    parser.add_argument("--skip-docs", action="store_true", help="Do not rewrite docs/EMBEDDING_AND_VECTOR_INDEX.md and docs/VECTOR_INDEX_QA.md.")
     return parser
 
 
@@ -368,9 +370,10 @@ def main(argv: list[str] | None = None) -> int:
     store_kind = "chroma" if build_mode == "real_bge_m3" else "json"
     build = build_index(chunks, provider, args.persist_dir, args.collection, rebuild=args.rebuild, batch_size=args.batch_size, build_mode=build_mode, store_kind=store_kind)
     summary = summarize(chunks, build, args.collection, args.persist_dir, provider.config, build_mode)
-    VECTOR_SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    args.summary_out.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     semantic_rows = run_semantic_qa(provider, args.persist_dir, args.collection, build_mode) if args.semantic_qa else None
-    write_docs(summary, semantic_rows)
+    if not args.skip_docs:
+        write_docs(summary, semantic_rows)
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     if not available:
         print("REAL BGE-M3 INDEX BUILD DEFERRED — MODEL NOT LOCALLY AVAILABLE")

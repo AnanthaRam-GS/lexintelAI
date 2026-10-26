@@ -166,6 +166,40 @@ Notes on these fixes:
 |---|---|---|---|
 | eslint-config-next 16.3.8 → @next/eslint-plugin-next → fast-glob → micromatch → braces | high (5) | GHSA-vfj7-8cjw-p6xm (braces stack exhaustion) | The only fix npm offers is a major downgrade to 14.x. Dev-only lint tooling, never shipped or given untrusted input. |
 | chromadb 1.5.9 | critical (2), high (2) | GHSA-f4j7-r4q5-qw2c, GHSA-36p7-vc44-83pf, GHSA-2wm9-hf6c-p5cr, GHSA-xph7-9rjv-w5fr | No fixed release. All four are in the Chroma HTTP server and its auth/RBAC; LegalAI uses the embedded `PersistentClient` and runs no Chroma server. Chroma was out of scope for this step. |
-| starlette 0.46.2 | high (3), medium (3), low (1) | GHSA-7f5h-v6xp-fcq8, GHSA-wqp7-x3pw-xc5r, GHSA-82w8-qh3p-5jfq, and others | The fixes need starlette ≥ 0.49.1 or 1.x, and FastAPI 0.115 (pinned `<0.116`) requires `starlette<0.47`, so this needs a FastAPI upgrade (a separate, tested change). Exposure: no `FileResponse` or `StaticFiles` is used (7f5h and wqp7 are unreachable; wqp7 is also Windows-only). The urlencoded form DoS (82w8) is bounded by the 11 MB request body limit. |
+| starlette 0.46.2 (**fixed in step 20**: 1.3.1) | high (3), medium (3), low (1) | GHSA-7f5h-v6xp-fcq8, GHSA-wqp7-x3pw-xc5r, GHSA-82w8-qh3p-5jfq, and others | The fixes need starlette ≥ 0.49.1 or 1.x, and FastAPI 0.115 (pinned `<0.116`) requires `starlette<0.47`, so this needs a FastAPI upgrade (a separate, tested change). Exposure: no `FileResponse` or `StaticFiles` is used (7f5h and wqp7 are unreachable; wqp7 is also Windows-only). The urlencoded form DoS (82w8) is bounded by the 11 MB request body limit. |
 | pyjwt 2.14.0 | medium (2) | GHSA-x33g-cr3x-6449, GHSA-42vr-xj54-vc7v | Only critical and high are fixed in this step. Neither path is used: LegalAI signs HS256 with a shared secret and never uses JWKs, `PyJWKClient` or `verify_signature=False`. Upgrade to 2.15.0 with the FastAPI upgrade. |
 | accelerate 1.14.0, mako 1.4.1, multidict 6.7.1, oauthlib 3.3.1 | medium | GHSA-4j2p-28q2-5m79, GHSA-5639-2j2p-m4mx, GHSA-54p9-h82j-f925, GHSA-hj66-6f7g-4r5v, GHSA-xpv3-w29h-x7cv | Medium only, so not in scope. None is on a request path: model loading of trusted local checkpoints, Alembic templates, transitive multidict, and an unused OAuth stack. |
+
+## Dependency scan (step 20)
+
+The same commands as in step 13, run on 2026-10-26 before and after the upgrades.
+
+| Scan | Before | After |
+|---|---|---|
+| pip-audit (OSV) | 23 advisories in 10 packages | 16 advisories in 9 packages: no critical or high on a request path (below) |
+| npm audit | 5: critical 1, high 2, moderate 2 | 2 moderate (dev-only test tooling) |
+
+### Fixed
+
+| Package | From → to | Severity | Advisories |
+|---|---|---|---|
+| fastapi | 0.115.14 → 0.133.0 | (enabler) | FastAPI 0.133.0 is the first release that allows Starlette 1.3.1. `requirements.txt`: `fastapi>=0.133,<0.134` |
+| starlette | 0.46.2 → 1.3.1 | high (3), medium (3), low (1) | GHSA-2c2j-9gv5-cj73, GHSA-7f5h-v6xp-fcq8, GHSA-82w8-qh3p-5jfq, GHSA-86qp-5c8j-p5mr, GHSA-jp82-jpqv-5vv3, GHSA-wqp7-x3pw-xc5r, GHSA-x746-7m8f-x49c. Starlette 0.49.x still had 5 of these, so 1.3.1 is the minimum clean version. `requirements.txt`: floor `starlette>=1.3.1` |
+| next (+ eslint-config-next) | 16.3.8 → 16.4.1 | critical (2), high (1) | GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r (all affect 16.0.0–16.4.0). 16.4.1 was released on 2026-10-14 |
+| undici (transitive) | → 7.30.1 | high (1), moderate (2) | GHSA-xjj6-f33q-929c, GHSA-4qv8-2p9j-2685, GHSA-f72v-6w45-q472 |
+| zod (transitive) | → 4.6.7 | high | GHSA-mrhx-c7xc-m3w5 |
+
+`requirements.lock` changes only in `fastapi` and `starlette`. No other Python package needed a change:
+pydantic, typing-inspection and annotated-doc already satisfy FastAPI 0.133. `npm audit fix` crashed on the lockfile,
+so undici and zod were updated with `npm update undici zod`. All backend (non-DB and DB), frontend and end-to-end
+suites pass on the new versions.
+
+### Not fixed (recorded; decisions pending)
+
+| Package | Severity | Advisory | Why not fixed / exposure |
+|---|---|---|---|
+| filelock 3.32.5 | high (1), low (2, Windows only) | GHSA-v4x8-3wr5-3wq8, GHSA-567q-5qvw-pf92, GHSA-9vhv-jxww-xfm5 | The fix is 4.2.1, a major version released on 2026-10-17. The vulnerable `ReadWriteLock` is never used: Hugging Face and torch use `FileLock`, and chromadb has its own threading `ReadWriteLock`. Pending a decision on taking a 9-day-old major release. |
+| pyjwt 2.14.0 | medium (2) | GHSA-x33g-cr3x-6449, GHSA-42vr-xj54-vc7v | Neither path is used (HS256 with a shared secret; no JWKs, `PyJWKClient` or `verify_signature=False`). Step 13 planned 2.15.0 alongside the FastAPI upgrade; step 20 limited itself to FastAPI and Starlette, so this is pending a decision. |
+| chromadb 1.5.9 | critical (2), high (2) | as in step 13 | No fixed release; Chroma HTTP server only, which LegalAI does not run. |
+| accelerate, mako, multidict, oauthlib, opentelemetry-api 1.44.0, setuptools 84.0.0 | medium / low | as in step 13, plus GHSA-xcq7-p3pf-p88h (opentelemetry-api) and GHSA-xmj3-9gf7-h52w (setuptools) | Not on a request path. |
+| vitest / @vitest/mocker ≤ 4.1.11 | moderate (2) | GHSA-qxg6-89mg-rqv8, GHSA-xp26-3454-mjgp | Dev-only test runner, never shipped. |

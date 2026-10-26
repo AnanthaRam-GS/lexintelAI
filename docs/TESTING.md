@@ -98,7 +98,7 @@ One process per module, with logs and a summary
 backend/scripts/dev/run_db_suites.sh /tmp/legalai_db_suites
 ```
 
-All 10 modules in one process:
+All the modules in one process (the full list is `backend/scripts/dev/db_test_modules.txt`):
 
 ```bash
 .venv/bin/python -m unittest \
@@ -214,7 +214,10 @@ takes the database URL from `DATABASE_URL` or `.env` and never prints it.
 - `backend/scripts/reconcile_cleanup.py`, `reconcile_backfill.py` and
   `verify_store_consistency.py` remove the inventory's test pollution,
   backfill the curated corpus into PostgreSQL, and check PostgreSQL against
-  Chroma and BM25. They take the database through `--database-url-env NAME`
+  Chroma and BM25. `reconcile_cleanup.py` and `reconcile_backfill.py` are
+  **legacy** one-offs (step 20): the backfill refuses any revision but 0005.
+  A fresh setup uses `load_corpus.py` and `build_indexes.py` instead
+  (README.md, "Quick start"). They take the database through `--database-url-env NAME`
   and explicit store paths, support `--dry-run`, and refuse the dev database
   or the repository's real stores without `--confirm-dev`. The procedure is
   in `docs/reconciliation/EXECUTION_RUNBOOK.md`.
@@ -271,7 +274,8 @@ DATABASE_URL='postgresql://<user>:<password>@localhost:5432/legalai_e2e' backend
 
 `run_e2e.sh` runs the setup, then `npx playwright test` (extra arguments are passed on, e.g. `--headed` or a spec
 file). Playwright starts uvicorn and the frontend. Options: `E2E_SKIP_BUILD=1` reuses an existing `.next` build;
-`E2E_NEXT_DEV=1` serves with `next dev` for machines that cannot reach Google Fonts during `next build`.
+`E2E_NEXT_DEV=1` serves with `next dev` instead of a production build (the fonts are self-hosted since step 20, so
+`next build` needs no network).
 `next build` and `next dev` may rewrite `frontend/next-env.d.ts` (and `next dev` the block in `frontend/AGENTS.md`):
 restore them before committing.
 
@@ -289,6 +293,11 @@ It makes (or uses) a `backup_dev_state.sh` backup, verifies it and restores it i
 `E2E_MODE=real`: BGE-M3 and the BGE reranker from the local model cache (MPS when available), the fake LLM unless
 `--real-llm` is given (that one uses provider quota). Test accounts, history and the ingested fixture go into the
 rehearsal database and the store copies only.
+
+To run the journeys against a freshly set-up database instead (the README clean-checkout check), call
+`run_e2e.sh` with `E2E_MODE=real`, `LEGALAI_E2E_STATE_DIR` holding copies of that setup's stores, and
+`E2E_ALLOW_DATABASE=<its exact name>`: `setup_e2e.py` accepts that one database in real mode only, even when it is
+the `.env` database. The journeys leave their test accounts, history and one synthetic ingested judgment in it.
 
 Real mode runs with the startup warm-up on, as in production. (Step 17 had to turn it off: concurrent inference on
 MPS crashed the backend. Step 18 serialises every model call; see `docs/performance/PERFORMANCE_BASELINE.md`.)

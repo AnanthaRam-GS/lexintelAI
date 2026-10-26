@@ -15,6 +15,10 @@ Both modes create the test accounts (an admin and a lawyer) with passwords gener
 Refuses: APP_ENV other than test; the development database; a database not named ``*_e2e`` or
 ``legalai_rehearsal``; a state directory that is or contains the repository's own stores.
 
+``E2E_ALLOW_DATABASE=<name>`` (real mode only, step 20) also allows that one database by its exact name, even when it
+is the ``.env`` database: the clean-checkout check runs the journeys against a freshly set-up database this way. The
+journeys then leave the test accounts, their query history and one synthetic ingested judgment in it.
+
 Usage:
     APP_ENV=test DATABASE_URL=... .venv/bin/python -m backend.scripts.e2e.setup_e2e --state-dir <dir> [--mode real]
 """
@@ -42,12 +46,17 @@ INGEST_FIXTURE = REPO_ROOT / "backend/scripts/tests/fixtures/e2e/ingest_judgment
 ACCOUNTS = {"admin": "E2E Admin", "lawyer": "E2E Lawyer"}
 
 
-def check_target(state_dir: Path) -> str:
+def check_target(state_dir: Path, mode: str = "fake") -> str:
     if (os.environ.get("APP_ENV") or "").strip().lower() != "test":
         raise TargetRefused("APP_ENV must be test for an end-to-end setup")
-    _url, name = resolve_database("DATABASE_URL", confirm_dev=False, write=True)
-    if not (name.endswith("_e2e") or name in ALLOWED_DATABASES):
-        raise TargetRefused(f"database '{name}' is not an end-to-end database (*_e2e or {', '.join(ALLOWED_DATABASES)})")
+    explicitly_allowed = (os.environ.get("E2E_ALLOW_DATABASE") or "").strip()
+    if explicitly_allowed and mode != "real":
+        raise TargetRefused("E2E_ALLOW_DATABASE is only accepted with --mode real")
+    _url, name = resolve_database("DATABASE_URL", confirm_dev=False, write=False)
+    if name != explicitly_allowed:
+        resolve_database("DATABASE_URL", confirm_dev=False, write=True)  # refuses the development database
+        if not (name.endswith("_e2e") or name in ALLOWED_DATABASES):
+            raise TargetRefused(f"database '{name}' is not an end-to-end database (*_e2e or {', '.join(ALLOWED_DATABASES)})")
     check_store_paths([state_dir], confirm_dev=False, write=True)
     for store in ("chroma_store", "bm25_store"):
         if (REPO_ROOT / store).resolve() in state_dir.resolve().parents:
@@ -182,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     state_dir = args.state_dir.resolve()
     try:
-        database = check_target(state_dir)
+        database = check_target(state_dir, args.mode)
     except TargetRefused as exc:
         print(f"refused: {exc}", file=sys.stderr)
         return 2

@@ -1,4 +1,6 @@
 #!/bin/bash
+# LEGACY (step 20): an early Ubuntu-only setup kept for the record. Do not use it: it drops the "legalai" database
+# and creates a PostgreSQL user with a fixed, publicly known password. Follow README.md, "Quick start", instead.
 set -e
 
 echo "1. Installing PostgreSQL..."

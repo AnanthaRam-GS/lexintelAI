@@ -1,3 +1,6 @@
+# LEGACY (step 20): an early SQLite prototype kept for the record. Do not use it: the app needs PostgreSQL with the
+# Alembic migrations (create_all skips them), and it seeds accounts with a fixed, publicly known password.
+# Follow README.md, "Quick start", and backend/scripts/seed_users.py instead.
 import sys
 import os
 

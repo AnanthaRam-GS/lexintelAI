@@ -1,5 +1,9 @@
 """Backfill PostgreSQL documents and chunks for the curated trusted corpus.
 
+LEGACY (step 20): a one-off for the reconciliation at migration 0005; it refuses any other revision, so it does not run
+on a current database. To load the corpus use ``load_corpus.py`` (README.md, "Quick start"), which reuses this module's
+``plan``/``execute`` at the current head. Kept for the record of how the development database was reconciled.
+
 Sources (no other metadata is invented):
 - documents: ``data/structured/manifests/trusted_judgment_processing_manifest.json``
 - chunks:    ``data/processed/judgment_chunks/*.json``
@@ -92,7 +96,9 @@ def differences(expected: dict[str, Any], actual: dict[str, Any]) -> list[str]:
     return [column for column, value in expected.items() if actual.get(column) != value]
 
 
-def plan(cursor: Any) -> dict[str, Any]:
+def plan(cursor: Any, *, ignore_document_columns: tuple[str, ...] = ()) -> dict[str, Any]:
+    """``ignore_document_columns``: existing values in these columns are not compared (load_corpus.py passes the
+    outcome columns, which produce_analytics_data.py fills after the load). Inserted rows still get NULL there."""
     documents, chunks = inventory_lib.load_curated_corpus()
     chunks_by_document: dict[str, list[dict[str, Any]]] = {}
     for chunk in chunks.values():
@@ -122,7 +128,7 @@ def plan(cursor: Any) -> dict[str, Any]:
             insert_documents.append(expected)
             insert_chunks.extend((key, row) for _, row in sorted(expected_chunks.items()))
             continue
-        changed = differences(expected, existing)
+        changed = [column for column in differences(expected, existing) if column not in ignore_document_columns]
         if changed:
             conflicts.append(f"document {key} (postgres id {existing['id']}): differs in {changed}")
             continue

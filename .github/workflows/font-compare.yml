@@ -29,7 +29,7 @@ jobs:
             (cd $side/frontend && npm ci && NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 npm run build)
           done
           grep -c "next/font/google" main/frontend/app/layout.tsx
-          grep -c "next/font/local" branch/frontend/app/layout.tsx
+          grep -c "next/font/local" branch/frontend/app/fonts.ts
           # the exact files next/font/google downloaded for main, with the @font-face CSS that names them
           mkdir -p google-fonts && cp main/frontend/.next/static/media/*.woff2 google-fonts/
           grep -l "font-face" main/frontend/.next/static/chunks/*.css main/frontend/.next/static/css/*.css 2>/dev/null | xargs -I{} cp {} google-fonts/ || true
