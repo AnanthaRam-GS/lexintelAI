@@ -1,5 +1,8 @@
 """Remove the test pollution identified by the reconciliation inventory.
 
+LEGACY (step 20): a one-off for the reconciliation recorded in ``docs/reconciliation/`` (already applied to the
+development database). A fresh setup has no test pollution and never needs it. Kept for the record.
+
 Targets are recomputed from the target database and stores with the same
 classification as ``reconcile_inventory.py``, and every target must also be
 classified ``test_pollution`` in the committed inventory (``--inventory``).

@@ -1,0 +1,25 @@
+/* The font variables and the metric-matched fallback faces (step 20). The values are the ones next/font/google
+   generated before, so text keeps the same size while the web fonts load (and if they fail). The @font-face rules of
+   the web fonts themselves come from app/fonts.ts. */
+:root {
+  --font-display: 'Libre Baskerville', 'Libre Baskerville Fallback';
+  --font-ui: 'IBM Plex Sans', 'IBM Plex Sans Fallback';
+}
+
+@font-face {
+  font-family: 'Libre Baskerville Fallback';
+  src: local('Times New Roman');
+  ascent-override: 76.22%;
+  descent-override: 21.22%;
+  line-gap-override: 0%;
+  size-adjust: 127.26%;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Fallback';
+  src: local('Arial');
+  ascent-override: 101.32%;
+  descent-override: 27.18%;
+  line-gap-override: 0%;
+  size-adjust: 101.17%;
+}

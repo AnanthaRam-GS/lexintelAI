@@ -83,7 +83,8 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral"
 
-    database_url: str = "postgresql://user:password@localhost:5432/legalai"
+    # Required (step 20): no default. backend/app/db/session.py refuses to start without it outside APP_ENV=test.
+    database_url: str = ""
 
     chroma_persist_dir: str = "./chroma_store"
     chroma_collection_name: str = DEFAULT_CHROMA_COLLECTION

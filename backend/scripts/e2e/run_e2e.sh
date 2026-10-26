@@ -11,6 +11,7 @@
 #   E2E_REAL_LLM            1 to call the configured LLM provider (real mode only; off by default).
 #   LEGALAI_E2E_STATE_DIR   the run's directory (default: a new temporary directory).
 #   E2E_PYTHON              Python to run the backend (default: .venv/bin/python, else python).
+#   E2E_ALLOW_DATABASE      real mode only: also allow this exact database name (setup_e2e.py; step 20).
 #
 # Playwright starts the API (uvicorn) and the frontend (next build + next start) itself; see
 # frontend/playwright.config.ts. Traces, screenshots and the HTML report go to frontend/test-results and

@@ -32,6 +32,8 @@ jobs:
       - name: Non-DB test suites
         env:
           LEGALAI_SKIP_VECTOR_TESTS: "1"
+          # No database here: APP_ENV=test lets the app import without DATABASE_URL (step 20).
+          APP_ENV: test
         run: |
           set -o pipefail
           backend/scripts/dev/run_nondb_suites.sh -v 2>&1 | tee nondb.log

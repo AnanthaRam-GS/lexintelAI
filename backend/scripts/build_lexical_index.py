@@ -69,6 +69,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--document-id")
     parser.add_argument("--k1", type=float, default=DEFAULT_K1)
     parser.add_argument("--b", type=float, default=DEFAULT_B)
+    parser.add_argument("--summary-out", type=Path, default=LEXICAL_SUMMARY, help="Where to write the build summary (default: the committed manifest).")
     return parser
 
 
@@ -84,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
         index.reset()
     build = {"stats_only": True, "indexed_chunks": index.count()} if args.stats and index.count() else index.build(chunks, rebuild=args.rebuild)
     summary = summarize(chunks, build, index, args.persist_dir)
-    LEXICAL_SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    args.summary_out.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     return 0 if summary["indexed_chunk_count"] == len(chunks) and summary["duplicate_chunk_ids"] == 0 and summary["empty_tokenized_docs"] == 0 else 1
 

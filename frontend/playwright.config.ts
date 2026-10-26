@@ -44,7 +44,7 @@ export default defineConfig({
     },
     {
       // E2E_SKIP_BUILD=1 reuses an existing .next build (CI builds in an earlier step). E2E_NEXT_DEV=1 serves
-      // with `next dev` instead, for machines that cannot reach Google Fonts during `next build`.
+      // with `next dev` instead of a production build.
       command: process.env.E2E_NEXT_DEV
         ? 'npx next dev -p 3000'
         : process.env.E2E_SKIP_BUILD

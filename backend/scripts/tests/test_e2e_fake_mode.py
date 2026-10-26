@@ -43,6 +43,10 @@ def settings_for(app_env: str, **values) -> Settings:
     return Settings(_env_file=None, app_env=app_env, legalai_e2e_fake_providers=True, **values)
 
 
+# DATABASE_URL is required outside APP_ENV=test (step 20); importing the app never connects, so any URL will do.
+UNCONNECTABLE_DATABASE_URL = "postgresql://unconfigured.invalid:5432/legalai_unconfigured"
+
+
 def run_python(code: str, **env: str) -> subprocess.CompletedProcess:
     # A fresh interpreter, so backend.main is imported with exactly these settings (env beats .env).
     clean = {key: value for key, value in os.environ.items() if not key.startswith(("LEGALAI_E2E", "APP_ENV"))}
@@ -74,7 +78,9 @@ class RefusedOutsideTestTests(unittest.TestCase):
     def test_the_app_does_not_start_with_the_flag_outside_test(self) -> None:
         for env in ("development", "production"):
             with self.subTest(app_env=env):
-                completed = run_python("import backend.main", APP_ENV=env, LEGALAI_E2E_FAKE_PROVIDERS="1", JWT_SECRET_KEY="k" * 48)
+                completed = run_python(
+                    "import backend.main", APP_ENV=env, LEGALAI_E2E_FAKE_PROVIDERS="1", JWT_SECRET_KEY="k" * 48, DATABASE_URL=UNCONNECTABLE_DATABASE_URL
+                )
                 self.assertNotEqual(completed.returncode, 0)
                 self.assertIn("InsecureConfigurationError", completed.stderr)
                 self.assertIn("LEGALAI_E2E_FAKE_PROVIDERS is set outside APP_ENV=test", completed.stderr)
@@ -89,6 +95,7 @@ class RefusedOutsideTestTests(unittest.TestCase):
             """,
             APP_ENV="development",
             JWT_SECRET_KEY="k" * 48,
+            DATABASE_URL=UNCONNECTABLE_DATABASE_URL,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertEqual(completed.stdout.split(), ["[]", "{}"])

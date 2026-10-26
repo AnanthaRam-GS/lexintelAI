@@ -27,6 +27,8 @@ target_metadata = Base.metadata
 
 # Override sqlalchemy.url with the database_url from Settings
 settings = Settings()
+if not (settings.database_url or "").strip():
+    raise SystemExit("DATABASE_URL is not set: copy .env.example to .env and set it (README.md, \"Configure\").")
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 

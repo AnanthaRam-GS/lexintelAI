@@ -48,6 +48,8 @@ Thumbs.db
 chroma_store/
 chroma_store_mock/
 bm25_store/
+# build_indexes.py summaries (default: next to the Chroma directory)
+index_build_summaries/
 
 # Local acquired judgment binaries
 data/raw/judgments/indiankanoon/*
