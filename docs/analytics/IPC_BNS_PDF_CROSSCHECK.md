@@ -178,4 +178,7 @@ Mapping rows: 370. Crime heads: 159.
 | 78 (125) | Other IPC/BNS crimes | — | — | not a pair (one side printed) | — |
 | 79 (126) | Total Cognizable IPC/BNS crimes | — | — | not a pair (one side printed) | — |
 
-Candidate rows for missing sections (not loaded): 68
+Rows for the missing sections: 68, in `data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv`. Since
+migration 0011 (step 19b) `load_ipc_bns.py` loads them as `source = NCRB_CII_2024_T1A4` with `source_page` and
+`change_type` NULL (no source gives one). The cross-check above compares with the CYTRAIN rows only. Group-label
+CYTRAIN rows are kept as they are until CYTRAIN can be re-read. The whole mapping is UNREVIEWED for legal review.

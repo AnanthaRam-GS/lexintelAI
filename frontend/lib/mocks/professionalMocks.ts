@@ -222,6 +222,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_description:
       'Murder punished with death or imprisonment for life; Section 103(2) covers mob lynching',
     change_type: 'Substantive Expansion',
+    source: 'CYTRAIN',
   },
   {
     ipc_section: 'Section 420',
@@ -229,6 +230,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_section: 'Section 318(4)',
     bns_description: 'Consolidated under Chapter on Offences Against Property',
     change_type: 'Relocated & Consolidated',
+    source: 'CYTRAIN',
   },
   {
     ipc_section: 'Section 124A',
@@ -237,6 +239,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_description:
       'Act endangering sovereignty, unity and integrity of India (omits sedition terminology)',
     change_type: 'Substantive Replacement',
+    source: 'CYTRAIN',
   },
   {
     ipc_section: 'Section 376',
@@ -245,6 +248,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_description:
       'Consolidated under Offences Against Women and Children with enhanced minimum penalties',
     change_type: 'Substantive Modification',
+    source: 'CYTRAIN',
   },
   {
     ipc_section: 'Section 304A',
@@ -253,6 +257,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_description:
       'Negligent acts causing death; 106(2) provides severe penalty for hit-and-run without reporting',
     change_type: 'Substantive Expansion',
+    source: 'CYTRAIN',
   },
   {
     ipc_section: 'Section 498A',
@@ -261,6 +266,7 @@ export const mockIpcBnsMappingData: IpcBnsMappingRow[] = [
     bns_description:
       'Cruelty defined separately with objective mental and physical distress criteria',
     change_type: 'Bifurcated & Clarified',
+    source: 'CYTRAIN',
   },
 ];
 

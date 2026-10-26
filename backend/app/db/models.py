@@ -371,7 +371,17 @@ class IpcBnsMapping(Base):
     ipc_description = Column(Text, nullable=False)
     bns_section = Column(String(50), nullable=True, index=True)
     bns_description = Column(Text, nullable=True)
-    change_type = Column(String(50), nullable=False)
+    # NULL only for a non-CYTRAIN row: no source gives its change type, and none is guessed (migration 0011).
+    change_type = Column(String(50), nullable=True)
+    # CYTRAIN (correspondence table) or NCRB_CII_2024_T1A4 (a pair printed in NCRB Crime in India 2024, Table 1A.4).
+    source = Column(String(40), nullable=False, index=True)
+    # The printed table page of an NCRB row.
+    source_page = Column(Integer, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("source IN ('CYTRAIN', 'NCRB_CII_2024_T1A4')", name="ck_ipc_bns_mapping_source"),
+        CheckConstraint("change_type IS NOT NULL OR source <> 'CYTRAIN'", name="ck_ipc_bns_mapping_change_type_source"),
+    )
 
 
 class NcrbStat(Base):

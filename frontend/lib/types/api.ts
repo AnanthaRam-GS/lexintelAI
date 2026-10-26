@@ -131,8 +131,26 @@ export interface IpcBnsMappingRow {
   ipc_description: string;
   bns_section?: string | null;
   bns_description?: string | null;
-  change_type: string;
+  /** Null when the source gives no change type (an NCRB-printed pair); never guessed. */
+  change_type: string | null;
+  /** CYTRAIN (correspondence table) or NCRB_CII_2024_T1A4 (a pair printed in NCRB Table 1A.4). */
+  source: string;
+  /** The printed table page of an NCRB row. */
+  source_page?: number | null;
 }
+
+/** "NCRB 2024, Table 1A.4, p. 50" for a PDF-printed pair; the CYTRAIN table otherwise. */
+export function ipcBnsSourceLabel(row: Pick<IpcBnsMappingRow, 'source' | 'source_page'>): string {
+  if (row.source === 'NCRB_CII_2024_T1A4') {
+    return row.source_page == null
+      ? 'NCRB 2024, Table 1A.4'
+      : `NCRB 2024, Table 1A.4, p. ${row.source_page}`;
+  }
+  if (row.source === 'CYTRAIN') return 'NCRB CYTRAIN correspondence table';
+  return row.source;
+}
+
+export const CHANGE_TYPE_NOT_SPECIFIED_LABEL = 'Not specified';
 
 export interface NcrbStatPoint {
   year: number;

@@ -54,7 +54,7 @@ from backend.app.services.judgment_outcomes import FIELDS, OUTCOME_METHOD, extra
 from backend.app.services.judgment_sections import EXTRACTION_METHOD, extract_section_mentions, regime_for, statute_regimes  # noqa: E402
 from backend.scripts.reconcile_common import REPO_ROOT, alembic_version, resolve_database  # noqa: E402
 
-REQUIRED_REVISION = "0010_ncrb_section_labels"
+REQUIRED_REVISION = "0011_ipc_bns_source"
 EXCERPT_CHARS = 160
 REVIEWED = "REVIEWED"
 UNREVIEWED = "UNREVIEWED"

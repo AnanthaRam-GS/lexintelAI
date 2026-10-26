@@ -85,6 +85,54 @@ describe('Professional Analytics Dashboard', () => {
     expect(screen.queryByText('Section 302')).not.toBeInTheDocument();
   });
 
+  it('shows each mapping row source and "Not specified" for a missing change type', async () => {
+    vi.spyOn(analyticsApi, 'getIpcBnsMap').mockResolvedValue([
+      {
+        ipc_section: '302',
+        ipc_description: 'Punishment for murder.',
+        bns_section: '103',
+        bns_description: 'Punishment for murder.',
+        change_type: 'DIRECT',
+        source: 'CYTRAIN',
+        source_page: null,
+      },
+      {
+        ipc_section: '153A',
+        ipc_description: 'Promoting enmity between groups (printed head)',
+        bns_section: '196',
+        bns_description: 'Promoting enmity between groups (printed head)',
+        change_type: null,
+        source: 'NCRB_CII_2024_T1A4',
+        source_page: 50,
+      },
+    ]);
+    render(<ProfessionalAnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByTestId('tab-offense-trends')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /IPC-BNS Map/i }));
+
+    const sources = screen.getAllByTestId('mapping-source').map((cell) => cell.textContent);
+    expect(sources).toEqual(['NCRB CYTRAIN correspondence table', 'NCRB 2024, Table 1A.4, p. 50']);
+    expect(screen.getByText('DIRECT')).toBeInTheDocument();
+    const notSpecified = screen.getByTestId('change-type-not-specified');
+    expect(notSpecified).toHaveTextContent('Not specified');
+    expect(notSpecified).toHaveAttribute('title', expect.stringMatching(/none is assumed/));
+
+    // The search handles the null change type and matches the source and "Not specified".
+    const search = screen.getByPlaceholderText(/Search section or description.../i);
+    fireEvent.change(search, { target: { value: 'table 1a.4' } });
+    expect(screen.getAllByTestId('mapping-source').map((cell) => cell.textContent)).toEqual([
+      'NCRB 2024, Table 1A.4, p. 50',
+    ]);
+    fireEvent.change(search, { target: { value: 'not specified' } });
+    expect(screen.getByText('153A')).toBeInTheDocument();
+    expect(screen.queryByText('302')).not.toBeInTheDocument();
+    fireEvent.change(search, { target: { value: 'direct' } });
+    expect(screen.getByText('302')).toBeInTheDocument();
+    expect(screen.queryByText('153A')).not.toBeInTheDocument();
+  });
+
   it('switches to NCRB Statistics tab and renders state crime metrics', async () => {
     render(<ProfessionalAnalyticsPage />);
 

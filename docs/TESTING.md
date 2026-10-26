@@ -6,7 +6,7 @@ from the repository root. Frontend tests live in `frontend` and run with Vitest.
 The Python suites are split in two:
 
 - **Non-DB suites** use mocks, fixtures, and temporary directories only.
-- **DB-backed suites** (the 12 modules in `backend/scripts/dev/db_test_modules.txt`) write to PostgreSQL. They run
+- **DB-backed suites** (the 13 modules in `backend/scripts/dev/db_test_modules.txt`) write to PostgreSQL. They run
   only against an isolated test database through `backend/scripts/tests/db_test_bootstrap.py`.
 
 Every test runs from a clean checkout (CI, below). Nothing reads `.env`, the real corpus, the stores or the model

@@ -23,7 +23,8 @@ group labels ("305, 306") and clause forms ("65(1)") match the NCRB labels.
 Outputs (``--out-dir``): ``crosscheck.md`` (per head and per section) and ``pdf_pair_candidates.csv``: for each head
 with a missing IPC section, one candidate row per printed BNS section, in the mapping's own convention (the printed IPC
 group as ``ipc_section``, one BNS section per row), with the printed head as both descriptions, ``change_type`` left
-empty (no source gives one) and the PDF page as attribution. Candidates are not loaded anywhere.
+empty (no source gives one), the attribution text and the table page (``source_page``). ``load_ipc_bns.py --source
+ncrb`` loads them as ``NCRB_CII_2024_T1A4`` rows (step 19b).
 
 Usage:
     .venv/bin/python backend/scripts/crosscheck_ipc_bns_pdf_pairs.py --database-url-env DATABASE_URL --out-dir <dir>
@@ -48,7 +49,7 @@ from backend.scripts.reconcile_common import REPO_ROOT, connect, resolve_databas
 V2_CSV = REPO_ROOT / "data/processed/ncrb/ncrb_stats_2024_v2.csv"
 MAPPING_CSV = REPO_ROOT / "data/processed/ipc_bns/ipc_bns_mapping.csv"
 ATTRIBUTION = "NCRB Crime in India 2024, Vol. I, Table 1A.4, p. {page}"
-CANDIDATE_FIELDS = ("ipc_section", "ipc_description", "bns_section", "bns_description", "change_type", "source", "pdf_page")
+CANDIDATE_FIELDS = ("ipc_section", "ipc_description", "bns_section", "bns_description", "change_type", "source", "source_page", "pdf_page")
 
 
 def printed_heads() -> dict[str, dict[str, Any]]:
@@ -143,6 +144,7 @@ def candidates(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "bns_description": entry["head_printed"],
                 "change_type": "",
                 "source": ATTRIBUTION.format(page=entry["table_page"]),
+                "source_page": entry["table_page"],  # loaded as ipc_bns_mapping.source_page (migration 0011)
                 "pdf_page": entry["pdf_page"],
             })
     return rows
@@ -176,7 +178,13 @@ def write_report(results: list[dict[str, Any]], rows: list[dict[str, Any]], mapp
         lines.append(
             f"| {entry['table_page']} ({entry['pdf_page']}) | {entry['head']} | {entry['ipc_section'] or '—'} | {entry['bns_section'] or '—'} | {entry['status']} | {detail} |"
         )
-    lines += ["", f"Candidate rows for missing sections (not loaded): {len(rows)}"]
+    lines += [
+        "",
+        f"Rows for the missing sections: {len(rows)}, in `data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv`. Since",
+        "migration 0011 (step 19b) `load_ipc_bns.py` loads them as `source = NCRB_CII_2024_T1A4` with `source_page` and",
+        "`change_type` NULL (no source gives one). The cross-check above compares with the CYTRAIN rows only. Group-label",
+        "CYTRAIN rows are kept as they are until CYTRAIN can be re-read. The whole mapping is UNREVIEWED for legal review.",
+    ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return {**{f"heads_{k}": v for k, v in per_head.items()}, **{f"sections_{k}": v for k, v in per_section.items()}}
 

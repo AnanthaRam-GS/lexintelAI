@@ -124,10 +124,11 @@ def load_analytics(db: Any) -> dict[str, Any]:
     from backend.scripts.produce_analytics_data import produce
 
     mapping = load_ipc_bns_mapping(db)
+    ncrb_mapping = load_ipc_bns_mapping(db, source="NCRB_CII_2024_T1A4")  # PDF-printed pairs (step 19b)
     ncrb = load_ncrb_stats(db)
     produced = produce(db, dry_run=False)
     db.commit()
-    return {"ipc_bns_rows": mapping.get("inserted"), "ncrb_rows": ncrb.get("inserted"), "sections": dict(produced.get("sections", {}))}
+    return {"ipc_bns_rows": mapping.get("inserted"), "ipc_bns_ncrb_rows": ncrb_mapping.get("inserted"), "ncrb_rows": ncrb.get("inserted"), "sections": dict(produced.get("sections", {}))}
 
 
 def write_accounts(db: Any, state_dir: Path) -> None:
