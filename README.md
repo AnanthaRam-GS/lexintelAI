@@ -185,7 +185,7 @@ This is one entry point for the whole build. It:
 4. adds the index metadata from PostgreSQL;
 5. runs the store-consistency verifier, and exits non-zero unless it reports `CONSISTENT`.
 
-It takes about 15 minutes on CPU. The build summaries go to `index_build_summaries/` next to the Chroma directory;
+It takes 15 to 40 minutes on CPU (13 and 38 minutes on an Apple Silicon laptop in the step 20 runs). The build summaries go to `index_build_summaries/` next to the Chroma directory;
 the committed manifests are not rewritten.
 
 ### 10. Run
@@ -198,9 +198,13 @@ curl -s http://127.0.0.1:8000/health          # in another terminal
 ```bash
 cd frontend
 npm ci
-cp .env.example .env.local
+echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:8000" > .env.local
 npm run dev                                    # http://localhost:3000
 ```
+
+Use `localhost` (not `127.0.0.1`) for the API, the same host name as the frontend. The sign-in cookie is
+`SameSite=Lax`, so the browser does not send it from `localhost:3000` to `127.0.0.1:8000` (a different site): signing
+in would succeed and then bounce back to the sign-in page. The seed accounts from step 4 sign in at `/login`.
 
 `/health` reports the database, the stores and the model warm-up. To check the analytics endpoints against the
 database, run `APP_ENV=test LEGALAI_MODEL_WARMUP=false .venv/bin/python backend/scripts/verify_analytics.py
@@ -259,7 +263,7 @@ sets the same value unless noted.
 | `INDIAN_KANOON_API_TOKEN`, `INDIAN_KANOON_BASE_URL` | corpus acquisition scripts only | empty, `https://api.indiankanoon.org` | to acquire |
 | `OLLAMA_*` | local LLM stub; not used by any product path | see `.env.example` | no |
 | `TEST_DATABASE_URL` | DB-backed test suites only; a `*_test` database | none | for DB tests |
-| `NEXT_PUBLIC_API_BASE_URL` (`frontend/.env.local`) | backend URL for the frontend | from `frontend/.env.example` | yes |
+| `NEXT_PUBLIC_API_BASE_URL` (`frontend/.env.local`) | backend URL for the frontend; use the frontend's host name (`localhost`) | `http://localhost:8000` (step 10) | yes |
 
 ## Project structure
 
