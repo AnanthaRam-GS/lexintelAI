@@ -8,7 +8,7 @@ sqlalchemy
 alembic
 pydantic
 pydantic-settings
-pyjwt
+pyjwt>=2.15.0  # step 20b: GHSA-x33g-cr3x-6449, GHSA-42vr-xj54-vc7v (docs/SECURITY.md)
 bcrypt
 python-multipart
 pandas

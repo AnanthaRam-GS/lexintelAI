@@ -71,6 +71,8 @@ cp .env.example .env
 
 Edit `.env` and fill in the values marked `[required]`:
 
+- `APP_ENV`: `development` here (`.env.example` already sets it). It has no default: the backend refuses to start
+  when it is unset or unknown;
 - `DATABASE_URL`: `postgresql://<user>:<password>@localhost:5432/legalai`;
 - `JWT_SECRET_KEY`: a generated secret;
 - `SEED_LAWYER_PASSWORD` and `SEED_ADMIN_PASSWORD`: at least 12 characters each.
@@ -198,11 +200,11 @@ curl -s http://127.0.0.1:8000/health          # in another terminal
 ```bash
 cd frontend
 npm ci
-echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:8000" > .env.local
+cp .env.example .env.local                     # NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 npm run dev                                    # http://localhost:3000
 ```
 
-Use `localhost` (not `127.0.0.1`) for the API, the same host name as the frontend. The sign-in cookie is
+Keep `localhost` (not `127.0.0.1`) for the API, the same host name as the frontend. The sign-in cookie is
 `SameSite=Lax`, so the browser does not send it from `localhost:3000` to `127.0.0.1:8000` (a different site): signing
 in would succeed and then bounce back to the sign-in page. The seed accounts from step 4 sign in at `/login`.
 
@@ -236,8 +238,8 @@ sets the same value unless noted.
 | `JWT_SECRET_KEY` | signs the auth tokens; at least 32 bytes | none | **yes** (except `APP_ENV=test`) |
 | `SEED_LAWYER_PASSWORD`, `SEED_ADMIN_PASSWORD` | passwords for `seed_users.py` | none | to seed |
 | `GROQ_API_KEY` / `GEMINI_API_KEY` | answer providers | none | for answers |
-| `APP_ENV` | `development`, `test` or `production` (production: secure cookies, stricter checks) | `development` | no |
-| `BACKEND_HOST`, `BACKEND_PORT` | backend bind address | `0.0.0.0`, `8000` | no |
+| `APP_ENV` | `development`, `test` or `production` (production: secure cookies, stricter checks, no console email) | none: startup refuses unset or unknown values; the test runners set `test` | **yes** |
+| `BACKEND_HOST`, `BACKEND_PORT` | backend bind address. Deployments that must accept outside connections set `0.0.0.0` explicitly (uvicorn's `--host` binds the socket) | `127.0.0.1`, `8000` | no |
 | `FRONTEND_ORIGIN` | allowed CORS origin | `http://localhost:3000` | no |
 | `LEGALAI_LLM_PROVIDER`, `LEGALAI_LLM_FALLBACK_PROVIDER` | primary and fallback provider (`groq`, `gemini`) | `gemini`, `gemini` (`.env.example`: `groq`, `gemini`) | no |
 | `GROQ_MODEL`, `GROQ_BASE_URL`, `GEMINI_MODEL` | provider models and endpoint | example: `openai/gpt-oss-120b`, Groq API, `gemini-3.7-flash` | with that provider |
@@ -256,7 +258,7 @@ sets the same value unless noted.
 | `OCR_*`, `TESSERACT_CMD` | OCR fallback ([docs/OCR.md](docs/OCR.md)) | `OCR_ENABLED=true`, `OCR_LANGUAGE=eng` | no |
 | `MAX_UPLOAD_SIZE_MB`, `MAX_QUERY_LENGTH` | request limits | `10`, `5000` | no |
 | `VERIFICATION_DOCUMENT_DIR` | private directory for lawyer verification proofs | `./data/private/lawyer_verification` | no |
-| `EMAIL_DELIVERY_MODE` | `console` (codes in the backend log) or `smtp` | `console` | `smtp` in production |
+| `EMAIL_DELIVERY_MODE` | `console` (codes in the backend log) or `smtp`; `console` is refused at startup with `APP_ENV=production` | `console` | `smtp` in production |
 | `SMTP_*` | SMTP delivery | empty | with `smtp` |
 | `EXPOSE_DEV_VERIFICATION_TOKENS`, `EMAIL_OTP_*` | verification codes | `false`; see `.env.example` | no |
 | `LEGAL_NER_*`, `INLEGALBERT_*` | optional NER experiments; off by default | see `.env.example` | no |
@@ -286,7 +288,6 @@ chroma_store/, bm25_store/ the indexes (gitignored; built in step 9)
 
 Legacy scripts are kept for the record but are not part of the setup:
 
-- `setup_db.sh` and `setup_sqlite.py`: early prototypes with fixed passwords;
 - `backend/scripts/reconcile_backfill.py`: pinned to migration 0005;
 - `backend/scripts/reconcile_cleanup.py`: a one-off reconciliation.
 
@@ -325,8 +326,14 @@ Each says so in its header.
 
 ## Team and credits
 
-Contributors, from the Git history: Anantha Ram G S, Rama Roshinee S V (backend, database and analytics), Gugan
-(GitHub: Gugan3007), and Ravindran G.
+| Name | Roll number | Role |
+| --- | --- | --- |
+| Anantha Ram G S | CB.SC.U4CSE23408 | Backend & AI Pipeline Lead |
+| Rama Roshinee S V | CB.SC.U4CSE23645 | Backend Developer |
+| Ravindran G | CB.SC.U4CSE23647 | Frontend Developer |
+| Gugan S S | CB.SC.U4CSE23416 | Frontend Developer |
+
+Guide: Dr. Sabarish B A, Assistant Professor, Department of CSE.
 
 Judgment data sourced from the Indian Kanoon API. Crime statistics from the National Crime Records Bureau,
 *Crime in India*. IPC↔BNS correspondence from the CYTRAIN table and NCRB *Crime in India 2024*, Table 1A.4.

@@ -141,16 +141,21 @@ class SeedCredentialTests(SecurityTestCase):
     def test_app_startup_runs_the_checks(self) -> None:
         user, _ = make_user(role="lawyer", password=historical_seed_passwords()[0])
         self.addCleanup(reset_password, user.id)
+        # A valid production configuration otherwise (smtp email, step 20b), so the seed password is what refuses.
         with patch.object(main_module.settings, "app_env", "production"), patch.object(
             main_module.settings, "jwt_secret_key", secrets.token_urlsafe(48)
-        ), patch.object(main_module.settings, "legalai_model_warmup", False):
-            with self.assertRaises(startup_checks.InsecureConfigurationError):
+        ), patch.object(main_module.settings, "legalai_model_warmup", False), patch.object(
+            main_module.settings, "email_delivery_mode", "smtp"
+        ):
+            with self.assertRaisesRegex(startup_checks.InsecureConfigurationError, "development seed password"):
                 with TestClient(app):
                     pass
         reset_password(user.id)
         with patch.object(main_module.settings, "app_env", "production"), patch.object(
             main_module.settings, "jwt_secret_key", secrets.token_urlsafe(48)
-        ), patch.object(main_module.settings, "legalai_model_warmup", False), patch.object(main_module, "reap_stale_jobs", return_value=[]):
+        ), patch.object(main_module.settings, "legalai_model_warmup", False), patch.object(
+            main_module.settings, "email_delivery_mode", "smtp"
+        ), patch.object(main_module, "reap_stale_jobs", return_value=[]):
             with TestClient(app) as client:
                 self.assertEqual(client.get("/health").status_code, 200)
 

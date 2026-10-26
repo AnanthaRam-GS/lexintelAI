@@ -5,6 +5,8 @@
 - Outside development and test, no user may have a password that verifies against
   a historical seed password.
 - ``LEGALAI_E2E_FAKE_PROVIDERS`` (test fakes for browser end-to-end runs) is refused outside ``APP_ENV=test``.
+- ``APP_ENV`` must be set to one of development, test or production; it has no default (step 20b).
+- ``EMAIL_DELIVERY_MODE=console`` (verification codes in the log) is refused with ``APP_ENV=production`` (step 20b).
 
 Errors never include the secret, any password or any email; only counts and user IDs.
 """
@@ -22,6 +24,7 @@ logger = logging.getLogger("legalai.security")
 
 MIN_JWT_SECRET_BYTES = 32
 SEED_CHECK_EXEMPT_ENVS = {"development", "test"}
+APP_ENVS = ("development", "test", "production")
 
 
 class InsecureConfigurationError(RuntimeError):
@@ -30,6 +33,26 @@ class InsecureConfigurationError(RuntimeError):
 
 def app_env(settings: Settings) -> str:
     return (settings.app_env or "").strip().casefold()
+
+
+def validate_app_env(settings: Settings) -> None:
+    """APP_ENV has no default: an unset or unknown value refuses to start instead of silently meaning development."""
+    value = app_env(settings)
+    if value not in APP_ENVS:
+        problem = "APP_ENV is not set" if not value else f"APP_ENV={settings.app_env!r} is not a known environment"
+        raise InsecureConfigurationError(
+            f"{problem}. Set APP_ENV in .env to one of {', '.join(APP_ENVS)} (see README.md, \"Configure\")."
+        )
+
+
+def validate_email_delivery(settings: Settings) -> None:
+    """Console delivery writes verification codes to the log; production must send them (EMAIL_DELIVERY_MODE=smtp)."""
+    mode = (settings.email_delivery_mode or "").strip().casefold()
+    if app_env(settings) == "production" and mode == "console":
+        raise InsecureConfigurationError(
+            "EMAIL_DELIVERY_MODE=console is refused with APP_ENV=production: it writes verification codes to the log. "
+            "Set EMAIL_DELIVERY_MODE=smtp and the SMTP_* settings."
+        )
 
 
 def jwt_secret_problem(secret: str | None) -> str | None:
@@ -90,6 +113,8 @@ def validate_e2e_fake_providers(settings: Settings) -> None:
 
 
 def run_startup_security_checks(settings: Settings, session_factory: Callable[[], Any]) -> None:
+    validate_app_env(settings)
+    validate_email_delivery(settings)
     validate_e2e_fake_providers(settings)
     validate_jwt_secret(settings)
     validate_no_seed_passwords(settings, session_factory)

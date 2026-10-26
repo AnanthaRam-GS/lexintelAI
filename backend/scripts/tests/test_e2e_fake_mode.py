@@ -68,7 +68,8 @@ class RefusedOutsideTestTests(unittest.TestCase):
             raise AssertionError("the database must not be opened")
 
         with self.assertRaisesRegex(InsecureConfigurationError, "LEGALAI_E2E_FAKE_PROVIDERS"):
-            run_startup_security_checks(settings_for("production", jwt_secret_key="x" * 48), no_database)
+            # Otherwise a valid production configuration (smtp email, step 20b), so only the fake-provider flag is wrong.
+            run_startup_security_checks(settings_for("production", jwt_secret_key="x" * 48, email_delivery_mode="smtp"), no_database)
 
     def test_installer_refuses_outside_test_even_when_called_directly(self) -> None:
         for env in NOT_TEST_ENVS:

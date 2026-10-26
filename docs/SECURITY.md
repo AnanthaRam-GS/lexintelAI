@@ -194,12 +194,35 @@ pydantic, typing-inspection and annotated-doc already satisfy FastAPI 0.133. `np
 so undici and zod were updated with `npm update undici zod`. All backend (non-DB and DB), frontend and end-to-end
 suites pass on the new versions.
 
-### Not fixed (recorded; decisions pending)
+### Not fixed in step 20 (see the step 20b decisions below)
 
 | Package | Severity | Advisory | Why not fixed / exposure |
 |---|---|---|---|
-| filelock 3.32.5 | high (1), low (2, Windows only) | GHSA-v4x8-3wr5-3wq8, GHSA-567q-5qvw-pf92, GHSA-9vhv-jxww-xfm5 | The fix is 4.2.1, a major version released on 2026-10-17. The vulnerable `ReadWriteLock` is never used: Hugging Face and torch use `FileLock`, and chromadb has its own threading `ReadWriteLock`. Pending a decision on taking a 9-day-old major release. |
-| pyjwt 2.14.0 | medium (2) | GHSA-x33g-cr3x-6449, GHSA-42vr-xj54-vc7v | Neither path is used (HS256 with a shared secret; no JWKs, `PyJWKClient` or `verify_signature=False`). Step 13 planned 2.15.0 alongside the FastAPI upgrade; step 20 limited itself to FastAPI and Starlette, so this is pending a decision. |
+| filelock 3.32.5 | high (1), low (2, Windows only) | GHSA-v4x8-3wr5-3wq8, GHSA-567q-5qvw-pf92, GHSA-9vhv-jxww-xfm5 | The fix is 4.2.1, a major version released on 2026-10-17. The vulnerable `ReadWriteLock` is never used: Hugging Face and torch use `FileLock`, and chromadb has its own threading `ReadWriteLock`. Step 20b: risk accepted (below). |
+| pyjwt 2.14.0 | medium (2) | GHSA-x33g-cr3x-6449, GHSA-42vr-xj54-vc7v | Neither path is used (HS256 with a shared secret; no JWKs, `PyJWKClient` or `verify_signature=False`). Step 13 planned 2.15.0 alongside the FastAPI upgrade; step 20 limited itself to FastAPI and Starlette. Step 20b: upgraded to 2.15.0 (below). |
 | chromadb 1.5.9 | critical (2), high (2) | as in step 13 | No fixed release; Chroma HTTP server only, which LegalAI does not run. |
 | accelerate, mako, multidict, oauthlib, opentelemetry-api 1.44.0, setuptools 84.0.0 | medium / low | as in step 13, plus GHSA-xcq7-p3pf-p88h (opentelemetry-api) and GHSA-xmj3-9gf7-h52w (setuptools) | Not on a request path. |
 | vitest / @vitest/mocker ≤ 4.1.11 | moderate (2) | GHSA-qxg6-89mg-rqv8, GHSA-xp26-3454-mjgp | Dev-only test runner, never shipped. |
+
+## Step 20b decisions
+
+### Dependencies
+
+| Package | Decision | Reason |
+|---|---|---|
+| pyjwt | **Upgraded** 2.14.0 → 2.15.0 | Clears GHSA-x33g-cr3x-6449 and GHSA-42vr-xj54-vc7v (moderate). `requirements.txt` has the floor `pyjwt>=2.15.0`. The lock was re-resolved in a fresh venv against the existing pins, and only the PyJWT line changed. |
+| filelock 3.32.5 | **Risk accepted** (high GHSA-v4x8-3wr5-3wq8; low, Windows-only GHSA-567q-5qvw-pf92 and GHSA-9vhv-jxww-xfm5) | The vulnerable code path is unused: nothing imports filelock's `ReadWriteLock`. Hugging Face and torch use `FileLock`, and chromadb has its own threading lock. The only fix is filelock 4.2.1, a new major version (released 2026-10-17), pulled in transitively by Hugging Face, torch and others. **Revisit** when a 4.x release has been out for a few weeks and the upstream packages declare support, or at once if LegalAI or a dependency starts using `ReadWriteLock`. |
+| next 16.4.1 | **Accepted** | Taken in step 20 for two critical RCE advisories (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr) and one high (GHSA-p3m5-59mp-jv5r) affecting 16.0.0–16.4.0. It was 12 days old at the time. A patch release that fixes critical RCEs outweighs the risk of a young release, and every frontend and end-to-end suite passes on it. |
+
+pip-audit (OSV) after step 20b: **14 advisories in 8 packages**: accelerate, multidict, chromadb (4), filelock (3), mako, oauthlib (2), opentelemetry-api and setuptools. All are recorded above, none on a request path. npm audit is unchanged: 2 moderate, in the dev-only test runner.
+
+### Configuration defaults (`core/startup_checks.py`)
+
+| Setting | Before | Now |
+|---|---|---|
+| `APP_ENV` | defaulted silently to `development` | **no default**: startup refuses an unset or unknown value (`InsecureConfigurationError: APP_ENV is not set…`). The test runners set `test` (`run_nondb_suites.sh`, the DB bootstrap, `run_e2e.sh`, CI). |
+| `EMAIL_DELIVERY_MODE` | `console` with `APP_ENV=production` failed only when a code was sent | **refused at startup** with `APP_ENV=production` (verification codes would go to the log); production uses `smtp` |
+| `BACKEND_HOST` | `0.0.0.0` | `127.0.0.1`; a deployment that must accept outside connections sets `0.0.0.0` explicitly. uvicorn's `--host` is what binds the socket; the README runs `--host 127.0.0.1`. |
+
+Tests: `backend/scripts/tests/test_safe_config_defaults.py`. Both refusals are checked by starting the real app (its lifespan) in a fresh interpreter.
+
