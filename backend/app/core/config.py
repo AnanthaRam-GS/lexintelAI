@@ -16,8 +16,11 @@ DEFAULT_CHROMA_COLLECTION = "legalai_trusted_judgments_v1"
 class Settings(BaseSettings):
     """Typed environment settings for future backend services."""
 
-    app_env: str = "development"
-    backend_host: str = "0.0.0.0"
+    # Required (step 20b): no default. development | test | production; startup refuses anything else
+    # (core/startup_checks.py). The test runners set it to test themselves.
+    app_env: str = ""
+    # Loopback by default (step 20b); a deployment that must accept outside connections sets 0.0.0.0 explicitly.
+    backend_host: str = "127.0.0.1"
     backend_port: int = 8000
     frontend_origin: str = "http://localhost:3000"
 
