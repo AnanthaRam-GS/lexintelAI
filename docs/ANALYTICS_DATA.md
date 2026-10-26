@@ -46,6 +46,12 @@ NCRB CSV. Seven pairs printed in the corrected table have no mapping row (for ex
 could not be regenerated, because the CYTRAIN source was unreachable. The details and the cross-check are in
 `docs/analytics/NCRB_CORRECTION.md`.
 
+Step 19: CYTRAIN was retried with TLS verification and is still unreachable (TCP timeout). A full cross-check of every
+pair printed in Table 1A.4 (`docs/analytics/IPC_BNS_PDF_CROSSCHECK.md`) finds 68 printed IPC sections with no mapping
+row and no exact contradiction. Rows for them, with PDF attribution, are prepared in
+`data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv` but not loaded until the schema can record their source
+and an unknown change type (proposed migration in `NCRB_CORRECTION.md`).
+
 ### NCRB statistics
 
 `data/processed/ncrb/ncrb_stats_2024_v2.csv` (6,201 rows, since step 15), from National

@@ -63,5 +63,28 @@ This dataset documents authoritative IPC-to-BNS section correspondences used for
 printed in the corrected NCRB table have no row here. Regeneration from CYTRAIN is blocked while
 `cytrain.ncrb.gov.in` is unreachable. See `docs/analytics/NCRB_CORRECTION.md`.
 
+## Step 19 (2026-10-26): CYTRAIN retry and printed-pair cross-check
+
+**TLS.** `backend/scripts/build_ipc_bns_mapping.py` no longer disables certificate verification. It used to set
+`ssl._create_default_https_context = ssl._create_unverified_context` for the whole process; it now fetches with
+`ssl.create_default_context(cafile=certifi.where())` (chain and host name checked).
+
+**Retry (one attempt, 2 of the 3 allowed requests, verified TLS):**
+
+| UTC | Request | Result |
+|---|---|---|
+| 2026-10-26T04:47:30Z | `GET https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html` through the script's `fetch()` | DNS resolves to 45.127.75.90; `URLError: <urlopen error timed out>` (`TimeoutError`) after 60 s |
+| 2026-10-26T04:48:46Z | bare TCP connect to 45.127.75.90:443 (no TLS) | `TimeoutError` after 30 s |
+
+The connection never reached a TLS handshake, so this is not a certificate problem. CYTRAIN stayed unreachable (as in
+step 15b, 2026-10-23), so the mapping was **not regenerated** and `ipc_bns_mapping.csv` is unchanged (370 rows).
+
+**Printed pairs.** Every IPC/BNS correspondence printed in the corrected NCRB Table 1A.4 was checked against the
+mapping (`backend/scripts/crosscheck_ipc_bns_pdf_pairs.py`; report `docs/analytics/IPC_BNS_PDF_CROSSCHECK.md`). Rows
+for the printed pairs the mapping lacks are prepared in `data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv`
+with their PDF attribution, but **not loaded**: `ipc_bns_mapping.change_type` is NOT NULL and must be one of DIRECT,
+SPLIT, MERGED, REPEALED, NO_DIRECT_EQUIVALENT, no source gives a change type for these rows, and the table has no
+column for a row's source. See the proposed migration in `docs/analytics/NCRB_CORRECTION.md`.
+
 ## Data quality note
 This dataset is a legal-mapping reference for Phase 0.4 analytics ingestion. It is not a substitute for full statutory interpretation or a final legal opinion. It intentionally excludes unsupported or uncertain mappings rather than guessing.

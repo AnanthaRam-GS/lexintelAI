@@ -5,6 +5,8 @@ import html
 import re
 import ssl
 import urllib.request
+
+import certifi
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
@@ -157,6 +159,20 @@ def lookup_bns_description(section_code, section_text):
     return section_match.group(1).strip() if section_match else text
 
 
+def tls_context() -> ssl.SSLContext:
+    """Verified TLS (certificate chain and host name) against certifi's CA bundle. Never disabled (step 19)."""
+    context = ssl.create_default_context(cafile=certifi.where())
+    context.check_hostname = True
+    context.verify_mode = ssl.CERT_REQUIRED
+    return context
+
+
+def fetch(url, timeout=60):
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(request, timeout=timeout, context=tls_context()) as response:
+        return response.read().decode("utf-8", "replace")
+
+
 def load_rows(path):
     with path.open(newline="", encoding="utf-8") as handle:
         return list(csv.DictReader(handle))
@@ -166,14 +182,10 @@ def main():
     ncrb_rows = load_rows(NCRB_PATH)
     labels = sorted({row["ipc_section"].strip() for row in ncrb_rows if row["ipc_section"].strip()})
 
-    ssl._create_default_https_context = ssl._create_unverified_context
-    request = urllib.request.Request(SOURCE_URL, headers={"User-Agent": "Mozilla/5.0"})
-    html = urllib.request.urlopen(request, timeout=180).read().decode("utf-8", "replace")
     parser = TableParser()
-    parser.feed(html)
+    parser.feed(fetch(SOURCE_URL))
 
-    bns_request = urllib.request.Request(BNS_TEXT_URL, headers={"User-Agent": "Mozilla/5.0"})
-    bns_html = urllib.request.urlopen(bns_request, timeout=180).read().decode("utf-8", "replace")
+    bns_html = fetch(BNS_TEXT_URL)
     bns_parser = BnsTextParser()
     bns_parser.feed(bns_html)
 
