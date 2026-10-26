@@ -150,7 +150,12 @@ chunks, and the chunk-universe fingerprint recorded in
 ```
 
 The models go to the Hugging Face cache (`~/.cache/huggingface/hub`). The backend loads them at startup
-(`LEGALAI_MODEL_WARMUP=true`).
+(`LEGALAI_MODEL_WARMUP=true`). The indexes and evaluations were built with these revisions:
+- BGE-M3 `5617a9f61b028005a4858fdac845db406aefb181`;
+- the reranker `953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e`.
+
+To check yours, run `cat ~/.cache/huggingface/hub/models--BAAI--bge-m3/refs/main`. If the upstream `main` has moved
+since, your vectors can differ slightly from the team's.
 
 ### 8. Produce the analytics
 
