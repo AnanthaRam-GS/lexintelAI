@@ -209,7 +209,15 @@ Evidence for the override:
 - The 2023 edition (`TABLE1A4.xlsx`) prints "Electricity/Power Supply Disputes".
 
 I scanned all 159 heads for the same artefact ("State/UT" inside a word) and for other evident misprints and found no
-other case. No other override is made.
+other case of a display misprint.
+
+**All overrides.** The printed values are always stored unchanged; an override changes only what is shown or parsed.
+
+| Kind | Printed (stored) | Override | Head | Approved | Evidence |
+|---|---|---|---|---|---|
+| Display label (`ncrb_display.py`) | `Rioting - n) ElectriState/UT/Power Supply Disputes` | `… Electricity/Power Supply Disputes` | Rioting n) | step 15b | above |
+| Section notation (`ncrb_sections.NOTATION_OVERRIDES`) | IPC `447-252` | parsed as `447-452` (IPC 447 … IPC 452) | Criminal Trespass | 2026-10-24 (PR #65) | "Notation overrides" below |
+| Section notation (`ncrb_sections.NOTATION_OVERRIDES`) | BNS `326(f),326(G) & 327(2)` | parsed as `326(f),326(g) & 327(2)` (case only) | Arson | 2026-10-24 (PR #65) | "Notation overrides" below |
 
 ### Section labels
 
@@ -358,3 +366,71 @@ Only the IPC label lists of the 39 Criminal Trespass rows changed. The Arson lab
 | Dev: dry runs, runs, second runs | each identical to the rehearsal; second runs 0 changes |
 | Dev: `verify_analytics.py` / store verifier | RECONCILED (3,544,608) / CONSISTENT; Chroma (21 tables) and BM25 identical to the backup copies; every table count unchanged |
 | Dev: filter | `IPC 447`, `IPC 450`, `IPC 452`: the 36 Criminal Trespass rows. `IPC 252`: only "Counterfeiting - a) Counterfeit Coin". `BNS 326`: Arson and Mischief |
+
+## Step 19: mapping follow-ups (2026-10-26)
+
+### CYTRAIN and TLS
+
+`build_ipc_bns_mapping.py` now verifies TLS (certifi). One retry (2 requests) found `cytrain.ncrb.gov.in` still
+unreachable at the TCP level (connect timeout to 45.127.75.90:443; no TLS handshake took place). Details are in
+`data/raw/ipc_bns/SOURCES.md`. The mapping was not regenerated: still 370 rows, unchanged.
+
+### Every printed pair against the mapping
+
+`backend/scripts/crosscheck_ipc_bns_pdf_pairs.py` reads the labels stored in `ncrb_stats` (checked equal to the parsed
+printed text on every head) and compares each crime head's printed IPC sections with the mapping. The full table, with
+table and PDF pages, is in `docs/analytics/IPC_BNS_PDF_CROSSCHECK.md`.
+
+NCRB prints a **head-level** correspondence (a set of IPC sections against a set of BNS sections). The cross-check
+never pairs individual sections the PDF does not pair.
+
+| Crime heads (159) | Count |
+|---|---:|
+| Every printed IPC section covered by the mapping | 90 |
+| At least one printed IPC section missing from the mapping | 26 |
+| A printed IPC section the mapping maps only elsewhere | 1 |
+| Only one side printed (no pair) | 42 |
+
+| IPC sections in printed pairs (346) | Count |
+|---|---:|
+| covered, by a single-section mapping row (exact) | 48 |
+| covered, only by a group-label mapping row | 228 |
+| missing from the mapping | 68 |
+| maps elsewhere, only by a group-label row | 2 |
+| maps elsewhere, by a single-section row (an exact contradiction) | **0** |
+
+- **The 7 pairs from step 15b are all missing:** 379, 384, 392, 396, 406, 411 and 153A.
+- **No contradiction:** IPC 255 and 256 (Counterfeiting Government Stamp, table p. 65) "map elsewhere" only through the
+  group label `177 to 188, 190, 194 to 216, 219 to 229, 255, 256, 268 to 271` taken from the old CSV's invented heads.
+  Such a row's BNS section belongs to one section of the group, which the stored mapping no longer records, so this is
+  not evidence against the printed pair. Neither side was changed.
+- **Weak coverage:** 228 of the 276 "covered" sections rest only on group-label rows, for the same reason. Regenerating
+  from CYTRAIN with the corrected IPC list (single-section lookups) would make them exact.
+
+### Rows for the missing pairs: prepared, not loaded
+
+`data/processed/ipc_bns/ipc_bns_pdf_pair_candidates.csv` has 68 rows: for each head with a missing section, the
+printed IPC group with one row per printed BNS section (the mapping's own convention), the printed crime head as both
+descriptions, and the attribution `NCRB Crime in India 2024, Vol. I, Table 1A.4, p. <table page>`. It includes all 7
+pairs. **They are not loaded**, because the schema cannot hold them without guessing:
+
+- `ipc_bns_mapping.change_type` is `NOT NULL` and must be one of DIRECT, SPLIT, MERGED, REPEALED,
+  NO_DIRECT_EQUIVALENT (`analytics.ALLOWED_CHANGE_TYPES`; the API contract and the frontend treat it as a required
+  string). The PDF gives no change type and CYTRAIN, which would, is unreachable.
+- The table has no column for a row's source, so the PDF attribution would be lost.
+
+**Proposed migration 0011 (needs your approval):** add `ipc_bns_mapping.source` (text, NOT NULL, backfilled
+`CYTRAIN SectionTableBNS (2026-09-04)` for the 370 existing rows), `source_page` (integer, nullable) and make
+`change_type` nullable; the API returns `change_type: null` for PDF-sourced rows, the contract and the frontend's IPC-BNS
+tab (which lower-cases `change_type`) handle null, and the loader accepts a blank change type only for rows whose source is
+the NCRB PDF. The 68 candidate rows would then load as `source = NCRB … p. N`, `change_type = null`.
+
+### Review status
+
+Every row remains **UNREVIEWED** pending legal review. Three kinds of entries are now distinguished:
+
+| Kind | Where | Status |
+|---|---|---|
+| CYTRAIN correspondence rows | `ipc_bns_mapping.csv`, loaded (370) | UNREVIEWED; IPC lookup list from the old CSV (step 15b) |
+| NCRB PDF-printed pairs | `ipc_bns_pdf_pair_candidates.csv` (68), not loaded | UNREVIEWED; awaiting the schema decision |
+| NCRB overrides | `ncrb_display.py`, `ncrb_sections.NOTATION_OVERRIDES` | approved misprint corrections, listed above |
