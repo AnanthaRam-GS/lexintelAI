@@ -71,6 +71,7 @@ from backend.app.services.local_document_map import (
 )
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter, groq_payload_schema
 from backend.app.services.llm_provider_chain import build_answer_adapter
+from backend.app.services.openai_compatible_adapter import PROFILE_NAMES, OpenAICompatibleAnswerAdapter, provider_profile
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
 from backend.app.services import professional_brief
@@ -170,7 +171,12 @@ def clear_retrieval_service_cache() -> None:
     _cached_retrieval_service.cache_clear()
 
 
-ANSWER_ADAPTER_FACTORIES = {"gemini": GeminiAnswerAdapter, "groq": GroqAnswerAdapter}
+ANSWER_ADAPTER_FACTORIES = {
+    "gemini": GeminiAnswerAdapter,
+    "groq": GroqAnswerAdapter,
+    # Step 21: OpenAI-compatible profiles (nvidia, ollama, and the disabled deepseek / openrouter).
+    **{name: (lambda settings, name=name: OpenAICompatibleAnswerAdapter(settings, name)) for name in PROFILE_NAMES},
+}
 
 
 def get_answer_adapter(settings: Settings = Depends(get_settings)):
@@ -181,9 +187,9 @@ def get_answer_adapter(settings: Settings = Depends(get_settings)):
     adapter = build_answer_adapter(settings, ANSWER_ADAPTER_FACTORIES)
     if adapter is not None:
         return adapter
-    # "ollama" and any other unrecognized primary provider fall through here deliberately:
-    # Ollama has no working live-generation path (see OllamaAnswerAdapter), and an
-    # explicit, controlled 503 is preferred over silently serving from another provider.
+    # An unrecognized primary provider falls through here deliberately: an explicit, controlled 503 is
+    # preferred over silently serving from another provider. ("ollama" is served by the OpenAI-compatible
+    # adapter since step 21, not by the frozen module's OllamaAnswerAdapter stub.)
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         detail={"code": "MODEL_PROVIDER_UNAVAILABLE", "message": "Configured answer model provider is unavailable."},
@@ -737,7 +743,7 @@ def run_frozen_query_pipeline(
             )
         log_product_context_metrics(
             provider=settings.legalai_llm_provider,
-            model=settings.gemini_model if settings.legalai_llm_provider == "gemini" else settings.groq_model,
+            model=getattr(adapter, "configured_model_id", ""),
             context_tier=tier,
             retrieval=bounded_retrieval,
             result=result,
@@ -839,7 +845,7 @@ def _attempt_generation(
 
 @dataclass(frozen=True)
 class RequestSizeGuard:
-    """Keeps a Groq request (prompt + structured-output schema + output limit) under the account's per-request ceiling.
+    """Keeps a request (prompt + structured-output schema + output limit) under the primary provider's per-request ceiling.
 
     ``estimate_tokens`` undercounts Groq's real prompt tokens by 1.18-1.43x
     (step 12 calibration on all recorded live runs), so the estimate is multiplied by
@@ -860,14 +866,25 @@ class RequestSizeGuard:
 
 
 def request_size_guard(settings: Settings) -> RequestSizeGuard | None:
-    """The guard when Groq is the primary provider and LEGALAI_GROQ_MAX_REQUEST_TOKENS is set."""
-    if settings.legalai_llm_provider.strip().lower() != "groq" or not settings.legalai_groq_max_request_tokens:
-        return None
-    return RequestSizeGuard(
-        ceiling_tokens=settings.legalai_groq_max_request_tokens,
-        max_output_tokens=settings.legalai_llm_max_output_tokens,
-        estimate_factor=settings.legalai_groq_token_estimate_factor,
-    )
+    """The primary provider's guard: Groq with LEGALAI_GROQ_MAX_REQUEST_TOKENS, or a profile with a request ceiling."""
+    provider = settings.legalai_llm_provider.strip().lower()
+    if provider == "groq":
+        if not settings.legalai_groq_max_request_tokens:
+            return None
+        return RequestSizeGuard(
+            ceiling_tokens=settings.legalai_groq_max_request_tokens,
+            max_output_tokens=settings.legalai_llm_max_output_tokens,
+            estimate_factor=settings.legalai_groq_token_estimate_factor,
+        )
+    if provider in PROFILE_NAMES:
+        profile = provider_profile(settings, provider)
+        if profile.max_request_tokens:
+            return RequestSizeGuard(
+                ceiling_tokens=profile.max_request_tokens,
+                max_output_tokens=profile.max_output_tokens,
+                estimate_factor=profile.token_estimate_factor,
+            )
+    return None
 
 
 class TimedAdapter:

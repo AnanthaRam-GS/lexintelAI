@@ -1,4 +1,4 @@
-# Live Run Summary (steps 11 to 11d)
+# Live Run Summary (steps 11 to 11d, and the step 21 provider bake-off)
 
 Supervised live runs of the four query endpoints against the reconciled dev database and stores, with real
 retrieval models and a live answer provider. This file holds identifiers, codes, scores, timings, counts and
@@ -101,7 +101,31 @@ Step 11d public runs: P1-public-ipc total 11.4 s (rerank 7.3 s, generation 3.9 s
 - Brief-map compaction (rendered map tokens, before → after): judgment 695 → 530, fir 630 → 551, chargesheet 960 → 805, petition 884 → 752, unknown 397 → 379.
 - Step 11c no-coverage: P2 (BNS snatching) and P3 (off-corpus trademark) returned the prompt v2 no-coverage statement with no provisions or sources; P2's three chunks all had negative reranker scores (−2.95 to −4.23).
 
+## Step 21 provider bake-off (2026-10-29)
+
+Groq, Gemini, NVIDIA (`deepseek-ai/deepseek-v4.1-flash`) and local Ollama (`legalai-gemma4-12b`, gemma4:12b with
+a 16k context) ran P1, P3, R1, B2 (FIR brief) and B3 (charge-sheet brief) through the product pipeline, prompt v2,
+retries 1, fallback off. Outputs (UNREVIEWED): `~/legalai_reviews/live_runs/20261029T_step21_bakeoff/`. Provider
+calls: 33 of 40 (Groq 6, Gemini 10, NVIDIA 7, Ollama 10). The full table and configurations are in
+`docs/LLM_PROVIDER_CONFIGURATION.md` ("Provider bake-off (step 21)").
+
+- Groq: P1 200 (3/3 citations), P3 correct no-coverage; R1 and B2 `502 MODEL_OUTPUT_TRUNCATED` at 2,048; B3
+  `413 PDF_CONTEXT_TOO_LARGE` (0 calls). Headers still `x-ratelimit-limit-tokens: 8000`.
+- Gemini: 8 generation calls, 0 answers (503 high demand, 90 s timeouts).
+- NVIDIA: the model listing answers, generation never does (P1 4 timeouts, two 64-token probes timed out at 60 s).
+- Ollama: schema-valid on P1, P3, B2 and B3, P3 correct no-coverage, but 0/3 valid citations on every answer
+  (`METADATA_MISMATCH`); R1 truncated at 4,096; 1–4.5 minutes per answer. `json_schema` first returned HTTP 501
+  (the Homebrew build's MLX runner has no constrained decoding); the reported runs use `prompt` mode.
+- Decision: no provider passes R1, B2 and B3; the chain stays Groq primary, Gemini fallback.
+- Live fallback check (2 calls): **FAILED**. The chain switched in both directions, with the fallback recorded in
+  the logs, but neither fallback answered: Gemini timed out; Groq returned HTTP 200 truncated at 2,048 on P1
+  (502 `MODEL_OUTPUT_TRUNCATED`).
+
 ## Open items
+
+- Step 21: no configured provider answers professional questions or briefs. Options needing an owner decision: a
+  higher Groq tier, a paid key for an OpenAI-compatible provider (the `deepseek`/`openrouter` profiles are ready), a
+  retry of NVIDIA when its endpoint responds, or a shorter professional output schema.
 
 - Professional answers (R1–R3, B1–B5, Q1) are blocked on the Groq Developer tier: the professional JSON exceeds 2,560 output tokens even at low reasoning effort, and prompt plus output must fit in 8,000 tokens. Options: a higher Groq tier, a working Gemini fallback, or a shorter professional output schema (a product decision; not changed here).
 - Gemini `gemini-3.8-flash` has not completed a generation in steps 11b–11d (503 high demand, timeouts). The live fallback check stays deferred.

@@ -804,12 +804,14 @@ class QueryApiTests(unittest.TestCase):
         self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
         self.assertIsInstance(adapter.fallback, GeminiAnswerAdapter)
 
-    def test_get_answer_adapter_rejects_ollama_with_controlled_unavailable_error(self) -> None:
-        settings = Settings(legalai_llm_provider="ollama")
-        with self.assertRaises(query_api.HTTPException) as ctx:
-            query_api.get_answer_adapter(settings)
-        self.assertEqual(ctx.exception.status_code, 503)
-        self.assertEqual(ctx.exception.detail["code"], "MODEL_PROVIDER_UNAVAILABLE")
+    def test_get_answer_adapter_serves_ollama_through_the_openai_compatible_adapter(self) -> None:
+        # Step 21: ollama is a provider profile of the generic adapter (before, it was refused with a 503).
+        from backend.app.services.openai_compatible_adapter import OpenAICompatibleAnswerAdapter
+
+        settings = Settings(legalai_llm_provider="ollama", legalai_llm_fallback_provider="none", ollama_model="local-model")
+        adapter = query_api.get_answer_adapter(settings)
+        self.assertIsInstance(adapter, OpenAICompatibleAnswerAdapter)
+        self.assertEqual((adapter.profile.name, adapter.configured_model_id), ("ollama", "local-model"))
 
     def test_get_answer_adapter_rejects_unknown_provider_with_controlled_unavailable_error(self) -> None:
         settings = Settings(legalai_llm_provider="anthropic")
