@@ -5,6 +5,9 @@
 # Usage:
 #   backend/scripts/dev/run_nondb_suites.sh [extra unittest args, e.g. -v]
 set -uo pipefail
+# macOS: no idle sleep while the suites run (keep_awake.sh explains why).
+source "$(dirname "${BASH_SOURCE[0]}")/keep_awake.sh"
+keep_awake "${BASH_SOURCE[0]}" "$@"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 PYTHON="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
@@ -12,6 +15,8 @@ PYTHON="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
 export PYTHONDONTWRITEBYTECODE=1
 # APP_ENV has no default (step 20b); the test runner sets it, as CI does, instead of relying on a local .env.
 export APP_ENV="${APP_ENV:-test}"
+# Step 23: Settings ignore the developer's .env (as in CI, which has none), so local results do not depend on it.
+export LEGALAI_ENV_FILE=none
 
 DB_MODULES=" $(grep -vE '^[[:space:]]*(#|$)' "$REPO_ROOT/backend/scripts/dev/db_test_modules.txt" | tr '\n' ' ') "
 MODULES=()

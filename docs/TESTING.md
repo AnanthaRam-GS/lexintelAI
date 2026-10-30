@@ -128,6 +128,17 @@ LEGALAI_SKIP_VECTOR_TESTS=1 .venv/bin/python -m unittest backend.scripts.tests.t
 
 The module list is `backend/scripts/dev/db_test_modules.txt`; `run_db_suites.sh` reads it.
 
+Both runners export `LEGALAI_ENV_FILE=none`, so `Settings` ignore the developer's `.env` as they do in CI (which
+has none). Step 23: once the local `.env` set the Groq routing and budget, they changed adapter and budget test
+results locally only. One test (`test_bulk_dry_run_makes_no_provider_or_raw_calls`) also copied the whole `.env`
+into `os.environ` through `load_project_env`; it is patched now. Running a module directly
+(`python -m unittest backend.scripts.tests.<module>`) still reads `.env` unless you set `LEGALAI_ENV_FILE=none`.
+
+On macOS both runners keep the machine awake while they run (`caffeinate -i`, `backend/scripts/dev/keep_awake.sh`;
+`LEGALAI_ALLOW_SLEEP=1` opts out). Step 23 found that unattended runs on battery took up to ~29 minutes per module
+because the Mac idle-slept (`pmset -g log`), although the tests themselves ran in seconds. unittest's timer stops
+during sleep, while the runner's wall clock does not.
+
 Run the DB-backed suites in a separate process from the non-DB suites. If any
 module imports `backend.app.db.session` before the bootstrap in the same
 process, the bootstrap refuses to run because the engine is already bound to
