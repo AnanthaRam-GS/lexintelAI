@@ -1719,12 +1719,22 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         with patch.object(query_api, "save_query_history") as save, self.assertLogs("legalai.query", level="INFO") as logs:
             response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json()["debug"]["backend"]["prompt_version"], "legal_answer_prompt_v2")
+        self.assertEqual(response.json()["debug"]["backend"]["prompt_version"], "legal_answer_prompt_v3")
         generation = save.call_args.kwargs["response_json"]["generation"]
-        self.assertEqual((generation["provider"], generation["prompt_version"]), ("mock", "legal_answer_prompt_v2"))
+        self.assertEqual((generation["provider"], generation["prompt_version"]), ("mock", "legal_answer_prompt_v3"))
         self.assertIsNone(save.call_args.kwargs["response_json"]["debug"])
-        self.assertTrue(any("prompt_version=legal_answer_prompt_v2" in line for line in logs.output))
+        self.assertTrue(any("prompt_version=legal_answer_prompt_v3" in line for line in logs.output))
         self.assertIn("<GROUNDING_RULES>", self.adapter.prompts[-1])
+        self.assertIn("<LENGTH_RULES>", self.adapter.prompts[-1])
+
+    def test_prompt_v2_stays_selectable(self) -> None:
+        app.dependency_overrides[query_api.get_settings] = lambda: self.debug_settings().model_copy(update={"legalai_prompt_version": "v2"})
+        with patch.object(query_api, "save_query_history"):
+            response = self.client.post("/query/professional", json={"text": "Regular bail after long custody"})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["debug"]["backend"]["prompt_version"], "legal_answer_prompt_v2")
+        self.assertIn("<GROUNDING_RULES>", self.adapter.prompts[-1])
+        self.assertNotIn("<LENGTH_RULES>", self.adapter.prompts[-1])
 
     # -- Step 11d: request-size guard --
 

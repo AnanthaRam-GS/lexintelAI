@@ -53,7 +53,7 @@ from backend.app.services.token_budget import estimate_tokens
 
 logger = logging.getLogger("legalai.openai_compatible")
 
-PROFILE_NAMES = ("nvidia", "ollama", "deepseek", "openrouter")
+PROFILE_NAMES = ("nvidia", "ollama", "deepseek", "openrouter", "groq_backup")
 # How the answer schema reaches the model:
 #   json_schema  response_format {"type": "json_schema", ...} (non-strict, as for Groq)
 #   json_object  response_format {"type": "json_object"} plus the schema in a system message
@@ -81,6 +81,20 @@ class ProviderProfile:
     # Per-request token ceiling (prompt + schema + output) for the request-size guard; None disables it.
     max_request_tokens: int | None = None
     token_estimate_factor: float = 1.51
+    # Server-sent events (`stream: true`): the timeout then applies to each read, not to the whole generation.
+    stream: bool = False
+    # Total time a streamed answer may take (the per-read timeout alone does not bound it).
+    stream_deadline_seconds: float = 300.0
+    # Per-mode routing (step 22): the model for public answers; empty uses ``model``.
+    public_model: str = ""
+    # Model-ID prefixes that accept reasoning_options; empty sends them to every model.
+    reasoning_models: tuple[str, ...] = ()
+
+    def model_for(self, mode: AnswerMode) -> str:
+        return self.public_model if mode == AnswerMode.PUBLIC and self.public_model else self.model
+
+    def reasoning_for(self, model: str) -> tuple[tuple[str, Any], ...]:
+        return self.reasoning_options if not self.reasoning_models or model.startswith(self.reasoning_models) else ()
     requires_key: bool = True
     enabled: bool = True
     disabled_reason: str = ""
@@ -115,6 +129,8 @@ def provider_profile(settings: Any, name: str) -> ProviderProfile:
             structured_output=settings.nvidia_structured_output,
             reasoning_options=_reasoning(settings.nvidia_reasoning_effort),
             max_request_tokens=_optional_int(settings.nvidia_max_request_tokens),
+            stream=settings.nvidia_stream,
+            stream_deadline_seconds=settings.nvidia_stream_deadline_seconds,
         )
     if name == "ollama":
         return ProviderProfile(
@@ -130,6 +146,28 @@ def provider_profile(settings: Any, name: str) -> ProviderProfile:
             # The model's context window (num_ctx): the OpenAI-compatible API cannot raise it per request.
             max_request_tokens=_optional_int(settings.ollama_context_tokens),
             requires_key=False,
+        )
+    if name == "groq_backup":
+        # Step 22: a second Groq model as the fallback. Groq's limits are per model (step 22 headers), so it still
+        # answers when GROQ_MODEL is rate-limited or failing. Same key, base URL, ceiling and reasoning effort.
+        # GROQ_BACKUP_PUBLIC_MODEL mirrors GROQ_PUBLIC_MODEL routing: each mode falls back to the other model.
+        model = settings.groq_backup_model
+        return ProviderProfile(
+            public_model=settings.groq_backup_public_model,
+            name="groq_backup",
+            base_url=settings.groq_base_url,
+            api_key=settings.groq_api_key,
+            api_key_env="GROQ_API_KEY",
+            model=model,
+            max_output_tokens=default_output,
+            timeout_seconds=settings.legalai_llm_timeout_seconds,
+            # Groq documents reasoning_effort for its gpt-oss models only (groq_answer_adapter.py).
+            reasoning_options=_reasoning(settings.legalai_groq_reasoning_effort),
+            reasoning_models=("openai/gpt-oss-",),
+            max_request_tokens=_optional_int(settings.legalai_groq_max_request_tokens),
+            token_estimate_factor=settings.legalai_groq_token_estimate_factor,
+            enabled=bool(model),
+            disabled_reason="GROQ_BACKUP_MODEL is not configured",
         )
     if name in {"deepseek", "openrouter"}:
         key = getattr(settings, f"{name}_api_key", "")
@@ -168,10 +206,11 @@ class OpenAICompatibleAnswerAdapter:
         profile = self.profile
         if not profile.enabled:
             raise ModelUnavailableError(f"Provider profile {profile.name} is disabled: {profile.disabled_reason}.")
-        if not profile.model or (profile.requires_key and not profile.api_key):
+        model = profile.model_for(mode)
+        if not model or (profile.requires_key and not profile.api_key):
             raise ModelUnavailableError(f"{profile.api_key_env or profile.name} and the {profile.name} model must be configured before live generation.")
         started = perf_counter()
-        payload = self.build_payload(prompt, schema)
+        payload = self.build_payload(prompt, schema, mode)
         retry_reasons: list[str] = []
         body = None
         attempt_count = 0
@@ -210,8 +249,8 @@ class OpenAICompatibleAnswerAdapter:
             raise ModelProviderError(f"{profile.error_prefix}_EMPTY_RESPONSE", f"{profile.name} returned no answer content.")
         metadata = ModelGenerationMetadata(
             provider=profile.name,
-            configured_model_id=profile.model,
-            actual_model_id=body.get("model") or profile.model,
+            configured_model_id=model,
+            actual_model_id=body.get("model") or model,
             temperature=self.temperature,
             response_mode=mode,
             attempt_count=attempt_count,
@@ -231,8 +270,9 @@ class OpenAICompatibleAnswerAdapter:
             timings={"generation_latency_ms": elapsed_ms(perf_counter, started)},
         )
 
-    def build_payload(self, prompt: str, schema: type[BaseModel]) -> dict[str, Any]:
+    def build_payload(self, prompt: str, schema: type[BaseModel], mode: AnswerMode | None = None) -> dict[str, Any]:
         profile = self.profile
+        model = profile.model_for(mode) if mode is not None else profile.model
         envelope = groq_payload_schema(schema)
         messages = [{"role": "user", "content": prompt}]
         response_format: dict[str, Any] | None
@@ -246,14 +286,17 @@ class OpenAICompatibleAnswerAdapter:
         else:
             raise ModelUnavailableError(f"Unsupported structured output mode for {profile.name}: {profile.structured_output}.")
         payload = {
-            "model": profile.model,
+            "model": model,
             "messages": messages,
             "temperature": self.temperature,
             "max_tokens": profile.max_output_tokens,
-            **dict(profile.reasoning_options),
+            **dict(profile.reasoning_for(model)),
         }
         if response_format is not None:
             payload["response_format"] = response_format
+        if profile.stream:
+            payload["stream"] = True
+            payload["stream_options"] = {"include_usage": True}
         return payload
 
     def _post(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -267,6 +310,8 @@ class OpenAICompatibleAnswerAdapter:
         prefix = profile.error_prefix
         try:
             with self._urlopen(request, timeout=profile.timeout_seconds) as response:
+                if payload.get("stream"):
+                    return assemble_stream(response, deadline_seconds=profile.stream_deadline_seconds)
                 return json.loads(response.read().decode("utf-8"))
         except (TimeoutError, socket.timeout) as exc:
             raise ModelProviderError(f"{prefix}_TIMEOUT", f"{profile.name} request timed out.") from exc
@@ -286,6 +331,44 @@ class OpenAICompatibleAnswerAdapter:
             raise ModelProviderError(f"{prefix}_PROVIDER_ERROR", f"{profile.name} request failed before a response: {reason}.") from exc
         except json.JSONDecodeError as exc:
             raise ModelProviderError(f"{prefix}_INVALID_RESPONSE", f"{profile.name} returned a non-JSON API response.") from exc
+
+
+def assemble_stream(response: Any, *, deadline_seconds: float | None = None, clock=time.monotonic) -> dict[str, Any]:
+    """Collect an OpenAI-style SSE stream into the non-streaming response shape.
+
+    Each ``data:`` line is a chunk; ``delta.content`` and ``delta.reasoning_content`` / ``delta.reasoning`` are
+    concatenated, the last ``finish_reason`` and the ``usage`` chunk (``stream_options.include_usage``) are kept.
+    A malformed chunk raises ``json.JSONDecodeError`` (mapped to ``*_INVALID_RESPONSE`` by the caller).
+
+    ``deadline_seconds`` bounds the whole stream: the socket timeout only bounds each read, and a server that sends
+    keep-alive lines without tokens would otherwise hold the request open (step 22: NVIDIA held one for 30 minutes).
+    """
+    content: list[str] = []
+    reasoning: list[str] = []
+    finish_reason = None
+    usage = None
+    model = None
+    started = clock()
+    for raw_line in response:
+        if deadline_seconds is not None and clock() - started > deadline_seconds:
+            raise TimeoutError("stream deadline exceeded")
+        line = raw_line.decode("utf-8").strip() if isinstance(raw_line, bytes) else str(raw_line).strip()
+        if not line.startswith("data:"):
+            continue
+        data = line[len("data:"):].strip()
+        if data == "[DONE]":
+            break
+        chunk = json.loads(data)
+        model = chunk.get("model") or model
+        if chunk.get("usage"):
+            usage = chunk["usage"]
+        for choice in chunk.get("choices") or []:
+            delta = choice.get("delta") or {}
+            content.append(str(delta.get("content") or ""))
+            reasoning.append(str(delta.get("reasoning_content") or delta.get("reasoning") or ""))
+            finish_reason = choice.get("finish_reason") or finish_reason
+    message = {"content": "".join(content), "reasoning_content": "".join(reasoning)}
+    return {"model": model, "choices": [{"message": message, "finish_reason": finish_reason}], "usage": usage or {}}
 
 
 def split_reasoning(message: dict[str, Any]) -> tuple[str, str]:

@@ -66,17 +66,24 @@ class GroqAnswerAdapter:
     def configured_model_id(self) -> str:
         return self.settings.groq_model
 
+    def model_for(self, mode: AnswerMode) -> str:
+        """Per-mode routing (step 22): GROQ_PUBLIC_MODEL serves public answers when set (it has its own rate limits);
+        GROQ_MODEL serves professional answers, and public ones too when no public model is set."""
+        public_model = (getattr(self.settings, "groq_public_model", "") or "").strip()
+        return public_model if mode == AnswerMode.PUBLIC and public_model else self.settings.groq_model
+
     def generate_structured_answer(self, prompt: str, *, schema: type[BaseModel], mode: AnswerMode) -> LegalAnswerModelResponse:
-        if not self.settings.groq_api_key or not self.settings.groq_model:
+        model = self.model_for(mode)
+        if not self.settings.groq_api_key or not model:
             raise ModelUnavailableError("Groq API key and GROQ_MODEL must be configured before live generation.")
         started = perf_counter()
         retry_reasons: list[str] = []
         payload = {
-            "model": self.settings.groq_model,
+            "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
             "max_completion_tokens": self.settings.legalai_llm_max_output_tokens,
-            **groq_reasoning_options(self.settings),
+            **groq_reasoning_options(self.settings, model),
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -130,8 +137,8 @@ class GroqAnswerAdapter:
         text = extract_groq_text(body)
         metadata = ModelGenerationMetadata(
             provider="groq",
-            configured_model_id=self.settings.groq_model,
-            actual_model_id=body.get("model") or self.settings.groq_model,
+            configured_model_id=model,
+            actual_model_id=body.get("model") or model,
             temperature=self.temperature,
             response_mode=mode,
             fallback_used=False,
@@ -199,9 +206,9 @@ GROQ_REASONING_EFFORT_MODELS = ("openai/gpt-oss-",)
 GROQ_REASONING_EFFORTS = {"low", "medium", "high"}
 
 
-def groq_reasoning_options(settings: Any) -> dict[str, str]:
+def groq_reasoning_options(settings: Any, model: str | None = None) -> dict[str, str]:
     effort = (getattr(settings, "legalai_groq_reasoning_effort", "") or "").strip().lower()
-    if effort in GROQ_REASONING_EFFORTS and str(settings.groq_model).startswith(GROQ_REASONING_EFFORT_MODELS):
+    if effort in GROQ_REASONING_EFFORTS and str(model or settings.groq_model).startswith(GROQ_REASONING_EFFORT_MODELS):
         return {"reasoning_effort": effort}
     return {}
 

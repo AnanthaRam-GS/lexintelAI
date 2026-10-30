@@ -26,13 +26,14 @@ Set via `LEGALAI_LLM_PROVIDER`:
 
 - `gemini` → `GeminiAnswerAdapter` (`backend/app/services/legal_answer_generation.py`)
 - `groq` → `GroqAnswerAdapter` (`backend/app/services/groq_answer_adapter.py`)
-- `nvidia`, `ollama`, `deepseek`, `openrouter` → `OpenAICompatibleAnswerAdapter` with that provider profile
-  (`backend/app/services/openai_compatible_adapter.py`, step 21; see "OpenAI-compatible provider profiles" below).
-  `deepseek` and `openrouter` are defined but disabled until their key is set.
+- `nvidia`, `ollama`, `deepseek`, `openrouter`, `groq_backup` → `OpenAICompatibleAnswerAdapter` with that provider
+  profile (`backend/app/services/openai_compatible_adapter.py`, steps 21-22; see "OpenAI-compatible provider
+  profiles" below). `deepseek` and `openrouter` are defined but disabled until their key is set.
 - anything else → a controlled `503 MODEL_PROVIDER_UNAVAILABLE` response.
 
-The chain is still **Groq primary, Gemini fallback**: the step 21 bake-off found no provider that passes the
-professional and brief cases (see "Provider bake-off (step 21)").
+Since step 22 the chain is **Groq primary, `groq_backup` fallback**, with prompt v3 and per-mode routing:
+professional answers on `openai/gpt-oss-120b`, public answers on `openai/gpt-oss-20b`, and each mode falls back to
+the other model, which has its own rate limits. See "Step 22: prompt v3 and the Groq setup".
 
 ### Primary and fallback (step 11)
 
@@ -144,6 +145,11 @@ recorded run is underestimated; the closest margin is 329 tokens. The earlier
 2 of 5 evidence items, and now keep 3. No local tokenizer for gpt-oss
 (`o200k_harmony`) is available offline, so a fixed factor is used instead of
 exact counting. Details are in `docs/performance/PERFORMANCE_BASELINE.md`.
+
+Step 22 recalibration (27 recorded Groq runs, prompts v1-v3; the step 22 runs record the guard's estimate of the
+exact prompt sent): ratios 1.07-1.49, worst 1.4928 (B3, prompt v3, charge-sheet brief). 1.51 never underestimated a
+run, but B3's margin was 66 tokens. The default is now **1.57** (worst plus 5%). At 1.57 every case still fits
+(zero-call dry run), and the briefs B1-B4 keep one trusted authority beside the document map.
 
 **Gemini thinking and timeout.**
 - `LEGALAI_GEMINI_THINKING` (`low`, `medium` or `high`; default `low`) is
@@ -340,19 +346,107 @@ forced to fail, Gemini timed out (90 s); with Gemini forced to fail, Groq answer
 output limit on P1 (2,048 tokens, 34 reasoning), so the product returned 502 `MODEL_OUTPUT_TRUNCATED`. P1 used
 2,000 tokens in the bake-off: Groq's limit is marginal even for public answers.
 
+### Step 22: prompt v3 and the Groq setup (2026-10-30)
+
+Budget: at most 50 provider calls; **45 used** (Groq 39, NVIDIA 4, Gemini 2). Full outputs (UNREVIEWED):
+`~/legalai_reviews/live_runs/20261030T_step22/`. The per-run table is in `docs/live_runs/LIVE_RUN_SUMMARY.md`.
+
+**NVIDIA retry: failed.**
+- The adapter now streams when `NVIDIA_STREAM=true` (SSE, `stream_options.include_usage`).
+- DeepSeek V4.1 Flash got two 64-token streamed calls, 18 minutes apart. Both timed out with no first byte
+  (120 s, 150 s).
+- `GET /v1/models` (85 models) answered in 0.2 s. Three alternatives appear in both that listing and NVIDIA's
+  chat-completions reference: `openai/gpt-oss-20b`, `nvidia/nemotron-3-super-120b-a12b` and `z-ai/glm-5.3-flash`.
+- The first, `openai/gpt-oss-20b`, kept the stream open without a token for 1,797 s. That was the second consecutive
+  timeout, so the stop rule ended NVIDIA; the other two were not called.
+- The stream reader now has a total deadline (`NVIDIA_STREAM_DEADLINE_SECONDS`, default 300). Before, a server that
+  sends keep-alives without tokens could hold a request indefinitely, because the socket timeout only bounds each
+  read.
+
+**Groq per-model limits** (one 16-token call each):
+
+| Model | Headers | Docs |
+|---|---|---|
+| `openai/gpt-oss-120b` | 8,000 tokens per minute, 1,000 requests per day | 30 RPM, 200K TPD |
+| `openai/gpt-oss-20b` | 8,000 tokens per minute, 1,000 requests per day | 30 RPM, 200K TPD |
+| `qwen/qwen3.8-27b` | 8,000 tokens per minute, 1,000 requests per day | 30 RPM, 200K TPD |
+
+The limits are separate per model: each model reported 999 daily requests remaining minutes after the others' calls.
+
+**Prompt v3** (`legal_answer_prompt_v3.py`, pinned in the eval manifest; v1 and v2 unchanged):
+- It is v2 plus `<LENGTH_RULES>`, with the same output schemas.
+- **Length targets:** about 900 output tokens for public answers and 1,200 for professional ones.
+- **Shape:** each point once; summaries of at most two sentences; at most 3 entries per list of text; at most 4
+  claims; uncertainties stay objects.
+- **Citations:** citations live in the claims only (the answer object's own `citations` list is never read);
+  `source_metadata` carries only `case_name` and `source_url`; no P# citations.
+- **Briefs:** the private document map is not restated.
+- **Iteration:**
+  - The first version, with length targets only, was ignored: R1, R3 and all five briefs stopped at 2,048 tokens.
+  - The second version fixed the length, but the "short entries" wording turned `uncertainties` into strings
+    (`MODEL_OUTPUT_VALIDATION_FAILED`).
+  - The third ran the live runs. The measured answer shape, characters per field with no text, showed the
+    duplicated citation list.
+  - After the runs, one wording change: the rule names "the PRIVATE_DOCUMENT_MAP block" without its opening `<`,
+    because the literal tag in every prompt read as a document map that was not there (a question-mode test, and
+    the fake E2E provider's detector). The pinned hash is of this version.
+
+**Budget.** `.env.example` and the zero-call dry run use:
+- output 2,048 (the reserve equals the limit) and ceiling 8,000;
+- product input 8,000, margin 300, trusted evidence 4,000, private PDF 1,500;
+- factor 1.57 (above).
+
+The private-context builders now signal when the private context does not fit (`PrivateContextDoesNotFit`). The
+lowest-ranked trusted item is then dropped first. While more than one trusted item is left, the document map or
+the question-focused P# excerpts are never cut; with one item left, the map gets 413 as before and the excerpts
+shrink. This removed B3's `413 PDF_CONTEXT_TOO_LARGE`.
+
+**Routing.**
+- `gpt-oss-20b` (separate limits) qualified for public answers:
+  - P1 had 3/3 valid citations with the final v3 (0/3 with the first v3, `METADATA_MISMATCH`);
+  - P3 was a correct no-coverage answer.
+- `qwen/qwen3.8-27b` failed P1 (0/4, first v3) and was not retried.
+- Public answers go to 20b (`GROQ_PUBLIC_MODEL`), professional answers stay on 120b, and the routed model is
+  recorded in `backend.model` and in the query-history `generation`.
+
+**Fallback.**
+- Gemini again answered 503 "high demand" with the new key, so the fallback is `groq_backup`: a second Groq model
+  with its own limits, mirrored per mode (`GROQ_BACKUP_MODEL`=20b for professional, `GROQ_BACKUP_PUBLIC_MODEL`=120b
+  for public).
+- The live check (Groq forced to fail) **passed**: `groq_backup`/20b answered P1 with HTTP 200, finish `stop`, 3/3
+  valid citations, `fallback_used: true`.
+
+**Results** (gpt-oss-120b, final v3; the per-run table is in the live-run summary):
+- 13 of 13 succeeded untruncated: P1-P4, R1-R3, B1-B5 and Q1.
+- Citations valid: 41 of 41.
+- P2 and P3 were correct no-coverage answers.
+- Every brief's map fields matched the expected files.
+- Output tokens: public 119-1,258, professional 882-1,879. All are under the 2,048 cap, but the v3 targets were
+  exceeded in 10 runs: P1 and P4 above ~900, and R1, R3, B1-B5 and Q1 above ~1,200. The model follows the shape
+  rules, not the numbers.
+
+**Sustained check: 1 of 5 public queries succeeded** in 22 s. The second got HTTP 429 from 20b (3,920 tokens left
+in the minute, against a request of about 7,000) and again on the adapter's retry. After 2 consecutive limit errors
+the run's stop rule refused all further Groq calls, including the 120b fallback. Each model's 8,000 tokens per
+minute holds about one answer, so a burst of 5 in 2 minutes cannot succeed on this tier.
+
 ### Required environment variables
 
 ```
-LEGALAI_LLM_PROVIDER=groq          # or gemini | nvidia | ollama | deepseek | openrouter
+LEGALAI_LLM_PROVIDER=groq          # or gemini | nvidia | ollama | deepseek | openrouter | groq_backup
+LEGALAI_PROMPT_VERSION=v3          # or v2 (v1 is the frozen evaluation baseline)
 
 GEMINI_API_KEY=                    # required if provider=gemini, or for the frozen benchmark
 GEMINI_MODEL=
 
 GROQ_API_KEY=                      # required if provider=groq
 GROQ_MODEL=openai/gpt-oss-120b     # never hardcoded in code — always read from this variable
+GROQ_PUBLIC_MODEL=openai/gpt-oss-20b          # public answers (empty: GROQ_MODEL)
+GROQ_BACKUP_MODEL=openai/gpt-oss-20b          # groq_backup fallback for professional answers
+GROQ_BACKUP_PUBLIC_MODEL=openai/gpt-oss-120b  # groq_backup fallback for public answers (empty: GROQ_BACKUP_MODEL)
 GROQ_BASE_URL=https://api.groq.com/openai/v1   # optional, defaults to the value above
 
-LEGALAI_LLM_FALLBACK_PROVIDER=gemini   # used only on a provider failure of the primary
+LEGALAI_LLM_FALLBACK_PROVIDER=groq_backup   # used only on a provider failure of the primary
 LEGALAI_QUERY_DEBUG=false              # true returns per-stage timings and the backend in `debug`
 
 LEGALAI_LLM_TEMPERATURE=0.1        # shared by all providers
@@ -361,7 +455,7 @@ LEGALAI_LLM_TIMEOUT_SECONDS=60.0   # Groq, and the deepseek/openrouter profiles
 NVIDIA_API_KEY=                    # required if provider=nvidia
 NVIDIA_MODEL=deepseek-ai/deepseek-v4.1-flash
 NVIDIA_MAX_OUTPUT_TOKENS=16384     # plus NVIDIA_BASE_URL, _TIMEOUT_SECONDS, _STRUCTURED_OUTPUT,
-                                   # _REASONING_EFFORT, _MAX_REQUEST_TOKENS
+                                   # _REASONING_EFFORT, _MAX_REQUEST_TOKENS, _STREAM, _STREAM_DEADLINE_SECONDS
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=legalai-gemma4-12b    # plus OLLAMA_CONTEXT_TOKENS, _MAX_OUTPUT_TOKENS, _TIMEOUT_SECONDS,
                                    # _STRUCTURED_OUTPUT, _REASONING_EFFORT
@@ -369,8 +463,9 @@ DEEPSEEK_API_KEY= / DEEPSEEK_MODEL= / OPENROUTER_API_KEY= / OPENROUTER_MODEL=   
 ```
 
 Each provider's context budget (`LEGALAI_PRODUCT_MAX_INPUT_TOKENS`, `LEGALAI_LLM_RESERVED_OUTPUT_TOKENS`,
-`PRIVATE_PDF_INPUT_BUDGET_TOKENS`…) must match its capacity: the Groq-sized budget refuses the charge-sheet brief
-(413 `PDF_CONTEXT_TOO_LARGE`) before any provider call.
+`PRIVATE_PDF_INPUT_BUDGET_TOKENS`…) must match its capacity. In step 21 the Groq-sized budget refused the
+charge-sheet brief (413 `PDF_CONTEXT_TOO_LARGE`) before any provider call; since step 22 the lowest-ranked trusted
+evidence is trimmed first, so the brief fits (see "Step 22").
 
 Both `GEMINI_API_KEY`/`GEMINI_MODEL` and `GROQ_API_KEY`/`GROQ_MODEL` may be
 configured at the same time — Gemini's values remain in use by the frozen
@@ -395,9 +490,10 @@ know or care which one is active:
 | Structured output fails validation | `MODEL_OUTPUT_VALIDATION_FAILED` | `MODEL_OUTPUT_VALIDATION_FAILED` | 502 |
 
 The OpenAI-compatible profiles use the same mapping with their own prefix (`NVIDIA_*`, `OLLAMA_*`, `DEEPSEEK_*`,
-`OPENROUTER_*`). A known limitation of the frozen module: the failure metadata of an unanswered request records
-`provider: "gemini"` whatever the provider (`legal_answer_generation.py`, hash-pinned); the warning code
-(`GROQ_*`, `OLLAMA_*`…) and the debug `backend` identify the real one.
+`OPENROUTER_*`, `GROQ_BACKUP_*`). Until step 22 the failure metadata of an unanswered request recorded
+`provider: "gemini"` whatever the provider. `legal_answer_generation.py` now records the provider that failed, read
+from the error code prefix (`failed_provider_name`; re-pinned with the reason in the eval manifest), and
+`test_prompt_v3.py` covers it.
 
 None of these responses ever include an API key, an `Authorization` header,
 the raw upstream response body, or a stack trace. The end user only ever

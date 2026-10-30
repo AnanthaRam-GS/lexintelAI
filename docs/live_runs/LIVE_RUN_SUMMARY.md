@@ -1,4 +1,4 @@
-# Live Run Summary (steps 11 to 11d, and the step 21 provider bake-off)
+# Live Run Summary (steps 11 to 11d, the step 21 provider bake-off and the step 22 live runs)
 
 Supervised live runs of the four query endpoints against the reconciled dev database and stores, with real
 retrieval models and a live answer provider. This file holds identifiers, codes, scores, timings, counts and
@@ -121,11 +121,70 @@ calls: 33 of 40 (Groq 6, Gemini 10, NVIDIA 7, Ollama 10). The full table and con
   the logs, but neither fallback answered: Gemini timed out; Groq returned HTTP 200 truncated at 2,048 on P1
   (502 `MODEL_OUTPUT_TRUNCATED`).
 
+## Step 22 live runs (2026-10-30)
+
+Setup:
+- **Model routing:** Groq `openai/gpt-oss-120b` for professional answers and `openai/gpt-oss-20b` for public ones.
+- **Fallback:** `groq_backup`, the other model for each mode.
+- **Prompt and limits:** prompt v3, output 2,048, reasoning effort low, ceiling 8,000.
+- **Calls:** retries 1; Groq calls 65 s apart, except the sustained check.
+
+The 13 main runs used gpt-oss-120b, with routing off and the fallback off. Outputs (UNREVIEWED):
+`~/legalai_reviews/live_runs/20261030T_step22/`. Earlier v3 iterations are in its `v3a_first/` and
+`v3_iterations/` folders.
+
+Provider calls: **45 of 50** (Groq 39, NVIDIA 4, Gemini 2). Details, the NVIDIA retry and the decisions are in
+`docs/LLM_PROVIDER_CONFIGURATION.md` ("Step 22: prompt v3 and the Groq setup").
+
+Latency is total / provider call, in seconds, excluding the harness's call spacing. Tokens are input / output /
+reasoning.
+
+| Run | HTTP | Backend / model | Prompt | Latency total / call (s) | Tokens in / out / reasoning | Finish | Valid citations | Trimmed | Field counts | Checks |
+|---|---:|---|---|---|---|---|---|---:|---|---|
+| groq-P1 | 200 | groq / openai/gpt-oss-120b | v3 | 6.0 / 3.4 | 3634 / 1258 / 215 | stop | 4/4 | 3 | sections 3, sources 2 | - |
+| groq-P2 | 200 | groq / openai/gpt-oss-120b | v3 | 2.1 / 1.0 | 5454 / 166 / 48 | stop | 0/0 | 1 | sections 0, sources 0 | no-coverage answer |
+| groq-P3 | 200 | groq / openai/gpt-oss-120b | v3 | 2.0 / 1.0 | 5266 / 119 / 26 | stop | 0/0 | 2 | sections 0, sources 0 | no-coverage answer |
+| groq-P4 | 200 | groq / openai/gpt-oss-120b | v3 | 5.5 / 3.1 | 3682 / 1173 / 299 | stop | 3/3 | 3 | sections 2, sources 1 | - |
+| groq-R1 | 200 | groq / openai/gpt-oss-120b | v3 | 5.1 / 4.1 | 4593 / 1541 / 326 | stop | 4/4 | 2 | sections 2, precedents 2, parties 0, chronology 0, procedural 0, evidence 0, facts 0 | - |
+| groq-R2 | 200 | groq / openai/gpt-oss-120b | v3 | 3.8 / 2.8 | 5117 / 882 / 86 | stop | 2/2 | 3 | sections 1, precedents 1, parties 0, chronology 0, procedural 1, evidence 0, facts 1 | - |
+| groq-R3 | 200 | groq / openai/gpt-oss-120b | v3 | 4.6 / 3.6 | 4169 / 1243 / 72 | stop | 4/4 | 3 | sections 1, precedents 1, parties 0, chronology 0, procedural 0, evidence 0, facts 0 | - |
+| groq-B1 | 200 | groq / openai/gpt-oss-120b | v3 | 10.0 / 4.7 | 5185 / 1879 / 91 | stop | 4/4 | 3 | sections 5, precedents 2, parties 2, chronology 4, procedural 6, evidence 0, facts 3 | map 2/2 parties, 4/4 events, 4/4 stages, 0/0 evidence: match |
+| groq-B2 | 200 | groq / openai/gpt-oss-120b | v3 | 9.3 / 4.6 | 4234 / 1616 / 114 | stop | 4/4 | 4 | sections 5, precedents 1, parties 2, chronology 3, procedural 3, evidence 4, facts 4 | map 2/2 parties, 2/2 events, 2/2 stages, 3/3 evidence: match |
+| groq-B3 | 200 | groq / openai/gpt-oss-120b | v3 | 10.3 / 4.8 | 5707 / 1846 / 126 | stop | 3/3 | 3 | sections 4, precedents 2, parties 3, chronology 6, procedural 9, evidence 7, facts 5 | map 3/3 parties, 6/6 events, 5/5 stages, 4/4 evidence: match |
+| groq-B4 | 200 | groq / openai/gpt-oss-120b | v3 | 9.6 / 4.3 | 4694 / 1440 / 122 | stop | 2/2 | 4 | sections 5, precedents 1, parties 3, chronology 6, procedural 10, evidence 7, facts 4 | map 3/3 parties, 5/5 events, 4/4 stages, 2/2 evidence: match |
+| groq-B5 | 200 | groq / openai/gpt-oss-120b | v3 | 8.0 / 5.0 | 4912 / 1813 / 214 | stop | 4/4 | 2 | sections 6, precedents 2, parties 0, chronology 1, procedural 1, evidence 0, facts 2 | map 0/0 parties, 1/1 events, 0/0 stages, 0/0 evidence: match |
+| groq-Q1 | 200 | groq / openai/gpt-oss-120b | v3 | 10.9 / 4.2 | 4488 / 1738 / 466 | stop | 3/3 | 3 | sections 4, precedents 1, parties 3, chronology 6, procedural 8, evidence 7, facts 1 | - |
+| FB-groq-to-gemini-P1 | 503 | - / - | - | - / 93.3 | - / - / - | - | 0/0 | - | - | error MODEL_PROVIDER_UNAVAILABLE |
+| FB-groq-to-groq_backup-P1 | 200 | groq_backup / openai/gpt-oss-20b | v3 | 4.8 / 2.4 | 3634 / 910 / 26 | stop | 3/3 | 3 | sections 3, sources 2 | fallback from groq (MODEL_UNAVAILABLE) |
+| sustained-P1 | 200 | groq / openai/gpt-oss-20b | v3 | 5.0 / 2.1 | 3634 / 866 / 24 | stop | 3/3 | 3 | sections 2, sources 2 | - |
+| sustained-P2 | 503 | - / - | - | - / 0.4 | - / - / - | - | 0/0 | - | - | error MODEL_PROVIDER_UNAVAILABLE |
+| sustained-P3 | 503 | - / - | - | - / 0 | - / - / - | - | 0/0 | - | - | error MODEL_PROVIDER_UNAVAILABLE |
+| sustained-P4 | 503 | - / - | - | - / 0 | - / - / - | - | 0/0 | - | - | error MODEL_PROVIDER_UNAVAILABLE |
+| sustained-P5 | 503 | - / - | - | - / 0 | - / - / - | - | 0/0 | - | - | error MODEL_PROVIDER_UNAVAILABLE |
+| groq20b-P1 | 200 | groq / openai/gpt-oss-20b | v3 | 8.2 / 3.1 | 4358 / 1483 / 29 | stop | 0/3 | 2 | sections 3, sources 0 | - |
+| groq20b-P3 | 200 | groq / openai/gpt-oss-20b | v3 | 2.2 / 1.1 | 5098 / 172 / 7 | stop | 0/0 | 2 | sections 0, sources 0 | no-coverage answer |
+| groqqwen-P1 | 200 | groq / qwen/qwen3.8-27b | v3 | 6.9 / 4.2 | 4095 / 1780 / - | stop | 0/4 | 2 | sections 2, sources 0 | - |
+
+- **R1-R3, B1-B5 and Q1 all succeeded untruncated** (finish `stop`).
+  - Citations: 41/41 valid across the 13 runs.
+  - P2 and P3 gave the no-coverage answer.
+  - Every brief's map fields matched the expected files.
+- **Live fallback check:**
+  - Gemini (fallback) answered 503 "high demand";
+  - `groq_backup` (20b) **passed**: HTTP 200, 3/3 valid citations, `fallback_used: true`.
+- **Sustained check: 1 of 5** public queries in 22 s. 20b answered 429 on the second query (TPM), and the run's stop
+  rule (2 consecutive limit errors) refused the rest, including the 120b fallback.
+- **Size guard recalibrated:** factor 1.51 to 1.57, worst ratio 1.4928 (B3) over 27 runs.
+- **Routing qualification:** `groq20b-P1`, `groq20b-P3` and `groqqwen-P1` ran with the first v3. 20b's P1 citations
+  became valid with the final v3 (`FB-groq-to-groq_backup-P1`, `sustained-P1`).
+
 ## Open items
 
-- Step 21: no configured provider answers professional questions or briefs. Options needing an owner decision: a
-  higher Groq tier, a paid key for an OpenAI-compatible provider (the `deepseek`/`openrouter` profiles are ready), a
-  retry of NVIDIA when its endpoint responds, or a shorter professional output schema.
+- Step 22: professional answers and briefs now work on Groq with prompt v3 (step 21's open item is closed), but
+  the free tier takes about one answer per minute per model. A burst (5 public queries in 2 minutes) fails: 1 of 5.
+  UAT with several testers needs a higher Groq tier or a provider without the 8,000 tokens-per-minute limit
+  (owner decision). The adapters also retry a 429 after 0.25 s, which cannot succeed within a per-minute window.
+- Step 22: v3 output exceeds its soft length targets in 10 of 13 runs (largest 1,879 of 2,048 tokens, B1).
 
 - Professional answers (R1–R3, B1–B5, Q1) are blocked on the Groq Developer tier: the professional JSON exceeds 2,560 output tokens even at low reasoning effort, and prompt plus output must fit in 8,000 tokens. Options: a higher Groq tier, a working Gemini fallback, or a shorter professional output schema (a product decision; not changed here).
 - Gemini `gemini-3.8-flash` has not completed a generation in steps 11b–11d (503 high demand, timeouts). The live fallback check stays deferred.

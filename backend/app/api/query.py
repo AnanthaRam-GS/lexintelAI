@@ -58,10 +58,11 @@ from backend.app.services.legal_answer_generation import (
 from backend.app.services.case_names import normalized_for_generation
 from backend.app.services.legal_answer_prompt_v2 import (
     NO_COVERAGE_STATEMENT,
-    PROMPT_VERSION,
+    PROMPT_V2,
     build_legal_answer_prompt_v2,
     is_no_coverage_answer,
 )
+from backend.app.services.legal_answer_prompt_v3 import PROMPT_V3, build_legal_answer_prompt_v3
 from backend.app.services.local_document_map import (
     LocalDocumentMap,
     build_enriched_trusted_query,
@@ -197,6 +198,20 @@ def get_answer_adapter(settings: Settings = Depends(get_settings)):
 
 
 MODEL_BUSY_RETRY_AFTER_SECONDS = 15
+
+# Product prompt versions (LEGALAI_PROMPT_VERSION). v1 is the frozen evaluation baseline and is never served here.
+PROMPT_BUILDERS: dict[str, tuple[str, Callable[..., Any]]] = {
+    "v2": (PROMPT_V2, build_legal_answer_prompt_v2),
+    "v3": (PROMPT_V3, build_legal_answer_prompt_v3),
+}
+
+
+def prompt_builder(settings: Settings) -> tuple[str, Callable[..., Any]]:
+    """(recorded prompt version, builder) for LEGALAI_PROMPT_VERSION; an unknown value is a configuration error."""
+    version = settings.legalai_prompt_version.strip().lower()
+    if version not in PROMPT_BUILDERS:
+        raise ValueError(f"LEGALAI_PROMPT_VERSION must be one of {sorted(PROMPT_BUILDERS)}")
+    return PROMPT_BUILDERS[version]
 
 
 def generation_limit(settings: Settings) -> tuple[int, float]:
@@ -549,6 +564,19 @@ def parse_and_chunk_pdf(path: Path, source_file_name: str) -> tuple[dict[str, An
     return document, chunk_document(document)
 
 
+class PrivateContextDoesNotFit(Exception):
+    """The private (P#) context does not fit beside the current trusted evidence (step 22).
+
+    Raised by a private-context builder called with ``allow_partial=False``; ``_attempt_generation`` then drops the
+    lowest-ranked trusted item and rebuilds, so private evidence is never cut while more than one trusted item is left.
+    """
+
+    def __init__(self, needed_tokens: int, available_tokens: int) -> None:
+        super().__init__(f"private context needs {needed_tokens} tokens, {available_tokens} available")
+        self.needed_tokens = needed_tokens
+        self.available_tokens = available_tokens
+
+
 def build_question_focused_context_builder(
     parsed_pdf: ParsedPrivatePdf,
     *,
@@ -562,9 +590,19 @@ def build_question_focused_context_builder(
     question and select a bounded, budgeted subset - never the whole PDF."""
     dense_provider = getattr(retrieval_service, "dense_provider", None)
 
-    def _builder(frozen_prompt_text: str) -> str | None:
+    def _builder(frozen_prompt_text: str, *, allow_partial: bool = True) -> str | None:
         already_used_tokens = estimate_tokens(frozen_prompt_text)
         private_budget_tokens = budget.private_pdf_budget(already_used_tokens=already_used_tokens)
+        if not allow_partial and private_budget_tokens < budget.private_pdf_ceiling_tokens:
+            # Step 22: the selection the full private ceiling would give must fit, or the caller trims trusted
+            # evidence first (private P# evidence is preferred over the lowest-ranked trusted item).
+            wanted = select_query_focused_private_evidence(
+                parsed_pdf.private_chunks, query, dense_provider=dense_provider, top_k=settings.private_pdf_top_k,
+                token_budget_tokens=budget.private_pdf_ceiling_tokens,
+            )
+            wanted_tokens = sum(item.chunk.token_count for item in wanted)
+            if wanted_tokens > private_budget_tokens:
+                raise PrivateContextDoesNotFit(wanted_tokens, private_budget_tokens)
         selected = select_query_focused_private_evidence(
             parsed_pdf.private_chunks,
             query,
@@ -599,12 +637,15 @@ def build_local_map_context_builder(
     (already-bounded) map fits the room left after trusted evidence, and
     renders it. No adapter, no per-batch generative calls."""
 
-    def _builder(frozen_prompt_text: str) -> str | None:
+    def _builder(frozen_prompt_text: str, *, allow_partial: bool = True) -> str | None:
         already_used_tokens = estimate_tokens(frozen_prompt_text)
         private_budget_tokens = budget.private_pdf_budget(already_used_tokens=already_used_tokens)
         map_text = render_local_document_map(document_map)
         map_tokens = estimate_tokens(map_text)
         if map_tokens > private_budget_tokens:
+            if not allow_partial:
+                # Step 22: the caller drops the lowest-ranked trusted evidence item and tries again.
+                raise PrivateContextDoesNotFit(map_tokens, private_budget_tokens)
             # The map is already bounded (capped entries/excerpt sizes,
             # global intent budget) - if it still cannot fit, local analysis
             # has genuinely failed to bring this within budget.
@@ -721,8 +762,9 @@ def run_frozen_query_pipeline(
             tier=ContextTier.NORMAL,
             private_context_builder=private_context_builder,
             timings=timings,
-            size_guard=request_size_guard(settings),
+            size_guard=request_size_guard(settings, mode),
             generation_limit=generation_limit(settings),
+            prompt=prompt_builder(settings),
         )
         if result.answer is None and any(
             warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
@@ -738,12 +780,15 @@ def run_frozen_query_pipeline(
                 tier=ContextTier.REDUCED,
                 private_context_builder=None,
                 timings=timings,
-                size_guard=request_size_guard(settings),
+                size_guard=request_size_guard(settings, mode),
                 generation_limit=generation_limit(settings),
+                prompt=prompt_builder(settings),
             )
         log_product_context_metrics(
             provider=settings.legalai_llm_provider,
-            model=getattr(adapter, "configured_model_id", ""),
+            # The model that answered (per-mode routing, step 22), else the adapter's configured model.
+            model=(result.model_metadata.configured_model_id if result.model_metadata and result.model_metadata.configured_model_id
+                   else getattr(adapter, "configured_model_id", "")),
             context_tier=tier,
             retrieval=bounded_retrieval,
             result=result,
@@ -777,8 +822,10 @@ def _attempt_generation(
     timings: dict[str, float] | None = None,
     size_guard: "RequestSizeGuard | None" = None,
     generation_limit: tuple[int, float] | None = None,
+    prompt: tuple[str, Callable[..., Any]] = PROMPT_BUILDERS["v2"],
 ) -> tuple[LegalAnswerResult, ContextTier, Any]:
     timings = timings if timings is not None else {}
+    prompt_version, build_prompt = prompt
     stage_started = perf_counter()
     tier_budget = product_budget if tier is ContextTier.NORMAL else product_budget.reduced()
     trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
@@ -789,16 +836,27 @@ def _attempt_generation(
         # date suffix (services/case_names.py); precedents keep the full titles.
         generation_retrieval = normalized_for_generation(bounded_retrieval)
         packet = build_grounded_evidence_packet(understanding, generation_retrieval)
-        prompt = build_legal_answer_prompt_v2(packet, mode=mode)
+        built_prompt = build_prompt(packet, mode=mode)
         # The private-context builder (if any) is invoked here, AFTER the
         # trusted-evidence prompt is fully built, so it can measure that
         # prompt's real token cost and size the private-PDF budget against
         # whatever is actually left - not a static guess made before trusted
         # retrieval even ran. See backend/app/services/token_budget.py.
-        private_document_context = private_context_builder(prompt.prompt) if private_context_builder else None
-        prompt_text = prompt_with_private_pdf_context(prompt.prompt, private_document_context)
-        if size_guard is None or size_guard.fits(prompt_text, mode):
-            break
+        # Step 22: while more than one trusted item is left, the private context must fit whole; if it does not,
+        # the lowest-ranked trusted item is dropped first (below).
+        can_trim = len(bounded_retrieval.evidence) > 1
+        try:
+            private_document_context = (
+                private_context_builder(built_prompt.prompt, allow_partial=not can_trim) if private_context_builder else None
+            )
+        except PrivateContextDoesNotFit as exc:
+            logger.info("private_context_budget needed_tokens=%d available_tokens=%d trimming_trusted_evidence", exc.needed_tokens, exc.available_tokens)
+            private_document_context = None
+            prompt_text = None
+        else:
+            prompt_text = prompt_with_private_pdf_context(built_prompt.prompt, private_document_context)
+            if size_guard is None or size_guard.fits(prompt_text, mode):
+                break
         if len(bounded_retrieval.evidence) <= 1:
             # Private (P#) evidence is never dropped, and one trusted item is the minimum for a grounded answer.
             if private_document_context:
@@ -832,7 +890,7 @@ def _attempt_generation(
         stage_started = perf_counter()
         result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
     if result.model_metadata is not None:
-        result.model_metadata.prompt_version = PROMPT_VERSION
+        result.model_metadata.prompt_version = prompt_version
         result.model_metadata.evidence_items_trimmed = trimmed
     answer_ms = elapsed_since(stage_started)
     provider_ms = timed_adapter.elapsed_ms if timed_adapter is not None else 0.0
@@ -865,7 +923,7 @@ class RequestSizeGuard:
         return self.estimated_request_tokens(prompt_text, mode) <= self.ceiling_tokens
 
 
-def request_size_guard(settings: Settings) -> RequestSizeGuard | None:
+def request_size_guard(settings: Settings, mode: AnswerMode | None = None) -> RequestSizeGuard | None:
     """The primary provider's guard: Groq with LEGALAI_GROQ_MAX_REQUEST_TOKENS, or a profile with a request ceiling."""
     provider = settings.legalai_llm_provider.strip().lower()
     if provider == "groq":

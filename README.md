@@ -77,9 +77,10 @@ Edit `.env` and fill in the values marked `[required]`:
 - `JWT_SECRET_KEY`: a generated secret;
 - `SEED_LAWYER_PASSWORD` and `SEED_ADMIN_PASSWORD`: at least 12 characters each.
 
-For real answers, also set `GROQ_API_KEY` (and `GEMINI_API_KEY` for the fallback). Groq stays the primary after the
-step 21 provider bake-off; it answers public questions, but professional answers and briefs exceed its 8,000-token
-per-request limit (see [docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)). Never commit `.env`. Without
+For real answers, also set `GROQ_API_KEY`: Groq serves every answer (step 22). Professional answers use
+`openai/gpt-oss-120b`, public answers `openai/gpt-oss-20b`, and each falls back to the other model (`groq_backup`).
+Prompt v3 keeps answers and briefs inside Groq's 8,000-token per-request limit. On the free tier each model takes
+about one answer per minute (see [docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)). Never commit `.env`. Without
 `DATABASE_URL` the backend refuses to start and says so. The full list is in
 [Environment variables](#environment-variables).
 
@@ -243,7 +244,10 @@ sets the same value unless noted.
 | `APP_ENV` | `development`, `test` or `production` (production: secure cookies, stricter checks, no console email) | none: startup refuses unset or unknown values; the test runners set `test` | **yes** |
 | `BACKEND_HOST`, `BACKEND_PORT` | backend bind address. Deployments that must accept outside connections set `0.0.0.0` explicitly (uvicorn's `--host` binds the socket) | `127.0.0.1`, `8000` | no |
 | `FRONTEND_ORIGIN` | allowed CORS origin | `http://localhost:3000` | no |
-| `LEGALAI_LLM_PROVIDER`, `LEGALAI_LLM_FALLBACK_PROVIDER` | primary and fallback provider (`groq`, `gemini`, `nvidia`, `ollama`, `deepseek`, `openrouter`) | `gemini`, `gemini` (`.env.example`: `groq`, `gemini`) | no |
+| `LEGALAI_LLM_PROVIDER`, `LEGALAI_LLM_FALLBACK_PROVIDER` | primary and fallback provider (`groq`, `gemini`, `nvidia`, `ollama`, `deepseek`, `openrouter`, `groq_backup`) | `gemini`, `gemini` (`.env.example`: `groq`, `groq_backup`) | no |
+| `LEGALAI_PROMPT_VERSION` | product prompt: `v3` (v2 plus concision) or `v2` | `v3` | no |
+| `GROQ_PUBLIC_MODEL` | Groq model for public answers (per-mode routing); empty uses `GROQ_MODEL` | empty (`.env.example`: `openai/gpt-oss-20b`) | no |
+| `GROQ_BACKUP_MODEL`, `GROQ_BACKUP_PUBLIC_MODEL` | models of the `groq_backup` fallback for professional and public answers | empty (`.env.example`: 20b, 120b) | with `groq_backup` |
 | `GROQ_MODEL`, `GROQ_BASE_URL`, `GEMINI_MODEL` | provider models and endpoint | example: `openai/gpt-oss-120b`, Groq API, `gemini-3.7-flash` | with that provider |
 | `LEGALAI_LLM_MAX_OUTPUT_TOKENS`, `LEGALAI_GROQ_*`, `LEGALAI_GEMINI_*` | provider limits and tuning | see `.env.example` | no |
 | `LEGALAI_PRODUCT_MAX_INPUT_TOKENS` and the other `*_TOKENS` / `PRIVATE_PDF_*` budgets | context budgeting ([docs/PRODUCT_CONTEXT_BUDGETING.md](docs/PRODUCT_CONTEXT_BUDGETING.md)) | see `.env.example` | no |
@@ -265,7 +269,7 @@ sets the same value unless noted.
 | `EXPOSE_DEV_VERIFICATION_TOKENS`, `EMAIL_OTP_*` | verification codes | `false`; see `.env.example` | no |
 | `LEGAL_NER_*`, `INLEGALBERT_*` | optional NER experiments; off by default | see `.env.example` | no |
 | `INDIAN_KANOON_API_TOKEN`, `INDIAN_KANOON_BASE_URL` | corpus acquisition scripts only | empty, `https://api.indiankanoon.org` | to acquire |
-| `NVIDIA_*` | NVIDIA API catalog profile (OpenAI-compatible): base URL, model, output limit, timeout, structured-output mode, request ceiling | see `.env.example` | with `nvidia` |
+| `NVIDIA_*` | NVIDIA API catalog profile (OpenAI-compatible): base URL, model, output limit, timeout, structured-output mode, request ceiling, streaming (`NVIDIA_STREAM`, `NVIDIA_STREAM_DEADLINE_SECONDS`) | see `.env.example` | with `nvidia` |
 | `OLLAMA_*` | local Ollama profile (OpenAI-compatible `/v1`, no key): model, context (`OLLAMA_CONTEXT_TOKENS`), output limit, timeout, structured-output mode (`prompt`), reasoning (`none`) | see `.env.example` | with `ollama` |
 | `DEEPSEEK_*`, `OPENROUTER_*` | profiles defined for future keys; disabled while the key is empty | empty | no |
 | `TEST_DATABASE_URL` | DB-backed test suites only; a `*_test` database | none | for DB tests |
