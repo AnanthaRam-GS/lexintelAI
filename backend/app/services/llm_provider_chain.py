@@ -231,7 +231,7 @@ class FallbackAnswerAdapter:
             entries.append(_Entry(name, adapter, key, request_tokens(adapter, prompt, schema, self.settings)))
         stats = {"queue_wait_ms": 0.0, "rate_limit_wait_ms": 0.0, "rate_limit_retries": 0.0}
 
-        # Step 24b daily budgets: a model without today's capacity for this request is skipped.
+        # Step 24b daily budgets: a model without room for this request in its last 24 hours is skipped.
         servable = [e for e in entries if self._daily_ok(e)]
         if not servable:
             raise DailyCapacityReached(self._daily_retry_after(entries))
@@ -330,8 +330,8 @@ class FallbackAnswerAdapter:
         return entry.key is None or self.quota is None or self.quota.can_serve(entry.key, entry.tokens)
 
     def _daily_retry_after(self, entries: list[_Entry]) -> float:
-        """Seconds until the earliest of these models has daily capacity again."""
-        waits = [self.quota.seconds_until_available(e.key) for e in entries if e.key is not None and self.quota is not None]
+        """Seconds until the earliest of these models has room for this request in its rolling 24-hour window."""
+        waits = [self.quota.seconds_until_fits(e.key, e.tokens) for e in entries if e.key is not None and self.quota is not None]
         return min(waits) if waits else DEFAULT_RATE_LIMIT_WAIT_SECONDS
 
     def _acquire(self, entries: list[_Entry], deadline: float, began: float) -> tuple[_Entry, float]:

@@ -1,4 +1,5 @@
-"""Step 24b: daily token budgets per model (accounting, persistence, the UTC reset, skipping, the error, marking)."""
+"""Steps 24b-24c: daily token budgets per model over a rolling 24-hour window (accounting, persistence, the window
+boundary, partial expiry, skipping, the error, marking)."""
 
 from __future__ import annotations
 
@@ -20,7 +21,6 @@ from backend.app.services.llm_daily_quota import (  # noqa: E402
     DailyLimits,
     DailyQuota,
     is_daily_limit_error,
-    seconds_until_utc_reset,
 )
 from backend.app.services.llm_pacing import LLMPacer, ModelLimits  # noqa: E402
 from backend.app.services.llm_provider_chain import PRIMARY_DAILY_CAPACITY, FallbackAnswerAdapter  # noqa: E402
@@ -80,18 +80,22 @@ class PersistenceTests(unittest.TestCase):
             first = DailyQuota(path, clock=clock)
             first.configure(KEY, DailyLimits(200_000))
             first.record(KEY, 150_000)
-            first.mark_exhausted(("groq", PUBLIC_MODEL), 600)
+            first.mark_exhausted(("groq", PUBLIC_MODEL), 7_200)
+            clock.now = at("2026-10-31T11:00:00")
             restarted = DailyQuota(path, clock=clock)
             restarted.configure(KEY, DailyLimits(200_000))
             restarted.configure(("groq", PUBLIC_MODEL), DailyLimits(200_000))
             self.assertFalse(restarted.can_serve(KEY, 60_000))
             self.assertTrue(restarted.can_serve(KEY, 50_000))
             self.assertFalse(restarted.can_serve(("groq", PUBLIC_MODEL), 1))
+            # The timestamps survive too: the usage still ages out 24 hours after it was recorded, not after the restart.
+            self.assertEqual(round(restarted.seconds_until_fits(KEY, 60_000)), 23 * 3600)
             stored = json.loads(path.read_text())
-            self.assertEqual(stored["day"], "2026-10-31")
-            self.assertNotIn("prompt", path.read_text())  # usage numbers only
+            self.assertEqual(stored["window"], "rolling_24h")
+            self.assertEqual(stored["models"][f"groq/{OTHER_MODEL}"]["events"], [[at("2026-10-31T10:00:00"), 150_000]])
+            self.assertNotIn("prompt", path.read_text())  # usage numbers and timestamps only
 
-    def test_an_unreadable_file_starts_a_new_count(self) -> None:
+    def test_an_unreadable_file_starts_a_new_record(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "usage.json"
             path.write_text("{not json")
@@ -99,37 +103,82 @@ class PersistenceTests(unittest.TestCase):
             quota.configure(KEY, DailyLimits(100))
             self.assertTrue(quota.can_serve(KEY, 100))
 
+    def test_a_step_24b_utc_day_file_starts_a_new_record(self) -> None:
+        """The earlier per-UTC-day totals have no timestamps to age out: they are not carried over."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "usage.json"
+            path.write_text(json.dumps({"day": "2026-10-30", "models": {f"groq/{OTHER_MODEL}": {"tokens": 9, "requests": 1}}}))
+            quota = DailyQuota(path, clock=Clock(at("2026-10-31T10:00:00")))
+            quota.configure(KEY, DailyLimits(100))
+            self.assertEqual(quota.status()["models"][f"groq/{OTHER_MODEL}"]["tokens_used"], 0)
 
-class ResetBoundaryTests(unittest.TestCase):
-    def test_the_count_resets_at_utc_midnight(self) -> None:
-        clock = Clock(at("2026-10-31T23:59:30"))
-        quota = DailyQuota(None, clock=clock)
-        quota.configure(KEY, DailyLimits(10_000))
-        quota.record(KEY, 10_000)
-        self.assertFalse(quota.can_serve(KEY, 1))
-        self.assertEqual(round(quota.seconds_until_available(KEY)), 30)
-        self.assertEqual(round(seconds_until_utc_reset(clock.now)), 30)
-        clock.now = at("2026-11-01T00:00:01")
-        self.assertTrue(quota.can_serve(KEY, 10_000))
-        self.assertEqual(quota.status()["day_utc"], "2026-11-01")
 
-    def test_a_provider_mark_beyond_midnight_is_kept(self) -> None:
-        clock = Clock(at("2026-10-31T23:50:00"))
-        quota = DailyQuota(None, clock=clock)
-        quota.configure(KEY, DailyLimits(10_000))
-        quota.mark_exhausted(KEY, 1_800)  # the provider says 30 minutes: past midnight
-        clock.now = at("2026-11-01T00:05:00")
-        self.assertFalse(quota.can_serve(KEY, 1))
-        self.assertEqual(round(quota.seconds_until_available(KEY)), 900)
-        clock.now = at("2026-11-01T00:21:00")
-        self.assertTrue(quota.can_serve(KEY, 1))
+class RollingWindowTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.clock = Clock(at("2026-10-31T10:00:00"))
+        self.quota = DailyQuota(None, clock=self.clock)
+        self.quota.configure(KEY, DailyLimits(10_000))
 
-    def test_a_mark_without_retry_after_lasts_until_the_reset(self) -> None:
-        clock = Clock(at("2026-10-31T22:00:00"))
-        quota = DailyQuota(None, clock=clock)
-        quota.configure(KEY, DailyLimits(10_000))
-        quota.mark_exhausted(KEY, None)
-        self.assertEqual(round(quota.seconds_until_available(KEY)), 7_200)
+    def test_usage_counts_until_exactly_24_hours_later(self) -> None:
+        self.quota.record(KEY, 10_000)
+        self.clock.now = at("2026-11-01T00:00:01")  # past UTC midnight: no reset
+        self.assertFalse(self.quota.can_serve(KEY, 1))
+        self.clock.now = at("2026-11-01T09:59:59")
+        self.assertFalse(self.quota.can_serve(KEY, 1))
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 1)), 1)
+        self.clock.now = at("2026-11-01T10:00:00")  # the window boundary: the usage has aged out
+        self.assertTrue(self.quota.can_serve(KEY, 10_000))
+        self.assertEqual(self.quota.status()["models"][f"groq/{OTHER_MODEL}"]["tokens_used"], 0)
+
+    def test_partial_expiry_frees_only_the_oldest_usage(self) -> None:
+        self.quota.record(KEY, 4_000)  # 10:00
+        self.clock.now = at("2026-10-31T14:00:00")
+        self.quota.record(KEY, 3_000)  # 14:00
+        self.clock.now = at("2026-10-31T18:00:00")
+        self.quota.record(KEY, 3_000)  # 18:00: 10,000 used
+        self.clock.now = at("2026-11-01T11:00:00")  # the 10:00 usage has aged out
+        status = self.quota.status()["models"][f"groq/{OTHER_MODEL}"]
+        self.assertEqual((status["tokens_used"], status["tokens_remaining"], status["requests_used"]), (6_000, 4_000, 2))
+        self.assertEqual(status["oldest_usage_expires_in_seconds"], 3 * 3600)  # the 14:00 usage
+        self.assertTrue(self.quota.can_serve(KEY, 4_000))
+        self.assertFalse(self.quota.can_serve(KEY, 4_001))
+
+    def test_retry_after_is_the_time_until_enough_usage_ages_out_to_fit_the_request(self) -> None:
+        self.quota.record(KEY, 4_000)  # 10:00
+        self.clock.now = at("2026-10-31T14:00:00")
+        self.quota.record(KEY, 3_000)  # 14:00
+        self.clock.now = at("2026-10-31T18:00:00")
+        self.quota.record(KEY, 2_000)  # 18:00: 9,000 used, 1,000 left
+        self.assertEqual(self.quota.seconds_until_fits(KEY, 1_000), 0.0)
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 1_001)), 16 * 3600)  # the 10:00 usage ages out
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 5_000)), 16 * 3600)
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 5_001)), 20 * 3600)  # and the 14:00 usage
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 50_000)), 24 * 3600)  # larger than the limit: all of it
+
+    def test_the_request_limit_waits_for_the_oldest_request(self) -> None:
+        self.quota.configure(KEY, DailyLimits(10_000, requests_per_day=2))
+        self.quota.record(KEY, 10)
+        self.clock.now = at("2026-10-31T12:00:00")
+        self.quota.record(KEY, 10)
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 1)), 22 * 3600)
+
+    def test_a_provider_mark_lasts_for_its_retry_time(self) -> None:
+        self.quota.mark_exhausted(KEY, 1_800)
+        self.clock.now = at("2026-10-31T10:15:00")
+        self.assertFalse(self.quota.can_serve(KEY, 1))
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 1)), 900)
+        self.clock.now = at("2026-10-31T10:31:00")
+        self.assertTrue(self.quota.can_serve(KEY, 1))
+
+    def test_a_mark_without_retry_after_lasts_until_the_oldest_usage_ages_out(self) -> None:
+        self.quota.record(KEY, 100)  # 10:00
+        self.clock.now = at("2026-10-31T22:00:00")
+        self.quota.mark_exhausted(KEY, None)
+        self.assertEqual(round(self.quota.seconds_until_fits(KEY, 1)), 12 * 3600)
+        fresh = DailyQuota(None, clock=self.clock)
+        fresh.configure(KEY, DailyLimits(10_000))
+        fresh.mark_exhausted(KEY, None)  # nothing recorded: an hour
+        self.assertEqual(round(fresh.seconds_until_fits(KEY, 1)), 3600)
 
 
 def rate_limited_daily(prefix: str, retry_after: float | None) -> ModelProviderError:
@@ -179,7 +228,7 @@ class ChainTests(unittest.TestCase):
         fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [answer("groq_backup", PUBLIC_MODEL)])  # never allowed: professional
         with self.assertRaises(DailyCapacityReached) as caught:
             generate_professional(self.chain(primary, fallback))
-        self.assertEqual(caught.exception.retry_after_seconds, 12 * 3600)  # until 00:00 UTC
+        self.assertEqual(caught.exception.retry_after_seconds, 24 * 3600)  # until that usage ages out of the window
         self.assertEqual((len(primary.calls), len(fallback.calls)), (0, 0))
 
     def test_a_provider_daily_error_marks_the_model_and_falls_back_for_public(self) -> None:
@@ -245,7 +294,8 @@ class ApiTests(unittest.TestCase):
                 daily = main_module.health_check()["llm_daily"]
         finally:
             llm_daily_quota.reset_default_quota(None)
-        self.assertEqual(set(daily), {"day_utc", "resets_in_seconds", "models"})
+        self.assertEqual(set(daily), {"window", "window_seconds", "models"})
+        self.assertEqual((daily["window"], daily["window_seconds"]), ("rolling_24h", 86_400))
         self.assertEqual(daily["models"][f"groq/{OTHER_MODEL}"]["tokens_used"], 1_234)
         self.assertEqual(daily["models"][f"groq/{OTHER_MODEL}"]["tokens_remaining"], 198_766)
 

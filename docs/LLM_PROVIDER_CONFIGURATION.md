@@ -511,20 +511,24 @@ restores the step 22 chain.
 **Daily limits (step 24b, `services/llm_daily_quota.py`).** Groq's free tier allows **200,000 tokens per model per
 day** and sends no header for it. A 429 names it: "tokens per day (TPD): Limit 200000, Used …", with a retry time
 of minutes.
-- **Count.** Each answer's provider-reported tokens (prompt + completion) and requests are counted per model and UTC
-  day in `LEGALAI_LLM_DAILY_USAGE_FILE` (default `data/runtime/llm_daily_usage.json`, gitignored; atomic writes, so
-  the count survives restarts).
-- **Limits.** `LEGALAI_GROQ_TOKENS_PER_DAY` (200,000), plus an optional `LEGALAI_GROQ_REQUESTS_PER_DAY`.
-- **Skip.** Before sending, a model whose count plus the request's estimate would exceed its limit is skipped.
-  A public answer then goes to its fallback (`fallback_reason=PRIMARY_DAILY_CAPACITY`). When no allowed model can
-  serve, the API answers `503 DAILY_CAPACITY_REACHED` with `Retry-After` = the seconds until capacity returns. The
-  frontend says "Today's AI capacity has been reached — please try again after <local time>".
-- **Mark from the provider.** A provider daily-limit 429 marks the model exhausted until its retry time (else 00:00
-  UTC), and the request goes to an allowed fallback or gets `DAILY_CAPACITY_REACHED`.
-- **Observed window.** Groq's daily window behaves like a rolling 24 hours (retry times of minutes in mid-afternoon),
-  while the count resets at 00:00 UTC, so the count is an approximation. The marking from Groq's own error corrects
-  it.
-- `/health` shows `llm_daily` (`docs/API_CONTRACTS.md`).
+- **Rolling 24-hour window (step 24c).** Groq's daily window behaves like a rolling 24 hours: in step 24 its retry
+  times were minutes in mid-afternoon, which a reset at 00:00 UTC could not produce. The tracker uses the same
+  window. (Step 24b counted per UTC day; that count is not carried over, because it has no timestamps.)
+- **Record.** Each answer's provider-reported tokens (prompt + completion) are stored with their timestamp, per
+  model, in `LEGALAI_LLM_DAILY_USAGE_FILE` (default `data/runtime/llm_daily_usage.json`, gitignored; atomic writes,
+  so the record survives restarts). Usage leaves the window 24 hours after it was recorded.
+- **Limits.** `LEGALAI_GROQ_TOKENS_PER_DAY` (200,000), plus an optional `LEGALAI_GROQ_REQUESTS_PER_DAY`. Both
+  apply to the last 24 hours: remaining = limit − usage in the last 24 hours.
+- **Skip.** Before sending, a model whose remaining budget cannot hold the request's estimate is skipped. A public
+  answer then goes to its fallback (`fallback_reason=PRIMARY_DAILY_CAPACITY`). When no allowed model can serve, the
+  API answers `503 DAILY_CAPACITY_REACHED` with `Retry-After` = the time until enough of the oldest usage ages out
+  for this request to fit. The frontend says "Today's AI capacity has been reached — please try again after
+  <local time>".
+- **Mark from the provider.** A provider daily-limit 429 (usage from before the record started, or another client
+  on the same key) marks the model exhausted until its retry time. Without one, the mark lasts until the oldest
+  recorded usage ages out, or an hour when nothing is recorded. The request goes to an allowed fallback or gets
+  `DAILY_CAPACITY_REACHED`.
+- `/health` shows `llm_daily` with `"window": "rolling_24h"` (`docs/API_CONTRACTS.md`).
 
 **Capacity planning (free tier):**
 - **Per minute:** about 3 answers per minute across the two models (step 23).

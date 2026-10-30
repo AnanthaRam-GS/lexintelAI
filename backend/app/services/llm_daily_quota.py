@@ -1,24 +1,24 @@
-"""Daily token and request budgets per LLM model (step 24b), persisted across restarts.
+"""Daily token and request budgets per LLM model, over a rolling 24-hour window (steps 24b-24c), persisted.
 
-Groq's free tier allows 200,000 tokens per model per day (observed: HTTP 429 "Rate limit reached for model … on
-tokens per day (TPD): Limit 200000"), and sends no header for it. The per-minute pacing (``llm_pacing.py``)
-cannot see that limit, so a day of heavy use ended in 429s and ``MODEL_BUSY`` (step 24). This module:
+Groq's free tier allows 200,000 tokens per model per day (HTTP 429 "Rate limit reached for model … on tokens per
+day (TPD): Limit 200000"), and sends no header for it. Its window is **rolling**: in step 24 its retry times were
+minutes in mid-afternoon, which a reset at 00:00 UTC could not produce. The per-minute pacing (``llm_pacing.py``)
+cannot see that limit, so a day of heavy use ended in 429s and ``MODEL_BUSY``. This module:
 
-- **Counts** each model's provider-reported tokens (prompt + completion) and requests per UTC day, in a small JSON
-  file (``LEGALAI_LLM_DAILY_USAGE_FILE``, default ``data/runtime/llm_daily_usage.json``, gitignored). Writes are
-  atomic (temporary file + rename), so the count survives a restart.
-- **Checks before sending:** a model whose used tokens plus the request's estimate would exceed its daily limit
-  (``LEGALAI_GROQ_TOKENS_PER_DAY``, default 200,000; optional ``LEGALAI_GROQ_REQUESTS_PER_DAY``), or that is marked
-  exhausted, is skipped. The provider chain then tries the fallback allowed for the mode; when nothing can serve, the
-  API answers ``503 DAILY_CAPACITY_REACHED`` with ``Retry-After`` = the seconds until capacity returns.
-- **Marks a model exhausted** when the provider reports its daily limit anyway (the count started late, or another
-  client shares the account): until the provider's ``retry-after`` when given, otherwise until the UTC reset.
+- **Records** each answered request's provider-reported tokens (prompt + completion) with its timestamp, per model,
+  in a small JSON file (``LEGALAI_LLM_DAILY_USAGE_FILE``, default ``data/runtime/llm_daily_usage.json``,
+  gitignored). Writes are atomic (temporary file + rename), so the record survives a restart. Entries older than
+  the window are dropped.
+- **Checks before sending:** a model's remaining budget is its limit (``LEGALAI_GROQ_TOKENS_PER_DAY``, default
+  200,000; optional ``LEGALAI_GROQ_REQUESTS_PER_DAY``) minus its usage in the last 24 hours. A model whose remaining
+  budget cannot hold the request's estimate, or that is marked exhausted, is skipped. The provider chain then tries
+  the fallback allowed for the mode. When nothing can serve, the API answers ``503 DAILY_CAPACITY_REACHED`` with
+  ``Retry-After`` = the time until enough usage ages out of the window to fit the request.
+- **Marks a model exhausted** when the provider reports its daily limit anyway (usage from before the record
+  started, or another client on the same account): until the provider's ``retry-after`` when given, otherwise until
+  the oldest recorded usage ages out (or an hour, when none is recorded).
 
-Groq's daily window behaves like a rolling 24 hours (step 24: retry times of minutes in mid-afternoon), while this
-count resets at 00:00 UTC. The count is therefore an approximation, and the exhaustion marking from the provider's
-own error keeps it honest.
-
-Only usage numbers are stored: no prompts, answers, keys or user data.
+Only usage numbers and timestamps are stored: no prompts, answers, keys or user data.
 """
 
 from __future__ import annotations
@@ -31,13 +31,16 @@ import tempfile
 import threading
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
 logger = logging.getLogger("legalai.llm_daily_quota")
 
 Key = tuple[str, str]  # (rate-limit account, model)
+WINDOW_SECONDS = 24 * 3600
+WINDOW_NAME = "rolling_24h"
+# A provider daily-limit error without a retry time, and no recorded usage to age out: try again in an hour.
+UNKNOWN_EXHAUSTION_SECONDS = 3600.0
 DAILY_LIMIT_MESSAGE = re.compile(r"(tokens|requests) per day|\b(TPD|RPD)\b", re.IGNORECASE)
 
 
@@ -48,10 +51,10 @@ class DailyLimits:
 
 
 class DailyCapacityReached(Exception):
-    """No model allowed for this request has daily capacity left; answered 503 DAILY_CAPACITY_REACHED."""
+    """No model allowed for this request has capacity left in its rolling window; answered 503 DAILY_CAPACITY_REACHED."""
 
     def __init__(self, retry_after_seconds: float) -> None:
-        super().__init__("today's answer capacity is used up")
+        super().__init__("the answer models' 24-hour capacity is used up")
         self.retry_after_seconds = max(1, int(round(retry_after_seconds)))
 
 
@@ -61,22 +64,13 @@ def is_daily_limit_error(exc: Exception) -> bool:
     return getattr(exc, "http_status", None) == 429 and bool(DAILY_LIMIT_MESSAGE.search(text))
 
 
-def utc_day(now: float) -> str:
-    return datetime.fromtimestamp(now, timezone.utc).strftime("%Y-%m-%d")
-
-
-def seconds_until_utc_reset(now: float) -> float:
-    current = datetime.fromtimestamp(now, timezone.utc)
-    midnight = (current + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    return (midnight - current).total_seconds()
-
-
 class DailyQuota:
-    """Per-model daily usage with limits; thread-safe; persisted to ``path`` (None keeps it in memory)."""
+    """Per-model usage over a rolling window, with limits; thread-safe; persisted to ``path`` (None: in memory)."""
 
-    def __init__(self, path: Path | None, *, clock: Callable[[], float] = time.time) -> None:
+    def __init__(self, path: Path | None, *, clock: Callable[[], float] = time.time, window_seconds: float = WINDOW_SECONDS) -> None:
         self.path = Path(path) if path else None
         self._clock = clock
+        self.window_seconds = float(window_seconds)
         self._lock = threading.Lock()
         self._limits: dict[Key, DailyLimits] = {}
         self._state = self._load()
@@ -84,18 +78,20 @@ class DailyQuota:
     # -- persistence ----------------------------------------------------------------------------------------------
 
     def _empty(self) -> dict[str, Any]:
-        return {"day": utc_day(self._clock()), "models": {}}
+        return {"window": WINDOW_NAME, "models": {}}
 
     def _load(self) -> dict[str, Any]:
         if self.path is None or not self.path.exists():
             return self._empty()
         try:
             state = json.loads(self.path.read_text(encoding="utf-8"))
-            if not isinstance(state, dict) or not isinstance(state.get("models"), dict):
-                raise ValueError("unexpected layout")
+            if not isinstance(state, dict) or state.get("window") != WINDOW_NAME or not isinstance(state.get("models"), dict):
+                raise ValueError("not a rolling-window usage file")
+            for entry in state["models"].values():
+                entry["events"] = [[float(at), int(tokens)] for at, tokens in entry.get("events", [])]
             return state
-        except (OSError, ValueError) as exc:
-            logger.warning("daily usage file unreadable, starting a new count: %s", type(exc).__name__)
+        except (OSError, ValueError, TypeError) as exc:
+            logger.warning("daily usage file unreadable, starting a new record: %s", type(exc).__name__)
             return self._empty()
 
     def _save(self) -> None:
@@ -107,19 +103,12 @@ class DailyQuota:
             json.dump(self._state, file, indent=1, sort_keys=True)
         os.replace(temporary, self.path)
 
-    def _roll(self) -> None:
-        """A new UTC day starts a new count; an exhaustion mark that reaches beyond the reset is kept."""
-        today = utc_day(self._clock())
-        if self._state.get("day") == today:
-            return
-        now = self._clock()
-        carried = {name: {"tokens": 0, "requests": 0, "exhausted_until": entry.get("exhausted_until")}
-                   for name, entry in self._state.get("models", {}).items()
-                   if (entry.get("exhausted_until") or 0) > now}
-        self._state = {"day": today, "models": carried}
-
-    def _entry(self, key: Key) -> dict[str, Any]:
-        return self._state["models"].setdefault(f"{key[0]}/{key[1]}", {"tokens": 0, "requests": 0, "exhausted_until": None})
+    def _entry(self, key: Key, now: float) -> dict[str, Any]:
+        """The model's entry, with usage older than the window dropped."""
+        entry = self._state["models"].setdefault(f"{key[0]}/{key[1]}", {"events": [], "exhausted_until": None})
+        cutoff = now - self.window_seconds
+        entry["events"] = [event for event in entry["events"] if event[0] > cutoff]
+        return entry
 
     # -- configuration -----------------------------------------------------------------------------------------------
 
@@ -134,45 +123,63 @@ class DailyQuota:
     # -- checks and accounting --------------------------------------------------------------------------------------
 
     def can_serve(self, key: Key, estimated_tokens: int) -> bool:
-        """True when ``key`` is untracked, or has the tokens and a request left today and is not marked exhausted."""
+        """True when ``key`` is untracked, or its last 24 hours leave room for the request and it is not exhausted."""
+        return self.seconds_until_fits(key, estimated_tokens) == 0.0
+
+    def seconds_until_fits(self, key: Key, estimated_tokens: int) -> float:
+        """0 when ``key`` can take the request now; otherwise the time until enough usage ages out of the window (and
+        any exhaustion mark has passed) for it to fit."""
         with self._lock:
             limits = self._limits.get(key)
             if limits is None:
-                return True
-            self._roll()
-            entry = self._entry(key)
-            if (entry.get("exhausted_until") or 0) > self._clock():
-                return False
-            if limits.requests_per_day is not None and entry["requests"] >= limits.requests_per_day:
-                return False
-            return entry["tokens"] + max(0, estimated_tokens) <= limits.tokens_per_day
-
-    def seconds_until_available(self, key: Key) -> float:
-        """When capacity returns for ``key``: the exhaustion mark, else the UTC reset."""
-        with self._lock:
-            self._roll()
+                return 0.0
             now = self._clock()
-            until = self._entry(key).get("exhausted_until") or 0
-            return max(until - now, 0.0) if until > now else seconds_until_utc_reset(now)
+            entry = self._entry(key, now)
+            waits = [max(0.0, (entry.get("exhausted_until") or 0) - now)]
+            events = entry["events"]
+            # Tokens: drop the oldest usage until the rest plus the request fits (a request larger than the whole
+            # limit fits only in an empty window).
+            needed = min(max(0, estimated_tokens), limits.tokens_per_day)
+            used = sum(tokens for _at, tokens in events)
+            for at, tokens in events:
+                if used + needed <= limits.tokens_per_day:
+                    break
+                used -= tokens
+                waits.append(at + self.window_seconds - now)
+            # Requests: the oldest request has to age out once the count is at its limit.
+            if limits.requests_per_day is not None and len(events) >= limits.requests_per_day:
+                index = len(events) - limits.requests_per_day
+                waits.append(events[index][0] + self.window_seconds - now)
+            return max(waits)
+
+    def seconds_until_available(self, key: Key, estimated_tokens: int = 1) -> float:
+        """When ``key`` can take a request of ``estimated_tokens`` (for ``Retry-After``)."""
+        return self.seconds_until_fits(key, estimated_tokens)
 
     def record(self, key: Key, tokens: int | None, *, requests: int = 1) -> None:
-        """Add one answered request's provider-reported tokens (prompt + completion)."""
+        """Add one answered request's provider-reported tokens (prompt + completion), timestamped now."""
         with self._lock:
             if key not in self._limits:
                 return
-            self._roll()
-            entry = self._entry(key)
-            entry["tokens"] += max(0, int(tokens or 0))
-            entry["requests"] += requests
+            now = self._clock()
+            entry = self._entry(key, now)
+            entry["events"].append([now, max(0, int(tokens or 0))])
+            for _ in range(max(0, requests - 1)):
+                entry["events"].append([now, 0])
             self._save()
 
     def mark_exhausted(self, key: Key, retry_after_seconds: float | None) -> None:
-        """The provider reported the daily limit: no requests to ``key`` until its retry time (else the UTC reset)."""
+        """The provider reported the daily limit: no requests to ``key`` until its retry time (else until the oldest
+        recorded usage ages out, or an hour when none is recorded)."""
         with self._lock:
-            self._roll()
             now = self._clock()
-            seconds = retry_after_seconds if retry_after_seconds else seconds_until_utc_reset(now)
-            entry = self._entry(key)
+            entry = self._entry(key, now)
+            if retry_after_seconds:
+                seconds = float(retry_after_seconds)
+            elif entry["events"]:
+                seconds = entry["events"][0][0] + self.window_seconds - now
+            else:
+                seconds = UNKNOWN_EXHAUSTION_SECONDS
             entry["exhausted_until"] = max(entry.get("exhausted_until") or 0, now + seconds)
             self._save()
             logger.warning("daily_limit model=%s/%s exhausted_for_s=%.0f", key[0], key[1], seconds)
@@ -181,21 +188,23 @@ class DailyQuota:
 
     def status(self) -> dict[str, Any]:
         with self._lock:
-            self._roll()
             now = self._clock()
             models = {}
             for key, limits in sorted(self._limits.items()):
-                entry = self._entry(key)
+                entry = self._entry(key, now)
+                used = sum(tokens for _at, tokens in entry["events"])
                 until = entry.get("exhausted_until") or 0
                 models[f"{key[0]}/{key[1]}"] = {
-                    "tokens_used": entry["tokens"],
+                    "tokens_used": used,
                     "tokens_per_day": limits.tokens_per_day,
-                    "tokens_remaining": max(0, limits.tokens_per_day - entry["tokens"]),
-                    "requests_used": entry["requests"],
+                    "tokens_remaining": max(0, limits.tokens_per_day - used),
+                    "requests_used": len(entry["events"]),
                     "requests_per_day": limits.requests_per_day,
                     "exhausted_for_seconds": round(until - now) if until > now else 0,
+                    # When the oldest usage in the window ages out (frees its tokens); None when nothing is used.
+                    "oldest_usage_expires_in_seconds": round(entry["events"][0][0] + self.window_seconds - now) if entry["events"] else None,
                 }
-            return {"day_utc": self._state["day"], "resets_in_seconds": round(seconds_until_utc_reset(now)), "models": models}
+            return {"window": WINDOW_NAME, "window_seconds": int(self.window_seconds), "models": models}
 
 
 _DEFAULT: DailyQuota | None = None
