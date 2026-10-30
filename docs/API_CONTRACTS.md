@@ -196,7 +196,12 @@ backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
   `generation_ms` (provider calls, including any fallback),
   `answer_parse_and_citation_validation_ms` and `total_ms`;
 - `backend`: provider, model, `fallback_used`, primary, fallback and
-  `fallback_reason`;
+  `fallback_reason` (a provider error code, or `PRIMARY_AT_CAPACITY` when the
+  pacing queue gave the request to the fallback model). Since step 23 also
+  `queue_wait_ms` (time queued for model capacity), `rate_limit_wait_ms` (time
+  waiting for a provider's `retry-after`), `rate_limit_retries` and
+  `retry_reasons` (`RATE_LIMIT_RETRY_AFTER` after such a retry). The query
+  history `generation` record keeps the same pacing fields;
 - `model_devices`: `{"embedder": "mps/fp32", "reranker": "mps/fp16"}`, the
   device and precision actually in use (after any CPU fallback), or `null`
   if the models are not loaded.
@@ -211,6 +216,26 @@ document text. Public responses also gain `debug` (`null` by default).
 - `error`: the exception type, when failed;
 - `warm_up` (step 18): `loading`, `ready`, `failed`, or `not_started` (warm-up disabled);
 - `inference` (step 18): `{active, waiting}`, the model calls holding and waiting for the process-wide model lock.
+
+`GET /health` also returns `llm_queue` (step 23, answer pacing; counts only):
+
+```json
+"llm_queue": {
+  "enabled": true,
+  "max_wait_seconds": 90.0,
+  "queue_depth": 2,
+  "estimated_wait_seconds": 37.5,
+  "models": {
+    "groq/openai/gpt-oss-120b": {"tokens_available": 1210, "tokens_per_minute": 8000, "requests_per_minute": 30, "blocked_seconds": 0.0},
+    "groq/openai/gpt-oss-20b": {"tokens_available": 3920, "tokens_per_minute": 8000, "requests_per_minute": 30, "blocked_seconds": 0.0}
+  }
+}
+```
+
+- `queue_depth`: requests waiting for model capacity now;
+- `estimated_wait_seconds`: how long until the last of them would be served, at the models' current refill rates;
+- `models`: each paced model's bucket (`account/model`), with `blocked_seconds` > 0 after a 429 until the
+  provider's `retry-after`.
 
 The top-level `status` still reflects the database only.
 
@@ -427,6 +452,10 @@ All limits are in-memory, per process (see `docs/SECURITY.md`).
   at once per process. A request waits up to `LLM_GENERATION_WAIT_SECONDS`
   (default 10) for a slot, then gets **503** with `Retry-After: 15` and
   `{"error": "Many people are asking questions right now. Please try again in a moment.", "code": "MODEL_BUSY", "detail": {"retry_after": 15}}`.
+- Answer pacing (step 23): a request for a rate-limited model (Groq) first waits in a FIFO queue until its primary
+  or fallback model has capacity, at most `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS` (default 90), and only then takes a
+  generation slot. If nothing frees up in time, or a provider's `retry-after` lies beyond that wait, the answer is
+  **503 `MODEL_BUSY`** with `Retry-After` set to the estimated seconds until capacity, same body shape as above.
 - Local model calls (query embedder, reranker, ingestion embedder, warm-up) run one at a time per process (step 18).
   A query waits up to `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (default 30) for the models, then gets **503** with
   `Retry-After`: `MODELS_LOADING` (`Retry-After: 10`) while the startup warm-up is running, otherwise `MODEL_BUSY`
@@ -537,7 +566,7 @@ BE-003; `backend/app/core/errors.py`):
 | Code | Status | Meaning | `detail` |
 |---|---|---|---|
 | `RATE_LIMITED` | 429 | Per-IP (public) or per-user (professional) query limit; `Retry-After` set. | `retry_after` (seconds) |
-| `MODEL_BUSY` | 503 | All answer-generation slots busy, or the local models stayed busy past `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS`; `Retry-After: 15`. | `retry_after` |
+| `MODEL_BUSY` | 503 | All answer-generation slots busy, or the local models stayed busy past `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (`Retry-After: 15`); or no answer-model capacity within `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS` (step 23; `Retry-After` = the estimated wait). | `retry_after` |
 | `MODELS_LOADING` | 503 | The local models are still warming up at startup and were not free in time; `Retry-After: 10` (step 18). | `retry_after` |
 | `INVALID_QUERY_REQUEST` | 422 | The question could not be processed. | |
 | `QUERY_PIPELINE_UNAVAILABLE` | 503 | The query pipeline failed unexpectedly. | |

@@ -14,6 +14,7 @@ import {
 
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
+import { QUEUED_NOTICE_DELAY_MS } from '../../../components/shared/QueuedNotice';
 import { ResponseCard } from '../../../components/shared/ResponseCard';
 import { UploadDropzone } from '../../../components/shared/UploadDropzone';
 
@@ -32,8 +33,10 @@ const emptyStateExamples = [
 
 const controlFocusClass =
   'focus-visible:outline-[0.1875rem] focus-visible:outline-[var(--color-focus)] focus-visible:outline-offset-[0.1875rem]';
-const PUBLIC_SLOW_CUE_DELAY_MS = 4_000;
-const PUBLIC_TIMEOUT_CUE_DELAY_MS = 9_000;
+// Step 23: from 5 s the answer is shown as queued (the backend paces requests to the model's rate limit and may
+// queue one for up to ~90 s); the keep-waiting / cancel card follows at 30 s.
+const PUBLIC_SLOW_CUE_DELAY_MS = QUEUED_NOTICE_DELAY_MS;
+const PUBLIC_TIMEOUT_CUE_DELAY_MS = 30_000;
 
 type ActiveInputMode = 'text' | 'file' | 'none';
 type RequestStatus = 'idle' | 'loading' | 'error';

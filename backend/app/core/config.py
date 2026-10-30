@@ -5,12 +5,14 @@ It intentionally does not instantiate settings or initialize external
 resources. The intended runtime dependency is `pydantic-settings`.
 """
 
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CHROMA_COLLECTION = "legalai_trusted_judgments_v1"
+_ENV_FILE = os.environ.get("LEGALAI_ENV_FILE", ".env")
 
 
 class Settings(BaseSettings):
@@ -41,6 +43,12 @@ class Settings(BaseSettings):
     # v1-v3); 1.57 is the worst ratio (1.4928, step 22 B3, v3) plus 5% (backend/scripts/calibrate_request_size_guard.py).
     # Step 12 set 1.51 from the 10 runs then available.
     legalai_groq_token_estimate_factor: float = 1.57
+    # Step 23 pacing (services/llm_pacing.py): requests wait in a FIFO queue for model capacity, at most this long,
+    # then get MODEL_BUSY with Retry-After. Groq's limits are per model; its rate-limit headers refine the estimate.
+    legalai_llm_pacing_enabled: bool = True
+    legalai_llm_queue_max_wait_seconds: float = 90.0
+    legalai_groq_tokens_per_minute: int = 8000
+    legalai_groq_requests_per_minute: int = 30
     # Gemini 3 thinking level (low | medium | high); empty sends none.
     legalai_gemini_thinking: str = "low"
     legalai_gemini_timeout_seconds: float = 90.0
@@ -219,7 +227,9 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        # LEGALAI_ENV_FILE=none (set by the test runners, step 23): ignore the developer's .env so local test results
+        # match CI, which has none. Anything else names the file; the default is ./.env.
+        env_file=None if _ENV_FILE.lower() == "none" else _ENV_FILE,
         env_file_encoding="utf-8",
         extra="ignore",
     )

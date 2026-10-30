@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ApiClientError, limitMessage, queryApi } from '../../../lib/api';
-import { ErrorMessage, LoadingSpinner, UploadDropzone } from '../../../components/shared';
+import { ErrorMessage, LoadingSpinner, QueuedNotice, UploadDropzone } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
 
@@ -201,6 +201,7 @@ export default function ProfessionalUploadPage() {
                 </button>
               </div>
             )}
+            <QueuedNotice active={isAnalyzing} className="mt-4" />
           </section>
         </div>
       )}

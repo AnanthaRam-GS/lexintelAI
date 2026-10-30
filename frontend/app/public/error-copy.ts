@@ -83,7 +83,8 @@ export const errorCopy = {
     } satisfies Record<PublicAnswerFailure, ErrorCopy>,
     loading: {
       fast: 'Finding a clear answer…',
-      slow: 'Still working on your answer…',
+      // Step 23: past ~5 s the answer is usually waiting in the pacing queue (shared copy: QueuedNotice).
+      slow: 'High demand — your answer is queued and will appear shortly.',
       timeoutTitle: 'Taking longer than expected',
       timeoutMessage: 'You can keep waiting, or cancel without losing your question.',
       continued: 'Still working. You can cancel at any time without losing your question.',

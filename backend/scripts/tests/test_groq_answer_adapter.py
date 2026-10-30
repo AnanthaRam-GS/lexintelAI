@@ -93,7 +93,8 @@ class GroqAnswerAdapterTests(unittest.TestCase):
     def settings(self, **overrides) -> Settings:
         defaults = dict(groq_api_key="test-groq-key", groq_model="openai/gpt-oss-120b", legalai_llm_provider="groq")
         defaults.update(overrides)
-        return Settings(**defaults)
+        # Not the developer's .env (e.g. its GROQ_PUBLIC_MODEL routing): these tests fix every setting they rely on.
+        return Settings(_env_file=None, **defaults)
 
     def test_adapter_initializes_with_configured_key_and_model(self) -> None:
         adapter = GroqAnswerAdapter(self.settings())
@@ -158,13 +159,18 @@ class GroqAnswerAdapterTests(unittest.TestCase):
                 adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
         self.assertEqual(ctx.exception.code, "GROQ_AUTH_ERROR")
 
-    def test_429_maps_to_rate_limit_and_is_retried_then_can_still_fail(self) -> None:
-        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
-        with patch("urllib.request.urlopen", side_effect=http_error(429, "Too Many Requests")):
+    def test_429_maps_to_rate_limit_without_a_quick_retry(self) -> None:
+        # Step 23: no 0.25 s retry into the same per-minute window; the provider chain waits for retry-after.
+        sleeps: list[float] = []
+        adapter = GroqAnswerAdapter(self.settings(), sleep=sleeps.append)
+        error = http_error(429, "Too Many Requests")
+        error.headers = {"retry-after": "7", "x-ratelimit-remaining-tokens": "120"}
+        with patch("urllib.request.urlopen", side_effect=error) as urlopen:
             with self.assertRaises(ModelProviderError) as ctx:
                 adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
         self.assertEqual(ctx.exception.code, "GROQ_RATE_LIMIT")
-        self.assertEqual(ctx.exception.attempt_count, adapter.max_attempts)
+        self.assertEqual((ctx.exception.attempt_count, urlopen.call_count, sleeps), (1, 1, []))
+        self.assertEqual(ctx.exception.retry_after_seconds, 7.0)
 
     def test_429_recorded_through_full_pipeline_as_rate_limit_warning(self) -> None:
         adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)

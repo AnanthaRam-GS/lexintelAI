@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { limitMessage, queryApi } from '../../../lib/api';
-import { ErrorMessage, LoadingSpinner } from '../../../components/shared';
+import { ErrorMessage, LoadingSpinner, QueuedNotice } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
 
@@ -193,6 +193,7 @@ export default function ProfessionalQueryPage() {
                 </button>
               </div>
             </form>
+            <QueuedNotice active={isLoading} className="mt-4" />
           </section>
 
           {/* Preset Example Queries */}

@@ -1,4 +1,4 @@
-# Live Run Summary (steps 11 to 11d, the step 21 provider bake-off and the step 22 live runs)
+# Live Run Summary (steps 11 to 11d, the step 21 provider bake-off, and the step 22-23 live runs)
 
 Supervised live runs of the four query endpoints against the reconciled dev database and stores, with real
 retrieval models and a live answer provider. This file holds identifiers, codes, scores, timings, counts and
@@ -178,12 +178,38 @@ reasoning.
 - **Routing qualification:** `groq20b-P1`, `groq20b-P3` and `groqqwen-P1` ran with the first v3. 20b's P1 citations
   became valid with the final v3 (`FB-groq-to-groq_backup-P1`, `sustained-P1`).
 
+## Step 23 sustained check (2026-10-30)
+
+The real backend (uvicorn, dev `.env`) with the final routing and step 23 pacing:
+- **Routing:** public queries on gpt-oss-20b, professional on gpt-oss-120b.
+- **Fallback:** `groq_backup`, the other model for each mode.
+- **Prompt and limits:** prompt v3, queue wait 90 s, retries 1.
+
+The run sent 5 public queries 7 s apart (0-28 s), then 3 professional queries 12 s apart (30-54 s). Outputs
+(UNREVIEWED): `~/legalai_reviews/live_runs/20261030T_step23/` (`sustained_step23.json`, with `/health` samples every
+2 s; `provider_calls.json`). Provider calls: **8 of 30**.
+
+| Query | Sent (s) | HTTP | Answered by | Fallback reason | Queue wait (s) | Latency (s) | Output tokens |
+|---|---:|---:|---|---|---:|---:|---:|
+| P1 public | 0 | 200 | groq / gpt-oss-20b | - | 0.0 | 3.8 | 1,141 |
+| P2 public | 7 | 200 | groq_backup / gpt-oss-120b | PRIMARY_AT_CAPACITY | 0.0 | 2.1 | 195 |
+| P3 public | 14 | 200 | groq / gpt-oss-20b | - | 7.2 | 9.2 | 94 |
+| P5 public | 21 | 200 | groq_backup / gpt-oss-120b | PRIMARY_AT_CAPACITY | 22.9 | 27.2 | 1,046 |
+| P6 public | 28 | 200 | groq / gpt-oss-20b | - | 31.5 | 34.7 | 1,113 |
+| R1 professional | 30 | 200 | groq / gpt-oss-120b | - | 50.5 | 55.8 | 1,691 |
+| R2 professional | 42 | 200 | groq_backup / gpt-oss-20b | PRIMARY_AT_CAPACITY | 51.7 | 55.6 | 1,423 |
+| R3 professional | 54 | 200 | groq / gpt-oss-120b | - | 72.6 | 77.4 | 1,433 |
+
+- **8 of 8 answered**, each within the 90 s queue wait. There were no 429s, no rate-limit retries and no
+  `MODEL_BUSY`; the deepest queue was 4 (`/health`).
+- Measured capacity: about **3.3 answers per minute** across both models once the full buckets were spent (6
+  answers between 23 s and 131 s). Guidance: `docs/LLM_PROVIDER_CONFIGURATION.md`, "Pacing and rate limits".
+
 ## Open items
 
-- Step 22: professional answers and briefs now work on Groq with prompt v3 (step 21's open item is closed), but
-  the free tier takes about one answer per minute per model. A burst (5 public queries in 2 minutes) fails: 1 of 5.
-  UAT with several testers needs a higher Groq tier or a provider without the 8,000 tokens-per-minute limit
-  (owner decision). The adapters also retry a 429 after 0.25 s, which cannot succeed within a per-minute window.
+- Step 23: bursts are paced (8 of 8 in the sustained check; the 0.25 s 429 retry is gone), but the free tier
+  sustains about 3 answers per minute in total. A UAT with several testers at once needs a higher Groq tier, or
+  testers spaced out (owner decision).
 - Step 22: v3 output exceeds its soft length targets in 10 of 13 runs (largest 1,879 of 2,048 tokens, B1).
 
 - Professional answers (R1–R3, B1–B5, Q1) are blocked on the Groq Developer tier: the professional JSON exceeds 2,560 output tokens even at low reasoning effort, and prompt plus output must fit in 8,000 tokens. Options: a higher Groq tier, a working Gemini fallback, or a shorter professional output schema (a product decision; not changed here).

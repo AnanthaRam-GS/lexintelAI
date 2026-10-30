@@ -1,7 +1,7 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfessionalQueryPage from './page';
-import { queryApi } from '../../../lib/api';
+import { ApiClientError, limitMessage, queryApi } from '../../../lib/api';
 import { mockProfessionalQueryResponse } from '../../../lib/mocks/professionalMocks';
 
 describe('Professional Query Page', () => {
@@ -62,5 +62,39 @@ describe('Professional Query Page', () => {
       expect(submitSpy).toHaveBeenCalled();
       expect(screen.getByTestId('professional-results-view')).toBeInTheDocument();
     });
+  });
+
+  it('explains a queued answer after 5 seconds and keeps the MODEL_BUSY message for a timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      let reject: (reason: unknown) => void = () => {};
+      vi.spyOn(queryApi, 'submitText').mockReturnValue(
+        new Promise((_resolve, rejectRequest) => {
+          reject = rejectRequest;
+        }),
+      );
+      render(<ProfessionalQueryPage />);
+      fireEvent.change(screen.getByPlaceholderText(/Accused charged under Section 302 IPC/i), {
+        target: { value: 'Bail under Section 437 CrPC.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Execute Legal Research/i }));
+
+      await act(async () => vi.advanceTimersByTimeAsync(4_999));
+      expect(screen.queryByText(/High demand/)).not.toBeInTheDocument();
+      await act(async () => vi.advanceTimersByTimeAsync(1));
+      const notice = screen.getByText('High demand — your answer is queued and will appear shortly.');
+      expect(notice).toHaveAttribute('role', 'status');
+      expect(notice).toHaveAttribute('aria-live', 'polite');
+
+      // The queue gave up: the existing MODEL_BUSY limit message replaces the notice.
+      await act(async () => {
+        reject(new ApiClientError('busy', 503, 'MODEL_BUSY', 15));
+      });
+      expect(screen.queryByText(/High demand/)).not.toBeInTheDocument();
+      expect(screen.getByText('Please slow down')).toBeInTheDocument();
+      expect(screen.getByText(limitMessage(new ApiClientError('busy', 503, 'MODEL_BUSY', 15)) as string)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

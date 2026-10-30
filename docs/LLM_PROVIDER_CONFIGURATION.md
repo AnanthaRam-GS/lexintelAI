@@ -430,6 +430,66 @@ in the minute, against a request of about 7,000) and again on the adapter's retr
 the run's stop rule refused all further Groq calls, including the 120b fallback. Each model's 8,000 tokens per
 minute holds about one answer, so a burst of 5 in 2 minutes cannot succeed on this tier.
 
+### Pacing and rate limits (step 23)
+
+Groq's free tier allows **8,000 tokens per minute per model**. It rejects a request with HTTP 429 when the tokens
+the request asks for (prompt plus `max_completion_tokens`) exceed what is left in the minute. A v3 answer asks for
+about 6,500-8,000 tokens, so each model can start roughly one answer at a time.
+
+In step 22, a burst answered 1 of 5: the adapter retried the 429 after 0.25 s in the same window, and the fallback
+never ran. Since step 23 the product paces itself (`services/llm_pacing.py`, `services/llm_provider_chain.py`):
+
+1. **Token buckets.** There is one bucket per (account, model), sized from `LEGALAI_GROQ_TOKENS_PER_MINUTE` (8000)
+   and `LEGALAI_GROQ_REQUESTS_PER_MINUTE` (30), refilling continuously. `groq` and `groq_backup` share the Groq
+   account's buckets. Every Groq response's `x-ratelimit-remaining-tokens` replaces the estimate with Groq's own
+   count. `x-ratelimit-remaining-requests` is per day, and at 0 blocks the model until its reset.
+2. **FIFO queue.** A request's cost is the request-size guard's prompt estimate (x 1.57) plus the output limit.
+   The request waits in one FIFO queue; at the head it takes the first of its candidates that has capacity:
+   primary first, then fallback. When only the fallback has capacity, the fallback answers
+   (`fallback_reason=PRIMARY_AT_CAPACITY`). After `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS` (90) the answer is
+   `503 MODEL_BUSY` with `Retry-After` = the estimated wait.
+3. **No slot or lock while queued.** The generation slot (`LLM_MAX_CONCURRENT_GENERATIONS`) is taken only after
+   the grant, and the model inference lock (local embedding and reranking) is never held while waiting. Mocked
+   tests run 6 concurrent requests through 2 slots with the inference lock busy, without deadlock.
+4. **429 handling.** The adapters no longer retry a 429. The chain blocks that model's bucket for the provider's
+   `retry-after` (else the token reset; without either, 60 s). If the other model has capacity, it answers
+   immediately. Otherwise the request waits for the retry time, if that is within its queue deadline, and
+   retries once; else `MODEL_BUSY`. It never retries sooner than the provider says.
+5. **Recorded per answer.** `debug.backend` and the history `generation` record carry `queue_wait_ms`,
+   `rate_limit_wait_ms`, `rate_limit_retries`, `fallback_reason` and `retry_reasons`. The log line
+   `llm_pacing provider=… model=… queue_wait_ms=… rate_limit_wait_ms=… rate_limit_retries=… fallback_used=…` is
+   written per answer, and `/health` shows `llm_queue` (`docs/API_CONTRACTS.md`).
+
+Providers with unknown limits (Gemini, NVIDIA, Ollama…) are not paced. `LEGALAI_LLM_PACING_ENABLED=false`
+restores the step 22 chain.
+
+**Sustained check (2026-10-30, real backend, final routing):** 5 public queries sent 7 s apart (0-28 s), then
+3 professional queries 12 s apart (30-54 s). Result: **8 of 8 answered**, 8 provider calls, no 429, no
+`MODEL_BUSY`; the deepest queue was 4.
+
+| Query | Sent (s) | HTTP | Answered by | Queue wait (s) | Latency (s) | Output tokens |
+|---|---:|---:|---|---:|---:|---:|
+| P1 public | 0 | 200 | groq / gpt-oss-20b | 0.0 | 3.8 | 1,141 |
+| P2 public | 7 | 200 | groq_backup / gpt-oss-120b (`PRIMARY_AT_CAPACITY`) | 0.0 | 2.1 | 195 |
+| P3 public | 14 | 200 | groq / gpt-oss-20b | 7.2 | 9.2 | 94 |
+| P5 public | 21 | 200 | groq_backup / gpt-oss-120b (`PRIMARY_AT_CAPACITY`) | 22.9 | 27.2 | 1,046 |
+| P6 public | 28 | 200 | groq / gpt-oss-20b | 31.5 | 34.7 | 1,113 |
+| R1 professional | 30 | 200 | groq / gpt-oss-120b | 50.5 | 55.8 | 1,691 |
+| R2 professional | 42 | 200 | groq_backup / gpt-oss-20b (`PRIMARY_AT_CAPACITY`) | 51.7 | 55.6 | 1,423 |
+| R3 professional | 54 | 200 | groq / gpt-oss-120b | 72.6 | 77.4 | 1,433 |
+
+**Capacity guidance for UAT (free tier, two models):**
+- **Sustained rate:** about **3 answers per minute** in total, about 1.5 per model; measured as 6 answers in 108 s
+  once the two full buckets were spent.
+- **Bursts:** the first two queries of a burst answer at once (one per model). Each further queued query waits
+  about 20 s more. With the 90 s limit, about 4-5 queries can wait; beyond that a burst gets `MODEL_BUSY` with
+  `Retry-After`.
+- **Daily limit:** each model allows about 200K tokens per day (Groq docs), about 30 answers per model per day at
+  6,000-7,000 tokens each.
+- **Recommendation:** a UAT session with several testers needs either a paced schedule (one query per tester
+  every 1-2 minutes) or a higher Groq tier, where the same code paces to the larger limits through
+  `LEGALAI_GROQ_TOKENS_PER_MINUTE` and the headers.
+
 ### Required environment variables
 
 ```
@@ -446,7 +506,11 @@ GROQ_BACKUP_MODEL=openai/gpt-oss-20b          # groq_backup fallback for profess
 GROQ_BACKUP_PUBLIC_MODEL=openai/gpt-oss-120b  # groq_backup fallback for public answers (empty: GROQ_BACKUP_MODEL)
 GROQ_BASE_URL=https://api.groq.com/openai/v1   # optional, defaults to the value above
 
-LEGALAI_LLM_FALLBACK_PROVIDER=groq_backup   # used only on a provider failure of the primary
+LEGALAI_LLM_FALLBACK_PROVIDER=groq_backup   # used on a provider failure of the primary, or when only it has capacity
+LEGALAI_LLM_PACING_ENABLED=true             # step 23 pacing queue (Groq)
+LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS=90       # then MODEL_BUSY with Retry-After
+LEGALAI_GROQ_TOKENS_PER_MINUTE=8000         # per model; Groq's headers refine it
+LEGALAI_GROQ_REQUESTS_PER_MINUTE=30
 LEGALAI_QUERY_DEBUG=false              # true returns per-stage timings and the backend in `debug`
 
 LEGALAI_LLM_TEMPERATURE=0.1        # shared by all providers
@@ -502,7 +566,9 @@ reached") — the provider name is never surfaced outside this document and
 the backend's own internal exception messages.
 
 Retries are bounded (at most 3 attempts, short backoff) and only apply to
-429/503/timeout — 400/401/403/404 fail immediately without retrying.
+503/timeout — 400/401/403/404 fail immediately without retrying. Since step 23
+a 429 is not retried by the adapter: the provider chain falls back at once or
+waits for the provider's `retry-after` ("Pacing and rate limits (step 23)").
 
 ## InLegalBERT
 

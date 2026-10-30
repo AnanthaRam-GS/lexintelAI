@@ -38,6 +38,7 @@ from backend.app.services.legal_answer_generation import (
     ModelUnavailableError,
     elapsed_ms,
 )
+from backend.app.services.llm_pacing import llm_pacer, retry_after_seconds
 from backend.app.services.provider_diagnostics import log_provider_http_error
 
 logger = logging.getLogger("legalai.groq")
@@ -71,6 +72,14 @@ class GroqAnswerAdapter:
         GROQ_MODEL serves professional answers, and public ones too when no public model is set."""
         public_model = (getattr(self.settings, "groq_public_model", "") or "").strip()
         return public_model if mode == AnswerMode.PUBLIC and public_model else self.settings.groq_model
+
+    def rate_limit_key(self, mode: AnswerMode) -> tuple[str, str]:
+        """The pacing bucket (step 23): Groq limits are per account and model."""
+        return ("groq", self.model_for(mode))
+
+    @property
+    def max_output_tokens(self) -> int:
+        return self.settings.legalai_llm_max_output_tokens
 
     def generate_structured_answer(self, prompt: str, *, schema: type[BaseModel], mode: AnswerMode) -> LegalAnswerModelResponse:
         model = self.model_for(mode)
@@ -174,22 +183,30 @@ class GroqAnswerAdapter:
             },
             method="POST",
         )
+        key = ("groq", str(payload.get("model") or ""))
         try:
             with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                # Step 23: the remaining-tokens / reset headers keep the pacing bucket on Groq's own count.
+                llm_pacer.observe(key, dict(getattr(response, "headers", None) or {}))
                 return json.loads(response.read().decode("utf-8"))
         except TimeoutError as exc:
             raise ModelProviderError("GROQ_TIMEOUT", "Groq request timed out.") from exc
         except socket.timeout as exc:
             raise ModelProviderError("GROQ_TIMEOUT", "Groq request timed out.") from exc
         except urllib.error.HTTPError as exc:
+            headers = dict(getattr(exc, "headers", None) or {})
+            llm_pacer.observe(key, headers)
             diagnostic = sanitized_http_diagnostic(exc)
-            raise ModelProviderError(
+            error = ModelProviderError(
                 http_error_code(exc),
                 diagnostic.message,
                 http_status=diagnostic.http_status,
                 provider_code=diagnostic.provider_code,
                 provider_message=diagnostic.provider_message,
-            ) from exc
+            )
+            # How long Groq says to wait (retry-after, else the token reset); the provider chain honours it.
+            error.retry_after_seconds = retry_after_seconds(headers) if exc.code == 429 else None
+            raise error from exc
         except urllib.error.URLError as exc:
             raise ModelProviderError("GROQ_PROVIDER_ERROR", sanitized_url_error(exc)) from exc
         except json.JSONDecodeError as exc:
@@ -300,8 +317,12 @@ def provider_status(exc: ModelProviderError) -> str:
 
 
 def is_retryable_groq_error(exc: ModelProviderError) -> bool:
-    if exc.http_status in {429, 503}:
+    # 429 is not retried here (step 23): a retry 0.25 s later falls in the same per-minute window and fails again.
+    # The provider chain handles it: an immediate fallback, or a wait for retry-after (llm_provider_chain.py).
+    if exc.http_status == 503:
         return True
+    if exc.http_status == 429:
+        return False
     if exc.http_status in {400, 401, 403, 404}:
         return False
     if exc.code == "GROQ_TIMEOUT":
