@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     # then get MODEL_BUSY with Retry-After. Groq's limits are per model; its rate-limit headers refine the estimate.
     legalai_llm_pacing_enabled: bool = True
     legalai_llm_queue_max_wait_seconds: float = 90.0
+    # Step 24 per-mode fallback policy: a professional answer waits this long for its primary model (gpt-oss-120b)
+    # before the fallback may answer; public answers fall back at once when the primary is at its limit.
+    legalai_professional_primary_max_wait_seconds: float = 45.0
     legalai_groq_tokens_per_minute: int = 8000
     legalai_groq_requests_per_minute: int = 30
     # Gemini 3 thinking level (low | medium | high); empty sends none.

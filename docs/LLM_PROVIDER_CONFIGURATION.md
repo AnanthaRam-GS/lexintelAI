@@ -490,6 +490,31 @@ restores the step 22 chain.
   every 1-2 minutes) or a higher Groq tier, where the same code paces to the larger limits through
   `LEGALAI_GROQ_TOKENS_PER_MINUTE` and the headers.
 
+### Professional fallback policy and the daily limit (step 24)
+
+The fallback policy is set per mode (`llm_provider_chain.py`):
+- **Public answers** keep step 23's immediate fallback: when gpt-oss-20b is at its limit, gpt-oss-120b answers.
+- **Professional answers** wait for their primary, gpt-oss-120b, up to `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS`
+  (45). Only then may gpt-oss-20b answer, with 120b still preferred. A 120b 429 whose `retry-after` falls inside
+  that window is waited out on 120b.
+- The policy applied is recorded as `fallback_policy` (`wait_for_primary` or `immediate`) and `primary_wait_ms` in
+  `debug.backend` and the history `generation` record. Mocked tests are in `test_llm_pacing.py`.
+
+**Evidence for the policy.** In the step 23 sustained check, R2 was answered by 20b (fallback). Compared with 120b
+answers to the same and other professional queries:
+- all its retrieved precedents had a validated citation (1/1), against 1/1 and 2/2 for 120b;
+- it filled all 9 model-written brief fields, against 6-8 for 120b, and 7 for the same query on 120b in step 22,
+  which had 2/2 valid citations.
+
+So no structural weakness showed there. In the step 24 evaluation, however, 20b answering professional queries as
+the fallback failed the professional schema in 10 of its 11 professional answers (configurations B and C,
+`docs/evaluation/EVALUATION_2026-10.md`). 120b is the reliable professional model.
+
+**Daily limit.** Groq's free tier also limits each model to **200,000 tokens per day**. Groq sends no header for
+it; a 429 names it ("tokens per day (TPD)") with a retry time of minutes. The chain honours that retry time, so the
+request becomes `MODEL_BUSY` if it is beyond the queue wait. At 6,000-7,000 tokens per answer, that is about 30
+answers per model per day. A day of heavy testing or evaluation can exhaust it, as it did on 2026-10-30.
+
 ### Required environment variables
 
 ```
@@ -509,6 +534,7 @@ GROQ_BASE_URL=https://api.groq.com/openai/v1   # optional, defaults to the value
 LEGALAI_LLM_FALLBACK_PROVIDER=groq_backup   # used on a provider failure of the primary, or when only it has capacity
 LEGALAI_LLM_PACING_ENABLED=true             # step 23 pacing queue (Groq)
 LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS=90       # then MODEL_BUSY with Retry-After
+LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS=45   # professional answers wait this long for gpt-oss-120b
 LEGALAI_GROQ_TOKENS_PER_MINUTE=8000         # per model; Groq's headers refine it
 LEGALAI_GROQ_REQUESTS_PER_MINUTE=30
 LEGALAI_QUERY_DEBUG=false              # true returns per-stage timings and the backend in `debug`

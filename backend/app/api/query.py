@@ -1042,6 +1042,10 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         "rate_limit_wait_ms": result.timings.get("rate_limit_wait_ms"),
         "rate_limit_retries": int(result.timings["rate_limit_retries"]) if "rate_limit_retries" in result.timings else None,
         "retry_reasons": list(metadata.retry_reasons),
+        # Step 24 per-mode fallback policy (llm_provider_chain.py): wait_for_primary (professional) or immediate.
+        "fallback_policy": (None if "fallback_policy_wait_for_primary" not in result.timings
+                            else "wait_for_primary" if result.timings["fallback_policy_wait_for_primary"] else "immediate"),
+        "primary_wait_ms": result.timings.get("primary_wait_ms"),
     }
 
 
@@ -1310,7 +1314,8 @@ def history_payload(payload: dict[str, Any], result: LegalAnswerResult) -> dict[
     payload["generation"] = {
         key: backend.get(key)
         for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used", "reasoning_tokens", "evidence_items_trimmed",
-                    "fallback_reason", "queue_wait_ms", "rate_limit_wait_ms", "rate_limit_retries")
+                    "fallback_reason", "queue_wait_ms", "rate_limit_wait_ms", "rate_limit_retries", "fallback_policy",
+                    "primary_wait_ms")
     }
     return payload
 

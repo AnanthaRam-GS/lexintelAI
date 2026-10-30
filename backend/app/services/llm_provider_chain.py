@@ -30,6 +30,11 @@ Pacing (step 23, ``services/llm_pacing.py``), for providers with known rate limi
    its queue deadline) and retries once. Never sooner than the provider says.
 4. ``timings`` records ``queue_wait_ms``, ``rate_limit_wait_ms`` and ``rate_limit_retries``; ``retry_reasons`` gains
    ``RATE_LIMIT_RETRY_AFTER`` after such a retry.
+5. Per-mode fallback policy (step 24): a *professional* answer with a fallback configured waits for its primary
+   model only, up to ``LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS`` (45), and only then takes either model (primary
+   still preferred); a primary 429 whose retry time is inside that window is waited out on the primary. *Public*
+   answers keep step 23's immediate fallback. ``timings`` records ``fallback_policy_wait_for_primary`` (1 or 0)
+   and ``primary_wait_ms``; the API shows ``fallback_policy`` (``wait_for_primary`` | ``immediate``).
 
 The answering backend is recorded in ``ModelGenerationMetadata``: ``provider`` is the backend that produced the
 answer, and ``primary_provider``, ``fallback_provider``, ``fallback_used`` and ``fallback_reason`` describe the
@@ -204,8 +209,22 @@ class FallbackAnswerAdapter:
                 self.pacer.register(key, limits)
             entries.append(_Entry(name, adapter, key, request_tokens(adapter, prompt, schema, self.settings)))
         stats = {"queue_wait_ms": 0.0, "rate_limit_wait_ms": 0.0, "rate_limit_retries": 0.0}
+        # Step 24 per-mode policy: professional answers wait for the primary model (up to
+        # LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS) before the fallback may answer; public answers fall back at once.
+        wait_for_primary = mode == AnswerMode.PROFESSIONAL and len(entries) > 1
+        primary_deadline = min(deadline, began + float(getattr(self.settings, "legalai_professional_primary_max_wait_seconds", 45.0)))
+        stats["fallback_policy_wait_for_primary"] = 1.0 if wait_for_primary else 0.0
 
-        entry, waited = self._acquire(entries, deadline, began)
+        if wait_for_primary:
+            try:
+                entry, waited = self._acquire(entries[:1], primary_deadline, began)
+            except GenerationQueueTimeout:
+                # The primary stayed at capacity for the whole primary wait: either model may answer now.
+                entry, waited = self._acquire(entries, deadline, began)
+                waited = self.clock() - began
+            stats["primary_wait_ms"] = min(waited, primary_deadline - began) * 1000
+        else:
+            entry, waited = self._acquire(entries, deadline, began)
         stats["queue_wait_ms"] += waited * 1000
         reason = PRIMARY_AT_CAPACITY if entry is not entries[0] else None
         if reason:
@@ -227,7 +246,11 @@ class FallbackAnswerAdapter:
                     wait = DEFAULT_RATE_LIMIT_WAIT_SECONDS if wait is None else float(wait)
                     if entry.key is not None:
                         self.pacer.block(entry.key, wait)
-                    other = next((e for e in entries if e is not entry and e not in failed and self._take_now(e)), None)
+                    # Professional policy: a primary 429 whose retry time falls inside the primary wait is waited out
+                    # on the primary (one retry) instead of falling back.
+                    keep_primary = wait_for_primary and entry is entries[0] and not retried and self.clock() + wait <= primary_deadline
+                    other = None if keep_primary else next(
+                        (e for e in entries if e is not entry and e not in failed and self._take_now(e)), None)
                     logger.warning("rate_limit provider=%s model=%s retry_after_s=%.1f immediate_fallback=%s",
                                    entry.name, entry.key[1] if entry.key else "", wait, other.name if other else "none")
                     if other is not None:
@@ -238,7 +261,8 @@ class FallbackAnswerAdapter:
                     retried = True
                     stats["rate_limit_retries"] += 1
                     waiting_since = self.clock()
-                    entry, _ = self._acquire([e for e in entries if e not in failed], deadline, began)
+                    candidates = entries[:1] if keep_primary else [e for e in entries if e not in failed]
+                    entry, _ = self._acquire(candidates, deadline, began)
                     stats["rate_limit_wait_ms"] += (self.clock() - waiting_since) * 1000
                     continue
                 failed.append(entry)

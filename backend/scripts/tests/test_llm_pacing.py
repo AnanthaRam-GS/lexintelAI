@@ -322,6 +322,88 @@ class ChainRateLimitTests(unittest.TestCase):
         self.assertEqual(request_tokens(adapter, prompt, PublicLegalAnswer, settings(legalai_groq_token_estimate_factor=1.57)), expected)
 
 
+def generate_professional(target):
+    from backend.app.services.legal_answer_generation import ProfessionalLegalBrief
+
+    return target.generate_structured_answer("prompt " * 50, schema=ProfessionalLegalBrief, mode=AnswerMode.PROFESSIONAL)
+
+
+class FallbackPolicyTests(unittest.TestCase):
+    """Step 24: professional answers wait for the primary (up to the primary wait); public answers fall back at once."""
+
+    def setUp(self) -> None:
+        self.pacer = LLMPacer()
+        for model in (PUBLIC_MODEL, OTHER_MODEL):
+            self.pacer.configure(("groq", model), ModelLimits(600_000, 600))
+
+    def test_professional_waits_for_the_primary_while_the_fallback_is_free(self) -> None:
+        primary = FakePacedAdapter("groq", OTHER_MODEL, [answer("groq", OTHER_MODEL)])
+        fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [])
+        self.pacer.block(("groq", OTHER_MODEL), 0.4)
+        response = generate_professional(chain(primary, fallback, self.pacer))
+        self.assertEqual((len(primary.calls), len(fallback.calls)), (1, 0))
+        self.assertFalse(response.model_metadata.fallback_used)
+        self.assertEqual(response.timings["fallback_policy_wait_for_primary"], 1.0)
+        self.assertGreaterEqual(response.timings["primary_wait_ms"], 390)
+
+    def test_professional_falls_back_after_the_primary_wait(self) -> None:
+        primary = FakePacedAdapter("groq", OTHER_MODEL, [])
+        fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [answer("groq_backup", PUBLIC_MODEL)])
+        self.pacer.block(("groq", OTHER_MODEL), 30)
+        started = time.monotonic()
+        response = generate_professional(chain(primary, fallback, self.pacer, legalai_professional_primary_max_wait_seconds=0.3))
+        elapsed = time.monotonic() - started
+        self.assertGreaterEqual(elapsed, 0.29)
+        self.assertLess(elapsed, 2.0)
+        self.assertEqual((len(primary.calls), len(fallback.calls)), (0, 1))
+        metadata = response.model_metadata
+        self.assertEqual((metadata.fallback_used, metadata.fallback_reason), (True, PRIMARY_AT_CAPACITY))
+        self.assertAlmostEqual(response.timings["primary_wait_ms"], 300, delta=60)
+
+    def test_public_falls_back_at_once(self) -> None:
+        primary = FakePacedAdapter("groq", PUBLIC_MODEL, [])
+        fallback = FakePacedAdapter("groq_backup", OTHER_MODEL, [answer("groq_backup", OTHER_MODEL)])
+        self.pacer.block(("groq", PUBLIC_MODEL), 30)
+        started = time.monotonic()
+        response = generate(chain(primary, fallback, self.pacer))
+        self.assertLess(time.monotonic() - started, 0.5)
+        self.assertEqual(response.timings["fallback_policy_wait_for_primary"], 0.0)
+        self.assertNotIn("primary_wait_ms", response.timings)
+        self.assertTrue(response.model_metadata.fallback_used)
+
+    def test_professional_429_inside_the_window_is_waited_out_on_the_primary(self) -> None:
+        primary = FakePacedAdapter("groq", OTHER_MODEL, [rate_limited("GROQ", 0.4), answer("groq", OTHER_MODEL)])
+        fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [])
+        response = generate_professional(chain(primary, fallback, self.pacer))
+        self.assertEqual((len(primary.calls), len(fallback.calls)), (2, 0))
+        self.assertGreaterEqual(primary.calls[1] - primary.calls[0], 0.4)
+        self.assertEqual(response.timings["rate_limit_retries"], 1)
+        self.assertFalse(response.model_metadata.fallback_used)
+
+    def test_professional_429_beyond_the_window_falls_back(self) -> None:
+        primary = FakePacedAdapter("groq", OTHER_MODEL, [rate_limited("GROQ", 120)])
+        fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [answer("groq_backup", PUBLIC_MODEL)])
+        response = generate_professional(chain(primary, fallback, self.pacer))
+        self.assertEqual((len(primary.calls), len(fallback.calls)), (1, 1))
+        self.assertEqual(response.model_metadata.fallback_reason, "GROQ_RATE_LIMIT")
+
+    def test_the_api_backend_names_the_policy(self) -> None:
+        from backend.app.api import query as query_api
+        from backend.app.services.legal_answer_generation import generate_legal_answer
+        from backend.app.services.legal_query_understanding import understand_legal_query
+        from backend.scripts.tests.test_legal_answer_foundation import retrieval
+
+        primary = FakePacedAdapter("groq", OTHER_MODEL, [answer("groq", OTHER_MODEL)])
+        fallback = FakePacedAdapter("groq_backup", PUBLIC_MODEL, [])
+        result = generate_legal_answer(understand_legal_query("bail"), retrieval(), mode=AnswerMode.PROFESSIONAL,
+                                       adapter=chain(primary, fallback, self.pacer), prompt="p")
+        backend = query_api.answer_backend(result)
+        self.assertEqual(backend["fallback_policy"], "wait_for_primary")
+        self.assertIsNotNone(backend["primary_wait_ms"])
+        self.assertIn("fallback_policy", query_api.history_payload({}, result)["generation"])
+        self.assertEqual(Settings.model_fields["legalai_professional_primary_max_wait_seconds"].default, 45.0)
+
+
 class NoDeadlockTests(unittest.TestCase):
     def test_a_queued_request_holds_no_slot_and_never_the_inference_lock(self) -> None:
         pacer = LLMPacer()
