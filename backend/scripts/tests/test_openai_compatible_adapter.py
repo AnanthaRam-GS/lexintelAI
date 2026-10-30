@@ -21,6 +21,7 @@ from backend.app.services.legal_answer_generation import (  # noqa: E402
     AnswerMode,
     ModelProviderError,
     ModelUnavailableError,
+    ProfessionalLegalBrief,
     PublicLegalAnswer,
 )
 from backend.app.services.llm_provider_chain import FallbackAnswerAdapter, build_answer_adapter, is_provider_failure  # noqa: E402
@@ -70,6 +71,8 @@ class Recorder:
         outcome = self.outcomes.pop(0)
         if isinstance(outcome, BaseException):
             raise outcome
+        if isinstance(outcome, bytes):  # a raw (streamed) body
+            return FakeResponse(outcome)
         return FakeResponse(json.dumps(outcome).encode("utf-8"))
 
     def payload(self, index: int = 0) -> dict:
@@ -294,8 +297,118 @@ class ChainAndSizeGuardTests(unittest.TestCase):
 
     def test_groq_guard_is_unchanged(self) -> None:
         guard = request_size_guard(settings(legalai_llm_provider="groq", legalai_groq_max_request_tokens=8000))
-        self.assertEqual((guard.ceiling_tokens, guard.max_output_tokens, guard.estimate_factor), (8000, 2048, 1.51))
+        self.assertEqual((guard.ceiling_tokens, guard.max_output_tokens, guard.estimate_factor), (8000, 2048, 1.57))
         self.assertIsNone(request_size_guard(settings(legalai_llm_provider="groq")))
+
+
+def sse(*chunks: dict, done: bool = True) -> bytes:
+    lines = [f"data: {json.dumps(chunk)}\n\n" for chunk in chunks]
+    if done:
+        lines.append("data: [DONE]\n\n")
+    return (": keep-alive\n\n" + "".join(lines)).encode("utf-8")
+
+
+def delta(content: str = "", reasoning: str = "", finish: str | None = None) -> dict:
+    return {"model": "vendor/model-x", "choices": [{"index": 0, "delta": {"content": content, "reasoning_content": reasoning}, "finish_reason": finish}]}
+
+
+class GroqBackupProfileTests(unittest.TestCase):
+    def test_profile_reuses_the_groq_key_url_and_limits(self) -> None:
+        profile = provider_profile(settings(groq_api_key="gsk_FAKEKEYFORTESTS0123", groq_backup_model="openai/gpt-oss-20b",
+                                            legalai_groq_max_request_tokens=8000, legalai_groq_reasoning_effort="low"), "groq_backup")
+        self.assertEqual((profile.base_url, profile.api_key_env, profile.model), ("https://api.groq.com/openai/v1", "GROQ_API_KEY", "openai/gpt-oss-20b"))
+        self.assertEqual((profile.max_request_tokens, profile.reasoning_for(profile.model), profile.error_prefix),
+                         (8000, (("reasoning_effort", "low"),), "GROQ_BACKUP"))
+        self.assertTrue(profile.enabled)
+
+    def test_disabled_without_a_model_and_no_effort_for_other_models(self) -> None:
+        self.assertFalse(provider_profile(settings(groq_api_key="k"), "groq_backup").enabled)
+        profile = provider_profile(settings(groq_api_key="k", groq_backup_model="qwen/qwen3.8-27b"), "groq_backup")
+        self.assertEqual(profile.reasoning_for(profile.model), ())
+
+    def test_each_mode_falls_back_to_its_own_model(self) -> None:
+        values = dict(groq_api_key="gsk_FAKEKEYFORTESTS0123", groq_backup_model="openai/gpt-oss-20b",
+                      groq_backup_public_model="openai/gpt-oss-120b", legalai_groq_reasoning_effort="low")
+        for mode, model in ((AnswerMode.PUBLIC, "openai/gpt-oss-120b"), (AnswerMode.PROFESSIONAL, "openai/gpt-oss-20b")):
+            with self.subTest(mode=mode):
+                recorder = Recorder(completion())
+                target = OpenAICompatibleAnswerAdapter(settings(**values), "groq_backup", sleep=lambda _: None, urlopen=recorder)
+                schema = PublicLegalAnswer if mode == AnswerMode.PUBLIC else ProfessionalLegalBrief
+                response = target.generate_structured_answer("p", schema=schema, mode=mode)
+                self.assertEqual((recorder.payload()["model"], recorder.payload()["reasoning_effort"]), (model, "low"))
+                self.assertEqual(response.model_metadata.configured_model_id, model)
+
+    def test_groq_primary_with_groq_backup_fallback(self) -> None:
+        chain = build_answer_adapter(settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="groq_backup", groq_api_key="k",
+                                              groq_model="openai/gpt-oss-120b", groq_backup_model="openai/gpt-oss-20b"), ANSWER_ADAPTER_FACTORIES)
+        self.assertIsInstance(chain, FallbackAnswerAdapter)
+        self.assertEqual((chain.primary_name, chain.fallback_name), ("groq", "groq_backup"))
+        self.assertTrue(is_provider_failure(ModelProviderError("GROQ_BACKUP_RATE_LIMIT", "x", http_status=429)))
+
+
+class StreamingTests(unittest.TestCase):
+    def test_stream_payload_asks_for_usage(self) -> None:
+        recorder = Recorder(sse(delta(json.dumps(ANSWER), finish="stop")))
+        generate(adapter(recorder, nvidia_stream=True))
+        payload = recorder.payload()
+        self.assertTrue(payload["stream"])
+        self.assertEqual(payload["stream_options"], {"include_usage": True})
+
+    def test_no_stream_fields_by_default(self) -> None:
+        recorder = Recorder(completion())
+        generate(adapter(recorder))
+        self.assertNotIn("stream", recorder.payload())
+
+    def test_chunks_are_assembled_and_reasoning_separated(self) -> None:
+        text = json.dumps(ANSWER)
+        usage = {"model": "vendor/model-x", "choices": [], "usage": {"prompt_tokens": 90, "completion_tokens": 40,
+                 "completion_tokens_details": {"reasoning_tokens": 12}}}
+        recorder = Recorder(sse(delta(reasoning="thinking "), delta(reasoning="more"), delta(text[:10]), delta(text[10:]),
+                                delta(finish="stop"), usage))
+        response = generate(adapter(recorder, nvidia_stream=True))
+        self.assertEqual(response.raw_response, text)
+        metadata = response.model_metadata
+        self.assertEqual((metadata.finish_reason, metadata.prompt_tokens, metadata.completion_tokens, metadata.reasoning_tokens),
+                         ("stop", 90, 40, 12))
+        self.assertEqual(metadata.actual_model_id, "vendor/model-x")
+
+    def test_streamed_length_stop_is_truncation(self) -> None:
+        recorder = Recorder(sse(delta('{"answer": '), delta(finish="length")))
+        with self.assertRaises(ModelProviderError) as caught:
+            generate(adapter(recorder, nvidia_stream=True))
+        self.assertEqual(caught.exception.code, "NVIDIA_OUTPUT_TRUNCATED")
+
+    def test_stream_without_done_still_returns_the_collected_answer(self) -> None:
+        recorder = Recorder(sse(delta(json.dumps(ANSWER), finish="stop"), done=False))
+        self.assertEqual(generate(adapter(recorder, nvidia_stream=True)).raw_response, json.dumps(ANSWER))
+
+    def test_malformed_chunk_is_an_invalid_response(self) -> None:
+        recorder = Recorder(b"data: {not json\n\n")
+        with self.assertRaises(ModelProviderError) as caught:
+            generate(adapter(recorder, nvidia_stream=True))
+        self.assertEqual(caught.exception.code, "NVIDIA_INVALID_RESPONSE")
+
+    def test_keep_alives_without_tokens_hit_the_stream_deadline(self) -> None:
+        from backend.app.services.openai_compatible_adapter import assemble_stream
+
+        ticks = iter(range(0, 1000, 10))  # each read takes 10 s of the fake clock
+        body = io.BytesIO(b": keep-alive\n\n" * 50)
+        with self.assertRaises(TimeoutError):
+            assemble_stream(body, deadline_seconds=60, clock=lambda: next(ticks))
+        self.assertEqual(provider_profile(settings(nvidia_stream_deadline_seconds=90), "nvidia").stream_deadline_seconds, 90)
+
+    def test_a_stream_past_its_deadline_is_a_provider_timeout(self) -> None:
+        recorder = Recorder(sse(delta(json.dumps(ANSWER), finish="stop")), sse(delta(json.dumps(ANSWER), finish="stop")),
+                            sse(delta(json.dumps(ANSWER), finish="stop")))
+        with self.assertRaises(ModelProviderError) as caught:
+            generate(adapter(recorder, nvidia_stream=True, nvidia_stream_deadline_seconds=-1))
+        self.assertEqual(caught.exception.code, "NVIDIA_TIMEOUT")
+
+    def test_stream_timeout_is_a_provider_timeout(self) -> None:
+        recorder = Recorder(socket.timeout("read timed out"), socket.timeout("read timed out"), socket.timeout("read timed out"))
+        with self.assertRaises(ModelProviderError) as caught:
+            generate(adapter(recorder, nvidia_stream=True))
+        self.assertEqual(caught.exception.code, "NVIDIA_TIMEOUT")
 
 
 if __name__ == "__main__":

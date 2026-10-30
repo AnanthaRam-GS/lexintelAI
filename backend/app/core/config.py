@@ -37,12 +37,15 @@ class Settings(BaseSettings):
     legalai_groq_reasoning_effort: str = "low"
     # Groq per-request token ceiling (the account's tokens-per-minute limit); unset disables the size guard.
     legalai_groq_max_request_tokens: int | None = None
-    # Groq's real prompt tokens are 1.18-1.43x estimate_tokens(prompt + schema) on all 10 recorded live runs;
-    # 1.51 is the worst ratio plus 5% (step 12, backend/scripts/calibrate_request_size_guard.py).
-    legalai_groq_token_estimate_factor: float = 1.51
+    # Groq's real prompt tokens are 1.07-1.49x estimate_tokens(prompt + schema) on all 27 recorded live runs (prompt
+    # v1-v3); 1.57 is the worst ratio (1.4928, step 22 B3, v3) plus 5% (backend/scripts/calibrate_request_size_guard.py).
+    # Step 12 set 1.51 from the 10 runs then available.
+    legalai_groq_token_estimate_factor: float = 1.57
     # Gemini 3 thinking level (low | medium | high); empty sends none.
     legalai_gemini_thinking: str = "low"
     legalai_gemini_timeout_seconds: float = 90.0
+    # Product prompt (v2 | v3; v1 is the frozen evaluation baseline). v3 = v2 plus concision (step 22).
+    legalai_prompt_version: str = "v3"
     # Return per-stage query timings and the answering backend in the response `debug` field.
     legalai_query_debug: bool = False
     # Device for the query embedder and reranker (auto | cpu | mps | cuda); auto uses MPS when torch reports it.
@@ -64,6 +67,12 @@ class Settings(BaseSettings):
 
     groq_api_key: str = ""
     groq_model: str = ""
+    # Step 22 per-mode routing: a separate Groq model (own rate limits) for public answers; empty uses GROQ_MODEL.
+    groq_public_model: str = ""
+    # Step 22: the model of the groq_backup fallback profile (a second Groq model with its own rate limits).
+    groq_backup_model: str = ""
+    # Its model for public answers (the fallback of GROQ_PUBLIC_MODEL); empty uses GROQ_BACKUP_MODEL.
+    groq_backup_public_model: str = ""
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
     # OpenAI-compatible provider profiles (step 21; services/openai_compatible_adapter.py). Each is selected by name
@@ -77,6 +86,8 @@ class Settings(BaseSettings):
     nvidia_structured_output: str = "json_schema"  # json_schema | json_object | prompt (schema in the prompt only)
     nvidia_reasoning_effort: str = ""  # sent as reasoning_effort when set
     nvidia_max_request_tokens: int | None = None  # per-request ceiling for the size guard; None: no guard
+    nvidia_stream: bool = False  # stream: true (SSE); the timeout then applies per read, not to the whole answer
+    nvidia_stream_deadline_seconds: float = 300.0  # total time a streamed answer may take
     # Ollama (local), through its OpenAI-compatible /v1 API, with ollama_base_url and ollama_model (below).
     ollama_max_output_tokens: int | None = None
     ollama_timeout_seconds: float = 300.0

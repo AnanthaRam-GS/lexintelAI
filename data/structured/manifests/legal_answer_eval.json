@@ -54,12 +54,29 @@
       "new_sha256": "44a90e1d7ad1152c7b73506677adeaf57d1f69d7ab2a6bd4c86ef543e0f18c81",
       "reason": "Provider limits (step 11d): GeminiAnswerAdapter sends generationConfig.thinkingConfig.thinkingLevel (LEGALAI_GEMINI_THINKING, default low) and uses LEGALAI_GEMINI_TIMEOUT_SECONDS (default 90); records thoughtsTokenCount; logs sanitized provider error type/code/message for non-2xx responses. ModelGenerationMetadata gains reasoning_tokens and evidence_items_trimmed. Prompt v1, schemas, parsing and citation validation are unchanged.",
       "approved_by": "project owner, step 11d"
+    },
+    {
+      "date": "2026-10-30",
+      "path": "backend/app/services/legal_answer_generation.py",
+      "old_sha256": "44a90e1d7ad1152c7b73506677adeaf57d1f69d7ab2a6bd4c86ef543e0f18c81",
+      "new_sha256": "8f331a78d782921e45250f5e56f1660542795252244a8c3844c0f573cc8554b5",
+      "reason": "Provider label fix (step 22): model_provider_failure_result() hard-coded provider=\"gemini\" in the failure metadata of every unanswered request, whatever the provider. generate_legal_answer now passes the failed provider, read from the error code prefix (failed_provider_name: GROQ_OUTPUT_TRUNCATED -> groq, NVIDIA_TIMEOUT -> nvidia); the parameter defaults to \"gemini\", so the frozen evaluation path (run_grounded_answer_eval_generation.py, Gemini only) records the same as before. Prompt v1, schemas, parsing and citation validation are unchanged; already-generated eval outputs keep their recorded run hashes.",
+      "approved_by": "project owner, step 22 part 4"
+    },
+    {
+      "date": "2026-10-30",
+      "path": "backend/app/services/legal_answer_prompt_v3.py",
+      "old_sha256": null,
+      "new_sha256": "475140917aebffaf65a7edf87e15a76e9fbad115b8778de8c76f1cfcf32e2a5f",
+      "reason": "New prompt v3 for the product runtime (step 22): prompt v2 unchanged plus length rules (about 900 output tokens public, 1,200 professional; no repetition; short lists; citations only in claims, with source_metadata limited to case_name and source_url; no P# citations; the private document map not restated), so professional answers and briefs fit Groq's 8,000-token per-request limit. Same output schemas. Prompt v1 (the frozen baseline of this evaluation) and v2 keep their pins.",
+      "approved_by": "project owner, step 22 part 2"
     }
   ],
   "component_hashes": {
     "backend/app/services/legal_answer_prompt.py": "5a300bf80dbe7508b366c60debc51d6cfd1b8813f95d03696c290f62d41e0f75",
-    "backend/app/services/legal_answer_generation.py": "44a90e1d7ad1152c7b73506677adeaf57d1f69d7ab2a6bd4c86ef543e0f18c81",
+    "backend/app/services/legal_answer_generation.py": "8f331a78d782921e45250f5e56f1660542795252244a8c3844c0f573cc8554b5",
     "backend/app/services/legal_answer_prompt_v2.py": "9cdc948cf9a7f5a11c4b0ba30b53a76104436d832e227b5057e9658315ab6790",
+    "backend/app/services/legal_answer_prompt_v3.py": "475140917aebffaf65a7edf87e15a76e9fbad115b8778de8c76f1cfcf32e2a5f",
     "backend/app/services/legal_citation_validation.py": "9c072a848f79276b27b158db0a792f30860cb348e5255e32aa0d335a160f63b0",
     "backend/app/services/legal_rag_retrieval.py": "2034acf1bb2b833e33181eff6f747a4dcb7d0801a43c6d45f85f327dfa7b02db",
     "backend/app/services/legal_query_understanding.py": "8138c5320293a35407f0c9a115e8b3fc5a57e28ab1bb338e5a07f1532fe4cbf1",

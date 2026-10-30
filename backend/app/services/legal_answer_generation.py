@@ -442,6 +442,7 @@ def generate_legal_answer(
             exc.code,
             str(exc),
             configured_model_id=getattr(adapter, "configured_model_id", ""),
+            provider=failed_provider_name(exc),
             http_status=exc.http_status,
             provider_code=exc.provider_code,
             provider_message=exc.provider_message,
@@ -750,6 +751,14 @@ def is_retryable_gemini_error(exc: ModelProviderError) -> bool:
     return False
 
 
+def failed_provider_name(exc: ModelProviderError) -> str:
+    """The provider that failed, from its error code: every adapter raises ``<PROVIDER>_<REASON>``
+    (GEMINI_TIMEOUT, GROQ_OUTPUT_TRUNCATED, NVIDIA_RATE_LIMIT...). Behind the provider chain this is the provider
+    whose error was raised (the fallback when both failed)."""
+    prefix, separator, _ = exc.code.partition("_")
+    return prefix.lower() if separator and prefix else "unknown"
+
+
 def model_provider_failure_result(
     understanding: LegalQueryUnderstanding,
     retrieval: LegalRetrievalResult,
@@ -758,6 +767,7 @@ def model_provider_failure_result(
     code: str,
     message: str,
     configured_model_id: str = "",
+    provider: str = "gemini",
     http_status: int | None = None,
     provider_code: str | None = None,
     provider_message: str | None = None,
@@ -768,7 +778,7 @@ def model_provider_failure_result(
 ) -> LegalAnswerResult:
     evidence_ids = [item.citation_id for item in retrieval.evidence]
     metadata = ModelGenerationMetadata(
-        provider="gemini",
+        provider=provider,
         configured_model_id=configured_model_id,
         response_mode=mode,
         fallback_used=False,
@@ -781,7 +791,7 @@ def model_provider_failure_result(
         query=understanding.query,
         mode=mode,
         answer=None,
-        summary="Gemini generation failed before a validated structured answer was produced.",
+        summary=f"{provider.capitalize()} generation failed before a validated structured answer was produced.",
         grounding_status=GroundingStatus.UNGROUNDED,
         warnings=[
             LegalAnswerWarning(

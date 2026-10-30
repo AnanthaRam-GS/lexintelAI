@@ -7,10 +7,15 @@ has Groq's reported ``prompt_tokens``, this rebuilds the prompt that was sent:
 - prompt v1 or v2, as recorded;
 - the captured private (P#) excerpt, for PDF runs.
 
+Runs recorded since step 22 carry ``capture.estimate_prompt_plus_schema``, the
+guard's estimate of the exact prompt that was sent (any prompt version), and are
+used as recorded without a rebuild.
+
 It then compares the guard's estimate with the real count, picks the smallest
 factor that never underestimates a recorded run (plus ``--margin``), and
 replays the guard for the step 11d public runs (P1, P4) to count the evidence
-items each factor keeps. Output: JSON with chunk IDs and token counts only.
+items each factor keeps. The current factor is LEGALAI_GROQ_TOKEN_ESTIMATE_FACTOR.
+Output: JSON with chunk IDs and token counts only.
 """
 
 from __future__ import annotations
@@ -38,6 +43,7 @@ from backend.app.services.groq_answer_adapter import groq_payload_schema
 from backend.app.services.legal_answer_generation import AnswerMode, ProfessionalLegalBrief, PublicLegalAnswer, build_grounded_evidence_packet
 from backend.app.services.legal_answer_prompt import build_legal_answer_prompt
 from backend.app.services.legal_answer_prompt_v2 import build_legal_answer_prompt_v2
+from backend.app.services.legal_answer_prompt_v3 import build_legal_answer_prompt_v3
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import retrieve_legal_evidence
 from backend.app.services.private_pdf_rag import PrivateChunk, PrivateEvidenceItem, render_private_evidence_block
@@ -47,7 +53,6 @@ from backend.scripts.retrieve_legal_evidence import make_service
 
 CEILING_TOKENS = 8000
 MAX_OUTPUT_TOKENS = 2048
-CURRENT_FACTOR = 1.7
 
 
 def schema_tokens(mode: AnswerMode) -> int:
@@ -73,7 +78,9 @@ def private_context(record: dict[str, Any]) -> str | None:
 
 
 def build_prompt(retrieval: Any, understanding: Any, mode: AnswerMode, version: str, private: str | None) -> str:
-    if version.endswith("v2"):
+    if version.endswith("v3"):
+        prompt = build_legal_answer_prompt_v3(build_grounded_evidence_packet(understanding, normalized_for_generation(retrieval)), mode=mode).prompt
+    elif version.endswith("v2"):
         prompt = build_legal_answer_prompt_v2(build_grounded_evidence_packet(understanding, normalized_for_generation(retrieval)), mode=mode).prompt
     else:
         prompt = build_legal_answer_prompt(build_grounded_evidence_packet(understanding, retrieval), mode=mode).prompt
@@ -88,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     settings = Settings()
+    current_factor = settings.legalai_groq_token_estimate_factor
     service = make_service(retrieval_service_args(settings))
     product = resolve_product_context_budget(settings)
     rows, replays = [], {}
@@ -99,6 +107,16 @@ def main(argv: list[str] | None = None) -> int:
         capture = record["capture"]
         mode = AnswerMode.PUBLIC if "public" in record["kind"] else AnswerMode.PROFESSIONAL
         version = meta.get("prompt_version") or "legal_answer_prompt_v1"
+        run = f"{path.parent.name}/{path.stem}"
+        if capture.get("estimate_prompt_plus_schema"):
+            estimate, actual = int(capture["estimate_prompt_plus_schema"]), int(meta["prompt_tokens"])
+            rows.append({
+                "run": run, "mode": mode.value, "prompt_version": version.replace("legal_answer_prompt_", ""),
+                "evidence_items": len(capture.get("evidence") or []), "evidence_matches_capture": True,
+                "estimate_prompt_plus_schema": estimate, "actual_prompt_tokens": actual, "ratio": round(actual / estimate, 4),
+                "predicted_at_current": round(estimate * current_factor),
+            })
+            continue
         query = capture["retrieval_query"]
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
         retrieval = retrieve_legal_evidence(understanding, retrieval_service=service)
@@ -112,11 +130,10 @@ def main(argv: list[str] | None = None) -> int:
         prompt = build_prompt(sent, understanding, mode, version, private)
         estimate = estimate_tokens(prompt) + schema_tokens(mode)
         actual = int(meta["prompt_tokens"])
-        run = f"{path.parent.name}/{path.stem}"
         rows.append({
             "run": run, "mode": mode.value, "prompt_version": version.replace("legal_answer_prompt_", ""), "evidence_items": len(kept),
             "evidence_matches_capture": rebuilt == captured, "estimate_prompt_plus_schema": estimate, "actual_prompt_tokens": actual,
-            "ratio": round(actual / estimate, 4), "predicted_at_1_7": round(estimate * CURRENT_FACTOR),
+            "ratio": round(actual / estimate, 4), "predicted_at_current": round(estimate * current_factor),
         })
         if path.parent.name == "20261020T162033Z":  # step 11d P1/P4: replay the guard on the full bounded evidence
             replays[run] = (bounded, understanding, mode, version, private)
@@ -126,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
     for row in rows:
         row["predicted_new"] = round(row["estimate_prompt_plus_schema"] * factor)
         row["new_minus_actual"] = row["predicted_new"] - row["actual_prompt_tokens"]
-        row["old_minus_actual"] = row["predicted_at_1_7"] - row["actual_prompt_tokens"]
+        row["old_minus_actual"] = row["predicted_at_current"] - row["actual_prompt_tokens"]
 
     def items_kept(bounded: Any, understanding: Any, mode: AnswerMode, version: str, private: str | None, guard_factor: float) -> int:
         guard = RequestSizeGuard(ceiling_tokens=CEILING_TOKENS, max_output_tokens=MAX_OUTPUT_TOKENS, estimate_factor=guard_factor)
@@ -136,10 +153,10 @@ def main(argv: list[str] | None = None) -> int:
         return len(evidence)
 
     replay = {
-        run: {"bounded_items": len(values[0].evidence), "kept_at_1_7": items_kept(*values, CURRENT_FACTOR), "kept_at_new": items_kept(*values, factor)}
+        run: {"bounded_items": len(values[0].evidence), "kept_at_current": items_kept(*values, current_factor), "kept_at_new": items_kept(*values, factor)}
         for run, values in replays.items()
     }
-    report = {"worst_ratio": worst, "margin": args.margin, "new_factor": factor, "current_factor": CURRENT_FACTOR, "runs": rows, "replay_11d": replay,
+    report = {"worst_ratio": worst, "margin": args.margin, "new_factor": factor, "current_factor": current_factor, "runs": rows, "replay_11d": replay,
               "ceiling_tokens": CEILING_TOKENS, "max_output_tokens": MAX_OUTPUT_TOKENS}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
