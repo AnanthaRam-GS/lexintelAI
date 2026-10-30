@@ -253,7 +253,8 @@ sets the same value unless noted.
 | `GROQ_MODEL`, `GROQ_BASE_URL`, `GEMINI_MODEL` | provider models and endpoint | example: `openai/gpt-oss-120b`, Groq API, `gemini-3.7-flash` | with that provider |
 | `LEGALAI_LLM_MAX_OUTPUT_TOKENS`, `LEGALAI_GROQ_*`, `LEGALAI_GEMINI_*` | provider limits and tuning | see `.env.example` | no |
 | `LEGALAI_LLM_PACING_ENABLED`, `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS`, `LEGALAI_GROQ_TOKENS_PER_MINUTE`, `LEGALAI_GROQ_REQUESTS_PER_MINUTE` | answer pacing queue for rate-limited models (step 23); `/health` shows `llm_queue` | `true`, `90`, `8000`, `30` | no |
-| `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS` | professional answers wait this long for gpt-oss-120b before the fallback may answer (step 24) | `45` | no |
+| `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS`, `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED` | professional answers wait this long for gpt-oss-120b, then `MODEL_BUSY`; they never fall back to 20b unless enabled (steps 24, 24b) | `45`, `false` | no |
+| `LEGALAI_GROQ_TOKENS_PER_DAY`, `LEGALAI_GROQ_REQUESTS_PER_DAY`, `LEGALAI_LLM_DAILY_USAGE_FILE` | daily budget per model and the persisted usage count; when nothing can serve, `503 DAILY_CAPACITY_REACHED` (step 24b); `/health` shows `llm_daily` | `200000`, unset, `data/runtime/llm_daily_usage.json` | no |
 | `LEGALAI_PRODUCT_MAX_INPUT_TOKENS` and the other `*_TOKENS` / `PRIVATE_PDF_*` budgets | context budgeting ([docs/PRODUCT_CONTEXT_BUDGETING.md](docs/PRODUCT_CONTEXT_BUDGETING.md)) | see `.env.example` | no |
 | `LEGALAI_MODEL_DEVICE` | query embedder and reranker device: `auto`, `cpu`, `mps`, `cuda` | `auto` | no |
 | `LEGALAI_RERANKER_FP16` | reranker half precision on GPU | `true` | no |

@@ -13,6 +13,7 @@ import {
 } from 'react';
 
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
+import { ApiClientError, dailyCapacityMessage } from '../../../lib/api';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { QUEUED_NOTICE_DELAY_MS } from '../../../components/shared/QueuedNotice';
 import { ResponseCard } from '../../../components/shared/ResponseCard';
@@ -115,11 +116,15 @@ function ChatThreadEntry({
   }
 
   const failure = errorCopy.public.answer[message.failure];
+  const failureMessage =
+    message.failure === 'daily-capacity' && message.retryAfterSeconds
+      ? `${dailyCapacityMessage(message.retryAfterSeconds)} Your question is still here.`
+      : failure.message;
 
   return (
     <li ref={entryRef}>
       <ErrorMessage
-        message={failure.message}
+        message={failureMessage}
         onRetry={retryAvailable ? () => onRetry(entry) : undefined}
         title={failure.title}
         variant="inline"
@@ -315,6 +320,8 @@ export function PublicAsk({
               role: 'assistant',
               kind: 'error',
               failure: classifyPublicAnswerFailure(error),
+              retryAfterSeconds:
+                error instanceof ApiClientError ? error.retryAfterSeconds : undefined,
             },
           };
 

@@ -50,6 +50,14 @@ class Settings(BaseSettings):
     # Step 24 per-mode fallback policy: a professional answer waits this long for its primary model (gpt-oss-120b)
     # before the fallback may answer; public answers fall back at once when the primary is at its limit.
     legalai_professional_primary_max_wait_seconds: float = 45.0
+    # Step 24b: professional answers never fall back (gpt-oss-20b failed the professional schema in 10 of 11
+    # answers); after the primary wait they get MODEL_BUSY. True restores the fallback after the wait.
+    legalai_professional_fallback_enabled: bool = False
+    # Step 24b daily budgets (services/llm_daily_quota.py): Groq's free tier allows 200,000 tokens per model per day.
+    legalai_groq_tokens_per_day: int = 200000
+    legalai_groq_requests_per_day: int | None = None
+    # Daily usage count, persisted across restarts; "none" keeps it in memory only. Relative to the repository root.
+    legalai_llm_daily_usage_file: str = "data/runtime/llm_daily_usage.json"
     legalai_groq_tokens_per_minute: int = 8000
     legalai_groq_requests_per_minute: int = 30
     # Gemini 3 thinking level (low | medium | high); empty sends none.

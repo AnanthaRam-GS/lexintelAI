@@ -100,6 +100,7 @@ describe('backend error bodies to public copy', () => {
       [503, 'OCR_UNAVAILABLE', 'ocr-unavailable'],
       [429, 'RATE_LIMITED', 'rate-limited'],
       [503, 'MODEL_BUSY', 'model-busy'],
+      [503, 'DAILY_CAPACITY_REACHED', 'daily-capacity'],
       [503, 'MODELS_LOADING', 'models-loading'],
       [503, 'MODEL_UNAVAILABLE', 'model-unavailable'],
       [500, 'INTERNAL_ERROR', 'service'],

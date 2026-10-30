@@ -490,30 +490,50 @@ restores the step 22 chain.
   every 1-2 minutes) or a higher Groq tier, where the same code paces to the larger limits through
   `LEGALAI_GROQ_TOKENS_PER_MINUTE` and the headers.
 
-### Professional fallback policy and the daily limit (step 24)
+### Professional answers, daily limits and capacity planning (steps 24 and 24b)
 
-The fallback policy is set per mode (`llm_provider_chain.py`):
-- **Public answers** keep step 23's immediate fallback: when gpt-oss-20b is at its limit, gpt-oss-120b answers.
-- **Professional answers** wait for their primary, gpt-oss-120b, up to `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS`
-  (45). Only then may gpt-oss-20b answer, with 120b still preferred. A 120b 429 whose `retry-after` falls inside
-  that window is waited out on 120b.
-- The policy applied is recorded as `fallback_policy` (`wait_for_primary` or `immediate`) and `primary_wait_ms` in
-  `debug.backend` and the history `generation` record. Mocked tests are in `test_llm_pacing.py`.
+**No professional fallback (step 24b).** Professional answers are served by gpt-oss-120b only:
+- They wait for it up to `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS` (45), then get `503 MODEL_BUSY` with
+  `Retry-After`. A 120b 429 whose retry time is inside that window is waited out; a provider failure is not retried
+  on another model.
+- Public answers keep the immediate fallback to 120b.
+- `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED=true` restores step 24's wait-then-fall-back to 20b. It is off by default.
+- The applied policy is recorded as `fallback_policy` (`no_fallback`, `immediate`, or `wait_for_primary` when
+  enabled) and `primary_wait_ms` in `debug.backend` and the history `generation` record.
 
-**Evidence for the policy.** In the step 23 sustained check, R2 was answered by 20b (fallback). Compared with 120b
-answers to the same and other professional queries:
-- all its retrieved precedents had a validated citation (1/1), against 1/1 and 2/2 for 120b;
-- it filled all 9 model-written brief fields, against 6-8 for 120b, and 7 for the same query on 120b in step 22,
-  which had 2/2 valid citations.
+**Why there is no 20b fallback.**
+- In the step 23 sustained check, R2 answered by 20b looked structurally fine: every retrieved precedent had a
+  validated citation (1/1), and it filled all 9 model-written brief fields, against 6-8 for 120b answers.
+- But in the step 24 evaluation, 20b answering professional queries as the fallback failed the professional schema
+  in **10 of its 11** professional answers (`docs/evaluation/EVALUATION_2026-10.md`).
+- 120b is the reliable professional model, so a professional query now waits for it or gets an honest "busy".
 
-So no structural weakness showed there. In the step 24 evaluation, however, 20b answering professional queries as
-the fallback failed the professional schema in 10 of its 11 professional answers (configurations B and C,
-`docs/evaluation/EVALUATION_2026-10.md`). 120b is the reliable professional model.
+**Daily limits (step 24b, `services/llm_daily_quota.py`).** Groq's free tier allows **200,000 tokens per model per
+day** and sends no header for it. A 429 names it: "tokens per day (TPD): Limit 200000, Used …", with a retry time
+of minutes.
+- **Count.** Each answer's provider-reported tokens (prompt + completion) and requests are counted per model and UTC
+  day in `LEGALAI_LLM_DAILY_USAGE_FILE` (default `data/runtime/llm_daily_usage.json`, gitignored; atomic writes, so
+  the count survives restarts).
+- **Limits.** `LEGALAI_GROQ_TOKENS_PER_DAY` (200,000), plus an optional `LEGALAI_GROQ_REQUESTS_PER_DAY`.
+- **Skip.** Before sending, a model whose count plus the request's estimate would exceed its limit is skipped.
+  A public answer then goes to its fallback (`fallback_reason=PRIMARY_DAILY_CAPACITY`). When no allowed model can
+  serve, the API answers `503 DAILY_CAPACITY_REACHED` with `Retry-After` = the seconds until capacity returns. The
+  frontend says "Today's AI capacity has been reached — please try again after <local time>".
+- **Mark from the provider.** A provider daily-limit 429 marks the model exhausted until its retry time (else 00:00
+  UTC), and the request goes to an allowed fallback or gets `DAILY_CAPACITY_REACHED`.
+- **Observed window.** Groq's daily window behaves like a rolling 24 hours (retry times of minutes in mid-afternoon),
+  while the count resets at 00:00 UTC, so the count is an approximation. The marking from Groq's own error corrects
+  it.
+- `/health` shows `llm_daily` (`docs/API_CONTRACTS.md`).
 
-**Daily limit.** Groq's free tier also limits each model to **200,000 tokens per day**. Groq sends no header for
-it; a 429 names it ("tokens per day (TPD)") with a retry time of minutes. The chain honours that retry time, so the
-request becomes `MODEL_BUSY` if it is beyond the queue wait. At 6,000-7,000 tokens per answer, that is about 30
-answers per model per day. A day of heavy testing or evaluation can exhaust it, as it did on 2026-10-30.
+**Capacity planning (free tier):**
+- **Per minute:** about 3 answers per minute across the two models (step 23).
+- **Per day:** about **30 answers per model per day**, at 6,000-7,000 tokens per v3 answer. Professional answers
+  use only gpt-oss-120b, so a day allows about 30 professional answers in total. A three-configuration evaluation
+  of 15 professional queries needs about 45 of them, more than one day.
+- **Scheduling:** run the evaluation, UAT and the demo on **separate days** (decision, step 24b), never more than
+  one heavy activity a day. Check `/health` → `llm_daily` before starting one. A paid Groq tier raises both limits;
+  set `LEGALAI_GROQ_TOKENS_PER_MINUTE` / `_PER_DAY` to match.
 
 ### Required environment variables
 
@@ -535,6 +555,9 @@ LEGALAI_LLM_FALLBACK_PROVIDER=groq_backup   # used on a provider failure of the 
 LEGALAI_LLM_PACING_ENABLED=true             # step 23 pacing queue (Groq)
 LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS=90       # then MODEL_BUSY with Retry-After
 LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS=45   # professional answers wait this long for gpt-oss-120b
+LEGALAI_PROFESSIONAL_FALLBACK_ENABLED=false       # step 24b: professional answers never fall back to 20b
+LEGALAI_GROQ_TOKENS_PER_DAY=200000                # daily budget per model (LEGALAI_GROQ_REQUESTS_PER_DAY optional)
+LEGALAI_LLM_DAILY_USAGE_FILE=data/runtime/llm_daily_usage.json
 LEGALAI_GROQ_TOKENS_PER_MINUTE=8000         # per model; Groq's headers refine it
 LEGALAI_GROQ_REQUESTS_PER_MINUTE=30
 LEGALAI_QUERY_DEBUG=false              # true returns per-stage timings and the backend in `debug`

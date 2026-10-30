@@ -42,14 +42,44 @@ export class ApiClientError extends Error {
   }
 }
 
+/** Step 24b: the answer models' daily capacity is used up; `retryAfterSeconds` is the time until it returns. */
+export const DAILY_CAPACITY_CODE = 'DAILY_CAPACITY_REACHED';
+
 /** Backend codes for "slow down" answers; their messages are written for end users. */
-const LIMIT_CODES = new Set(['RATE_LIMITED', 'LOGIN_THROTTLED', 'MODEL_BUSY', 'MODELS_LOADING']);
+const LIMIT_CODES = new Set([
+  'RATE_LIMITED',
+  'LOGIN_THROTTLED',
+  'MODEL_BUSY',
+  'MODELS_LOADING',
+  DAILY_CAPACITY_CODE,
+]);
+
+/** "Today's AI capacity has been reached — please try again after 5:30 AM" (local time; "tomorrow" when it is). */
+export function dailyCapacityMessage(retryAfterSeconds?: number, now: Date = new Date()): string {
+  const prefix = "Today's AI capacity has been reached — please try again";
+  if (!retryAfterSeconds || retryAfterSeconds <= 0) return `${prefix} later.`;
+  const at = new Date(now.getTime() + retryAfterSeconds * 1000);
+  const time = at.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  if (at.toDateString() === now.toDateString()) return `${prefix} after ${time}.`;
+  if (at.toDateString() === tomorrow.toDateString()) return `${prefix} after ${time} tomorrow.`;
+  return `${prefix} after ${at.toLocaleDateString([], { day: 'numeric', month: 'short' })}, ${time}.`;
+}
 
 /** The plain-language message for a rate-limit, login-throttle or busy answer, or null for other errors. */
 export function limitMessage(error: unknown): string | null {
   if (!(error instanceof ApiClientError) || !error.code || !LIMIT_CODES.has(error.code))
     return null;
+  if (error.code === DAILY_CAPACITY_CODE) return dailyCapacityMessage(error.retryAfterSeconds);
   return error.message;
+}
+
+/** The heading for a limit answer (see `limitMessage`). */
+export function limitTitle(error: unknown): string {
+  return error instanceof ApiClientError && error.code === DAILY_CAPACITY_CODE
+    ? 'Daily capacity reached'
+    : 'Please slow down';
 }
 
 export async function apiFetch<TResponse>(

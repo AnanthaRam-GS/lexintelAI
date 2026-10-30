@@ -203,6 +203,31 @@ class ReviewSheetTests(unittest.TestCase):
             build_review_sheet.main(["--raw-dir", "x", "--out-dir", str(REPO_ROOT / "review")])
 
 
+class DailyCapacityStopTests(unittest.TestCase):
+    """Step 24b: the run stops cleanly at the first DAILY_CAPACITY_REACHED; that query stays missing."""
+
+    def test_stops_and_saves_nothing_for_the_refused_query(self) -> None:
+        from unittest.mock import patch
+
+        attempts = []
+
+        def fake_llm_only(example, adapter):
+            attempts.append(example["example_id"])
+            status = evaluation.DAILY_CAPACITY if len(attempts) == 3 else "SUCCESS"
+            return {"config": "A_llm_only", "example_id": example["example_id"], "mode": example["mode"], "status": status,
+                    "backend": {"model": "m", "fallback_used": False}, "latency_s": 1.0, "claims": [], "evidence": []}
+
+        with tempfile.TemporaryDirectory() as tmp, \
+                patch.object(evaluation, "run_llm_only", side_effect=fake_llm_only), \
+                patch("backend.scripts.retrieve_legal_evidence.make_service", return_value=object()), \
+                patch("backend.app.services.llm_provider_chain.build_answer_adapter", return_value=object()):
+            evaluation.main(["--raw-dir", tmp, "--output-dir", str(Path(tmp) / "out"), "--configs", "A_llm_only", "--mode", "professional"])
+            saved = sorted(p.stem for p in (Path(tmp) / "A_llm_only").glob("*.json"))
+        self.assertEqual(len(attempts), 3)  # nothing is attempted after the refusal
+        self.assertEqual(saved, attempts[:2])  # the refused query is not saved, so a later run retries it
+        self.assertTrue(all(int(a.split("q")[-1]) >= 16 for a in attempts))  # professional queries only
+
+
 class GuardTests(unittest.TestCase):
     def test_raw_outputs_must_be_outside_the_repository(self) -> None:
         with self.assertRaisesRegex(SystemExit, "outside the repository"):

@@ -71,7 +71,8 @@ from backend.app.services.local_document_map import (
     render_local_document_map,
 )
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter, groq_payload_schema
-from backend.app.services.llm_provider_chain import GenerationQueueTimeout, build_answer_adapter, configure_pacing
+from backend.app.services.llm_daily_quota import DailyCapacityReached, daily_quota
+from backend.app.services.llm_provider_chain import GenerationQueueTimeout, build_answer_adapter, configure_pacing, daily_limits
 from backend.app.services.openai_compatible_adapter import PROFILE_NAMES, OpenAICompatibleAnswerAdapter, provider_profile
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
@@ -185,7 +186,17 @@ def configure_answer_pacing(settings: Settings) -> None:
     if not settings.legalai_llm_pacing_enabled:
         return
     names = {settings.legalai_llm_provider.strip().lower(), (settings.legalai_llm_fallback_provider or "").strip().lower()}
-    configure_pacing(settings, [ANSWER_ADAPTER_FACTORIES[name](settings) for name in names if name in ANSWER_ADAPTER_FACTORIES])
+    adapters = [ANSWER_ADAPTER_FACTORIES[name](settings) for name in names if name in ANSWER_ADAPTER_FACTORIES]
+    configure_pacing(settings, adapters)
+    # Step 24b: the same models' daily budgets, so /health shows today's usage from the start.
+    quota = daily_quota(settings)
+    for adapter in adapters:
+        for mode in (AnswerMode.PUBLIC, AnswerMode.PROFESSIONAL):
+            if hasattr(adapter, "rate_limit_key"):
+                key = adapter.rate_limit_key(mode)
+                limits = daily_limits(settings, key[0])
+                if limits is not None and key[1]:
+                    quota.configure(key, limits)
 
 
 def get_answer_adapter(settings: Settings = Depends(get_settings)):
@@ -909,6 +920,15 @@ def _attempt_generation(
                 status.HTTP_503_SERVICE_UNAVAILABLE,
                 retry_after=exc.retry_after_seconds,
             ) from exc
+        except DailyCapacityReached as exc:
+            # Step 24b: no model allowed for this mode has daily capacity left (services/llm_daily_quota.py).
+            logger.warning("llm_daily_capacity_reached retry_after_s=%d", exc.retry_after_seconds)
+            raise QueryExecutionError(
+                "DAILY_CAPACITY_REACHED",
+                "Today's answer capacity has been reached. Please try again later.",
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                retry_after=exc.retry_after_seconds,
+            ) from exc
     if result.model_metadata is not None:
         result.model_metadata.prompt_version = prompt_version
         result.model_metadata.evidence_items_trimmed = trimmed
@@ -1020,6 +1040,14 @@ QUERY_STAGES = (
 )
 
 
+def fallback_policy_name(timings: dict[str, float]) -> str | None:
+    if timings.get("fallback_policy_no_fallback"):
+        return "no_fallback"
+    if "fallback_policy_wait_for_primary" not in timings:
+        return None
+    return "wait_for_primary" if timings["fallback_policy_wait_for_primary"] else "immediate"
+
+
 def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
     """Which backend produced the answer (never keys or raw provider text)."""
     metadata = result.model_metadata
@@ -1042,9 +1070,9 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         "rate_limit_wait_ms": result.timings.get("rate_limit_wait_ms"),
         "rate_limit_retries": int(result.timings["rate_limit_retries"]) if "rate_limit_retries" in result.timings else None,
         "retry_reasons": list(metadata.retry_reasons),
-        # Step 24 per-mode fallback policy (llm_provider_chain.py): wait_for_primary (professional) or immediate.
-        "fallback_policy": (None if "fallback_policy_wait_for_primary" not in result.timings
-                            else "wait_for_primary" if result.timings["fallback_policy_wait_for_primary"] else "immediate"),
+        # Per-mode fallback policy (llm_provider_chain.py): no_fallback (professional, step 24b default),
+        # wait_for_primary (professional with LEGALAI_PROFESSIONAL_FALLBACK_ENABLED) or immediate (public).
+        "fallback_policy": fallback_policy_name(result.timings),
         "primary_wait_ms": result.timings.get("primary_wait_ms"),
     }
 

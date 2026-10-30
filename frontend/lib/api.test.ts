@@ -6,7 +6,9 @@ import {
   ApiClientError,
   authApi,
   historyApi,
+  dailyCapacityMessage,
   limitMessage,
+  limitTitle,
   queryApi,
 } from './api';
 
@@ -349,6 +351,38 @@ describe('unified error contract (BE-003)', () => {
     expect(limitMessage(busy)).toBe(
       'Many people are asking questions right now. Please try again in a moment.',
     );
+  });
+
+  it('says when daily capacity returns for DAILY_CAPACITY_REACHED (step 24b)', async () => {
+    const reached = await failure(
+      errorResponse(
+        503,
+        {
+          error: "Today's answer capacity has been reached. Please try again later.",
+          code: 'DAILY_CAPACITY_REACHED',
+          detail: { retry_after: 7200 },
+        },
+        { 'Retry-After': '7200' },
+      ),
+    );
+    expect(reached.retryAfterSeconds).toBe(7200);
+    expect(limitTitle(reached)).toBe('Daily capacity reached');
+    expect(limitMessage(reached)).toMatch(
+      /^Today's AI capacity has been reached — please try again after .+\.$/,
+    );
+    const now = new Date(2026, 9, 31, 10, 0, 0);
+    const later = new Date(2026, 9, 31, 12, 0, 0).toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    expect(dailyCapacityMessage(7200, now)).toBe(
+      `Today's AI capacity has been reached — please try again after ${later}.`,
+    );
+    expect(dailyCapacityMessage(16 * 3600, now)).toMatch(/tomorrow\.$/);
+    expect(dailyCapacityMessage(undefined, now)).toBe(
+      "Today's AI capacity has been reached — please try again later.",
+    );
+    expect(limitTitle(new ApiClientError('busy', 503, 'MODEL_BUSY', 15))).toBe('Please slow down');
   });
 
   it('does not read the retired {detail: {code, message}} or {detail: string} shapes', async () => {

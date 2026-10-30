@@ -392,6 +392,26 @@ describe('PublicAsk', () => {
     expect(alert).not.toHaveTextContent('private-host');
   });
 
+  it('says when daily capacity returns for DAILY_CAPACITY_REACHED (step 24b)', async () => {
+    const user = userEvent.setup();
+    fetchPublicQuery.mockRejectedValueOnce(
+      new ApiClientError(
+        "Today's answer capacity has been reached.",
+        503,
+        'DAILY_CAPACITY_REACHED',
+        3600,
+      ),
+    );
+    renderAsk();
+
+    await submitText(user, 'What can I do?');
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent("Today's AI capacity has been reached");
+    expect(alert).toHaveTextContent(/please try again after .+\. Your question is still here\./);
+    expect(alert).not.toHaveTextContent('Many people are asking');
+  });
+
   it('maps a 429 provider quota failure to a usage-limit-safe message', async () => {
     const user = userEvent.setup();
     fetchPublicQuery.mockRejectedValueOnce(

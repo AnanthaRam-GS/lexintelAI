@@ -52,6 +52,7 @@ EVAL_PATH = REPO_ROOT / "data/structured/manifests/legal_answer_eval.json"
 DEFAULT_OUTPUT = REPO_ROOT / "data/evaluation/runs/2026-10_v3_groq/generation"
 CONFIGS = ("A_llm_only", "B_dense_rag", "C_full_legalai")
 UNSUPPORTED_CODES = {"UNKNOWN_EVIDENCE_ID", "UNSUPPORTED_CASE_REFERENCE"}
+DAILY_CAPACITY = "DAILY_CAPACITY"
 PROMPT_FILES = ["backend/app/services/legal_answer_prompt_v3.py", "backend/app/services/legal_answer_prompt_v3_llm_only.py"]
 
 _NAME = r"[A-Z][A-Za-z.&'’()-]*"
@@ -266,6 +267,7 @@ def run_llm_only(example: dict[str, Any], adapter: Any) -> dict[str, Any]:
     )
     from backend.app.services.legal_answer_prompt_v3_llm_only import PROMPT_V3_LLM_ONLY, build_legal_answer_prompt_v3_llm_only
     from backend.app.services.legal_citation_validation import validate_legal_answer_citations
+    from backend.app.services.llm_daily_quota import DailyCapacityReached
     from backend.app.services.llm_provider_chain import GenerationQueueTimeout
 
     mode = AnswerMode(example["mode"])
@@ -276,6 +278,9 @@ def run_llm_only(example: dict[str, Any], adapter: Any) -> dict[str, Any]:
                                                       schema=schema, mode=mode)
     except GenerationQueueTimeout:
         return build_record("A_llm_only", example, None, evidence=[], status="BUSY", latency_s=time.monotonic() - started, error_code="MODEL_BUSY")
+    except DailyCapacityReached:
+        return build_record("A_llm_only", example, None, evidence=[], status=DAILY_CAPACITY, latency_s=time.monotonic() - started,
+                            error_code="DAILY_CAPACITY_REACHED")
     except (ModelProviderError, ModelUnavailableError) as exc:
         code = getattr(exc, "code", "MODEL_UNAVAILABLE")
         status = "TRUNCATED" if code.endswith("_OUTPUT_TRUNCATED") else "PROVIDER_ERROR"
@@ -283,8 +288,13 @@ def run_llm_only(example: dict[str, Any], adapter: Any) -> dict[str, Any]:
     try:
         parsed = parse_model_payload(response.raw_response, response.parsed_response, schema)
     except Exception:  # noqa: BLE001 - any schema failure is the measured outcome
-        return build_record("A_llm_only", example, None, evidence=[], status="SCHEMA_FAILED", latency_s=time.monotonic() - started,
-                            error_code="MODEL_OUTPUT_VALIDATION_FAILED")
+        record = build_record("A_llm_only", example, None, evidence=[], status="SCHEMA_FAILED", latency_s=time.monotonic() - started,
+                              error_code="MODEL_OUTPUT_VALIDATION_FAILED")
+        metadata = response.model_metadata  # which model produced the invalid answer (step 24b)
+        record["backend"].update({"provider": metadata.provider, "model": metadata.actual_model_id or metadata.configured_model_id,
+                                  "fallback_used": bool(metadata.fallback_used), "fallback_reason": metadata.fallback_reason,
+                                  "finish_reason": metadata.finish_reason})
+        return record
     claims = parsed["claims"]
     citations = [citation for claim in claims for citation in claim.citations]
     metadata = response.model_metadata.model_copy(update={"prompt_version": PROMPT_V3_LLM_ONLY})
@@ -320,7 +330,7 @@ def run_pipeline(config: str, example: dict[str, Any], adapter: Any, service: An
             generation_limit=query_api.generation_limit(settings), prompt=query_api.prompt_builder(settings),
         )
     except query_api.QueryExecutionError as exc:
-        status = "BUSY" if exc.code == "MODEL_BUSY" else "REQUEST_REFUSED"
+        status = {"MODEL_BUSY": "BUSY", "DAILY_CAPACITY_REACHED": DAILY_CAPACITY}.get(exc.code, "REQUEST_REFUSED")
         return build_record(config, example, None, evidence=list(retrieval.evidence), status=status,
                             latency_s=time.monotonic() - started, error_code=exc.code)
     return build_record(config, example, result, evidence=list(bounded.evidence), status=status_of(result),
@@ -338,6 +348,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--configs", nargs="+", default=list(CONFIGS), choices=CONFIGS)
     parser.add_argument("--limit", type=int, default=None, help="first N queries only")
     parser.add_argument("--score-only", action="store_true", help="re-score existing raw records, no generation")
+    parser.add_argument("--mode", choices=["public", "professional"], help="generate only queries of this mode")
     args = parser.parse_args(argv)
     raw_dir = args.raw_dir.resolve()
     if raw_dir == REPO_ROOT or REPO_ROOT in raw_dir.parents:
@@ -359,7 +370,10 @@ def main(argv: list[str] | None = None) -> int:
         service = make_service(retrieval_service_args(settings))
         dense_service = DenseOnlyService(service)
         # Interleaved per query (A, B, C), so provider conditions over time affect the three configurations alike.
+        stopped = None
         for example in examples:
+            if args.mode and example["mode"] != args.mode:
+                continue
             for config in args.configs:
                 path = raw_dir / config / f"{example['example_id']}.json"
                 if path.exists():
@@ -369,10 +383,18 @@ def main(argv: list[str] | None = None) -> int:
                     record = run_llm_only(example, adapter)
                 else:
                     record = run_pipeline(config, example, adapter, dense_service if config == "B_dense_rag" else service, settings)
+                if record["status"] == DAILY_CAPACITY:
+                    # Step 24b: today's capacity is used up. Nothing is saved for this query (it stays missing) and the
+                    # run stops cleanly instead of spending calls on refusals.
+                    stopped = {"example_id": example["example_id"], "config": config}
+                    print(json.dumps({"stopped": "DAILY_CAPACITY_REACHED", **stopped}), flush=True)
+                    break
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(json.dumps(record, indent=1, ensure_ascii=False, default=str) + "\n", encoding="utf-8")
                 print(json.dumps({"config": config, "example_id": example["example_id"], "status": record["status"],
                                   "model": record["backend"]["model"], "latency_s": record["latency_s"]}), flush=True)
+            if stopped:
+                break
 
     rows = []
     for config in args.configs:

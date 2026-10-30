@@ -24,6 +24,7 @@ from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheck
 from backend.app.core.startup_checks import run_startup_security_checks, validate_e2e_fake_providers
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
+from backend.app.services.llm_daily_quota import daily_quota
 from backend.app.services.llm_pacing import llm_pacer
 from backend.app.services.ocr import tesseract_status
 from backend.app.services.query_models import model_status, start_warm_up
@@ -126,4 +127,7 @@ def health_check() -> dict:
             "max_wait_seconds": settings.legalai_llm_queue_max_wait_seconds,
             **llm_pacer.status(),
         },
+        # Step 24b daily budgets: tokens and requests used today (UTC) per model, remaining tokens, and any model
+        # marked exhausted by the provider (services/llm_daily_quota.py). Counts only.
+        "llm_daily": daily_quota(settings).status(),
     }
