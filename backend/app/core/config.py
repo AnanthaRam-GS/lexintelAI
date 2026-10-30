@@ -66,6 +66,34 @@ class Settings(BaseSettings):
     groq_model: str = ""
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
+    # OpenAI-compatible provider profiles (step 21; services/openai_compatible_adapter.py). Each is selected by name
+    # in LEGALAI_LLM_PROVIDER / LEGALAI_LLM_FALLBACK_PROVIDER. Model IDs have no default: set the verified ID.
+    # NVIDIA API catalog (build.nvidia.com).
+    nvidia_api_key: str = ""
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
+    nvidia_model: str = ""
+    nvidia_max_output_tokens: int | None = None  # None: LEGALAI_LLM_MAX_OUTPUT_TOKENS
+    nvidia_timeout_seconds: float = 120.0
+    nvidia_structured_output: str = "json_schema"  # json_schema | json_object | prompt (schema in the prompt only)
+    nvidia_reasoning_effort: str = ""  # sent as reasoning_effort when set
+    nvidia_max_request_tokens: int | None = None  # per-request ceiling for the size guard; None: no guard
+    # Ollama (local), through its OpenAI-compatible /v1 API, with ollama_base_url and ollama_model (below).
+    ollama_max_output_tokens: int | None = None
+    ollama_timeout_seconds: float = 300.0
+    # prompt: the Homebrew build's MLX runner answers 501 "structured output is unavailable" to response_format.
+    ollama_structured_output: str = "prompt"
+    ollama_reasoning_effort: str = ""
+    # The model's context window (num_ctx). The OpenAI-compatible API cannot set it per request, so it is
+    # fixed in a Modelfile; the size guard keeps prompt + schema + output within it.
+    ollama_context_tokens: int | None = None
+    # Defined for future keys; disabled while the key is empty.
+    deepseek_api_key: str = ""
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
+    deepseek_model: str = ""
+    openrouter_api_key: str = ""
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_model: str = ""
+
     # Application-level context budget for a single generative call, deliberately
     # independent of any provider's advertised maximum context window. A model
     # (or an account's rate-limited tier) may accept far less than its nominal

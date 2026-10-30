@@ -18,7 +18,8 @@ from typing import Any
 logger = logging.getLogger("legalai.provider_errors")
 
 MAX_MESSAGE_CHARS = 240
-_SECRET_LIKE = re.compile(r"(gsk_[A-Za-z0-9]{6,}|AIza[0-9A-Za-z_\-]{10,}|Bearer\s+\S+|sk-[A-Za-z0-9]{10,})")
+# Groq, Google, bearer tokens, OpenAI-style (DeepSeek, OpenRouter "sk-or-...") and NVIDIA API catalog ("nvapi-") keys.
+_SECRET_LIKE = re.compile(r"(gsk_[A-Za-z0-9]{6,}|AIza[0-9A-Za-z_\-]{10,}|Bearer\s+\S+|sk-[A-Za-z0-9\-]{10,}|nvapi-[A-Za-z0-9_\-]{10,})")
 
 
 def sanitize_provider_message(message: Any) -> str | None:
