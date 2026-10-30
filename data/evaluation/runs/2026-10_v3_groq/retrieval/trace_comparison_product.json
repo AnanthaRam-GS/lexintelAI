@@ -1,0 +1,86 @@
+{
+  "variant": "product",
+  "device": {
+    "model_device": "mps",
+    "reranker_fp16": true
+  },
+  "run_at": "2026-10-30T14:58:26+00:00",
+  "frozen_inputs": {
+    "queries": "retrieval_eval_queries.json",
+    "judgments": "retrieval_eval_judgments.json",
+    "traces": "retrieval_eval_pool_traces.json"
+  },
+  "pooling": "legalai-retrieval-pool-v1 (depth 20, per-system ranks <= 15 pooled, max 25 per query)",
+  "recall_caveat": "pooled recall: relevant chunks are those judged relevant in the frozen pool, not across the corpus",
+  "systems": {
+    "bm25": {
+      "identical_queries": 30,
+      "query_count": 30,
+      "differences": {}
+    },
+    "dense": {
+      "identical_queries": 30,
+      "query_count": 30,
+      "differences": {}
+    },
+    "hybrid": {
+      "identical_queries": 29,
+      "query_count": 30,
+      "differences": {
+        "eval-q005": {
+          "frozen_top5": [
+            "indian_kanoon:31029978:chunk:0024",
+            "indian_kanoon:179828917:chunk:0033",
+            "indian_kanoon:184937779:chunk:0010",
+            "indian_kanoon:31029978:chunk:0001",
+            "indian_kanoon:31029978:chunk:0009"
+          ],
+          "fresh_top5": [
+            "indian_kanoon:31029978:chunk:0024",
+            "indian_kanoon:179828917:chunk:0033",
+            "indian_kanoon:184937779:chunk:0010",
+            "indian_kanoon:31029978:chunk:0001",
+            "indian_kanoon:47759402:chunk:0001"
+          ],
+          "top5_set_equal": false,
+          "first_difference_rank": 5,
+          "changed_chunks": {
+            "indian_kanoon:31029978:chunk:0009": {
+              "frozen": {
+                "hybrid_rank": 5,
+                "hybrid_score": 0.027205882352941177,
+                "dense_rank": 8,
+                "lexical_rank": null
+              },
+              "fresh": {
+                "hybrid_rank": 6,
+                "hybrid_score": 0.027205882352941177,
+                "dense_rank": 8,
+                "lexical_rank": null
+              }
+            },
+            "indian_kanoon:47759402:chunk:0001": {
+              "frozen": {
+                "hybrid_rank": 11,
+                "hybrid_score": 0.015873015873015872,
+                "dense_rank": null,
+                "lexical_rank": 3
+              },
+              "fresh": {
+                "hybrid_rank": 5,
+                "hybrid_score": 0.028373015873015873,
+                "dense_rank": null,
+                "lexical_rank": 3
+              }
+            }
+          }
+        }
+      }
+    },
+    "hybrid_rerank": {
+      "identical_queries": 30,
+      "query_count": 30,
+      "differences": {}
+    }
+  }
+}

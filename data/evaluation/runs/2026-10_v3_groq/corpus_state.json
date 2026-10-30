@@ -1,0 +1,23 @@
+{
+  "bm25": {
+    "documents": 70,
+    "fingerprint": "af2b9ee39ffc4a2a65694111aabcbb523cbe2a267c609cb0c4ffc3a2ea9ae5e5",
+    "records": 1356
+  },
+  "chroma": {
+    "collections": [
+      "legalai_trusted_judgments_v1"
+    ],
+    "documents": 70,
+    "entries": 1356
+  },
+  "collection": "legalai_trusted_judgments_v1",
+  "consistent": true,
+  "database": "legalai",
+  "mismatch_ids": {},
+  "mismatches": {},
+  "postgres": {
+    "chunks": 1356,
+    "documents_with_chunks": 70
+  }
+}

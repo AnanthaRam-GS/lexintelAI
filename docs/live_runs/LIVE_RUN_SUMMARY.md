@@ -211,6 +211,10 @@ The run sent 5 public queries 7 s apart (0-28 s), then 3 professional queries 12
   sustains about 3 answers per minute in total. A UAT with several testers at once needs a higher Groq tier, or
   testers spaced out (owner decision).
 - Step 22: v3 output exceeds its soft length targets in 10 of 13 runs (largest 1,879 of 2,048 tokens, B1).
+- Step 24: Groq's free tier also has a **daily** limit of 200K tokens per model, about 30 answers per model per day.
+  The step 22-24 runs of 2026-10-30 exhausted it during the evaluation run: 429 "tokens per day (TPD)" with retry
+  times of 6-33 minutes, answered `MODEL_BUSY`. Plan live runs and evaluations on separate days, or use a paid tier
+  (`docs/evaluation/EVALUATION_2026-10.md`).
 
 - Professional answers (R1–R3, B1–B5, Q1) are blocked on the Groq Developer tier: the professional JSON exceeds 2,560 output tokens even at low reasoning effort, and prompt plus output must fit in 8,000 tokens. Options: a higher Groq tier, a working Gemini fallback, or a shorter professional output schema (a product decision; not changed here).
 - Gemini `gemini-3.8-flash` has not completed a generation in steps 11b–11d (503 high demand, timeouts). The live fallback check stays deferred.
