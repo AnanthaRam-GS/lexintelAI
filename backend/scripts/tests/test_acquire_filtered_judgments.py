@@ -169,7 +169,10 @@ class AcquireFilteredJudgmentsTest(unittest.TestCase):
     def test_bulk_dry_run_makes_no_provider_or_raw_calls(self) -> None:
         output = io.StringIO()
         plan = acquire.REPO_ROOT / "data/structured/manifests/bulk_acquisition_plan.json"
-        with patch.object(acquire, "IndianKanoonClient", side_effect=AssertionError("provider reached")):
+        # load_project_env is patched as in the test above: otherwise main() copies the developer's .env into
+        # os.environ, and every later test module in the process sees it (step 23).
+        with patch.object(acquire, "load_project_env"), \
+                patch.object(acquire, "IndianKanoonClient", side_effect=AssertionError("provider reached")):
             with patch.object(acquire, "acquire", side_effect=AssertionError("live acquisition reached")):
                 with redirect_stdout(output):
                     result = acquire.main([

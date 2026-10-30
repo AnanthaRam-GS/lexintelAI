@@ -11,7 +11,7 @@ from backend.app.api.analytics import router as analytics_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.ingest import router as ingest_router
 from backend.app.api.lawyer_verification import router as lawyer_verification_router
-from backend.app.api.query import get_retrieval_service, router as query_router
+from backend.app.api.query import configure_answer_pacing, get_retrieval_service, router as query_router
 from backend.app.api.query_history import router as query_history_router
 from backend.app.core.config import Settings, allowed_origins
 from backend.app.core.errors import (
@@ -24,6 +24,7 @@ from backend.app.core.request_guards import BodySizeLimitMiddleware, OriginCheck
 from backend.app.core.startup_checks import run_startup_security_checks, validate_e2e_fake_providers
 from backend.app.db.session import SessionLocal, check_db_connection
 from backend.app.services.ingestion import reap_stale_jobs
+from backend.app.services.llm_pacing import llm_pacer
 from backend.app.services.ocr import tesseract_status
 from backend.app.services.query_models import model_status, start_warm_up
 
@@ -48,6 +49,11 @@ async def lifespan(_app: FastAPI):
     if settings.legalai_model_warmup:
         # Load the query embedder and reranker in the background; /health reports the progress.
         start_warm_up(get_retrieval_service)
+    try:
+        # Step 23: register the configured answer models' rate-limit buckets so /health shows them from the start.
+        configure_answer_pacing(settings)
+    except Exception as exc:  # never block startup on it; requests register their buckets themselves
+        logger.error("startup answer pacing setup failed: %s", type(exc).__name__)
     yield
 
 
@@ -113,4 +119,11 @@ def health_check() -> dict:
         "models": model_status(),
         # Tesseract OCR for scanned PDFs: available, version, languages (or the reason it is unavailable).
         "ocr": tesseract_status(settings),
+        # Step 23 answer pacing: requests waiting for model capacity, the estimated wait of the last one, and each
+        # paced model's available tokens (services/llm_pacing.py). Counts only.
+        "llm_queue": {
+            "enabled": settings.legalai_llm_pacing_enabled,
+            "max_wait_seconds": settings.legalai_llm_queue_max_wait_seconds,
+            **llm_pacer.status(),
+        },
     }

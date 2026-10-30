@@ -239,7 +239,7 @@ class ErrorMappingTests(unittest.TestCase):
 
     def test_codes_and_fallback_semantics(self) -> None:
         cases = [
-            (http_error(429, {"error": {"message": "slow down"}}), "NVIDIA_RATE_LIMIT", True, 2),
+            (http_error(429, {"error": {"message": "slow down"}}), "NVIDIA_RATE_LIMIT", True, 1),  # step 23: chain waits
             (http_error(401, {"error": {"message": "bad key"}}), "NVIDIA_AUTH_ERROR", True, 1),
             (http_error(403, "forbidden"), "NVIDIA_AUTH_ERROR", True, 1),
             (http_error(404, {"detail": "model not found"}), "NVIDIA_HTTP_ERROR", True, 1),

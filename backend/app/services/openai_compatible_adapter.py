@@ -48,6 +48,7 @@ from backend.app.services.legal_answer_generation import (
     ModelUnavailableError,
     elapsed_ms,
 )
+from backend.app.services.llm_pacing import llm_pacer, retry_after_seconds
 from backend.app.services.provider_diagnostics import log_provider_http_error, sanitize_provider_message
 from backend.app.services.token_budget import estimate_tokens
 
@@ -89,6 +90,8 @@ class ProviderProfile:
     public_model: str = ""
     # Model-ID prefixes that accept reasoning_options; empty sends them to every model.
     reasoning_models: tuple[str, ...] = ()
+    # The account whose rate limits apply (step 23 pacing); empty means the profile name. groq_backup shares Groq's.
+    rate_limit_account: str = ""
 
     def model_for(self, mode: AnswerMode) -> str:
         return self.public_model if mode == AnswerMode.PUBLIC and self.public_model else self.model
@@ -153,6 +156,7 @@ def provider_profile(settings: Any, name: str) -> ProviderProfile:
         # GROQ_BACKUP_PUBLIC_MODEL mirrors GROQ_PUBLIC_MODEL routing: each mode falls back to the other model.
         model = settings.groq_backup_model
         return ProviderProfile(
+            rate_limit_account="groq",
             public_model=settings.groq_backup_public_model,
             name="groq_backup",
             base_url=settings.groq_base_url,
@@ -201,6 +205,14 @@ class OpenAICompatibleAnswerAdapter:
     @property
     def configured_model_id(self) -> str:
         return self.profile.model
+
+    def rate_limit_key(self, mode: AnswerMode) -> tuple[str, str]:
+        """The pacing bucket (step 23): (rate-limit account, model for this mode)."""
+        return (self.profile.rate_limit_account or self.profile.name, self.profile.model_for(mode))
+
+    @property
+    def max_output_tokens(self) -> int:
+        return self.profile.max_output_tokens
 
     def generate_structured_answer(self, prompt: str, *, schema: type[BaseModel], mode: AnswerMode) -> LegalAnswerModelResponse:
         profile = self.profile
@@ -308,22 +320,28 @@ class OpenAICompatibleAnswerAdapter:
             profile.base_url.rstrip("/") + "/chat/completions", data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST"
         )
         prefix = profile.error_prefix
+        key = (profile.rate_limit_account or profile.name, str(payload.get("model") or ""))
         try:
             with self._urlopen(request, timeout=profile.timeout_seconds) as response:
+                llm_pacer.observe(key, dict(getattr(response, "headers", None) or {}))
                 if payload.get("stream"):
                     return assemble_stream(response, deadline_seconds=profile.stream_deadline_seconds)
                 return json.loads(response.read().decode("utf-8"))
         except (TimeoutError, socket.timeout) as exc:
             raise ModelProviderError(f"{prefix}_TIMEOUT", f"{profile.name} request timed out.") from exc
         except urllib.error.HTTPError as exc:
+            headers = dict(getattr(exc, "headers", None) or {})
+            llm_pacer.observe(key, headers)
             provider_code, provider_message = sanitized_error(exc, profile.name)
-            raise ModelProviderError(
+            error = ModelProviderError(
                 http_error_code(exc.code, prefix),
                 f"{profile.name} request failed with HTTP {exc.code}: {provider_message}",
                 http_status=exc.code,
                 provider_code=provider_code,
                 provider_message=provider_message,
-            ) from exc
+            )
+            error.retry_after_seconds = retry_after_seconds(headers) if exc.code == 429 else None
+            raise error from exc
         except urllib.error.URLError as exc:
             reason = exc.reason.__class__.__name__ if hasattr(exc, "reason") else "URLError"
             if isinstance(getattr(exc, "reason", None), (TimeoutError, socket.timeout)):
@@ -423,7 +441,8 @@ def status_label(exc: ModelProviderError) -> str:
 
 
 def is_retryable(exc: ModelProviderError, profile: ProviderProfile) -> bool:
-    if exc.http_status in {429, 502, 503, 504}:
+    # A 429 is left to the provider chain (step 23): fallback or a wait for retry-after, never a quick retry.
+    if exc.http_status in {502, 503, 504}:
         return True
     if exc.http_status is not None:
         return False

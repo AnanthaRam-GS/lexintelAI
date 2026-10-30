@@ -71,7 +71,7 @@ from backend.app.services.local_document_map import (
     render_local_document_map,
 )
 from backend.app.services.groq_answer_adapter import GroqAnswerAdapter, groq_payload_schema
-from backend.app.services.llm_provider_chain import build_answer_adapter
+from backend.app.services.llm_provider_chain import GenerationQueueTimeout, build_answer_adapter, configure_pacing
 from backend.app.services.openai_compatible_adapter import PROFILE_NAMES, OpenAICompatibleAnswerAdapter, provider_profile
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
@@ -178,6 +178,14 @@ ANSWER_ADAPTER_FACTORIES = {
     # Step 21: OpenAI-compatible profiles (nvidia, ollama, and the disabled deepseek / openrouter).
     **{name: (lambda settings, name=name: OpenAICompatibleAnswerAdapter(settings, name)) for name in PROFILE_NAMES},
 }
+
+
+def configure_answer_pacing(settings: Settings) -> None:
+    """Register the rate-limit buckets of the configured primary and fallback models (step 23; /health shows them)."""
+    if not settings.legalai_llm_pacing_enabled:
+        return
+    names = {settings.legalai_llm_provider.strip().lower(), (settings.legalai_llm_fallback_provider or "").strip().lower()}
+    configure_pacing(settings, [ANSWER_ADAPTER_FACTORIES[name](settings) for name in names if name in ANSWER_ADAPTER_FACTORIES])
 
 
 def get_answer_adapter(settings: Settings = Depends(get_settings)):
@@ -879,7 +887,10 @@ def _attempt_generation(
     add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
     timed_adapter = TimedAdapter(adapter) if adapter is not None else None
     max_generations, wait_seconds = generation_limit or (0, 0.0)
-    with generation_slots.slot(max_generations, wait_seconds) if generation_limit else nullcontext(True) as acquired:
+    # Step 23: a paced chain queues for model capacity first and takes the generation slot itself afterwards, so a
+    # queued request holds no slot (llm_provider_chain.py).
+    own_slot = generation_limit is not None and not getattr(adapter, "manages_generation_slot", False)
+    with generation_slots.slot(max_generations, wait_seconds) if own_slot else nullcontext(True) as acquired:
         if not acquired:
             raise QueryExecutionError(
                 "MODEL_BUSY",
@@ -888,7 +899,16 @@ def _attempt_generation(
                 retry_after=MODEL_BUSY_RETRY_AFTER_SECONDS,
             )
         stage_started = perf_counter()
-        result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+        try:
+            result = generate_legal_answer(understanding, generation_retrieval, mode=mode, adapter=timed_adapter, prompt=prompt_text)
+        except GenerationQueueTimeout as exc:
+            logger.warning("llm_queue_timeout waited_s=%.1f retry_after_s=%d", exc.waited_seconds, exc.retry_after_seconds)
+            raise QueryExecutionError(
+                "MODEL_BUSY",
+                "Many people are asking questions right now. Please try again in a moment.",
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                retry_after=exc.retry_after_seconds,
+            ) from exc
     if result.model_metadata is not None:
         result.model_metadata.prompt_version = prompt_version
         result.model_metadata.evidence_items_trimmed = trimmed
@@ -1017,6 +1037,11 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         "reasoning_tokens": metadata.reasoning_tokens,
         "output_tokens": metadata.completion_tokens,
         "evidence_items_trimmed": metadata.evidence_items_trimmed,
+        # Step 23 pacing: time queued for model capacity, time waiting for a provider's retry-after, and retries.
+        "queue_wait_ms": result.timings.get("queue_wait_ms"),
+        "rate_limit_wait_ms": result.timings.get("rate_limit_wait_ms"),
+        "rate_limit_retries": int(result.timings["rate_limit_retries"]) if "rate_limit_retries" in result.timings else None,
+        "retry_reasons": list(metadata.retry_reasons),
     }
 
 
@@ -1284,7 +1309,8 @@ def history_payload(payload: dict[str, Any], result: LegalAnswerResult) -> dict[
     payload = {**payload, "debug": None}
     payload["generation"] = {
         key: backend.get(key)
-        for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used", "reasoning_tokens", "evidence_items_trimmed")
+        for key in ("provider", "model", "prompt_version", "finish_reason", "fallback_used", "reasoning_tokens", "evidence_items_trimmed",
+                    "fallback_reason", "queue_wait_ms", "rate_limit_wait_ms", "rate_limit_retries")
     }
     return payload
 

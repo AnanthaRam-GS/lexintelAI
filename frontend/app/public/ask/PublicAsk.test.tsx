@@ -450,13 +450,23 @@ describe('PublicAsk', () => {
     expect(requestSignal?.aborted).toBe(false);
 
     expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeInTheDocument();
-    await act(async () => vi.advanceTimersByTimeAsync(4_000));
+    await act(async () => vi.advanceTimersByTimeAsync(4_999));
+    expect(screen.getByRole('status', { name: 'Finding a clear answer' })).toBeInTheDocument();
+    expect(screen.queryByText(/High demand/)).not.toBeInTheDocument();
+    // Step 23: past 5 s the answer is shown as queued.
+    await act(async () => vi.advanceTimersByTimeAsync(1));
     expect(
       screen.getByRole('status', { name: 'Still working on your answer' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Still working on your answer…')).toBeInTheDocument();
+    expect(
+      screen.getByText('High demand — your answer is queued and will appear shortly.'),
+    ).toBeInTheDocument();
+    await act(async () => vi.advanceTimersByTimeAsync(24_999));
+    expect(
+      screen.queryByRole('heading', { name: 'Taking longer than expected' }),
+    ).not.toBeInTheDocument();
 
-    await act(async () => vi.advanceTimersByTimeAsync(5_000));
+    await act(async () => vi.advanceTimersByTimeAsync(1));
     expect(
       screen.getByRole('heading', { name: 'Taking longer than expected' }),
     ).toBeInTheDocument();

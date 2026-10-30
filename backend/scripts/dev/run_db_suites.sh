@@ -8,8 +8,10 @@
 # TEST_DATABASE_URL must be set (see docs/TESTING.md); the test bootstrap
 # aborts otherwise. Each module's log is <out_dir>/<module>.log and the
 # summary is <out_dir>/summary.txt. Exit status is non-zero if any module
-# fails.
+# fails. On macOS the run is kept awake (keep_awake.sh): idle sleep, not the tests, made unattended runs slow.
 set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/keep_awake.sh"
+keep_awake "${BASH_SOURCE[0]}" "$@"
 
 if [ "$#" -ne 1 ]; then
   echo "usage: $0 <out_dir>" >&2
@@ -23,6 +25,8 @@ OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 PYTHON="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
 [ -x "$PYTHON" ] || PYTHON="$(command -v python)"  # CI has no .venv
 export PYTHONDONTWRITEBYTECODE=1
+# Step 23: Settings ignore the developer's .env (as in CI, which has none), so local results do not depend on it.
+export LEGALAI_ENV_FILE=none
 
 # The module list is shared with run_nondb_suites.sh.
 MODULES=()

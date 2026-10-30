@@ -79,8 +79,10 @@ Edit `.env` and fill in the values marked `[required]`:
 
 For real answers, also set `GROQ_API_KEY`: Groq serves every answer (step 22). Professional answers use
 `openai/gpt-oss-120b`, public answers `openai/gpt-oss-20b`, and each falls back to the other model (`groq_backup`).
-Prompt v3 keeps answers and briefs inside Groq's 8,000-token per-request limit. On the free tier each model takes
-about one answer per minute (see [docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)). Never commit `.env`. Without
+Prompt v3 keeps answers and briefs inside Groq's 8,000-token per-request limit. On the free tier the two models
+sustain about 3 answers per minute; requests beyond that wait in a pacing queue (up to 90 s, the page says "High
+demand — your answer is queued") and then get `MODEL_BUSY` (step 23, see
+[docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)). Never commit `.env`. Without
 `DATABASE_URL` the backend refuses to start and says so. The full list is in
 [Environment variables](#environment-variables).
 
@@ -250,6 +252,7 @@ sets the same value unless noted.
 | `GROQ_BACKUP_MODEL`, `GROQ_BACKUP_PUBLIC_MODEL` | models of the `groq_backup` fallback for professional and public answers | empty (`.env.example`: 20b, 120b) | with `groq_backup` |
 | `GROQ_MODEL`, `GROQ_BASE_URL`, `GEMINI_MODEL` | provider models and endpoint | example: `openai/gpt-oss-120b`, Groq API, `gemini-3.7-flash` | with that provider |
 | `LEGALAI_LLM_MAX_OUTPUT_TOKENS`, `LEGALAI_GROQ_*`, `LEGALAI_GEMINI_*` | provider limits and tuning | see `.env.example` | no |
+| `LEGALAI_LLM_PACING_ENABLED`, `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS`, `LEGALAI_GROQ_TOKENS_PER_MINUTE`, `LEGALAI_GROQ_REQUESTS_PER_MINUTE` | answer pacing queue for rate-limited models (step 23); `/health` shows `llm_queue` | `true`, `90`, `8000`, `30` | no |
 | `LEGALAI_PRODUCT_MAX_INPUT_TOKENS` and the other `*_TOKENS` / `PRIVATE_PDF_*` budgets | context budgeting ([docs/PRODUCT_CONTEXT_BUDGETING.md](docs/PRODUCT_CONTEXT_BUDGETING.md)) | see `.env.example` | no |
 | `LEGALAI_MODEL_DEVICE` | query embedder and reranker device: `auto`, `cpu`, `mps`, `cuda` | `auto` | no |
 | `LEGALAI_RERANKER_FP16` | reranker half precision on GPU | `true` | no |

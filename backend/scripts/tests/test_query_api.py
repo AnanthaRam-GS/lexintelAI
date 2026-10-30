@@ -778,8 +778,14 @@ class QueryApiTests(unittest.TestCase):
     def test_get_answer_adapter_selects_groq_for_groq_provider(self) -> None:
         settings = Settings(legalai_llm_provider="groq", legalai_llm_fallback_provider="", groq_api_key="key", groq_model="openai/gpt-oss-120b")
         adapter = query_api.get_answer_adapter(settings)
-        self.assertIsInstance(adapter, GroqAnswerAdapter)
+        # Step 23: Groq has known rate limits, so even without a fallback it is served through the pacing chain.
+        self.assertIsInstance(adapter, FallbackAnswerAdapter)
+        self.assertIsInstance(adapter.primary, GroqAnswerAdapter)
+        self.assertIsNone(adapter.fallback)
+        self.assertTrue(adapter.manages_generation_slot)
         self.assertEqual(adapter.configured_model_id, "openai/gpt-oss-120b")
+        unpaced = query_api.get_answer_adapter(settings.model_copy(update={"legalai_llm_pacing_enabled": False}))
+        self.assertIsInstance(unpaced, GroqAnswerAdapter)
 
     def test_get_answer_adapter_chains_groq_primary_to_gemini_fallback(self) -> None:
         settings = Settings(
