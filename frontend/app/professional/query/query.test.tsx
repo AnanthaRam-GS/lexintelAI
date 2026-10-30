@@ -82,7 +82,9 @@ describe('Professional Query Page', () => {
       await act(async () => vi.advanceTimersByTimeAsync(4_999));
       expect(screen.queryByText(/High demand/)).not.toBeInTheDocument();
       await act(async () => vi.advanceTimersByTimeAsync(1));
-      const notice = screen.getByText('High demand — your answer is queued and will appear shortly.');
+      const notice = screen.getByText(
+        'High demand — your answer is queued and will appear shortly.',
+      );
       expect(notice).toHaveAttribute('role', 'status');
       expect(notice).toHaveAttribute('aria-live', 'polite');
 
@@ -92,7 +94,9 @@ describe('Professional Query Page', () => {
       });
       expect(screen.queryByText(/High demand/)).not.toBeInTheDocument();
       expect(screen.getByText('Please slow down')).toBeInTheDocument();
-      expect(screen.getByText(limitMessage(new ApiClientError('busy', 503, 'MODEL_BUSY', 15)) as string)).toBeInTheDocument();
+      expect(
+        screen.getByText(limitMessage(new ApiClientError('busy', 503, 'MODEL_BUSY', 15)) as string),
+      ).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

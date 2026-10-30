@@ -462,7 +462,9 @@ describe('PublicAsk', () => {
       screen.getByText('High demand — your answer is queued and will appear shortly.'),
     ).toBeInTheDocument();
     await act(async () => vi.advanceTimersByTimeAsync(24_999));
-    expect(screen.queryByRole('heading', { name: 'Taking longer than expected' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Taking longer than expected' }),
+    ).not.toBeInTheDocument();
 
     await act(async () => vi.advanceTimersByTimeAsync(1));
     expect(

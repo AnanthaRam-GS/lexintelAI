@@ -17,7 +17,11 @@ export interface QueuedNoticeProps {
   className?: string;
 }
 
-export function QueuedNotice({ active, delayMs = QUEUED_NOTICE_DELAY_MS, className = '' }: QueuedNoticeProps) {
+export function QueuedNotice({
+  active,
+  delayMs = QUEUED_NOTICE_DELAY_MS,
+  className = '',
+}: QueuedNoticeProps) {
   // Mounted only while a request is pending, so each request starts its own delay from zero.
   return active ? <DelayedQueuedNotice className={className} delayMs={delayMs} /> : null;
 }
