@@ -27,6 +27,8 @@ PYTHON="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
 export PYTHONDONTWRITEBYTECODE=1
 # Step 23: Settings ignore the developer's .env (as in CI, which has none), so local results do not depend on it.
 export LEGALAI_ENV_FILE=none
+# Step 24b: daily LLM usage counts stay in memory in tests (never data/runtime/llm_daily_usage.json).
+export LEGALAI_LLM_DAILY_USAGE_FILE=none
 
 # The module list is shared with run_nondb_suites.sh.
 MODULES=()

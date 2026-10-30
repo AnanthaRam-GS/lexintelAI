@@ -67,6 +67,8 @@ data/processed/judgment_chunks/*
 
 # Model / generated runtime artifacts
 *.log
+# Daily LLM usage counts (step 24b, services/llm_daily_quota.py)
+data/runtime/
 
 # Phase 0.4 temporary/debug artifacts
 extraction_output.txt

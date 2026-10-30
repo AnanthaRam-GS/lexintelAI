@@ -17,6 +17,8 @@ export PYTHONDONTWRITEBYTECODE=1
 export APP_ENV="${APP_ENV:-test}"
 # Step 23: Settings ignore the developer's .env (as in CI, which has none), so local results do not depend on it.
 export LEGALAI_ENV_FILE=none
+# Step 24b: daily LLM usage counts stay in memory in tests (never data/runtime/llm_daily_usage.json).
+export LEGALAI_LLM_DAILY_USAGE_FILE=none
 
 DB_MODULES=" $(grep -vE '^[[:space:]]*(#|$)' "$REPO_ROOT/backend/scripts/dev/db_test_modules.txt" | tr '\n' ' ') "
 MODULES=()

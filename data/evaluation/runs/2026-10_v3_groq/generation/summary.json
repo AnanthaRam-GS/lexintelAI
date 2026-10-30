@@ -1,0 +1,372 @@
+{
+ "run": "2026-10_v3_groq",
+ "generated_at": "2026-10-30T16:04:43+00:00",
+ "queries": "legal_answer_eval.json (30 examples, read only)",
+ "provider": "groq",
+ "models": {
+  "professional": "openai/gpt-oss-120b",
+  "public": "openai/gpt-oss-20b",
+  "fallback_provider": "groq_backup",
+  "fallback_models": {
+   "professional": "openai/gpt-oss-20b",
+   "public": "openai/gpt-oss-120b"
+  }
+ },
+ "prompts": {
+  "B_C": "legal_answer_prompt_v3",
+  "A": "legal_answer_prompt_v3_llm_only",
+  "sha256": {
+   "backend/app/services/legal_answer_prompt_v3.py": "475140917aebffaf65a7edf87e15a76e9fbad115b8778de8c76f1cfcf32e2a5f",
+   "backend/app/services/legal_answer_prompt_v3_llm_only.py": "be2dec0f024b28e7f5ad5a58526df144d978d1dbcd8205a6231b7fa57f52cc59"
+  }
+ },
+ "pacing": {
+  "queue_max_wait_s": 90.0,
+  "professional_primary_max_wait_s": 45.0
+ },
+ "unsupported_citation_definition": "structured citations to IDs or cases not in the evidence (A: all) plus free-text case references matching no evidence case name (A: all); text matching is heuristic",
+ "configurations": {
+  "A_llm_only": {
+   "queries": 30,
+   "statuses": {
+    "SUCCESS": 16,
+    "SCHEMA_FAILED": 7,
+    "BUSY": 7
+   },
+   "schema_valid_rate": 0.5333,
+   "truncation_rate": 0.0,
+   "citations_total": 0,
+   "citations_valid": 0,
+   "structural_grounding_rate": null,
+   "answers_with_valid_claim_rate": 0.0,
+   "unsupported_citation_rate": null,
+   "unsupported_references": 0,
+   "references_total": 0,
+   "text_case_references": 0,
+   "out_of_scope_queries": 4,
+   "out_of_scope_no_coverage_rate": 0.0,
+   "in_scope_no_coverage_count": 0,
+   "latency_s_median": 7.38,
+   "latency_s_max": 90.01,
+   "prompt_tokens_total": 18443,
+   "completion_tokens_total": 11132,
+   "reasoning_tokens_total": 675,
+   "fallback_used": 4
+  },
+  "B_dense_rag": {
+   "queries": 30,
+   "statuses": {
+    "SUCCESS": 16,
+    "SCHEMA_FAILED": 4,
+    "PROVIDER_ERROR": 1,
+    "BUSY": 9
+   },
+   "schema_valid_rate": 0.5333,
+   "truncation_rate": 0.0,
+   "citations_total": 42,
+   "citations_valid": 42,
+   "structural_grounding_rate": 1.0,
+   "answers_with_valid_claim_rate": 0.8125,
+   "unsupported_citation_rate": 0.0,
+   "unsupported_references": 0,
+   "references_total": 42,
+   "text_case_references": 0,
+   "out_of_scope_queries": 4,
+   "out_of_scope_no_coverage_rate": 0.25,
+   "in_scope_no_coverage_count": 3,
+   "latency_s_median": 45.28,
+   "latency_s_max": 90.16,
+   "prompt_tokens_total": 82504,
+   "completion_tokens_total": 17706,
+   "reasoning_tokens_total": 2301,
+   "fallback_used": 11
+  },
+  "C_full_legalai": {
+   "queries": 30,
+   "statuses": {
+    "SUCCESS": 14,
+    "BUSY": 9,
+    "PROVIDER_ERROR": 1,
+    "SCHEMA_FAILED": 6
+   },
+   "schema_valid_rate": 0.4667,
+   "truncation_rate": 0.0,
+   "citations_total": 39,
+   "citations_valid": 39,
+   "structural_grounding_rate": 1.0,
+   "answers_with_valid_claim_rate": 0.8571,
+   "unsupported_citation_rate": 0.0244,
+   "unsupported_references": 1,
+   "references_total": 41,
+   "text_case_references": 2,
+   "out_of_scope_queries": 4,
+   "out_of_scope_no_coverage_rate": 0.25,
+   "in_scope_no_coverage_count": 1,
+   "latency_s_median": 41.12,
+   "latency_s_max": 91.26,
+   "prompt_tokens_total": 86216,
+   "completion_tokens_total": 19735,
+   "reasoning_tokens_total": 1147,
+   "fallback_used": 9
+  }
+ },
+ "by_mode": {
+  "public": {
+   "A_llm_only": {
+    "queries": 15,
+    "statuses": {
+     "SUCCESS": 15
+    },
+    "schema_valid_rate": 1.0,
+    "truncation_rate": 0.0,
+    "citations_total": 0,
+    "citations_valid": 0,
+    "structural_grounding_rate": null,
+    "answers_with_valid_claim_rate": 0.0,
+    "unsupported_citation_rate": null,
+    "unsupported_references": 0,
+    "references_total": 0,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.0,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 1.96,
+    "latency_s_max": 7.38,
+    "prompt_tokens_total": 16913,
+    "completion_tokens_total": 9967,
+    "reasoning_tokens_total": 620,
+    "fallback_used": 4
+   },
+   "B_dense_rag": {
+    "queries": 15,
+    "statuses": {
+     "SUCCESS": 15
+    },
+    "schema_valid_rate": 1.0,
+    "truncation_rate": 0.0,
+    "citations_total": 38,
+    "citations_valid": 38,
+    "structural_grounding_rate": 1.0,
+    "answers_with_valid_claim_rate": 0.8,
+    "unsupported_citation_rate": 0.0,
+    "unsupported_references": 0,
+    "references_total": 38,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.5,
+    "in_scope_no_coverage_count": 3,
+    "latency_s_median": 33.25,
+    "latency_s_max": 46.28,
+    "prompt_tokens_total": 60370,
+    "completion_tokens_total": 13422,
+    "reasoning_tokens_total": 2069,
+    "fallback_used": 6
+   },
+   "C_full_legalai": {
+    "queries": 15,
+    "statuses": {
+     "SUCCESS": 13,
+     "BUSY": 1,
+     "PROVIDER_ERROR": 1
+    },
+    "schema_valid_rate": 0.8667,
+    "truncation_rate": 0.0,
+    "citations_total": 39,
+    "citations_valid": 39,
+    "structural_grounding_rate": 1.0,
+    "answers_with_valid_claim_rate": 0.9231,
+    "unsupported_citation_rate": 0.0244,
+    "unsupported_references": 1,
+    "references_total": 41,
+    "text_case_references": 2,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.5,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 25.67,
+    "latency_s_max": 41.12,
+    "prompt_tokens_total": 55037,
+    "completion_tokens_total": 12743,
+    "reasoning_tokens_total": 749,
+    "fallback_used": 3
+   }
+  },
+  "professional": {
+   "A_llm_only": {
+    "queries": 15,
+    "statuses": {
+     "SCHEMA_FAILED": 7,
+     "SUCCESS": 1,
+     "BUSY": 7
+    },
+    "schema_valid_rate": 0.0667,
+    "truncation_rate": 0.0,
+    "citations_total": 0,
+    "citations_valid": 0,
+    "structural_grounding_rate": null,
+    "answers_with_valid_claim_rate": 0.0,
+    "unsupported_citation_rate": null,
+    "unsupported_references": 0,
+    "references_total": 0,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.0,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 47.9,
+    "latency_s_max": 90.01,
+    "prompt_tokens_total": 1530,
+    "completion_tokens_total": 1165,
+    "reasoning_tokens_total": 55,
+    "fallback_used": 0
+   },
+   "B_dense_rag": {
+    "queries": 15,
+    "statuses": {
+     "SCHEMA_FAILED": 4,
+     "SUCCESS": 1,
+     "PROVIDER_ERROR": 1,
+     "BUSY": 9
+    },
+    "schema_valid_rate": 0.0667,
+    "truncation_rate": 0.0,
+    "citations_total": 4,
+    "citations_valid": 4,
+    "structural_grounding_rate": 1.0,
+    "answers_with_valid_claim_rate": 1.0,
+    "unsupported_citation_rate": 0.0,
+    "unsupported_references": 0,
+    "references_total": 4,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.0,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 48.2,
+    "latency_s_max": 90.16,
+    "prompt_tokens_total": 22134,
+    "completion_tokens_total": 4284,
+    "reasoning_tokens_total": 232,
+    "fallback_used": 5
+   },
+   "C_full_legalai": {
+    "queries": 15,
+    "statuses": {
+     "SCHEMA_FAILED": 6,
+     "SUCCESS": 1,
+     "BUSY": 8
+    },
+    "schema_valid_rate": 0.0667,
+    "truncation_rate": 0.0,
+    "citations_total": 0,
+    "citations_valid": 0,
+    "structural_grounding_rate": null,
+    "answers_with_valid_claim_rate": 0.0,
+    "unsupported_citation_rate": null,
+    "unsupported_references": 0,
+    "references_total": 0,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.0,
+    "in_scope_no_coverage_count": 1,
+    "latency_s_median": 90.97,
+    "latency_s_max": 91.26,
+    "prompt_tokens_total": 31179,
+    "completion_tokens_total": 6992,
+    "reasoning_tokens_total": 398,
+    "fallback_used": 6
+   }
+  }
+ },
+ "paired_answered_by_all": {
+  "example_ids": [
+   "ans-q001",
+   "ans-q002",
+   "ans-q003",
+   "ans-q004",
+   "ans-q005",
+   "ans-q006",
+   "ans-q007",
+   "ans-q008",
+   "ans-q009",
+   "ans-q011",
+   "ans-q012",
+   "ans-q013",
+   "ans-q015"
+  ],
+  "configurations": {
+   "A_llm_only": {
+    "queries": 13,
+    "statuses": {
+     "SUCCESS": 13
+    },
+    "schema_valid_rate": 1.0,
+    "truncation_rate": 0.0,
+    "citations_total": 0,
+    "citations_valid": 0,
+    "structural_grounding_rate": null,
+    "answers_with_valid_claim_rate": 0.0,
+    "unsupported_citation_rate": null,
+    "unsupported_references": 0,
+    "references_total": 0,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.0,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 1.67,
+    "latency_s_max": 6.97,
+    "prompt_tokens_total": 14666,
+    "completion_tokens_total": 8599,
+    "reasoning_tokens_total": 490,
+    "fallback_used": 3
+   },
+   "B_dense_rag": {
+    "queries": 13,
+    "statuses": {
+     "SUCCESS": 13
+    },
+    "schema_valid_rate": 1.0,
+    "truncation_rate": 0.0,
+    "citations_total": 36,
+    "citations_valid": 36,
+    "structural_grounding_rate": 1.0,
+    "answers_with_valid_claim_rate": 0.8462,
+    "unsupported_citation_rate": 0.0,
+    "unsupported_references": 0,
+    "references_total": 36,
+    "text_case_references": 0,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.5,
+    "in_scope_no_coverage_count": 2,
+    "latency_s_median": 29.91,
+    "latency_s_max": 46.28,
+    "prompt_tokens_total": 52454,
+    "completion_tokens_total": 12600,
+    "reasoning_tokens_total": 2048,
+    "fallback_used": 6
+   },
+   "C_full_legalai": {
+    "queries": 13,
+    "statuses": {
+     "SUCCESS": 13
+    },
+    "schema_valid_rate": 1.0,
+    "truncation_rate": 0.0,
+    "citations_total": 39,
+    "citations_valid": 39,
+    "structural_grounding_rate": 1.0,
+    "answers_with_valid_claim_rate": 0.9231,
+    "unsupported_citation_rate": 0.0244,
+    "unsupported_references": 1,
+    "references_total": 41,
+    "text_case_references": 2,
+    "out_of_scope_queries": 2,
+    "out_of_scope_no_coverage_rate": 0.5,
+    "in_scope_no_coverage_count": 0,
+    "latency_s_median": 25.67,
+    "latency_s_max": 41.12,
+    "prompt_tokens_total": 55037,
+    "completion_tokens_total": 12743,
+    "reasoning_tokens_total": 749,
+    "fallback_used": 3
+   }
+  }
+ }
+}

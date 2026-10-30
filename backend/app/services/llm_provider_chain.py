@@ -30,6 +30,11 @@ Pacing (step 23, ``services/llm_pacing.py``), for providers with known rate limi
    its queue deadline) and retries once. Never sooner than the provider says.
 4. ``timings`` records ``queue_wait_ms``, ``rate_limit_wait_ms`` and ``rate_limit_retries``; ``retry_reasons`` gains
    ``RATE_LIMIT_RETRY_AFTER`` after such a retry.
+5. Per-mode fallback policy (step 24): a *professional* answer with a fallback configured waits for its primary
+   model only, up to ``LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS`` (45), and only then takes either model (primary
+   still preferred); a primary 429 whose retry time is inside that window is waited out on the primary. *Public*
+   answers keep step 23's immediate fallback. ``timings`` records ``fallback_policy_wait_for_primary`` (1 or 0)
+   and ``primary_wait_ms``; the API shows ``fallback_policy`` (``wait_for_primary`` | ``immediate``).
 
 The answering backend is recorded in ``ModelGenerationMetadata``: ``provider`` is the backend that produced the
 answer, and ``primary_provider``, ``fallback_provider``, ``fallback_used`` and ``fallback_reason`` describe the
@@ -52,6 +57,7 @@ from backend.app.services.legal_answer_generation import (
     ModelProviderError,
     ModelUnavailableError,
 )
+from backend.app.services.llm_daily_quota import DailyCapacityReached, DailyLimits, DailyQuota, daily_quota, is_daily_limit_error
 from backend.app.services.llm_pacing import Key, LLMPacer, ModelLimits, PacingTimeout, llm_pacer
 
 logger = logging.getLogger("legalai.llm_chain")
@@ -60,6 +66,7 @@ PROVIDER_FAILURE_SUFFIXES = ("_AUTH_ERROR", "_RATE_LIMIT", "_TIMEOUT", "_PROVIDE
 PROVIDER_FAILURE_HTTP_STATUSES = {401, 403, 404, 408, 429}
 UNAVAILABLE_CODE = "MODEL_UNAVAILABLE"
 PRIMARY_AT_CAPACITY = "PRIMARY_AT_CAPACITY"
+PRIMARY_DAILY_CAPACITY = "PRIMARY_DAILY_CAPACITY"
 RATE_LIMIT_RETRY = "RATE_LIMIT_RETRY_AFTER"
 # A 429 without retry-after or reset headers: wait for the provider's whole per-minute window.
 DEFAULT_RATE_LIMIT_WAIT_SECONDS = 60.0
@@ -104,6 +111,13 @@ def model_limits(settings: Any, account: str) -> ModelLimits | None:
     return None
 
 
+def daily_limits(settings: Any, account: str) -> DailyLimits | None:
+    """Known daily limits for an account (Groq: LEGALAI_GROQ_TOKENS_PER_DAY / _REQUESTS_PER_DAY)."""
+    if account == "groq":
+        return DailyLimits(int(settings.legalai_groq_tokens_per_day), settings.legalai_groq_requests_per_day)
+    return None
+
+
 def request_tokens(adapter: Any, prompt: str, schema: Any, settings: Any) -> int:
     """Tokens a request asks for: the request-size guard's prompt estimate plus the output limit."""
     from backend.app.services.groq_answer_adapter import groq_payload_schema
@@ -143,8 +157,10 @@ class FallbackAnswerAdapter:
     """Answer adapter that tries ``primary``, then ``fallback`` on a provider failure, paced when ``pacer`` is set."""
 
     def __init__(self, primary: Any, fallback: Any | None, *, primary_name: str, fallback_name: str | None,
-                 settings: Any = None, pacer: LLMPacer | None = None, slots: Any = None, clock=time.monotonic) -> None:
+                 settings: Any = None, pacer: LLMPacer | None = None, slots: Any = None, clock=time.monotonic,
+                 quota: DailyQuota | None = None) -> None:
         self.primary = primary
+        self.quota = quota
         self.fallback = fallback
         self.primary_name = primary_name
         self.fallback_name = fallback_name
@@ -195,19 +211,51 @@ class FallbackAnswerAdapter:
         started = perf_counter()
         began = self.clock()
         deadline = began + float(getattr(self.settings, "legalai_llm_queue_max_wait_seconds", 90.0))
+        primary_deadline = min(deadline, began + float(getattr(self.settings, "legalai_professional_primary_max_wait_seconds", 45.0)))
+        professional = mode == AnswerMode.PROFESSIONAL
+        # Step 24b: professional answers never fall back (gpt-oss-20b failed the professional schema in 10 of its 11
+        # step 24 answers). They wait for the primary up to the primary wait, then MODEL_BUSY.
+        no_professional_fallback = professional and not bool(getattr(self.settings, "legalai_professional_fallback_enabled", False))
+        candidates = [(self.primary_name, self.primary)]
+        if self.fallback is not None and not no_professional_fallback:
+            candidates.append((self.fallback_name, self.fallback))
+        if no_professional_fallback:
+            deadline = primary_deadline
         entries = []
-        for name, adapter in ((self.primary_name, self.primary), (self.fallback_name, self.fallback)):
-            if adapter is None:
-                continue
+        for name, adapter in candidates:
             key, limits = paced_key(adapter, mode, self.settings)
             if key is not None:
                 self.pacer.register(key, limits)
+                if self.quota is not None:
+                    self.quota.configure(key, daily_limits(self.settings, key[0]))
             entries.append(_Entry(name, adapter, key, request_tokens(adapter, prompt, schema, self.settings)))
         stats = {"queue_wait_ms": 0.0, "rate_limit_wait_ms": 0.0, "rate_limit_retries": 0.0}
 
-        entry, waited = self._acquire(entries, deadline, began)
+        # Step 24b daily budgets: a model without room for this request in its last 24 hours is skipped.
+        servable = [e for e in entries if self._daily_ok(e)]
+        if not servable:
+            raise DailyCapacityReached(self._daily_retry_after(entries))
+        reason = PRIMARY_DAILY_CAPACITY if servable[0] is not entries[0] else None
+        # Step 24 per-mode policy (only when the professional fallback is enabled): wait for the primary first.
+        wait_for_primary = professional and len(servable) > 1 and servable[0] is entries[0]
+        stats["fallback_policy_wait_for_primary"] = 1.0 if (professional and len(entries) > 1) else 0.0
+        stats["fallback_policy_no_fallback"] = 1.0 if no_professional_fallback else 0.0
+
+        if wait_for_primary:
+            try:
+                entry, waited = self._acquire(servable[:1], primary_deadline, began)
+            except GenerationQueueTimeout:
+                # The primary stayed at capacity for the whole primary wait: either model may answer now.
+                entry, waited = self._acquire(servable, deadline, began)
+                waited = self.clock() - began
+            stats["primary_wait_ms"] = min(waited, primary_deadline - began) * 1000
+        else:
+            entry, waited = self._acquire(servable, deadline, began)
+            if professional:
+                stats["primary_wait_ms"] = waited * 1000
         stats["queue_wait_ms"] += waited * 1000
-        reason = PRIMARY_AT_CAPACITY if entry is not entries[0] else None
+        if entry is not entries[0] and reason is None:
+            reason = PRIMARY_AT_CAPACITY
         if reason:
             logger.warning("answer provider fallback primary=%s reason=%s fallback=%s", self.primary_name, reason, entry.name)
         failed: list[_Entry] = []
@@ -224,25 +272,37 @@ class FallbackAnswerAdapter:
                     reason = code
                 if is_rate_limit(exc):
                     wait = getattr(exc, "retry_after_seconds", None)
+                    daily = is_daily_limit_error(exc)
+                    if daily and entry.key is not None and self.quota is not None:
+                        # Step 24b: the provider reports its daily limit: nothing more to this model until then.
+                        self.quota.mark_exhausted(entry.key, wait)
                     wait = DEFAULT_RATE_LIMIT_WAIT_SECONDS if wait is None else float(wait)
                     if entry.key is not None:
                         self.pacer.block(entry.key, wait)
-                    other = next((e for e in entries if e is not entry and e not in failed and self._take_now(e)), None)
-                    logger.warning("rate_limit provider=%s model=%s retry_after_s=%.1f immediate_fallback=%s",
-                                   entry.name, entry.key[1] if entry.key else "", wait, other.name if other else "none")
+                    # A primary 429 whose retry time falls inside the primary wait is waited out on the primary (one
+                    # retry) instead of falling back (professional answers).
+                    keep_primary = (professional and entry is entries[0] and not retried and not daily
+                                    and self.clock() + wait <= primary_deadline)
+                    other = None if keep_primary else next(
+                        (e for e in servable if e is not entry and e not in failed and self._daily_ok(e) and self._take_now(e)), None)
+                    logger.warning("rate_limit provider=%s model=%s retry_after_s=%.1f daily=%s immediate_fallback=%s",
+                                   entry.name, entry.key[1] if entry.key else "", wait, daily, other.name if other else "none")
                     if other is not None:
                         entry = other
                         continue
+                    if daily and not any(self._daily_ok(e) for e in servable if e not in failed):
+                        raise DailyCapacityReached(self._daily_retry_after(entries)) from exc
                     if retried or self.clock() + wait > deadline:
                         raise GenerationQueueTimeout(wait, self.clock() - began) from exc
                     retried = True
                     stats["rate_limit_retries"] += 1
                     waiting_since = self.clock()
-                    entry, _ = self._acquire([e for e in entries if e not in failed], deadline, began)
+                    retry_candidates = servable[:1] if keep_primary else [e for e in servable if e not in failed and self._daily_ok(e)]
+                    entry, _ = self._acquire(retry_candidates, deadline, began)
                     stats["rate_limit_wait_ms"] += (self.clock() - waiting_since) * 1000
                     continue
                 failed.append(entry)
-                remaining = [e for e in entries if e not in failed]
+                remaining = [e for e in servable if e not in failed]
                 if not remaining:
                     if len(entries) > 1:
                         logger.error("answer providers failed primary=%s reason=%s fallback=%s reason=%s",
@@ -252,6 +312,10 @@ class FallbackAnswerAdapter:
                 entry, waited = self._acquire(remaining, deadline, began)
                 stats["queue_wait_ms"] += waited * 1000
                 continue
+            if entry.key is not None and self.quota is not None:
+                metadata = response.model_metadata
+                used = metadata.total_tokens or ((metadata.prompt_tokens or 0) + (metadata.completion_tokens or 0))
+                self.quota.record(entry.key, used)
             fallback_used = entry is not entries[0]
             response = self._record(response, started, fallback_used=fallback_used, reason=reason if fallback_used else None,
                                     stats=stats, retried=retried)
@@ -261,6 +325,14 @@ class FallbackAnswerAdapter:
                 int(stats["rate_limit_retries"]), fallback_used, reason if fallback_used else None,
             )
             return response
+
+    def _daily_ok(self, entry: _Entry) -> bool:
+        return entry.key is None or self.quota is None or self.quota.can_serve(entry.key, entry.tokens)
+
+    def _daily_retry_after(self, entries: list[_Entry]) -> float:
+        """Seconds until the earliest of these models has room for this request in its rolling 24-hour window."""
+        waits = [self.quota.seconds_until_fits(e.key, e.tokens) for e in entries if e.key is not None and self.quota is not None]
+        return min(waits) if waits else DEFAULT_RATE_LIMIT_WAIT_SECONDS
 
     def _acquire(self, entries: list[_Entry], deadline: float, began: float) -> tuple[_Entry, float]:
         paced = [entry for entry in entries if entry.key is not None]
@@ -337,6 +409,7 @@ def build_answer_adapter(settings: Any, factories: dict[str, Any]) -> Any | None
     return FallbackAnswerAdapter(
         primary, fallback, primary_name=primary_name, fallback_name=fallback_name, settings=settings,
         pacer=llm_pacer if paced else None, slots=generation_slots if paced else None,
+        quota=daily_quota(settings) if paced else None,
     )
 
 

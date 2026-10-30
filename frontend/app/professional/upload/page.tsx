@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ApiClientError, limitMessage, queryApi } from '../../../lib/api';
+import { ApiClientError, limitMessage, limitTitle, queryApi } from '../../../lib/api';
 import {
   ErrorMessage,
   LoadingSpinner,
@@ -50,7 +50,7 @@ export default function ProfessionalUploadPage() {
     } catch (err) {
       const limited = limitMessage(err);
       if (limited) {
-        setErrorState({ title: 'Please slow down', message: limited });
+        setErrorState({ title: limitTitle(err), message: limited });
         return;
       }
       if (err instanceof ApiClientError && err.status === 429) {

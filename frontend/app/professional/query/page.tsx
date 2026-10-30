@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { limitMessage, queryApi } from '../../../lib/api';
+import { limitMessage, limitTitle, queryApi } from '../../../lib/api';
 import { ErrorMessage, LoadingSpinner, QueuedNotice } from '../../../components/shared';
 import { ProfessionalResultsView } from '../../../components/professional/ProfessionalResultsView';
 import type { ProfessionalQueryResponse } from '../../../lib/types/api';
@@ -53,7 +53,7 @@ export default function ProfessionalQueryPage() {
     } catch (err) {
       const limited = limitMessage(err);
       if (limited) {
-        setErrorState({ title: 'Please slow down', message: limited });
+        setErrorState({ title: limitTitle(err), message: limited });
         return;
       }
       setErrorState({

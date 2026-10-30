@@ -11,6 +11,7 @@ export type PublicAnswerFailure =
   | 'model-quota-exceeded'
   | 'rate-limited'
   | 'model-busy'
+  | 'daily-capacity'
   | 'models-loading'
   | 'ocr-too-many-pages'
   | 'ocr-unavailable';
@@ -75,6 +76,12 @@ export const errorCopy = {
       'model-busy': {
         title: 'LegalAI is busy right now',
         message: 'Many people are asking questions at the moment. Please try again in a minute.',
+      },
+      // Step 24b: the message shows the local time capacity returns (dailyCapacityMessage); this one is the fallback.
+      'daily-capacity': {
+        title: "Today's AI capacity has been reached",
+        message:
+          "Today's AI capacity has been reached — please try again later. Your question is still here.",
       },
       'models-loading': {
         title: 'LegalAI is still starting up',
@@ -195,6 +202,7 @@ export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure
     if (error.code === 'OCR_UNAVAILABLE') return 'ocr-unavailable';
     if (error.code === 'RATE_LIMITED') return 'rate-limited';
     if (error.code === 'MODEL_BUSY') return 'model-busy';
+    if (error.code === 'DAILY_CAPACITY_REACHED') return 'daily-capacity';
     if (error.code === 'MODELS_LOADING') return 'models-loading';
     if (error.code === 'MODEL_PROVIDER_QUOTA_EXCEEDED' || error.status === 429)
       return 'model-quota-exceeded';

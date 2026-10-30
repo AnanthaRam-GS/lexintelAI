@@ -197,7 +197,10 @@ backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
   `answer_parse_and_citation_validation_ms` and `total_ms`;
 - `backend`: provider, model, `fallback_used`, primary, fallback and
   `fallback_reason` (a provider error code, or `PRIMARY_AT_CAPACITY` when the
-  pacing queue gave the request to the fallback model). Since step 23 also
+  pacing queue gave the request to the fallback model; `PRIMARY_DAILY_CAPACITY` when the primary had no daily
+  capacity left). Since step 24 `fallback_policy` (`no_fallback` for professional answers, `immediate` for
+  public ones; `wait_for_primary` only with `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED`) and `primary_wait_ms`.
+  Since step 23 also
   `queue_wait_ms` (time queued for model capacity), `rate_limit_wait_ms` (time
   waiting for a provider's `retry-after`), `rate_limit_retries` and
   `retry_reasons` (`RATE_LIMIT_RETRY_AFTER` after such a retry). The query
@@ -236,6 +239,30 @@ document text. Public responses also gain `debug` (`null` by default).
 - `estimated_wait_seconds`: how long until the last of them would be served, at the models' current refill rates;
 - `models`: each paced model's bucket (`account/model`), with `blocked_seconds` > 0 after a 429 until the
   provider's `retry-after`.
+
+`GET /health` also returns `llm_daily` (steps 24b-24c, daily budgets over a rolling 24-hour window; counts only):
+
+```json
+"llm_daily": {
+  "window": "rolling_24h",
+  "window_seconds": 86400,
+  "models": {
+    "groq/openai/gpt-oss-120b": {"tokens_used": 152340, "tokens_per_day": 200000, "tokens_remaining": 47660,
+                                 "requests_used": 24, "requests_per_day": null, "exhausted_for_seconds": 0,
+                                 "oldest_usage_expires_in_seconds": 41234}
+  }
+}
+```
+
+- `tokens_used` / `requests_used`: provider-reported usage in the **last 24 hours** (each answer is stored with
+  its timestamp and leaves the count 24 hours later), kept across restarts;
+- `tokens_remaining`: `tokens_per_day` minus `tokens_used`;
+- `oldest_usage_expires_in_seconds`: when the oldest usage in the window ages out and frees its tokens (`null` when
+  nothing is used);
+- `exhausted_for_seconds` > 0: the provider reported the model's daily limit, so it is skipped until then.
+
+Step 24c replaced step 24b's per-UTC-day count (`day_utc`, `resets_in_seconds`) with this window, which matches
+Groq's.
 
 The top-level `status` still reflects the database only.
 
@@ -566,7 +593,8 @@ BE-003; `backend/app/core/errors.py`):
 | Code | Status | Meaning | `detail` |
 |---|---|---|---|
 | `RATE_LIMITED` | 429 | Per-IP (public) or per-user (professional) query limit; `Retry-After` set. | `retry_after` (seconds) |
-| `MODEL_BUSY` | 503 | All answer-generation slots busy, or the local models stayed busy past `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (`Retry-After: 15`); or no answer-model capacity within `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS` (step 23; `Retry-After` = the estimated wait). | `retry_after` |
+| `MODEL_BUSY` | 503 | All answer-generation slots busy, or the local models stayed busy past `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` (`Retry-After: 15`); or no answer-model capacity within `LEGALAI_LLM_QUEUE_MAX_WAIT_SECONDS` (step 23; `Retry-After` = the estimated wait); or, for a professional query, gpt-oss-120b stayed at its limit for `LEGALAI_PROFESSIONAL_PRIMARY_MAX_WAIT_SECONDS` (step 24b, no fallback). | `retry_after` |
+| `DAILY_CAPACITY_REACHED` | 503 | Step 24b: no answer model allowed for this request has daily capacity left (`LEGALAI_GROQ_TOKENS_PER_DAY`, or the provider reported its daily limit). `Retry-After` = seconds until enough of the last 24 hours' usage ages out for this request to fit (or the provider's retry time, when it reported the limit). The frontend says "Today's AI capacity has been reached — please try again after <local time>". | `retry_after` |
 | `MODELS_LOADING` | 503 | The local models are still warming up at startup and were not free in time; `Retry-After: 10` (step 18). | `retry_after` |
 | `INVALID_QUERY_REQUEST` | 422 | The question could not be processed. | |
 | `QUERY_PIPELINE_UNAVAILABLE` | 503 | The query pipeline failed unexpectedly. | |
