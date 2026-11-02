@@ -20,25 +20,27 @@ which were unchanged before and after the run. Full method and results: `docs/ev
   - **Public half** (2026-10-30, step 24): `openai/gpt-oss-20b`, falling back at once to `openai/gpt-oss-120b`;
     the step 23 pacing queue (90 s).
   - **Professional half** (2026-10-31, step 24b): `openai/gpt-oss-120b` only, with no fallback. It waits up to
-    45 s for 120b, then `MODEL_BUSY`. The rolling 24-hour daily tracker (step 24c) is on.
+    45 s for 120b, then `MODEL_BUSY`. The rolling 24-hour daily tracker (step 24c) is on. B ans-q029 was
+    re-run on 2026-11-01 (step 24c), the same way.
 - **Calls:**
   - Step 24: 73 provider calls (63 OK, 8 HTTP 429 from Groq's daily token limit, 2 HTTP 400 "json_validate_failed"),
     within that step's budget of 110.
   - Steps 24b-24c: 42 calls (40 OK, 2 HTTP 400), within the approved 45.
+  - Step 24c, B ans-q029: 1 call (OK), within the approved 2.
 - **Full outputs** (answers, citations, evidence text), marked UNREVIEWED, are outside the repository at
   `~/legalai_reviews/eval_runs/2026-10_v3_groq/`:
   - `raw/{A_llm_only,B_dense_rag,C_full_legalai}/`;
   - `human_review/`;
   - the call ledgers;
   - the superseded records, kept and not deleted: `raw_superseded_step24/` (the failed professional records from
-    step 24) and `raw_superseded_step24b_busy/` (the BUSY records that were retried).
+    step 24) and `raw_superseded_step24b_busy/` and `raw_superseded_step24c_busy/` (the BUSY records that were
+    retried).
 
 ## Status
 
 - The retrieval re-run is complete.
-- The generation run is **complete**: all 90 cells have a record, and 83 are schema-valid answers.
-  - The 7 that are not: 2 schema failures, 3 Groq 400s (C ans-q014 from step 24's public half; A ans-q017 and
-    ans-q020) and 2 BUSY (C ans-q010 public; B ans-q029).
-  - B ans-q029 was refused by the daily tracker on retry, so it keeps its BUSY record.
+- The generation run is **complete**: all 90 cells have a record, and 84 are schema-valid answers.
+  - The 6 that are not: 2 schema failures (A ans-q019, B ans-q016), 3 Groq 400s (C ans-q014 from step 24's public
+    half; A ans-q017 and ans-q020) and 1 BUSY (C ans-q010, public).
 - The human-review sheet has been regenerated for the full sample (15 queries x 3 configurations) and is not yet
   filled.

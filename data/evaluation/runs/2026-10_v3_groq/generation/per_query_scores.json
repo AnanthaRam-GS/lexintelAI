@@ -1,6 +1,6 @@
 {
  "run": "2026-10_v3_groq",
- "generated_at": "2026-10-31T17:39:48+00:00",
+ "generated_at": "2026-11-01T17:17:33+00:00",
  "queries": "legal_answer_eval.json (30 examples, read only)",
  "provider": "groq",
  "models": {
@@ -1689,32 +1689,29 @@
    "example_id": "ans-q029",
    "mode": "professional",
    "scores": {
-    "status": "BUSY",
-    "schema_valid": false,
+    "status": "SUCCESS",
+    "schema_valid": true,
     "truncated": false,
     "no_coverage": false,
-    "claims": 0,
-    "citations_total": 0,
-    "citations_valid": 0,
-    "has_valid_claim": false,
+    "claims": 3,
+    "citations_total": 2,
+    "citations_valid": 2,
+    "has_valid_claim": true,
     "unsupported_structured_citations": 0,
     "text_case_references": 0,
     "unsupported_text_case_references": 0,
     "issue_codes": []
    },
-   "model": null,
+   "model": "openai/gpt-oss-120b",
    "fallback_used": false,
-   "latency_s": 45.16,
-   "queue_wait_ms": null,
-   "prompt_tokens": null,
-   "completion_tokens": null,
-   "reasoning_tokens": null,
+   "latency_s": 5.8,
+   "queue_wait_ms": 0.006,
+   "prompt_tokens": 4103,
+   "completion_tokens": 1579,
+   "reasoning_tokens": 459,
    "evidence_chunk_ids": [
     "indian_kanoon:125041151:chunk:0010",
-    "indian_kanoon:125041151:chunk:0005",
-    "indian_kanoon:179828917:chunk:0048",
-    "indian_kanoon:70774666:chunk:0029",
-    "indian_kanoon:77330685:chunk:0028"
+    "indian_kanoon:125041151:chunk:0005"
    ]
   },
   {

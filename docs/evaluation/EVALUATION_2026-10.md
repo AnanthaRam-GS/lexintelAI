@@ -7,9 +7,12 @@ full, UNREVIEWED outputs are outside the repository.
 - **Retrieval:** complete.
 - **Generation:** all 90 cells (30 queries x 3 configurations) have a record.
   - Public half: run on 2026-10-30 (step 24).
-  - Professional half: re-run on 2026-10-31 (step 24b) on gpt-oss-120b only, under the no-fallback policy.
-  - 83 records are schema-valid answers. The other 7: 2 schema failures, 3 Groq "json_validate_failed" 400s and
-    2 BUSY.
+  - Professional half: re-run on 2026-10-31 (step 24b) on gpt-oss-120b only, under the no-fallback policy; the
+    last cell, B ans-q029, on 2026-11-01 (step 24c).
+  - 84 records are schema-valid answers. The other 6 remain as recorded, not retried:
+    - schema failures: A ans-q019, B ans-q016;
+    - Groq "json_validate_failed" 400s: A ans-q017, A ans-q020, C ans-q014;
+    - BUSY: C ans-q010 (public).
 - **Human review:** sheet produced for the full sample, not yet filled.
 
 ## 1. What exists and how it works
@@ -91,50 +94,50 @@ first reproduces the published frozen numbers from the frozen traces.
 
 ### Results
 
-**Paired comparison** (the 23 queries all three configurations answered with a schema-valid answer: 13 public and
-10 professional; the fairest comparison):
+**Paired comparison** (the 24 queries all three configurations answered with a schema-valid answer: 13 public and
+11 professional; the fairest comparison):
 
 | | A, LLM-only | B, dense RAG | C, full LegalAI |
 |---|---:|---:|---:|
-| Citations: valid / total | 0 / 0 | 69 / 69 | 71 / 71 |
+| Citations: valid / total | 0 / 0 | 71 / 71 | 73 / 73 |
 | Structural grounding rate | n/a (no citations) | 1.00 | 1.00 |
-| Answers with ≥1 valid grounded claim | 0.0% | 87.0% (20/23) | **95.7%** (22/23) |
-| Flagged unsupported references / all references | 3 / 3 | 1 / 70 | 3 / 75 |
+| Answers with ≥1 valid grounded claim | 0.0% | 87.5% (21/24) | **95.8%** (23/24) |
+| Flagged unsupported references / all references | 3 / 3 | 1 / 72 | 3 / 77 |
 | …of which are real case names not in the evidence (checked by hand) | 3 | 1 | 2 |
 | Out-of-scope (4): no-coverage answer | 0 / 4 | 2 / 4 | 1 / 4 |
 | In-scope answered "not covered" | 0 | 2 | 0 |
-| Median latency (s, including queue wait) | 3.8 | 33.6 | 29.4 |
+| Median latency (s, including queue wait) | 4.4 | 33.6 | 29.4 |
 
 **By mode** (all 15 queries of each mode; rates of schema-valid answers):
 
 | | A public | B public | C public | A professional | B professional | C professional |
 |---|---:|---:|---:|---:|---:|---:|
-| Schema-valid | 15/15 | 15/15 | 13/15 | 12/15 | 13/15 | **15/15** |
-| Not schema-valid | — | — | 1 BUSY, 1 Groq 400 | 1 schema, 2 Groq 400 | 1 schema, 1 BUSY | — |
-| Valid / total citations | 0 / 0 | 38 / 38 | 39 / 39 | 0 / 0 | 44 / 46 | 46 / 46 |
-| Answers with ≥1 valid grounded claim | 0% | 80.0% | 92.3% | 0% | 92.3% | 93.3% |
-| Flagged unsupported / all references | 0 / 0 | 0 / 38 | 1 / 41 | 4 / 4 | 2 / 48 | 3 / 49 |
+| Schema-valid | 15/15 | 15/15 | 13/15 | 12/15 | 14/15 | **15/15** |
+| Not schema-valid | — | — | 1 BUSY, 1 Groq 400 | 1 schema, 2 Groq 400 | 1 schema | — |
+| Valid / total citations | 0 / 0 | 38 / 38 | 39 / 39 | 0 / 0 | 46 / 48 | 46 / 46 |
+| Answers with ≥1 valid grounded claim | 0% | 80.0% | 92.3% | 0% | 92.9% | 93.3% |
+| Flagged unsupported / all references | 0 / 0 | 0 / 38 | 1 / 41 | 4 / 4 | 2 / 50 | 3 / 49 |
 | Out-of-scope (2): no-coverage answer | 0 / 2 | 1 / 2 | 1 / 2 | 0 / 2 | 1 / 2 | 0 / 2 |
 | In-scope answered "not covered" | 0 | 3 | 0 | 0 | 0 | 1 |
-| Median latency (s) | 2.0 | 33.3 | 25.7 | 16.5 | 38.3 | 43.7 |
+| Median latency (s) | 2.0 | 33.3 | 25.7 | 16.5 | 35.2 | 43.7 |
 
 **All 30 queries:**
 
 | | A | B | C |
 |---|---:|---:|---:|
-| SUCCESS / SCHEMA_FAILED / BUSY / PROVIDER_ERROR | 27 / 1 / 0 / 2 | 28 / 1 / 1 / 0 | 28 / 0 / 1 / 1 |
+| SUCCESS / SCHEMA_FAILED / BUSY / PROVIDER_ERROR | 27 / 1 / 0 / 2 | 29 / 1 / 0 / 0 | 28 / 0 / 1 / 1 |
 | Truncated | 0 | 0 | 0 |
-| Valid / total citations | 0 / 0 | 82 / 84 | 85 / 85 |
-| Answers with ≥1 valid grounded claim (of schema-valid) | 0% | 85.7% | 92.9% |
-| Completion tokens | 22,745 | 33,972 | 33,970 |
-| Answering model (schema-valid answers) | 120b 16, 20b 11 | 120b 19, 20b 9 | 120b 18, 20b 10 |
+| Valid / total citations | 0 / 0 | 84 / 86 | 85 / 85 |
+| Answers with ≥1 valid grounded claim (of schema-valid) | 0% | 86.2% | 92.9% |
+| Completion tokens | 22,745 | 35,551 | 33,970 |
+| Answering model (schema-valid answers) | 120b 16, 20b 11 | 120b 20, 20b 9 | 120b 18, 20b 10 |
 
 All professional answers came from gpt-oss-120b; public answers came from either model under the pacing queue.
 
 **Reading:**
-- **Grounding.** In the paired set, C grounds 95.7% of answers with at least one valid cited claim, against 87.0%
+- **Grounding.** In the paired set, C grounds 95.8% of answers with at least one valid cited claim, against 87.5%
   for B and 0% for A (which has no evidence, by construction). Every structured citation in C passed validation
-  (85/85); B had 2 rejected citations of 84, both in professional answers.
+  (85/85); B had 2 rejected citations of 86, both in professional answers.
 - **Unsupported references are not "lower" in C than in A.**
   - A's references are all unsupported by construction (it has no evidence). In public answers it named no case
     at all, which makes those answers unverifiable rather than better supported. In professional answers it named
@@ -149,7 +152,7 @@ All professional answers came from gpt-oss-120b; public answers came from either
     rejects structured citations to cases outside the evidence, but it does not read the answer text.
 - **Professional answers on 120b only.** With the step 24b policy (no fallback to 20b), the professional schema-valid
   rate rose from 1/15 per configuration (step 24, when 20b answered professional queries as the fallback) to 12-15
-  of 15. B and C together produced 28 schema-valid professional answers from 29 attempts that reached the model
+  of 15. B and C together produced 29 schema-valid professional answers from 30 attempts that reached the model
   (one schema failure, B ans-q016). The 120b failures are in A (one schema failure, two Groq "json_validate_failed"
   400s: the model's JSON was rejected by the provider).
 - **Dense-only retrieval.** B answered three in-scope public questions as "not covered" (two in the paired set),
@@ -157,7 +160,7 @@ All professional answers came from gpt-oss-120b; public answers came from either
 - **Out-of-scope queries.** Only B and C ever say "not covered" (B 2 of 4, C 1 of 4); A answers all out-of-scope
   questions from general knowledge.
 - **Latency.** Medians include the pacing-queue wait (professional: up to 45 s for 120b; C's median professional
-  queue wait in the paired set was 37 s). Model time alone is far shorter.
+  queue wait in the paired set was 36 s). Model time alone is far shorter.
 
 ### How the professional half was completed (steps 24b-24c)
 
@@ -184,10 +187,16 @@ half. The step 22-23 live runs earlier that day had used part of it.
 **Retry of the 5 BUSY cells, spaced 75 s apart.**
 - 4 were answered.
 - The fifth, B ans-q029, was refused by the daily tracker **before sending** (`DAILY_CAPACITY_REACHED`; 120b had
-  used 194,393 of its 200,000 tokens in the window). It keeps its BUSY record from the re-run.
+  used 194,393 of its 200,000 tokens in the window).
 - The retried answers' latencies (76-80 s) include the 75 s spacing.
 
-Step 24b-24c used **42 provider calls** (40 OK, 2 HTTP 400) of the 45 approved, and no daily-limit 429.
+Steps 24b-24c used **42 provider calls** (40 OK, 2 HTTP 400) of the 45 approved, and no daily-limit 429.
+
+**B ans-q029, 2026-11-01 17:17 UTC (step 24c).**
+- Before the call, `llm_daily` showed 176,105 of 200,000 tokens free for 120b (the gate was ≥ 8,000).
+- **1 provider call** (HTTP 200) of the 2 allowed. The answer is schema-valid, with 2 of 2 citations valid and no
+  unsupported references.
+- The BUSY record it replaces is kept outside the repository.
 
 **Capacity lesson.** A day of Groq's free tier allows about 30 answers per model. One three-configuration pass
 over 15 professional queries, about 45 answers on 120b, does not fit in one day.
@@ -225,10 +234,10 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
 
 ## 6. Caveats
 
-- **Sample size:** 30 generation queries, with 23 answered by all three configurations. Differences of a few
-  answers are within noise (one answer in the paired set is 4.3 points).
-- **Two days:** the public half ran on 2026-10-30 and the professional half on 2026-10-31 (the 4 retried cells
-  later that day). Each configuration's queries of one mode ran in the same session, interleaved, so the
+- **Sample size:** 30 generation queries, with 24 answered by all three configurations. Differences of a few
+  answers are within noise (one answer in the paired set is 4.2 points).
+- **Three days:** the public half ran on 2026-10-30, the professional half on 2026-10-31 (the 4 retried cells
+  later that day), and B ans-q029 on 2026-11-01. Each configuration's queries of one mode ran in the same session, interleaved, so the
   comparison between configurations is not affected; the comparison between modes partly is.
 - **Unsupported-reference heuristic:** see the reading above. Flagged counts are upper bounds; the hand-checked
   counts are given beside them.
@@ -258,4 +267,3 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
 
 1. Human review of the 15 x 3 sample, then run `import_human_review.py`.
 2. Collect the about 70 new benchmark queries and labels with the kit, then recompute retrieval metrics on v2.
-3. Optional, on another day: retry B ans-q029 (1 call) for a complete professional row.
