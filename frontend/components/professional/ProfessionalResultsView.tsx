@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CitationCard } from '../CitationCard';
 import { SectionBadge } from '../SectionBadge';
+import { SectionLabelText } from '../SectionLabelText';
 import type { ProfessionalQueryResponse } from '../../lib/types/api';
 
 export interface ProfessionalResultsViewProps {
@@ -26,9 +27,12 @@ export function ProfessionalResultsView({
     ['Parties & Roles', case_brief.parties_and_roles],
     ['Material Facts', case_brief.material_facts],
     ['Chronology', case_brief.chronology],
-    ['Explicit Statutory Provisions', case_brief.statutory_provisions],
     ['Evidence Identified', case_brief.evidence_identified],
   ].filter(([, items]) => Array.isArray(items) && items.length > 0) as [string, string[]][];
+  // Step 25: provisions with their resolved labels; older history entries have only the answer's strings.
+  const provisionReferences = case_brief.statutory_provision_references ?? [];
+  const legacyProvisions =
+    provisionReferences.length === 0 ? (case_brief.statutory_provisions ?? []) : [];
 
   const handleCopyBrief = async () => {
     const textToCopy = `LEGAL BRIEF: ${queryTitle || 'Case Analysis'}
@@ -172,6 +176,32 @@ ${precedents.map((p) => `${p.case_name} (${p.year || 'N/A'}, ${p.court || 'Court
                 {case_brief.summary}
               </p>
             </article>
+
+            {(provisionReferences.length > 0 || legacyProvisions.length > 0) && (
+              <article
+                className="rounded-[var(--radius-standard)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-xs"
+                data-testid="statutory-provisions"
+              >
+                <h4 className="font-display text-base font-bold text-[var(--color-ink)]">
+                  Explicit Statutory Provisions
+                </h4>
+                <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--color-body)]">
+                  {provisionReferences.map((reference, idx) => (
+                    <li key={idx} className="border-l-2 border-[var(--color-border)] pl-3">
+                      <SectionLabelText reference={reference} />
+                    </li>
+                  ))}
+                  {legacyProvisions.map((item, idx) => (
+                    <li
+                      key={`legacy-${idx}`}
+                      className="border-l-2 border-[var(--color-border)] pl-3"
+                    >
+                      <SectionLabelText reference={{ statute: 'Unspecified', section: item }} />
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            )}
 
             {optionalSections.map(([title, items]) => (
               <article

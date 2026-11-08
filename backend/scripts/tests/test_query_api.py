@@ -97,9 +97,27 @@ class QueryApiTests(unittest.TestCase):
                 "explanation": "You may have procedural protections.",
                 "sections": [
                     {
-                        "title": "BNSS section 35",
+                        # Step 25: the model's "BNSS section 35" resolved against the section catalog.
+                        "title": "Section 35 BNSS — Arrest safeguards",
                         "explanation": "Applicability depends on the specific facts and documents.",
                         "link": "https://www.indiacode.nic.in/",
+                        "references": [
+                            {
+                                "statute": "BNSS",
+                                "section": "35",
+                                "confidence": None,
+                                "context": "generated_from_grounded_answer",
+                                "label": {
+                                    "state": "verified",
+                                    "title": "Arrest safeguards",
+                                    "source": "section_catalog",
+                                    "source_key": "BNSS 35",
+                                    "model_label": None,
+                                    "statute_corrected_from": None,
+                                    "note": None,
+                                },
+                            }
+                        ],
                     }
                 ],
                 "sources": [{"title": "Example v State", "link": "https://example.test/judgment"}],
@@ -1513,8 +1531,8 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
                 self.assertFalse(set(brief["evidence_identified"]) & set(brief["material_facts"]))
                 self.assert_references_resolve(brief["evidence_identified"], chunk_texts, name=name, field="evidence_identified")
 
-                # No field is a copy of another.
-                list_fields = [key for key, value in brief.items() if isinstance(value, list)]
+                # No field is a copy of another (text fields; statutory_provision_references holds the provisions' labels).
+                list_fields = [key for key, value in brief.items() if isinstance(value, list) and all(isinstance(item, str) for item in value)]
                 for index, left in enumerate(list_fields):
                     for right in list_fields[index + 1:]:
                         if brief[left] or brief[right]:
@@ -1845,7 +1863,10 @@ class ProfessionalMapperTests(unittest.TestCase):
         self.assertEqual(brief.chronology, professional_brief.chronology(document_map))  # document map, dated
         self.assertEqual(brief.evidence_identified, professional_brief.evidence_identified(document_map))  # document map
         self.assertEqual(brief.procedural_considerations, professional_brief.procedural_considerations(document_map, MOCK_POSTURE))
-        self.assertEqual(brief.statutory_provisions, ["BNSS section 480"])
+        # Step 25: provisions are shown through the label resolver; BNSS 480 has no trusted title (catalog or mapping).
+        self.assertEqual(brief.statutory_provisions, ["Section 480 BNSS (no trusted title)"])
+        self.assertEqual([(r.statute, r.section, r.label.state) for r in brief.statutory_provision_references],
+                         [("BNSS", "480", "unverified")])
         self.assertEqual(brief.key_issues, ["Bail"])
         self.assertEqual(brief.applicable_law, ["Grounded principle"])
         self.assertEqual(brief.precedent_analysis, ["Grounded analysis"])

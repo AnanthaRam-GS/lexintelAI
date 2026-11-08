@@ -78,10 +78,11 @@ Edit `.env` and fill in the values marked `[required]`:
 - `SEED_LAWYER_PASSWORD` and `SEED_ADMIN_PASSWORD`: at least 12 characters each.
 
 For real answers, also set `GROQ_API_KEY`: Groq serves every answer (step 22). Professional answers use
-`openai/gpt-oss-120b`, public answers `openai/gpt-oss-20b`, and each falls back to the other model (`groq_backup`).
-Prompt v3 keeps answers and briefs inside Groq's 8,000-token per-request limit. On the free tier the two models
-sustain about 3 answers per minute; requests beyond that wait in a pacing queue (up to 90 s, the page says "High
-demand — your answer is queued") and then get `MODEL_BUSY` (step 23, see
+`openai/gpt-oss-120b` only: they never fall back to another model and wait up to 45 s for 120b, then get
+`MODEL_BUSY` (step 24b). Public answers use `openai/gpt-oss-20b` and fall back at once to 120b (`groq_backup`) when
+20b is at capacity or fails. Prompt v3 keeps answers and briefs inside Groq's 8,000-token per-request limit. On the
+free tier the two models sustain about 3 answers per minute; requests beyond that wait in a pacing queue (up to 90 s,
+the page says "High demand — your answer is queued") and then get `MODEL_BUSY` (step 23, see
 [docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)). Never commit `.env`. Without
 `DATABASE_URL` the backend refuses to start and says so. The full list is in
 [Environment variables](#environment-variables).
@@ -335,9 +336,11 @@ documents.
 
 ## Known limitations
 
-- **Provider capacity:** answers depend on an external LLM. On a base Groq account, requests are capped near 8,000
-  tokens per minute, so the context budgets are tuned low. Rate limits and outages return a clear error, or fall back
-  to Gemini ([docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)).
+- **Provider capacity:** answers depend on an external LLM. On Groq's free tier each model allows about 8,000 tokens
+  per minute and 200,000 in a rolling 24 hours (about 30 answers per model per day), so the context budgets are tuned
+  low. Requests wait in a pacing queue; past it they get `MODEL_BUSY`, and past the daily budget
+  `DAILY_CAPACITY_REACHED`, each with `Retry-After`. Public answers can fall back to the other Groq model; professional
+  answers never fall back ([docs/LLM_PROVIDER_CONFIGURATION.md](docs/LLM_PROVIDER_CONFIGURATION.md)).
 - **One local inference at a time:** the embedder and reranker are serialised per process. Under load, queries wait,
   then get `503 MODEL_BUSY`.
 - **English-only OCR:** scanned pages are read with Tesseract's English model. Hindi and other scripts are not
@@ -346,6 +349,10 @@ documents.
 - **Unreviewed legal extractions:** the outcome fields, the cited sections and the IPC↔BNS mapping were extracted or
   loaded without legal review, and are marked UNREVIEWED. The NCRB-printed IPC↔BNS pairs have no change type
   (none is printed).
+- **Section labels:** the titles shown for sections an answer names come from the section catalog and the IPC↔BNS
+  mapping, both UNREVIEWED, so they are only as good as those sources. Only 57 of the 370 sections cited in the corpus
+  have a trusted title; other labels are the model's own and are marked "unverified"
+  ([docs/SECTION_LABELS.md](docs/SECTION_LABELS.md)).
 - **Pending scope decisions:** corpus redistribution beyond the team (see above), and any further statute
   correspondence sources (the BPR&D table was not approved).
 

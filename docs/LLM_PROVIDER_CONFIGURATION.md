@@ -32,8 +32,10 @@ Set via `LEGALAI_LLM_PROVIDER`:
 - anything else → a controlled `503 MODEL_PROVIDER_UNAVAILABLE` response.
 
 Since step 22 the chain is **Groq primary, `groq_backup` fallback**, with prompt v3 and per-mode routing:
-professional answers on `openai/gpt-oss-120b`, public answers on `openai/gpt-oss-20b`, and each mode falls back to
-the other model, which has its own rate limits. See "Step 22: prompt v3 and the Groq setup".
+professional answers on `openai/gpt-oss-120b`, public answers on `openai/gpt-oss-20b`. Since step 24b only public
+answers fall back (to 120b, which has its own rate limits); professional answers never fall back and wait for 120b,
+unless `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED=true`. See "Step 22: prompt v3 and the Groq setup" and "Professional
+answers, daily limits and capacity planning".
 
 ### Primary and fallback (step 11)
 

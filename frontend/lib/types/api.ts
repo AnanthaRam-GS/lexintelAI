@@ -28,11 +28,30 @@ export interface EmailVerificationResponse {
   expires_at?: string | null;
 }
 
+/**
+ * How a section's label was resolved against LegalAI's trusted sources (step 25; backend services/section_labels.py).
+ * verified: `title` is the trusted title. corrected_statute: the answer named the wrong statute
+ * (`statute_corrected_from`); `title` is set when a trusted title exists, else `model_label` is the answer's own,
+ * unverified wording. unverified: no trusted title; `model_label` is the answer's wording. conflict: the trusted source
+ * disagrees with itself, so no title is shown. The sources (section catalog, IPC-BNS mapping) are unreviewed.
+ */
+export interface SectionLabel {
+  state: 'verified' | 'corrected_statute' | 'unverified' | 'conflict';
+  title?: string | null;
+  source?: string | null;
+  source_key?: string | null;
+  model_label?: string | null;
+  statute_corrected_from?: string | null;
+  note?: string | null;
+}
+
 export interface SectionReference {
   statute: string;
   section: string;
   confidence?: number | null;
   context?: string | null;
+  /** Present for sections the answer names (step 25). */
+  label?: SectionLabel | null;
 }
 
 export interface ProfessionalPrecedent {
@@ -63,6 +82,8 @@ export interface ProfessionalCaseBrief {
   material_facts?: string[];
   chronology?: string[];
   statutory_provisions?: string[];
+  /** The explicit provisions with their label resolution (step 25); absent in older history entries. */
+  statutory_provision_references?: SectionReference[];
   evidence_identified?: string[];
   applicable_law: string[];
   key_issues: string[];
@@ -88,7 +109,13 @@ export interface ProfessionalQueryResponse {
 
 export interface PublicQueryResponse {
   explanation: string;
-  sections: Array<{ title: string; explanation: string; link: string }>;
+  sections: Array<{
+    title: string;
+    explanation: string;
+    link: string;
+    /** Each section the answer named, with its label resolution (step 25). */
+    references?: SectionReference[];
+  }>;
   sources: Array<{ title: string; link: string }>;
   nextStepGuidance: string;
   /** Caveats about an uploaded document (for example low-confidence OCR); empty for text questions. */

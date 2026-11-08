@@ -169,7 +169,9 @@ for example `[P2, p. 3]`:
 
 | Field | Source |
 |---|---|
-| `summary`, `material_facts`, `statutory_provisions`, `key_issues`, `applicable_law`, `precedent_analysis`, `recommended_research_questions` | the model |
+| `summary`, `material_facts`, `key_issues`, `applicable_law`, `precedent_analysis`, `recommended_research_questions` | the model |
+| `statutory_provisions` | the model's explicit provisions as display text, each label resolved against the trusted sources (step 25, below) |
+| `statutory_provision_references` | the same provisions as section references with their `label` (step 25) |
 | `parties_and_roles` | brief mode: local document-map party detection, `"<Role>: <name> [P#, p. N]"` |
 | `chronology` | brief mode: dated events only, sorted by date, `"<YYYY-MM-DD> - <event>: <sentence> [P#, p. N]"` |
 | `procedural_considerations` | brief mode: procedural stages stated in the document (FIR registration, arrest, investigation, bail, charge sheet filing, framing of charges, trial, appeal, revision, petition/quashing), `"<stage>: <sentence> [P#, p. N]"`; then the model's procedural posture |
@@ -182,6 +184,42 @@ question-focused P# excerpts. Both fill `parties_and_roles`, `chronology`,
 procedural stages and `evidence_identified` from the map. Text queries have
 no document, so those fields are empty: nothing is inferred from the query
 text. No field copies another.
+
+## Section labels (step 25)
+
+The model names provisions with a one-line label of its own ("Section 309(4) BNS – offences relating to suicide
+attempts"), which the citation validator does not check. Every section the model names is now resolved against
+LegalAI's trusted sources before it reaches a response (`services/section_labels.py`, explained in
+`docs/SECTION_LABELS.md`). Optional fields, added without removing any:
+
+- `SectionReference` (`identified_sections[]`, `case_brief.statutory_provision_references[]`, public
+  `sections[].references[]`) has `statute` and `section` read from the model's text (`"BNS"`, `"309(4)"`; `statute`
+  is `"Unspecified"` and `section` the text as written when no section can be read) and a new optional `label`:
+
+  ```json
+  {"statute": "BNS", "section": "309(4)", "confidence": null, "context": "generated_from_grounded_answer",
+   "label": {"state": "verified", "title": "Robbery", "source": "section_catalog", "source_key": "BNS 309",
+             "model_label": null, "statute_corrected_from": null,
+             "note": "The answer's own label for this section did not match the trusted title and is not shown."}}
+  ```
+
+  | `label.state` | Meaning | `title` | `model_label` |
+  |---|---|---|---|
+  | `verified` | a trusted title exists and replaces the model's label | trusted title | null |
+  | `corrected_statute` | the model named the wrong statute of BNS/BNSS or IPC/CrPC; `statute` is corrected and `statute_corrected_from` holds the model's | trusted title of the corrected section, or null | the model's label (unverified) when there is no title |
+  | `unverified` | no trusted title | null | the model's label, shown marked "unverified" |
+  | `conflict` | the trusted source gives different titles for the section | null | null |
+
+  `source` is `section_catalog` or `ipc_bns_mapping` (CYTRAIN rows) and `source_key` the entry used. Both sources are
+  UNREVIEWED.
+- `case_brief.statutory_provisions` stays a list of strings, now display text: `"Section 309(4) BNS — Robbery"`,
+  `"Section 173 BNSS — registration of FIR (statute corrected from BNS; unverified label)"`, `"Section 113B Evidence
+  Act — … (unverified label)"`, `"Section 900 BNS (title not shown: trusted sources disagree)"`.
+  `case_brief.statutory_provision_references` (new) lists the same sections with their labels.
+- Public `sections[].title` is display text in the same form, and `sections[].references` (new) lists the sections
+  of that provision. Fallback sections built from validated citations have `references: []`.
+
+Older query-history entries have no `label`; the frontend shows their provisions as unverified.
 
 Query history keeps the professional response without any item quoted from
 the uploaded document: P#-referenced items are dropped and a limitation

@@ -76,7 +76,7 @@ from backend.app.services.llm_provider_chain import GenerationQueueTimeout, buil
 from backend.app.services.openai_compatible_adapter import PROFILE_NAMES, OpenAICompatibleAnswerAdapter, provider_profile
 from backend.app.services.legal_query_understanding import understand_legal_query
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
-from backend.app.services import professional_brief
+from backend.app.services import professional_brief, section_labels
 from backend.app.services.private_pdf_rag import (
     PrivateChunk,
     build_private_chunks,
@@ -1410,6 +1410,7 @@ def professional_response_from_result(
             parties.append(party)
     limitations = [item.message for item in answer.uncertainties]
     limitations += [item for item in professional_brief.document_limitations(document_map) if item not in limitations]
+    provision_references = section_labels.resolve_provisions(answer.explicit_legal_provisions)
     return ProfessionalQueryResponse(
         identified_sections=section_references(answer.explicit_legal_provisions + answer.potential_additional_provisions),
         precedents=professional_brief.precedents_from_retrieval(
@@ -1420,7 +1421,8 @@ def professional_response_from_result(
             parties_and_roles=parties,
             material_facts=answer.material_facts_from_query,
             chronology=professional_brief.chronology(document_map),
-            statutory_provisions=answer.explicit_legal_provisions,
+            statutory_provisions=[section_labels.display_text(reference) for reference in provision_references],
+            statutory_provision_references=provision_references,
             evidence_identified=professional_brief.evidence_identified(document_map),
             applicable_law=answer.applicable_principles,
             key_issues=answer.legal_issues,
@@ -1438,8 +1440,15 @@ NO_COVERAGE_GUIDANCE = (
 
 
 def public_section(text: str) -> PublicSection:
-    title = text.strip() or "General legal information"
-    return PublicSection(title=title, explanation="Applicability depends on the specific facts and documents.", link="https://www.indiacode.nic.in/")
+    """A provision the answer names, with its label resolved against the trusted sources (step 25)."""
+    references = section_labels.resolve_provision(text)
+    title = "; ".join(section_labels.display_text(reference) for reference in references) or "General legal information"
+    return PublicSection(
+        title=title,
+        explanation="Applicability depends on the specific facts and documents.",
+        link="https://www.indiacode.nic.in/",
+        references=references,
+    )
 
 
 def public_section_from_reference(citation: GroundedCitation) -> PublicSection:
@@ -1470,9 +1479,5 @@ def safe_public_link(value: Any) -> str:
 
 
 def section_references(values: list[str]) -> list[SectionReference]:
-    sections: list[SectionReference] = []
-    for value in values:
-        cleaned = value.strip()
-        if cleaned:
-            sections.append(SectionReference(statute="Unspecified", section=cleaned, context="generated_from_grounded_answer"))
-    return sections
+    """Sections the answer names, each resolved against the trusted sources (services/section_labels.py, step 25)."""
+    return section_labels.resolve_provisions(values)

@@ -54,7 +54,10 @@ class ProfessionalCaseBrief(BaseModel):
     parties_and_roles: list[str] = Field(default_factory=list)
     material_facts: list[str] = Field(default_factory=list)
     chronology: list[str] = Field(default_factory=list)
+    # The answer's explicit provisions as display text: the trusted title when one exists, never an unmarked model
+    # label (step 25). statutory_provision_references carries each section with its label resolution.
     statutory_provisions: list[str] = Field(default_factory=list)
+    statutory_provision_references: list[SectionReference] = Field(default_factory=list)
     evidence_identified: list[str] = Field(default_factory=list)
     applicable_law: list[str]
     key_issues: list[str]
@@ -86,11 +89,16 @@ class PublicTextQueryRequest(BaseModel):
 
 
 class PublicSection(BaseModel):
-    """Public-facing statutory section reference."""
+    """Public-facing statutory section reference.
+
+    For a provision the answer names, ``title`` is display text built from the resolved label (step 25) and
+    ``references`` lists each section with its label resolution; empty for a retrieved-authority fallback section.
+    """
 
     title: str
     explanation: str
     link: str
+    references: list[SectionReference] = Field(default_factory=list)
 
 
 class PublicSource(BaseModel):
