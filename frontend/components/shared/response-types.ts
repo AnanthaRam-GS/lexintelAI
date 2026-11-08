@@ -19,6 +19,10 @@ export interface LegalSection {
   explanation?: string;
   sourceUrl: string;
   confidence?: number;
+  /** Step 25: 'unverified' when the title is the answer's own wording, 'conflict' when no title is shown. */
+  labelMarker?: 'unverified' | 'conflict' | null;
+  /** Step 25: a short note, for example a corrected statute. */
+  labelNote?: string | null;
 }
 
 export interface ResponseCardProps {

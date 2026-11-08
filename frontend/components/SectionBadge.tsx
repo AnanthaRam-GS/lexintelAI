@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { sectionLabelParts, sectionNumberText } from '../lib/section-labels';
 import type { SectionReference } from '../lib/types/api';
+import { SectionLabelText } from './SectionLabelText';
 
 export interface SectionBadgeProps {
   section: SectionReference;
@@ -80,6 +82,9 @@ export function SectionBadge({
 }: SectionBadgeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const style = getStatuteStyle(section.statute);
+  const labelParts = sectionLabelParts(section);
+  // Sections named by the answer show their resolved label; the raw answer text is never shown as the label.
+  const showLabel = Boolean(section.label) || labelParts.marker !== null;
 
   const confidencePct =
     typeof section.confidence === 'number' ? Math.round(section.confidence * 100) : null;
@@ -97,7 +102,9 @@ export function SectionBadge({
           {style.prefix}
         </span>
 
-        <span className="font-semibold text-[var(--color-ink)]">{section.section}</span>
+        <span className="font-semibold text-[var(--color-ink)]">
+          {section.statute === 'Unspecified' ? section.section : sectionNumberText(section.section)}
+        </span>
 
         {confidencePct !== null && (
           <span
@@ -108,7 +115,7 @@ export function SectionBadge({
           </span>
         )}
 
-        {showContext && section.context && variant === 'detailed' && (
+        {showContext && section.context && !showLabel && variant === 'detailed' && (
           <button
             type="button"
             onClick={() => setIsExpanded((prev) => !prev)}
@@ -134,7 +141,13 @@ export function SectionBadge({
         )}
       </div>
 
-      {isExpanded && section.context && (
+      {showLabel && (
+        <div className="border-t border-black/10 px-2.5 py-1.5 text-[0.75rem] leading-snug text-[var(--color-body)]">
+          <SectionLabelText reference={section} showHeading={false} />
+        </div>
+      )}
+
+      {isExpanded && section.context && !showLabel && (
         <div className="border-t border-black/10 px-2.5 py-2 text-[0.75rem] leading-relaxed text-[var(--color-body)]">
           <p className="font-medium text-[var(--color-ink)] mb-0.5">{section.statute}</p>
           <p>{section.context}</p>

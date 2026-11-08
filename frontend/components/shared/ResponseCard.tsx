@@ -1,5 +1,6 @@
 import { useId } from 'react';
 
+import { SECTION_MARKER_COPY } from '../../lib/section-labels';
 import type { Citation, ResponseCardProps } from './response-types';
 
 export type { AnswerContent, Citation, LegalSection, ResponseCardProps } from './response-types';
@@ -243,7 +244,23 @@ function PublicResponse({
               >
                 <h4 className="text-type-body font-semibold text-[var(--color-ink)]">
                   {legalSection.title}
+                  {legalSection.labelMarker ? (
+                    <span
+                      className="ml-2 inline-flex items-center rounded-full border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] px-2 py-0.5 align-middle text-type-label font-semibold text-[var(--color-warning-foreground)]"
+                      data-testid="section-label-marker"
+                    >
+                      {SECTION_MARKER_COPY[legalSection.labelMarker]}
+                    </span>
+                  ) : null}
                 </h4>
+                {legalSection.labelNote ? (
+                  <p
+                    className="text-type-label mt-1 text-[var(--color-muted)]"
+                    data-testid="section-label-note"
+                  >
+                    {legalSection.labelNote}
+                  </p>
+                ) : null}
                 {legalSection.explanation ? (
                   <p className="text-type-body-relaxed mt-1 text-[var(--color-body)]">
                     {legalSection.explanation}
