@@ -75,3 +75,6 @@ extraction_output.txt
 
 # Large raw NCRB source PDFs
 data/raw/ncrb/*.pdf
+
+# Experiment model checkpoints (step E0): never committed
+models/
