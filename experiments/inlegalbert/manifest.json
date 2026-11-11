@@ -310,5 +310,56 @@
     0.978
    ]
   }
+ },
+ "e1_training": {
+  "protocol": "docs/experiments/INLEGALBERT_E1_PROTOCOL.md",
+  "script": "experiments/inlegalbert/train_ner.py",
+  "base_checkpoint": "law-ai/InLegalBERT@b5ecfed8ed6cf9d25a3cb8225a8c52f161f7401a",
+  "data": "InLegalNER@2e32a46e6714424979db8677b39dbc0aa7e308e7 train/dev after leakage exclusion (10,887 / 1,051 items; 11,457 training windows, 717 steps per epoch)",
+  "environment": {
+   "device": "mps",
+   "torch": "2.14.0",
+   "transformers": "5.16.1",
+   "precision": "fp32"
+  },
+  "wall_clock": {
+   "start": "2026-11-11 22:06:07 IST",
+   "end": "2026-11-12 01:35:45 IST",
+   "hours": 3.49,
+   "plan_cap_hours": 3,
+   "plan_stop_at_hours": 4.5,
+   "brief_stop_at_hours": 6
+  },
+  "backend_stopped_during_training": true,
+  "checkpoints_not_committed": {
+   "11": {
+    "local_path": "models/inlegalbert_ner/seed-11",
+    "model_safetensors_sha256": "0dc0a349b8342b15af0dd6c46b1eb590e237c6c716437d6a887d237c1fd1112c",
+    "best_epoch": 5,
+    "best_dev_exact_f1": 0.814231,
+    "train_seconds_total": 3879.7
+   },
+   "22": {
+    "local_path": "models/inlegalbert_ner/seed-22",
+    "model_safetensors_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+    "best_epoch": 4,
+    "best_dev_exact_f1": 0.812038,
+    "train_seconds_total": 4354.2
+   },
+   "33": {
+    "local_path": "models/inlegalbert_ner/seed-33",
+    "model_safetensors_sha256": "9a66fab959aa22e28ce282170cd6ab16def3cb3d70843fffdebbf3e860e3ab5c",
+    "best_epoch": 4,
+    "best_dev_exact_f1": 0.811755,
+    "train_seconds_total": 4327.2
+   }
+  },
+  "runs": "experiments/inlegalbert/runs/seed-<n>.json (curves, per-epoch timings), runs/wallclock.txt",
+  "gold_scoring": {
+   "script": "experiments/inlegalbert/score_gold.py",
+   "scored_once": "2026-11-12",
+   "results": "experiments/inlegalbert/results/e1_results.json",
+   "status": "UNREVIEWED"
+  }
  }
 }
