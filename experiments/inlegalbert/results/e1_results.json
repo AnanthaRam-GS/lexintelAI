@@ -1,0 +1,7169 @@
+{
+ "summary": {
+  "deterministic_f1_recomputed": 0.787879,
+  "deterministic_f1_frozen": 0.787879,
+  "median_seed": 22,
+  "seed_order_by_combined_f1": [
+   11,
+   22,
+   33
+  ],
+  "mean_over_seeds": {
+   "model_alone": {
+    "precision": 0.894918,
+    "recall": 0.445693,
+    "f1": 0.59498
+   },
+   "deterministic": {
+    "precision": 0.855263,
+    "recall": 0.730337,
+    "f1": 0.787879
+   },
+   "combined": {
+    "precision": 0.913262,
+    "recall": 0.906367,
+    "f1": 0.909795
+   }
+  },
+  "verdict_median_seed": {
+   "criteria": {
+    "f1_at_least_0.838": {
+     "value": 0.915254,
+     "pass": true
+    },
+    "paired_improvement_ci_above_zero": {
+     "value": {
+      "mean": 0.1277,
+      "ci95": [
+       0.0664,
+       0.2029
+      ]
+     },
+     "pass": true
+    },
+    "precision_at_least_0.805": {
+     "value": 0.920455,
+     "pass": true
+    },
+    "no_loss_on_brief_types": {
+     "value": {},
+     "pass": true
+    },
+    "no_false_positives_on_no_entity_examples": {
+     "value": 0,
+     "pass": true
+    }
+   },
+   "overall": "PASS"
+  },
+  "verdict_per_seed": {
+   "11": "PASS",
+   "22": "PASS",
+   "33": "PASS"
+  }
+ },
+ "seeds": [
+  {
+   "seed": 11,
+   "systems": {
+    "model_alone": {
+     "overall": {
+      "precision": 0.866667,
+      "recall": 0.438202,
+      "f1": 0.58209,
+      "tp": 39,
+      "fp": 6,
+      "fn": 50
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 6,
+       "precision": 0.5,
+       "recall": 0.75,
+       "f1": 0.6,
+       "tp": 3,
+       "fp": 3,
+       "fn": 1
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 5,
+       "precision": 1.0,
+       "recall": 0.454545,
+       "f1": 0.625,
+       "tp": 5,
+       "fp": 0,
+       "fn": 6
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.8,
+       "recall": 1.0,
+       "f1": 0.888889,
+       "tp": 4,
+       "fp": 1,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 2,
+       "fp": 0,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 14,
+       "precision": 0.928571,
+       "recall": 0.8125,
+       "f1": 0.866667,
+       "tp": 13,
+       "fp": 1,
+       "fn": 3
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 2,
+       "precision": 0.5,
+       "recall": 1.0,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 1,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 9
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      }
+     }
+    },
+    "deterministic": {
+     "overall": {
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "tp": 65,
+      "fp": 11,
+      "fn": 24
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 3
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.636364,
+       "recall": 0.636364,
+       "f1": 0.636364,
+       "tp": 7,
+       "fp": 4,
+       "fn": 4
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.4,
+       "recall": 0.5,
+       "f1": 0.444444,
+       "tp": 2,
+       "fp": 3,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    },
+    "combined": {
+     "overall": {
+      "precision": 0.898876,
+      "recall": 0.898876,
+      "f1": 0.898876,
+      "tp": 80,
+      "fp": 9,
+      "fn": 9
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 0.75,
+       "recall": 0.75,
+       "f1": 0.75,
+       "tp": 3,
+       "fp": 1,
+       "fn": 1
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.909091,
+       "recall": 0.909091,
+       "f1": 0.909091,
+       "tp": 10,
+       "fp": 1,
+       "fn": 1
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.8,
+       "recall": 1.0,
+       "f1": 0.888889,
+       "tp": 4,
+       "fp": 1,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.6,
+       "recall": 0.75,
+       "f1": 0.666667,
+       "tp": 3,
+       "fp": 2,
+       "fn": 1
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    }
+   },
+   "bootstrap": {
+    "f1_ci95": {
+     "model_alone": [
+      0.4681,
+      0.6818
+     ],
+     "deterministic": [
+      0.7,
+      0.8655
+     ],
+     "combined": [
+      0.8409,
+      0.9512
+     ]
+    },
+    "paired_combined_minus_deterministic": {
+     "mean": 0.1116,
+     "ci95": [
+      0.0611,
+      0.1691
+     ]
+    }
+   },
+   "no_entity_examples": {
+    "ids": [
+     "ner-q026",
+     "ner-q036"
+    ],
+    "false_positives": {
+     "model_alone": 0,
+     "deterministic": 0,
+     "combined": 0
+    }
+   },
+   "per_example": [
+    {
+     "example_id": "ner-q001",
+     "gold": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q002",
+     "gold": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q003",
+     "gold": [
+      [
+       3,
+       9,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       46,
+       70,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q004",
+     "gold": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       6,
+       7,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       28,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q005",
+     "gold": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       81,
+       "ORGANIZATION"
+      ],
+      [
+       81,
+       83,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       20,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       81,
+       "ORGANIZATION"
+      ],
+      [
+       81,
+       83,
+       "LOCATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q006",
+     "gold": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       38,
+       69,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q007",
+     "gold": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       25,
+       49,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q008",
+     "gold": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q009",
+     "gold": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q010",
+     "gold": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q011",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q012",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q013",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       21,
+       37,
+       "CASE_CITATION"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       21,
+       37,
+       "CASE_NAME"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q014",
+     "gold": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ],
+      [
+       37,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q015",
+     "gold": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q016",
+     "gold": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q017",
+     "gold": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       19,
+       26,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q018",
+     "gold": [
+      [
+       7,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q019",
+     "gold": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q020",
+     "gold": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q021",
+     "gold": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q022",
+     "gold": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q023",
+     "gold": [
+      [
+       8,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q024",
+     "gold": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q025",
+     "gold": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q026",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    },
+    {
+     "example_id": "ner-q027",
+     "gold": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "model_alone": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "deterministic": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "combined": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q028",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       60,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q029",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       23,
+       33,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q030",
+     "gold": [
+      [
+       18,
+       34,
+       "OFFENCE"
+      ],
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q031",
+     "gold": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q032",
+     "gold": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q033",
+     "gold": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "model_alone": [
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q034",
+     "gold": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       35,
+       38,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q035",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "model_alone": [
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q036",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    }
+   ]
+  },
+  {
+   "seed": 22,
+   "systems": {
+    "model_alone": {
+     "overall": {
+      "precision": 0.911111,
+      "recall": 0.460674,
+      "f1": 0.61194,
+      "tp": 41,
+      "fp": 4,
+      "fn": 48
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 6,
+       "precision": 0.666667,
+       "recall": 1.0,
+       "f1": 0.8,
+       "tp": 4,
+       "fp": 2,
+       "fn": 0
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 5,
+       "precision": 1.0,
+       "recall": 0.454545,
+       "f1": 0.625,
+       "tp": 5,
+       "fp": 0,
+       "fn": 6
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 2,
+       "fp": 0,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 15,
+       "precision": 0.933333,
+       "recall": 0.875,
+       "f1": 0.903226,
+       "tp": 14,
+       "fp": 1,
+       "fn": 2
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 2,
+       "precision": 0.5,
+       "recall": 1.0,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 1,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 9
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      }
+     }
+    },
+    "deterministic": {
+     "overall": {
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "tp": 65,
+      "fp": 11,
+      "fn": 24
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 3
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.636364,
+       "recall": 0.636364,
+       "f1": 0.636364,
+       "tp": 7,
+       "fp": 4,
+       "fn": 4
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.4,
+       "recall": 0.5,
+       "f1": 0.444444,
+       "tp": 2,
+       "fp": 3,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    },
+    "combined": {
+     "overall": {
+      "precision": 0.920455,
+      "recall": 0.910112,
+      "f1": 0.915254,
+      "tp": 81,
+      "fp": 7,
+      "fn": 8
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.909091,
+       "recall": 0.909091,
+       "f1": 0.909091,
+       "tp": 10,
+       "fp": 1,
+       "fn": 1
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.6,
+       "recall": 0.75,
+       "f1": 0.666667,
+       "tp": 3,
+       "fp": 2,
+       "fn": 1
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    }
+   },
+   "bootstrap": {
+    "f1_ci95": {
+     "model_alone": [
+      0.496,
+      0.7125
+     ],
+     "deterministic": [
+      0.7,
+      0.8655
+     ],
+     "combined": [
+      0.8636,
+      0.9609
+     ]
+    },
+    "paired_combined_minus_deterministic": {
+     "mean": 0.1277,
+     "ci95": [
+      0.0664,
+      0.2029
+     ]
+    }
+   },
+   "no_entity_examples": {
+    "ids": [
+     "ner-q026",
+     "ner-q036"
+    ],
+    "false_positives": {
+     "model_alone": 0,
+     "deterministic": 0,
+     "combined": 0
+    }
+   },
+   "per_example": [
+    {
+     "example_id": "ner-q001",
+     "gold": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q002",
+     "gold": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q003",
+     "gold": [
+      [
+       3,
+       9,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       46,
+       70,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q004",
+     "gold": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       34,
+       45,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       28,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q005",
+     "gold": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       20,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q006",
+     "gold": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       38,
+       69,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q007",
+     "gold": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       25,
+       49,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q008",
+     "gold": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q009",
+     "gold": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q010",
+     "gold": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q011",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q012",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       25,
+       41,
+       "CASE_NAME"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q013",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       21,
+       37,
+       "CASE_CITATION"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q014",
+     "gold": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ],
+      [
+       37,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q015",
+     "gold": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q016",
+     "gold": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q017",
+     "gold": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       19,
+       26,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q018",
+     "gold": [
+      [
+       7,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q019",
+     "gold": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q020",
+     "gold": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q021",
+     "gold": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q022",
+     "gold": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q023",
+     "gold": [
+      [
+       8,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q024",
+     "gold": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q025",
+     "gold": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q026",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    },
+    {
+     "example_id": "ner-q027",
+     "gold": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "model_alone": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "deterministic": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "combined": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q028",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       60,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q029",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       23,
+       33,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q030",
+     "gold": [
+      [
+       18,
+       34,
+       "OFFENCE"
+      ],
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q031",
+     "gold": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q032",
+     "gold": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q033",
+     "gold": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "model_alone": [
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q034",
+     "gold": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       44,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q035",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "model_alone": [
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q036",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    }
+   ]
+  },
+  {
+   "seed": 33,
+   "systems": {
+    "model_alone": {
+     "overall": {
+      "precision": 0.906977,
+      "recall": 0.438202,
+      "f1": 0.590909,
+      "tp": 39,
+      "fp": 4,
+      "fn": 50
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 6,
+       "precision": 0.666667,
+       "recall": 1.0,
+       "f1": 0.8,
+       "tp": 4,
+       "fp": 2,
+       "fn": 0
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 5,
+       "precision": 1.0,
+       "recall": 0.454545,
+       "f1": 0.625,
+       "tp": 5,
+       "fp": 0,
+       "fn": 6
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 2,
+       "fp": 0,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 12,
+       "precision": 1.0,
+       "recall": 0.75,
+       "f1": 0.857143,
+       "tp": 12,
+       "fp": 0,
+       "fn": 4
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 3,
+       "precision": 0.333333,
+       "recall": 1.0,
+       "f1": 0.5,
+       "tp": 1,
+       "fp": 2,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 12
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 9
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 2
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      }
+     }
+    },
+    "deterministic": {
+     "overall": {
+      "precision": 0.855263,
+      "recall": 0.730337,
+      "f1": 0.787879,
+      "tp": 65,
+      "fp": 11,
+      "fn": 24
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 3
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.636364,
+       "recall": 0.636364,
+       "f1": 0.636364,
+       "tp": 7,
+       "fp": 4,
+       "fn": 4
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 4
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.4,
+       "recall": 0.5,
+       "f1": 0.444444,
+       "tp": 2,
+       "fp": 3,
+       "fn": 2
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 0,
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": 0.0,
+       "tp": 0,
+       "fp": 0,
+       "fn": 1
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    },
+    "combined": {
+     "overall": {
+      "precision": 0.920455,
+      "recall": 0.910112,
+      "f1": 0.915254,
+      "tp": 81,
+      "fp": 7,
+      "fn": 8
+     },
+     "per_type": {
+      "PERSON": {
+       "gold_support": 3,
+       "predicted": 3,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 3,
+       "fp": 0,
+       "fn": 0
+      },
+      "ORGANIZATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "COURT": {
+       "gold_support": 11,
+       "predicted": 11,
+       "precision": 0.909091,
+       "recall": 0.909091,
+       "f1": 0.909091,
+       "tp": 10,
+       "fp": 1,
+       "fn": 1
+      },
+      "LOCATION": {
+       "gold_support": 4,
+       "predicted": 4,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 4,
+       "fp": 0,
+       "fn": 0
+      },
+      "DATE": {
+       "gold_support": 4,
+       "predicted": 5,
+       "precision": 0.6,
+       "recall": 0.75,
+       "f1": 0.666667,
+       "tp": 3,
+       "fp": 2,
+       "fn": 1
+      },
+      "STATUTE": {
+       "gold_support": 16,
+       "predicted": 16,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 16,
+       "fp": 0,
+       "fn": 0
+      },
+      "SECTION": {
+       "gold_support": 8,
+       "predicted": 8,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 8,
+       "fp": 0,
+       "fn": 0
+      },
+      "CASE_CITATION": {
+       "gold_support": 2,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 0.5,
+       "f1": 0.666667,
+       "tp": 1,
+       "fp": 0,
+       "fn": 1
+      },
+      "CASE_NAME": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      },
+      "LEGAL_PROCEDURE": {
+       "gold_support": 12,
+       "predicted": 11,
+       "precision": 1.0,
+       "recall": 0.916667,
+       "f1": 0.956522,
+       "tp": 11,
+       "fp": 0,
+       "fn": 1
+      },
+      "OFFENCE": {
+       "gold_support": 12,
+       "predicted": 12,
+       "precision": 0.666667,
+       "recall": 0.666667,
+       "f1": 0.666667,
+       "tp": 8,
+       "fp": 4,
+       "fn": 4
+      },
+      "LEGAL_ROLE": {
+       "gold_support": 9,
+       "predicted": 9,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 9,
+       "fp": 0,
+       "fn": 0
+      },
+      "POLICE_STATION": {
+       "gold_support": 2,
+       "predicted": 2,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 2,
+       "fp": 0,
+       "fn": 0
+      },
+      "FIR_NUMBER": {
+       "gold_support": 1,
+       "predicted": 1,
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "tp": 1,
+       "fp": 0,
+       "fn": 0
+      }
+     }
+    }
+   },
+   "bootstrap": {
+    "f1_ci95": {
+     "model_alone": [
+      0.4696,
+      0.6944
+     ],
+     "deterministic": [
+      0.7,
+      0.8655
+     ],
+     "combined": [
+      0.8636,
+      0.9609
+     ]
+    },
+    "paired_combined_minus_deterministic": {
+     "mean": 0.1277,
+     "ci95": [
+      0.0664,
+      0.2029
+     ]
+    }
+   },
+   "no_entity_examples": {
+    "ids": [
+     "ner-q026",
+     "ner-q036"
+    ],
+    "false_positives": {
+     "model_alone": 0,
+     "deterministic": 0,
+     "combined": 0
+    }
+   },
+   "per_example": [
+    {
+     "example_id": "ner-q001",
+     "gold": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       11,
+       "SECTION"
+      ],
+      [
+       12,
+       15,
+       "STATUTE"
+      ],
+      [
+       38,
+       51,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q002",
+     "gold": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       21,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       28,
+       39,
+       "SECTION"
+      ],
+      [
+       40,
+       44,
+       "STATUTE"
+      ],
+      [
+       61,
+       65,
+       "DATE"
+      ],
+      [
+       66,
+       74,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q003",
+     "gold": [
+      [
+       3,
+       9,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       46,
+       70,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       16,
+       27,
+       "SECTION"
+      ],
+      [
+       28,
+       32,
+       "STATUTE"
+      ],
+      [
+       50,
+       70,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q004",
+     "gold": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       34,
+       45,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       28,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       6,
+       9,
+       "STATUTE"
+      ],
+      [
+       34,
+       45,
+       "DATE"
+      ],
+      [
+       52,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q005",
+     "gold": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       20,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       20,
+       "COURT"
+      ],
+      [
+       41,
+       53,
+       "PERSON"
+      ],
+      [
+       62,
+       83,
+       "ORGANIZATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q006",
+     "gold": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       38,
+       69,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       19,
+       "FIR_NUMBER"
+      ],
+      [
+       38,
+       69,
+       "POLICE_STATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q007",
+     "gold": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       25,
+       49,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       25,
+       49,
+       "POLICE_STATION"
+      ],
+      [
+       54,
+       78,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q008",
+     "gold": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       35,
+       "CASE_NAME"
+      ],
+      [
+       45,
+       56,
+       "SECTION"
+      ],
+      [
+       57,
+       60,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q009",
+     "gold": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       11,
+       "LEGAL_ROLE"
+      ],
+      [
+       19,
+       31,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       42,
+       54,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q010",
+     "gold": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       28,
+       37,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       12,
+       22,
+       "OFFENCE"
+      ],
+      [
+       28,
+       37,
+       "LOCATION"
+      ],
+      [
+       42,
+       60,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q011",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       33,
+       42,
+       "LEGAL_ROLE"
+      ],
+      [
+       47,
+       63,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q012",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       25,
+       41,
+       "CASE_NAME"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       25,
+       41,
+       "CASE_CITATION"
+      ],
+      [
+       53,
+       66,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q013",
+     "gold": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       21,
+       37,
+       "CASE_CITATION"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       21,
+       37,
+       "CASE_NAME"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       14,
+       "LEGAL_ROLE"
+      ],
+      [
+       22,
+       26,
+       "DATE"
+      ],
+      [
+       43,
+       58,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q014",
+     "gold": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ],
+      [
+       37,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       3,
+       13,
+       "SECTION"
+      ],
+      [
+       14,
+       22,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q015",
+     "gold": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       17,
+       "COURT"
+      ],
+      [
+       23,
+       33,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       44,
+       53,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q016",
+     "gold": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "LEGAL_ROLE"
+      ],
+      [
+       24,
+       37,
+       "OFFENCE"
+      ],
+      [
+       66,
+       79,
+       "ORGANIZATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q017",
+     "gold": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       19,
+       26,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       15,
+       "COURT"
+      ],
+      [
+       19,
+       26,
+       "LOCATION"
+      ],
+      [
+       36,
+       48,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q018",
+     "gold": [
+      [
+       7,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       18,
+       22,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       16,
+       "DATE"
+      ],
+      [
+       18,
+       22,
+       "STATUTE"
+      ],
+      [
+       47,
+       50,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q019",
+     "gold": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       41,
+       45,
+       "STATUTE"
+      ],
+      [
+       71,
+       84,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q020",
+     "gold": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "STATUTE"
+      ],
+      [
+       36,
+       41,
+       "LEGAL_PROCEDURE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q021",
+     "gold": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       10,
+       "LEGAL_ROLE"
+      ],
+      [
+       17,
+       23,
+       "PERSON"
+      ],
+      [
+       28,
+       33,
+       "PERSON"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q022",
+     "gold": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "model_alone": [
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       32,
+       37,
+       "OFFENCE"
+      ],
+      [
+       57,
+       62,
+       "LOCATION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q023",
+     "gold": [
+      [
+       8,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       0,
+       18,
+       "COURT"
+      ],
+      [
+       36,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q024",
+     "gold": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       10,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       32,
+       46,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q025",
+     "gold": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       17,
+       31,
+       "ORGANIZATION"
+      ],
+      [
+       49,
+       65,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q026",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    },
+    {
+     "example_id": "ner-q027",
+     "gold": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "model_alone": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "deterministic": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ],
+     "combined": [
+      [
+       5,
+       16,
+       "SECTION"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q028",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "model_alone": [
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       60,
+       "COURT"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       43,
+       60,
+       "COURT"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q029",
+     "gold": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       23,
+       33,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "LEGAL_ROLE"
+      ],
+      [
+       39,
+       53,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q030",
+     "gold": [
+      [
+       18,
+       34,
+       "OFFENCE"
+      ],
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [],
+     "deterministic": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       39,
+       58,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q031",
+     "gold": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       13,
+       "STATUTE"
+      ],
+      [
+       37,
+       48,
+       "SECTION"
+      ],
+      [
+       49,
+       52,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q032",
+     "gold": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       57,
+       "OFFENCE"
+      ]
+     ],
+     "model_alone": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ],
+     "combined": [
+      [
+       27,
+       36,
+       "LOCATION"
+      ],
+      [
+       41,
+       46,
+       "OFFENCE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q033",
+     "gold": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "model_alone": [
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       16,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       23,
+       39,
+       "ORGANIZATION"
+      ],
+      [
+       46,
+       53,
+       "LEGAL_ROLE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q034",
+     "gold": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "model_alone": [
+      [
+       35,
+       38,
+       "STATUTE"
+      ]
+     ],
+     "deterministic": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ],
+     "combined": [
+      [
+       2,
+       19,
+       "LEGAL_PROCEDURE"
+      ],
+      [
+       35,
+       38,
+       "STATUTE"
+      ],
+      [
+       43,
+       46,
+       "STATUTE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q035",
+     "gold": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "model_alone": [
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "deterministic": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ],
+     "combined": [
+      [
+       4,
+       18,
+       "COURT"
+      ],
+      [
+       31,
+       43,
+       "DATE"
+      ]
+     ]
+    },
+    {
+     "example_id": "ner-q036",
+     "gold": [],
+     "model_alone": [],
+     "deterministic": [],
+     "combined": []
+    }
+   ]
+  }
+ ]
+}
