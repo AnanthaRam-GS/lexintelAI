@@ -166,8 +166,11 @@ The models go to the Hugging Face cache (`~/.cache/huggingface/hub`). The backen
 To check yours, run `cat ~/.cache/huggingface/hub/models--BAAI--bge-m3/refs/main`. If the upstream `main` has moved
 since, your vectors can differ slightly from the team's.
 
-**Optional: the InLegalBERT NER checkpoint** (only for `LEGALAI_NER_BACKEND=combined`; the default `deterministic`
-needs nothing). It is not in Git and not on the Hub. Rebuild it as described in
+**The InLegalBERT NER checkpoint** (used by the default `LEGALAI_NER_BACKEND=combined`, step E4c; see
+[docs/experiments/INLEGALBERT_DECISION.md](docs/experiments/INLEGALBERT_DECISION.md)). Without it the backend
+runs, but uses the rule-based NER (as with `deterministic`) and `/health` shows `ner.fallback: true`. With it, the
+backend needs about 0.84 GB more memory and about 10 ms more per query for NER (step E3). It is not in Git and not on
+the Hub. Rebuild it as described in
 [docs/experiments/INLEGALBERT_E3_RESULTS.md](docs/experiments/INLEGALBERT_E3_RESULTS.md#reproducing-the-checkpoint)
 (InLegalNER access on the Hub, about 75 minutes on Apple MPS), or copy it from the team's private storage into
 `models/inlegalbert_ner/seed-22/`. The backend checks its SHA-256
@@ -270,7 +273,7 @@ sets the same value unless noted.
 | `LEGALAI_MODEL_WARMUP` | load the models at startup | `true` | no |
 | `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` | wait for the model lock before a 503 | `30` | no |
 | `LEGALAI_QUERY_DEBUG` | timings in query responses (debug only) | `false` | no |
-| `LEGALAI_NER_BACKEND`, `LEGALAI_NER_CHECKPOINT_DIR` | NER backend: `deterministic` (rules) or `combined` (InLegalBERT NER + rules, step E3; needs the checkpoint, see below; with `combined` the brief's Parties & Roles also take the model's parties, step E4, which failed its precision rule, see `docs/experiments/NER_PARTY_ROLES_RESULTS.md`); `/health` shows `ner` | `deterministic`, `models/inlegalbert_ner/seed-22` | no |
+| `LEGALAI_NER_BACKEND`, `LEGALAI_NER_CHECKPOINT_DIR` | NER backend: `combined` (InLegalBERT NER + rules, the default since step E4c; needs the checkpoint, see above, and about +0.84 GB memory; falls back to the rules without it; the brief's Parties & Roles also take the model's parties) or `deterministic` (rules only); `/health` shows `ner` | `combined`, `models/inlegalbert_ner/seed-22` | no |
 | `CHROMA_PERSIST_DIR`, `CHROMA_COLLECTION_NAME` | vector store location | `./chroma_store`, `legalai_trusted_judgments_v1` | no |
 | `EMBEDDING_*`, `BGE_*`, `RERANKER_*`, `RETRIEVAL_TOP_K`, `RERANK_TOP_K` | index-build embedder and retrieval settings | see `.env.example` (`EMBEDDING_DEVICE=cpu`) | no |
 | `JWT_ALGORITHM`, `JWT_EXPIRY_MINUTES`, `AUTH_COOKIE_SAMESITE` | auth tokens and cookie | `HS256`, `60`, `lax` | no |

@@ -258,6 +258,17 @@ document text. Public responses also gain `debug` (`null` by default).
 - `warm_up` (step 18): `loading`, `ready`, `failed`, or `not_started` (warm-up disabled);
 - `inference` (step 18): `{active, waiting}`, the model calls holding and waiting for the process-wide model lock.
 
+`GET /health` also returns `ner` (steps E3 and E4c; no text, no paths):
+- `backend`: the configured `LEGALAI_NER_BACKEND`, `combined` by default (InLegalBERT NER + rules) or `deterministic`;
+- `active`: the NER actually in use, `combined` or `deterministic`;
+- with `deterministic`: `model` is `"not_used"` and nothing else is reported;
+- with `combined`: `model` is the checkpoint state (`status`: `not_loaded`, `loading`, `ready` or `failed`, with
+  `reason`, the device, and load and warm-up times when ready), `calls` counts `combined_calls` and
+  `fallback_calls`, and `fallback` is `true` when the model could not be used. When the checkpoint is missing, has
+  another SHA-256, or fails to load (as in CI), queries use the rule-based NER and never fail;
+  `active` is then `deterministic`.
+- The loaded model adds about 0.84 GB to the backend's memory footprint (step E3).
+
 `GET /health` also returns `llm_queue` (step 23, answer pacing; counts only):
 
 ```json

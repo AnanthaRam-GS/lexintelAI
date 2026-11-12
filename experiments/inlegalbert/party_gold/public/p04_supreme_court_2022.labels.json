@@ -1,11 +1,20 @@
 {
- "doc_id": "p04_supreme_court_2022",
- "source": "public",
- "synthetic": false,
- "text_file": "experiments/inlegalbert/party_gold/public/p04_supreme_court_2022.txt",
- "label_status": "unlabelled",
- "labeller": null,
- "labelled_on": null,
- "parties": [],
- "notes": ""
+  "doc_id": "p04_supreme_court_2022",
+  "source": "public",
+  "synthetic": false,
+  "text_file": "experiments/inlegalbert/party_gold/public/p04_supreme_court_2022.txt",
+  "label_status": "labelled",
+  "labeller": "AI-labelled (Claude, chat assistant; blind to system output; not human-verified)",
+  "labelled_on": "2026-11-12",
+  "parties": [
+    { "name": "Devender Singh", "role": "appellant", "alternative_roles": [] },
+    { "name": "Jagdish Singh", "role": "appellant", "alternative_roles": [] },
+    { "name": "Kunja Devi", "role": "appellant", "alternative_roles": [] },
+    {
+      "name": "State of Uttarakhand",
+      "role": "respondent",
+      "alternative_roles": []
+    }
+  ],
+  "notes": "Appellant Nos. 1-3 are named individually. Bhawan Singh is named only as a parent, with no role. Sushila is the deceased. The complainant (her brother) is unnamed. The appellants were charged and convicted, but the excerpt never uses the word 'accused' for them, so no alternative role is added (unsure: a labeller could reasonably add 'accused')."
 }

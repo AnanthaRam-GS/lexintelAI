@@ -354,8 +354,8 @@ class DetailedEntitiesTests(unittest.TestCase):
     def test_deterministic_has_no_model_entities(self) -> None:
         with patch.dict(os.environ, {"LEGALAI_NER_BACKEND": "deterministic"}):
             result, model = ner_backend.extract_entities_detailed("The accused Ravi Das fled.")
+            plain = ner_backend.extract_entities("The accused Ravi Das fled.")
         self.assertEqual(model, [])
-        plain = ner_backend.extract_entities("The accused Ravi Das fled.")
         self.assertEqual([e.model_dump() for e in result.entities], [e.model_dump() for e in plain.entities])
 
     def test_combined_returns_the_same_entities_and_the_model_types(self) -> None:

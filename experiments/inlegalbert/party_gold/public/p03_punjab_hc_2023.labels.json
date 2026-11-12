@@ -1,11 +1,15 @@
 {
- "doc_id": "p03_punjab_hc_2023",
- "source": "public",
- "synthetic": false,
- "text_file": "experiments/inlegalbert/party_gold/public/p03_punjab_hc_2023.txt",
- "label_status": "unlabelled",
- "labeller": null,
- "labelled_on": null,
- "parties": [],
- "notes": ""
+  "doc_id": "p03_punjab_hc_2023",
+  "source": "public",
+  "synthetic": false,
+  "text_file": "experiments/inlegalbert/party_gold/public/p03_punjab_hc_2023.txt",
+  "label_status": "labelled",
+  "labeller": "AI-labelled (Claude, chat assistant; blind to system output; not human-verified)",
+  "labelled_on": "2026-11-12",
+  "parties": [
+    { "name": "Venus Goyal", "role": "petitioner", "alternative_roles": [] },
+    { "name": "Sourabh Goyal", "role": "petitioner", "alternative_roles": [] },
+    { "name": "State of Punjab", "role": "respondent", "alternative_roles": [] }
+  ],
+  "notes": "Respondent No. 2 is the complainant Bank, but it is never named ('the Bank'), so it is not labelled. M/s Chandigarh Casting Private Limited has no role. Vanita Goyal (mother) and the buyers Pawan Kumar Joshi and Jyoti Joshi are third persons."
 }

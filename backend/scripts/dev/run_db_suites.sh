@@ -29,6 +29,9 @@ export PYTHONDONTWRITEBYTECODE=1
 export LEGALAI_ENV_FILE=none
 # Step 24b: daily LLM usage counts stay in memory in tests (never data/runtime/llm_daily_usage.json).
 export LEGALAI_LLM_DAILY_USAGE_FILE=none
+# Step E4c: the product default is combined (InLegalBERT), which falls back to the rules without the checkpoint, as in
+# CI. Tests run the rules everywhere so a local checkpoint cannot change results; tests of combined set it themselves.
+export LEGALAI_NER_BACKEND=deterministic
 
 # The module list is shared with run_nondb_suites.sh.
 MODULES=()

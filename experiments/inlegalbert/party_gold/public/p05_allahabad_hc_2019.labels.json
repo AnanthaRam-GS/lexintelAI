@@ -1,11 +1,19 @@
 {
- "doc_id": "p05_allahabad_hc_2019",
- "source": "public",
- "synthetic": false,
- "text_file": "experiments/inlegalbert/party_gold/public/p05_allahabad_hc_2019.txt",
- "label_status": "unlabelled",
- "labeller": null,
- "labelled_on": null,
- "parties": [],
- "notes": ""
+  "doc_id": "p05_allahabad_hc_2019",
+  "source": "public",
+  "synthetic": false,
+  "text_file": "experiments/inlegalbert/party_gold/public/p05_allahabad_hc_2019.txt",
+  "label_status": "labelled",
+  "labeller": "AI-labelled (Claude, chat assistant; blind to system output; not human-verified)",
+  "labelled_on": "2026-11-12",
+  "parties": [
+    { "name": "Arun Bhandari", "role": "applicant", "alternative_roles": [] },
+    { "name": "State of U.P.", "role": "respondent", "alternative_roles": [] },
+    {
+      "name": "Raghuvendra Singh",
+      "role": "respondent",
+      "alternative_roles": ["accused"]
+    }
+  ],
+  "notes": "'Opposite Party' maps to respondent. Raghuvendra Singh is 'respondent-2' and 'accused-respondent-2'. Sanjay Gandhi appears only in a cited precedent. The applicant is likely the complainant, but the excerpt never says so."
 }
