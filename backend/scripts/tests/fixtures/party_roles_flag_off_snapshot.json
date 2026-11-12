@@ -1,0 +1,542 @@
+{
+ "f_chargesheet": {
+  "parties_and_roles": [
+   [
+    "accused",
+    "Dev Fakename",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "accused",
+    "Sunil Mockwala",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "complainant",
+    "Asha Testwoman",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Accused: Dev Fakename [P1, pp. 1-2]",
+    "Accused: Sunil Mockwala [P1, pp. 1-2]",
+    "Complainant: Asha Testwoman [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2023-01-10 - FIR registered: FIR No. 0123/2023 dated 10.01.2023. [P1, pp. 1-2]",
+    "2023-01-20 - Arrest: Both accused were arrested on 20.01.2023. [P1, pp. 1-2]",
+    "2023-01-25 - Recovery/seizure: The bank account statements and the original forged agreement were seized under a seizure memo dated 25.01.2023. [P1, pp. 1-2]",
+    "2023-02-02 - Bail: Accused No. 1 was released on bail by the Judicial Magistrate on 02.02.2023. [P1, pp. 1-2]",
+    "2023-03-15 - Dated entry: The questioned signatures were sent to the Forensic Science Laboratory, whose report dated 15.03.2023 states that the signatures on the agreement do not match the specimen signatures of the complainant. [P1, pp. 1-2]",
+    "2023-04-30 - Charge sheet filed: The investigation having been completed, this charge sheet is filed on 30.04.2023 against both accused for offences under Sections 420, 406 and 120B IPC. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Investigation: Details of investigation: [P1, pp. 1-2]",
+    "FIR registration: The FIR was registered on 10.01.2023. [P1, pp. 1-2]",
+    "Arrest: Both accused were arrested on 20.01.2023. [P1, pp. 1-2]",
+    "Bail: Accused No. 1 was released on bail by the Judicial Magistrate on 02.02.2023. [P1, pp. 1-2]",
+    "Investigation: During investigation, the statements of witnesses LW-1 Ramesh Sampleman and LW-2 Geeta Demo were recorded under Section 161 Cr.P.C. [P1, pp. 1-2]",
+    "Investigation; charge sheet filing: The investigation having been completed, this charge sheet is filed on 30.04.2023 against both accused for offences under Sections 420, 406 and 120B IPC. [P1, pp. 1-2]",
+    "Investigation: List of witnesses: LW-1 Ramesh Sampleman; LW-2 Geeta Demo; LW-3 Inspector Kavya Notreal, Investigating Officer. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": [
+    "Documents: The complainant alleges that between June and December 2022 the accused persons induced her to deposit Rs. 4,50,000 in a fictitious investment scheme on the strength of a forged partnership agreement, and later refused... [P1, pp. 1-2]",
+    "Witnesses: During investigation, the statements of witnesses LW-1 Ramesh Sampleman and LW-2 Geeta Demo were recorded under Section 161 Cr.P.C. [P1, pp. 1-2]",
+    "Documents, Recoveries/seizures: The bank account statements and the original forged agreement were seized under a seizure memo dated 25.01.2023. [P1, pp. 1-2]",
+    "Documents, Medical/forensic: The questioned signatures were sent to the Forensic Science Laboratory, whose report dated 15.03.2023 states that the signatures on the agreement do not match the specimen signatures of the complainant. [P1, pp. 1-2]",
+    "Documents, Recoveries/seizures: A rubber stamp used on the agreement was recovered from the office of Accused No. 2. [P1, pp. 1-2]",
+    "Witnesses: List of witnesses: LW-1 Ramesh Sampleman; LW-2 Geeta Demo; LW-3 Inspector Kavya Notreal, Investigating Officer. [P1, pp. 1-2]",
+    "Documents, Medical/forensic, Recoveries/seizures: List of documents: FIR; seizure memo; bank account statements; FSL report. [P1, pp. 1-2]"
+   ]
+  },
+  "brief_fields_sha256": "aa7540b145761ea4f57b6f7333a0adb5e1289ca2a831410e58f322fff11ce36f",
+  "rendered_map_sha256": "5d84e1f53e658d2e62abe15b4a764d23934c13f3cea96927cb3d740012dbf1ff"
+ },
+ "f_fir": {
+  "parties_and_roles": [
+   [
+    "accused",
+    "Ravi Sampleton",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "complainant",
+    "Meera Placeholder",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Accused: Ravi Sampleton [P1, pp. 1-2]",
+    "Complainant: Meera Placeholder [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2024-03-03 - Incident occurred: Date and time of occurrence: 03-03-2024 at about 9:15 PM. [P1, pp. 1-2]",
+    "2024-03-04 - FIR registered: The FIR was registered on 04-03-2024 at 10:30 AM on the basis of the above statement. [P1, pp. 1-2]",
+    "2024-03-04 - Medical examination: The complainant was sent for medical examination to the District Hospital, Fictionalpur, on 04-03-2024. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "FIR registration: The FIR was registered on 04-03-2024 at 10:30 AM on the basis of the above statement. [P1, pp. 1-2]",
+    "Investigation: The investigation was entrusted to Sub-Inspector Arjun Notreal of Police Station Sample Nagar, who visited the place of occurrence and requested the CCTV footage from the shop owner. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": [
+    "Witnesses: My neighbour Kiran Exampleton saw the incident and is an eye-witness. [P1, pp. 1-2]",
+    "Electronic: The shop next to the bus stand has a CCTV camera facing the road. [P1, pp. 1-2]",
+    "Medical/forensic: The complainant was sent for medical examination to the District Hospital, Fictionalpur, on 04-03-2024. [P1, pp. 1-2]",
+    "Electronic: The investigation was entrusted to Sub-Inspector Arjun Notreal of Police Station Sample Nagar, who visited the place of occurrence and requested the CCTV footage from the shop owner. [P1, pp. 1-2]"
+   ]
+  },
+  "brief_fields_sha256": "b9d752459afe6ead91d6021723b3a3f4320d0b965b65d8e4dfb4751b032b45eb",
+  "rendered_map_sha256": "b8d5d78a5df5adc525a1068b15b842ca4cd170723941561612c2c8e510321f15"
+ },
+ "f_judgment": {
+  "parties_and_roles": [
+   [
+    "applicant",
+    "NEELAM @ NEERAJ",
+    "P1",
+    1,
+    1
+   ],
+   [
+    "respondent",
+    "THE STATE OF MADHYA PRADESH",
+    "P1",
+    1,
+    1
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Applicant: NEELAM @ NEERAJ [P1, p. 1]",
+    "Respondent: THE STATE OF MADHYA PRADESH [P1, p. 1]"
+   ],
+   "chronology": [
+    "2013-10-30 - Judgment delivered: This revision petition has been filed by the applicant under Section 397/401 of the Cr.P.C. being aggrieved by the judgment of conviction and order of sentence dated 14.8.2015 passed by Additional Sessions Judge, Bina,... [P1, p. 1]",
+    "2015-08-14 - Order pronounced: This revision petition has been filed by the applicant under Section 397/401 of the Cr.P.C. being aggrieved by the judgment of conviction and order of sentence dated 14.8.2015 passed by Additional Sessions Judge, Bina,... [P1, p. 1]",
+    "2018-10-11 - Dated entry: The applicant is in custody since 11.10.2018. [P1, p. 1]",
+    "2019-02-08 - Dated entry: Jabalpur, Dated : 08-02-2019 Record of both the courts below are received. [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Bail: Today this case is listed for admission and on I.A.No.14/2019 which is an application for suspension of sentence and grant of bail. [P1, p. 1]",
+    "Revision; petition/quashing: With the consent of learned counsel for the parties, this revision petition is finally heard. [P1, p. 1]",
+    "Trial; appeal; revision; petition/quashing: This revision petition has been filed by the applicant under Section 397/401 of the Cr.P.C. being aggrieved by the judgment of conviction and order of sentence dated 14.8.2015 passed by Additional Sessions Judge, Bina,... [P1, p. 1]",
+    "Revision: Consequently, the criminal revision is partly allowed. [P1, p. 1]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "ec98dbb652eb95ea6e350044bbe47cdc7fb7b9d9ed1a4c3a7274591f9f1fbd9a",
+  "rendered_map_sha256": "50bd97b6644016b7c411348c49a341e2051bfda906c00f462b9ec00cab711656"
+ },
+ "f_petition": {
+  "parties_and_roles": [
+   [
+    "respondent",
+    "State of Fictionaland",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "respondent",
+    "Priya Testcase",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "petitioner",
+    "Nikhil Placeholder",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Respondent: Priya Testcase [P1, pp. 1-2]",
+    "Petitioner: Nikhil Placeholder [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2024-01-15 - Dated entry: The petitioner and Respondent No. 2 entered into a written agreement dated 15.01.2024 for the supply of building material. [P1, pp. 1-2]",
+    "2024-01-15 - Dated entry: Annexure P-1: Copy of the agreement dated 15.01.2024. [P1, pp. 1-2]",
+    "2024-05-12 - FIR registered: A commercial dispute arose over payment, and Respondent No. 2 lodged FIR No. 0789/2024 dated 12.05.2024 at Police Station Hilltop under Sections 318(4) and 316(2) BNS. [P1, pp. 1-2]",
+    "2024-05-20 - Bail: The petitioner was granted anticipatory bail by the Sessions Court, Samplepur on 20.05.2024. [P1, pp. 1-2]",
+    "2024-08-01 - Charge sheet filed: The police filed a charge sheet on 01.08.2024 without considering the documents produced by the petitioner. [P1, pp. 1-2]",
+    "2024-09-02 - Petition filed: Filed on 02.09.2024 through counsel. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Petition/quashing: IN THE HIGH COURT OF FICTIONALAND AT SAMPLEPUR CRIMINAL MISCELLANEOUS PETITION No. 0456 of 2024 (Petition under Section 528 of the Bharatiya Nagarik Suraksha Sanhita, 2023) [P1, pp. 1-2]",
+    "Petition/quashing: PETITION FOR QUASHING OF FIR No. 0789/2024 MOST RESPECTFULLY SHOWETH: [P1, pp. 1-2]",
+    "FIR registration: A commercial dispute arose over payment, and Respondent No. 2 lodged FIR No. 0789/2024 dated 12.05.2024 at Police Station Hilltop under Sections 318(4) and 316(2) BNS. [P1, pp. 1-2]",
+    "Bail: The petitioner was granted anticipatory bail by the Sessions Court, Samplepur on 20.05.2024. [P1, pp. 1-2]",
+    "Charge sheet filing: The police filed a charge sheet on 01.08.2024 without considering the documents produced by the petitioner. [P1, pp. 1-2]",
+    "Petition/quashing: It is therefore most respectfully prayed that this Hon'ble Court may be pleased to quash FIR No. 0789/2024 and all proceedings arising from it. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": [
+    "Documents: The petitioner and Respondent No. 2 entered into a written agreement dated 15.01.2024 for the supply of building material. [P1, pp. 1-2]",
+    "Documents: The police filed a charge sheet on 01.08.2024 without considering the documents produced by the petitioner. [P1, pp. 1-2]",
+    "Electronic: The WhatsApp messages exchanged between the parties between February and April 2024 show that payment was only delayed, not refused. [P1, pp. 1-2]",
+    "Documents: Copies of these messages are annexed as Annexure P-3. [P1, pp. 1-2]",
+    "Documents: Annexure P-1: Copy of the agreement dated 15.01.2024. [P1, pp. 1-2]",
+    "Documents: Annexure P-2: Copy of FIR No. 0789/2024. [P1, pp. 1-2]",
+    "Documents, Electronic: Annexure P-3: Copies of the WhatsApp messages. [P1, pp. 1-2]"
+   ]
+  },
+  "brief_fields_sha256": "17f5892c267baf8ed86815067223a231087f0f059a2a68b55f8596a9e15e31e1",
+  "rendered_map_sha256": "0de703ec0c46bf3e5527bf6c62eee73fcf28bffbaa1f133c9deda572d642d55a"
+ },
+ "f_unknown": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2024-07-07 - Dated entry: Notes from a residents' association meeting, Maple Grove Housing Society, Samplepur Date of meeting: 07-07-2024 Present: the secretary and eleven members. [P1, p. 1]"
+   ],
+   "procedural_considerations": [],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "d7cf8976e1b64dbbdb3be62d97cb8204c1be5c20ddb7b9d03e76bf5e9c58f0c0",
+  "rendered_map_sha256": "ae884f618b2d123ddf623ac149bb02661b3ac629459cb2260fd10a66580f0576"
+ },
+ "s01_fir_multi_accused": {
+  "parties_and_roles": [
+   [
+    "informant",
+    "Lakshmi Varadkar",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Informant: Lakshmi Varadkar [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2024-06-10 - Incident occurred: Occurrence: 10-06-2024 at about 8:30 PM, near the weekly market, Mocknagar. [P1, pp. 1-2]",
+    "2024-06-11 - Dated entry: Date: 11-06-2024. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Investigation: Action taken: the case was registered and the investigation was handed over to Sub-Inspector Arvind Nagre. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "47fbe1136c610be50c8c7df3bc6ccbb2bd5f99db78a27960e7523d9a40f070a7",
+  "rendered_map_sha256": "f89a0ab5abf74041340c2cfd3e89c8b96626a0e85ba47c3a803f20965e271c95"
+ },
+ "s02_fir_org_complainant": {
+  "parties_and_roles": [
+   [
+    "complainant",
+    "Samplepur Urban Co-operative Bank Ltd",
+    "P1",
+    1,
+    2
+   ],
+   [
+    "informant",
+    "Nitin Deshmane",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Complainant: Samplepur Urban Co-operative Bank Ltd [P1, pp. 1-2]",
+    "Informant: Nitin Deshmane [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2024-01-15 - Dated entry: When the bank's inspection team, including clerk Anjali Kurhade, visited the godown on 15.01.2024, it was found empty. [P1, pp. 1-2]",
+    "2024-02-02 - FIR registered: FIR No. 0058/2024 dated 02.02.2024. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "2d2a7544fada179f724873f624bd008bf8a139aee3aca4fcb6b63809fcfab480",
+  "rendered_map_sha256": "2e62b248dbdb65fb9a5cd9ced608a5ed2baeef75ec3939a7b9160eef3706cbbd"
+ },
+ "s03_chargesheet_four_accused": {
+  "parties_and_roles": [
+   [
+    "complainant",
+    "Prakash Hingmire",
+    "P1",
+    1,
+    2
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Complainant: Prakash Hingmire [P1, pp. 1-2]"
+   ],
+   "chronology": [
+    "2024-07-04 - Dated entry: On 04.07.2024 at about 7 PM, A-1 and A-2 entered the complainant's shop armed with a knife, threatened the staff and took gold ornaments worth Rs. 6,20,000. [P1, pp. 1-2]",
+    "2024-07-05 - FIR registered: FIR No. 0391/2024 dated 05.07.2024. [P1, pp. 1-2]",
+    "2024-07-09 - Arrest: Investigation: the accused Bunty and Farhan Shaikhwadi were arrested on 09.07.2024 and part of the ornaments was recovered at their instance in the presence of panch witness Ganesh Ubale. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Bail: A-3 Kavita Dongrekar, on bail; [P1, pp. 1-2]",
+    "Arrest; investigation: Investigation: the accused Bunty and Farhan Shaikhwadi were arrested on 09.07.2024 and part of the ornaments was recovered at their instance in the presence of panch witness Ganesh Ubale. [P1, pp. 1-2]",
+    "Investigation: List of witnesses: CW-1 Prakash Hingmire; CW-2 Sneha Wavikar; CW-3 Vinod Pathrekar; CW-4 Ganesh Ubale; CW-5 Inspector Shailesh Mokashi, Investigating Officer. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": [
+    "Witnesses, Recoveries/seizures: Investigation: the accused Bunty and Farhan Shaikhwadi were arrested on 09.07.2024 and part of the ornaments was recovered at their instance in the presence of panch witness Ganesh Ubale. [P1, pp. 1-2]",
+    "Documents, Medical/forensic: The medical certificate issued by Dr. Vinod Pathrekar records a cut injury on her hand. [P1, pp. 1-2]",
+    "Witnesses: List of witnesses: CW-1 Prakash Hingmire; CW-2 Sneha Wavikar; CW-3 Vinod Pathrekar; CW-4 Ganesh Ubale; CW-5 Inspector Shailesh Mokashi, Investigating Officer. [P1, pp. 1-2]"
+   ]
+  },
+  "brief_fields_sha256": "cbea17c7316cd3b32250cc3fb99a74c4ae32ec3af7890e9a03a8f3c86aaae6e9",
+  "rendered_map_sha256": "216bf8ddb911508001797b7d89a11ef8802707b301ff868bf5b93f192618f5e9"
+ },
+ "s04_chargesheet_company_accused": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2023-03-21 - FIR registered: FIR No. 0076/2023 dated 21.03.2023. [P1, pp. 1-2]",
+    "2023-03-30 - Dated entry: Jitendra Sawlekar has absconded since 30.03.2023 and a proclamation has been issued against him. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Investigation: Investigation established that the accused Harshad Malvankar, director of the company, signed the refund claims, and that the accused Jitendra Sawlekar, a former clerk of the Committee, prepared the forged slips. [P1, pp. 1-2]",
+    "Charge sheet filing: The charge sheet is filed against Accused No. 1 Greenleaf Fictional Agro Pvt. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "6df8e60a15ebd55d95c4c43255daa8277feed8f3ed4689eba4e477933ea8e477",
+  "rendered_map_sha256": "518d54a3fbbd07fce21b8c54b28b686f0f761b16873c26e34449a7edc3669a31"
+ },
+ "s05_petition_bail": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2024-08-14 - FIR registered: The applicant has been in custody since 14.08.2024 in FIR No. 0612/2024 registered at Police Station Lakeview on the report of respondent No. 2, the complainant, under Sections 309(4) and 3(5) BNS. [P1, pp. 1-2]",
+    "2024-09-02 - Bail: The co-accused Ajay Phadtare, against whom the same role is alleged, has already been released on bail by this Court on 02.09.2024. [P1, pp. 1-2]",
+    "2024-09-30 - Charge sheet filed: The charge sheet has been filed on 30.09.2024 and the applicant's custody is no longer required for investigation. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Bail: IN THE COURT OF THE SESSIONS JUDGE, SAMPLEPUR CRIMINAL BAIL APPLICATION No. 1142 of 2024 (Application for regular bail under Section 483 of the Bharatiya Nagarik Suraksha Sanhita, 2023) [P1, pp. 1-2]",
+    "Bail: The co-accused Ajay Phadtare, against whom the same role is alleged, has already been released on bail by this Court on 02.09.2024. [P1, pp. 1-2]",
+    "Investigation; charge sheet filing: The charge sheet has been filed on 30.09.2024 and the applicant's custody is no longer required for investigation. [P1, pp. 1-2]",
+    "Bail: PRAYER: The applicant prays that he be released on bail on such terms as this Court thinks fit. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "06739cf566045d02d45836bab8da12cec41d4195fa0cca16b4e7bb91dc9eacc9",
+  "rendered_map_sha256": "098aeb44355839979e21e7bbc136997d3baa6838bd42b2fd67816712f043436a"
+ },
+ "s06_petition_quashing_multi": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [],
+   "procedural_considerations": [
+    "Petition/quashing: IN THE HIGH COURT OF FICTIONALAND AT SAMPLEPUR CRIMINAL WRIT PETITION No. 2210 of 2024 1. [P1, pp. 1-2]",
+    "Petition/quashing: Respondents PETITION UNDER ARTICLE 226 OF THE CONSTITUTION AND SECTION 528 BNSS 1. [P1, pp. 1-2]",
+    "FIR registration: Respondent No. 3, the seller of the flat, lodged FIR No. 0333/2024 against the petitioners alleging that they forged a no-objection letter. [P1, pp. 1-2]",
+    "Petition/quashing: PRAYER: quash FIR No. 0333/2024 and direct respondent No. 2 to produce its original file. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "6f937c2290179dd3dadc4fbcf50ffdd97d91c6d472e7bbcfab4e71dcd68c879e",
+  "rendered_map_sha256": "3a726668e04a5b965d8b7532a674900e24283c70d655d77a08a7a1583234a9a1"
+ },
+ "s07_judgment_criminal_appeal": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2017-11-02 - FIR registered: The prosecution case rests on the evidence of the complainant Yamuna Ninave (PW-1), the widow of the deceased, who lodged the FIR on 02.11.2017, and of the neighbour Dilip Kharat (PW-2). [P1, pp. 1-2]",
+    "2019-04-18 - Dated entry: The three appellants were convicted by the Sessions Judge, Testgarh on 18.04.2019 under Sections 304 Part II and 34 IPC for the death of Tukaram Ninave and sentenced to seven years' rigorous imprisonment. [P1, pp. 1-2]"
+   ],
+   "procedural_considerations": [
+    "Appeal: IN THE HIGH COURT OF FICTIONALAND AT SAMPLEPUR CRIMINAL APPELLATE JURISDICTION CRIMINAL APPEAL No. 512 of 2019 Gopal Ninave & Ors. .... [P1, pp. 1-2]",
+    "Trial: The three appellants were convicted by the Sessions Judge, Testgarh on 18.04.2019 under Sections 304 Part II and 34 IPC for the death of Tukaram Ninave and sentenced to seven years' rigorous imprisonment. [P1, pp. 1-2]",
+    "FIR registration: The prosecution case rests on the evidence of the complainant Yamuna Ninave (PW-1), the widow of the deceased, who lodged the FIR on 02.11.2017, and of the neighbour Dilip Kharat (PW-2). [P1, pp. 1-2]",
+    "Appeal: The appeal is dismissed. [P1, pp. 1-2]"
+   ],
+   "evidence_identified": [
+    "Witnesses: The prosecution case rests on the evidence of the complainant Yamuna Ninave (PW-1), the widow of the deceased, who lodged the FIR on 02.11.2017, and of the neighbour Dilip Kharat (PW-2). [P1, pp. 1-2]",
+    "Witnesses, Medical/forensic: The post-mortem was conducted by Dr. Meena Joglekar (PW-5). [P1, pp. 1-2]",
+    "Witnesses: On a careful reading of the evidence of PW-1 and PW-2, we find the presence of all three appellants proved. [P1, pp. 1-2]"
+   ]
+  },
+  "brief_fields_sha256": "a77548f4f504afb692911b15b2377efb6abae8bfc0a4b57b58e0b191dcf32143",
+  "rendered_map_sha256": "5970cb56a01a5972c4677e0b6a18fb3230fc56bd5c65ed5d0f490a4e58d619be"
+ },
+ "s08_order_bail_cancellation": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2024-03-12 - Bail: This application seeks cancellation of the bail granted on 12.03.2024 to opposite party No. 2, namely, Sameer Lonkar, who is the accused in Case Crime No. 0144 of 2024 under Sections 115(2) and 351(3) BNS, Police... [P1, p. 1]",
+    "2024-04-20 - Dated entry: The applicant, who is the complainant in the case, alleges that after his release the accused threatened her on 20.04.2024. [P1, p. 1]",
+    "2024-07-15 - Dated entry: List on 15.07.2024. [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Bail: BAIL CANCELLATION APPLICATION No. 0871 of 2024 Applicant :- Kamini Bhagwat Opposite Party :- State of Fictionaland and Another ORDER 1. [P1, p. 1]",
+    "Bail: This application seeks cancellation of the bail granted on 12.03.2024 to opposite party No. 2, namely, Sameer Lonkar, who is the accused in Case Crime No. 0144 of 2024 under Sections 115(2) and 351(3) BNS, Police... [P1, p. 1]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "3a75511386029c87d29f20f35300badcb8ea92d8d13f9a93755b9712776bd005",
+  "rendered_map_sha256": "86293d0805c92a6f5ac3bc28a0c9b2683ab04b780c4f370e9ef54a456e1e560e"
+ },
+ "s09_order_cheque_complaint": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2024-05-05 - Petition filed: IN THE COURT OF THE JUDICIAL MAGISTRATE FIRST CLASS, SAMPLEPUR Summary Criminal Case No. 0930 of 2024 ORDER BELOW EXHIBIT 1 The complainant, M/s Sunrise Fictional Traders, a partnership firm acting through its partner... [P1, p. 1]",
+    "2024-08-19 - Dated entry: Issue process against the accused Mahesh Tidke under Section 138 of the Negotiable Instruments Act, returnable on 19.08.2024. [P1, p. 1]"
+   ],
+   "procedural_considerations": [],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "02fdeed61a89e45455e545aa81b7101977ec15aff84f5768dfde6d99c3af9a1c",
+  "rendered_map_sha256": "c6296914d5be6d58a78cb3f4d2bee866944cef67fa710cf7719c595ae7db3e8e"
+ },
+ "s10_unknown_legal_aid_minutes": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2024-08-18 - Dated entry: Minutes of the legal-awareness camp held at Gram Panchayat Hall, Khedgaon, Testgarh District Date: 18-08-2024 Present: para-legal volunteer Shobha Kale; panchayat secretary Dinesh Yewale; about forty villagers. [P1, p. 1]"
+   ],
+   "procedural_considerations": [],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "c25123de59a5e204c189c970777e93e0c55720e7ca22d54472f33fa046ca1c4e",
+  "rendered_map_sha256": "7e605ab511c092afc3c027baf04d916ffb50edea5c447f14120ad94e22811f08"
+ },
+ "p01_gujarat_hc_2021": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2004-06-17 - Dated entry: 3.1 It is stated that in Civil Suit No.128 of 2013, the petitioner had prayed for cancellation of the sale deed dated 17.06.2004 as was on the basis of misrepresentation, cheating, forgery and taking undue advantage of... [P1, p. 1]",
+    "2018-08-16 - Petition filed: The defendants of the Suit had filed an application under Order 7 Rule 11 C.P.C. at Exhibit-51 before the learned Principal Civil Judge, Tarapur which came to be allowed rejecting the Suit on 16.08.2018. [P1, p. 1]",
+    "2019-08-23 - Dated entry: The petitioner challenges the inaction on the part of the respondent nos.2 and 3 for not deciding his application dated 23.08.2019 and challenges the action of respondent no.3 ? [P1, p. 1]",
+    "2019-09-08 - FIR registered: No.II/72/2019 registered at Tarapur Police Station, District Anand for the offences punishable under Sections 186 and 114 of IPC, dated 08.09.2019. [P1, p. 1]",
+    "2021-08-19 - Order pronounced: After the death of the original petitioner his son Vijay Karamanbhai Bharvad by an order dated 19.08.2021 in Criminal Misc. [P1, p. 1]",
+    "2021-10-12 - FIR registered: Vide amendment dated 12.10.2021, it was further prayed to quash and set aside the FIR being C.R. [P1, p. 1]",
+    "2021-10-21 - Judgment delivered: Versus STATE OF GUJARAT CORAM: HONOURABLE MS. JUSTICE GITA GOPI Date : 21/10/2021 ORAL JUDGMENT 1. [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Petition/quashing: Vide amendment dated 12.10.2021, it was further prayed to quash and set aside the FIR being C.R. [P1, p. 1]",
+    "Appeal: Anand and also stating that the Regular Civil Appeal is pending before the learned District Court. [P1, p. 1]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "45140d7b7d5e7eadf1d92b8b2fd9546976cef2e5ab1179b820b566d7f5f9fc37",
+  "rendered_map_sha256": "9d73c01a7f7e7c59ac605358a55721f40daeb45f5d6d4c63683af96f6a557302"
+ },
+ "p02_andhra_hc_2023": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2007-09-06 - Dated entry: On 06.09.2007 night, a music orchestra was arranged in Padirikuppam Harijanawada in connection with Kumbhabhisekham of Lord Sri Krishna temple. [P1, p. 1]",
+    "2010-11-10 - Judgment delivered: 30.11.2023 JUDGMENT:- The judgment in Sessions Case No.67 of 2008, on the file of IV Additional District & Sessions Judge, Chittoor at Tirupati (?Additional Sessions Judge? for short), delivered on 10.11.2010, is under... [P1, p. 1]",
+    "2023-11-30 - Judgment delivered: 30.11.2023 JUDGMENT:- The judgment in Sessions Case No.67 of 2008, on the file of IV Additional District & Sessions Judge, Chittoor at Tirupati (?Additional Sessions Judge? for short), delivered on 10.11.2010, is under... [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Appeal: HIGH COURT OF ANDHRA PRADESH AT AMARAVATI CRIMINAL APPEAL No.1481 OF 2010 Between: [P1, p. 1]",
+    "Trial; appeal: 30.11.2023 JUDGMENT:- The judgment in Sessions Case No.67 of 2008, on the file of IV Additional District & Sessions Judge, Chittoor at Tirupati (?Additional Sessions Judge? for short), delivered on 10.11.2010, is under... [P1, p. 1]",
+    "Appeal: The parties to this Criminal Appeal will hereinafter be referred to as described before the learned Sessions Judge for the sake of convenience. [P1, p. 1]",
+    "Trial: The Sessions Case No.67 of 2008 as above arose out of a committal order in P.R.C.No.18 of 2007, on the file of Judicial Magistrate of First Class, Putturu, pertaining to Crime No.65 of 2005 of Karveti Nagar Police... [P1, p. 1]",
+    "Charge sheet filing: The State, represented by the Inspector of Police, Karveti Nagar Circle, in the aforesaid crime number, filed a charge sheet alleging the offence under Section 302 of I.P.C. [P1, p. 1]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "f8ab0456378db42a3f22fb5e3010e3cd2562060b08b585a1cc5dc16dddce5f20",
+  "rendered_map_sha256": "d06973a741b736133c6086bf180eeb9f0953ced599c4a7802096fb5e360da65c"
+ },
+ "p03_punjab_hc_2023": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [
+    "2011-10-03 - Dated entry: Consequent upon the sale, an amount of Rs.38 lacs was deposited in the account of the respondent No.2/complainant Bank (hereinafter known as ?the respondent No.2?) on 03.10.2011 and 20.10.2011. [P1, p. 1]",
+    "2011-10-15 - Dated entry: On account of the recession in the market, a letter dated 15.10.2011 (Annexure P-1) was submitted to the Bank making a request to reduce the credit limited from Rs.6.25 Crores to Rs. 4.75 Crores and for a release of the... [P1, p. 1]",
+    "2011-10-19 - FIR registered: Since the same was not done, Smt. Vanita Goyal, who was not the director of the company, sold the property in dispute measuring 02 Biswa and 18 Biswasi (which had been mortgaged with the Bank) to one Pawan Kumar Joshi... [P1, p. 1]",
+    "2011-10-20 - Dated entry: Consequent upon the sale, an amount of Rs.38 lacs was deposited in the account of the respondent No.2/complainant Bank (hereinafter known as ?the respondent No.2?) on 03.10.2011 and 20.10.2011. [P1, p. 1]",
+    "2012-12-13 - FIR registered: HON?BLE MR. JUSTICE JASJIT SINGH BEDI The prayer in the present petition under Section 482 Cr.P.C. is for quashing of FIR No.243 dated 13.12.2012 (Annexure P-3) under Sections 420, 120-B IPC registered at Police Station... [P1, p. 1]",
+    "2023-04-11 - Dated entry: IN THE HIGH COURT OF PUNJAB AND HARYANA AT CHANDIGARH Date of decision:11.04.2023 Venus Goyal and anr. [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Petition/quashing: HON?BLE MR. JUSTICE JASJIT SINGH BEDI The prayer in the present petition under Section 482 Cr.P.C. is for quashing of FIR No.243 dated 13.12.2012 (Annexure P-3) under Sections 420, 120-B IPC registered at Police Station... [P1, p. 1]"
+   ],
+   "evidence_identified": [
+    "Documents: HON?BLE MR. JUSTICE JASJIT SINGH BEDI The prayer in the present petition under Section 482 Cr.P.C. is for quashing of FIR No.243 dated 13.12.2012 (Annexure P-3) under Sections 420, 120-B IPC registered at Police Station... [P1, p. 1]",
+    "Documents: On account of the recession in the market, a letter dated 15.10.2011 (Annexure P-1) was submitted to the Bank making a request to reduce the credit limited from Rs.6.25 Crores to Rs. 4.75 Crores and for a release of the... [P1, p. 1]"
+   ]
+  },
+  "brief_fields_sha256": "23103aec86ca9b182fca5221749e0b549f6e931b7fb8f2da1c2acca4b0575bc8",
+  "rendered_map_sha256": "dbc26027958298d610def6141115f5c4ad4406345a01f2d2ba734a6122d99e52"
+ },
+ "p04_supreme_court_2022": {
+  "parties_and_roles": [],
+  "brief_fields": {
+   "parties_and_roles": [],
+   "chronology": [],
+   "procedural_considerations": [
+    "Appeal: IN THE SUPREME COURT OF INDIA CRIMINAL APPELLATE JURISDICTION CRIMINAL APPEAL NO.383 OF 2018 Devender Singh & Ors. [P1, p. 1]",
+    "Appeal: The appellants have assailed the judgment dated 14th September, 2017, passed by the High Court of Uttarakhand at Nainital in Government Appeal No.57 of 2010, whereby the judgment dated 17th April, 2010 passed by the... [P1, p. 1]",
+    "Appeal: Being aggrieved by the said judgment and order of conviction, the appellants are before this Court, in this appeal by way of special leave. [P1, p. 1]",
+    "Investigation: Based on the complaint, investigation was carried out by the local police and the body of Sushila was subsequently found in Ganga river. [P1, p. 1]"
+   ],
+   "evidence_identified": []
+  },
+  "brief_fields_sha256": "230361a3a081058743708d212cd490e0d55c505986a2c3b98a4d5333f48d5c2c",
+  "rendered_map_sha256": "e7a40947b469761df874dca694b3b00832e7d9fae77232011b925edbd46cf894"
+ },
+ "p05_allahabad_hc_2019": {
+  "parties_and_roles": [
+   [
+    "accused",
+    "respondent- 2",
+    "P1",
+    1,
+    1
+   ]
+  ],
+  "brief_fields": {
+   "parties_and_roles": [
+    "Accused: respondent- 2 [P1, p. 1]"
+   ],
+   "chronology": [
+    "1978-04-11 - Order pronounced: Considerations and relevant aspects by a Court while granting a bail are different than those when an application for cancellation of bail has come up before the Court and this aspect has been considered by a... [P1, p. 1]",
+    "2011-07-21 - Order pronounced: This is an application seeking cancellation of bail granted to respondent- 2, namely, Raghuvendra Singh passed by learned IInd Additional Chief Judicial Magistrate, Gautam Budh Nagar vide order dated 21.07.2011 in Case... [P1, p. 1]"
+   ],
+   "procedural_considerations": [
+    "Bail: BAIL CANCELLATION APPLICATION No. - 30322 of 2012 Applicant :- Arun Bhandari Opposite Party :- State of U.P. and Another Hon'ble Sudhir Agarwal,J. [P1, p. 1]",
+    "Bail: This is an application seeking cancellation of bail granted to respondent- 2, namely, Raghuvendra Singh passed by learned IInd Additional Chief Judicial Magistrate, Gautam Budh Nagar vide order dated 21.07.2011 in Case... [P1, p. 1]",
+    "Bail: It is contended that after grant of bail to accused-respondent- 2, he has threatened applicant and pressurize prosecution witnesses.. [P1, p. 1]",
+    "Bail: Considerations and relevant aspects by a Court while granting a bail are different than those when an application for cancellation of bail has come up before the Court and this aspect has been considered by a... [P1, p. 1]",
+    "Bail: Court observed that rejection of bail, when bail applied is one thing; cancellation of bail already granted is quite another. [P1, p. 1]",
+    "Bail: It is easier to reject a bail application in a non-bailable case than to cancel a bail granted in such a case. [P1, p. 1]",
+    "Bail; trial: Cancellation of bail necessarily involves review of a decision already made and can, by and large, be permitted only, if, by reason of supervening circumstances, it would be no longer conducive to a fair trial to allow... [P1, p. 1]"
+   ],
+   "evidence_identified": [
+    "Witnesses: It is contended that after grant of bail to accused-respondent- 2, he has threatened applicant and pressurize prosecution witnesses.. [P1, p. 1]"
+   ]
+  },
+  "brief_fields_sha256": "e570b52ebe05bc70ba8101e109f7d7102f2309154d5a1ac20e08b7b9d3e234a8",
+  "rendered_map_sha256": "c8fc0632abdc7e63338b5ac852935564fb1967fbb82ef46cc7743713e7497dcd"
+ }
+}
