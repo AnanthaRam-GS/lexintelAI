@@ -7,6 +7,8 @@ help fill the brief's "Parties & Roles". Please label from the text alone.
 ## Before you start
 - **Do not run LegalAI, the scorer or any model on these excerpts, and do not look at any system output for them,
   before you finish.** Labels must not be influenced by what the system finds.
+- In particular, do not open `backend/scripts/tests/fixtures/party_roles_flag_off_snapshot.json` or
+  `experiments/inlegalbert/results/e4_party_roles.json`: they hold system output.
 - Do not edit the excerpt texts (`public/*.txt`). Only edit the matching `public/*.labels.json`.
 - Files, in `experiments/inlegalbert/party_gold/public/`:
   `p01_gujarat_hc_2021`, `p02_andhra_hc_2023`, `p03_punjab_hc_2023`, `p04_supreme_court_2022`,

@@ -49,6 +49,13 @@ Both were frozen and committed before any training code ran.
 - Mode `hybrid`, threshold 0.70.
 - Confidence is the mean label probability over the entity's tokens.
 - Rule-owned types are protected.
+- *Erratum (2026-11-12, step E4):* the protocol's "model spans of these types are never inserted" is not exact. A
+  model entity with exactly the same span as a non-protected rule entity replaces it when its type has a higher
+  priority (`should_replace_same_span`), even if that type is a protected one. One query is known to be affected:
+  eval-q010 in the E3 retrieval benchmark (rule OFFENCE "criminal conspiracy" became a model STATUTE). The E1 scores
+  already include this behaviour, because E1 ran the same merge code; on the 36 E1 test examples no same-span
+  replacement occurred for any seed (re-checked from `results/predictions-seed-*.json`). Thresholds and verdict are
+  unchanged. Details: `INLEGALBERT_PLAN.md`, "Errata".
 
 ## 3. Recipe and training
 

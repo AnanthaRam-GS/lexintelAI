@@ -215,3 +215,19 @@ E2 (IPC classifier), only after E1 and only if you want it
   BGE cross-encoder ranker remains the section component.
 - **Minimum viable version:** E1 (3 seeds, about 1.5 hours) plus E3 with E1's entities, judged by the frozen
   thresholds above.
+
+## Errata
+
+**2026-11-12 (step E4), the merge can replace a rule entity with a same-span model entity.** Section 6 and the E1
+protocol (`INLEGALBERT_E1_PROTOCOL.md` section 3) describe the combination as rule-owned types protected, with model
+spans of those types "never inserted". That is not exactly what the unchanged product merge does: a model entity with
+**exactly the same span** as a rule entity whose type is *not* protected replaces it when the model's type has a higher
+priority (`hybrid_legal_ner.should_replace_same_span`, `TYPE_PRIORITY`), even when the model's type is a protected one
+such as STATUTE.
+- **Affected:** one query observed so far, in the E3 retrieval benchmark: eval-q010, "criminal conspiracy section 120B
+  IPC", where the rule OFFENCE "criminal conspiracy" became a model STATUTE. Its retrieval did not change (the query
+  sent to retrieval is the original text; `INLEGALBERT_E3_RESULTS.md` section 2).
+- **E1's scores already include this behaviour:** E1 ran the same merge code, so its numbers are those of the system
+  as it is. Re-checked on the stored E1 predictions (all three seeds, 36 test examples): no same-span replacement
+  occurred, so no E1 score involves one.
+- **Unchanged:** the frozen thresholds in section 6 and every verdict. Only the description of the policy was wrong.
