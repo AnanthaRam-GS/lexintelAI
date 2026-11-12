@@ -1,0 +1,1351 @@
+{
+ "backend": "deterministic",
+ "command": "backend/scripts/dev/stress_inference.py --repetitions 5 (concurrency 10, 3 rounds, 5 single; warm-up on; fake LLM; real models on MPS)",
+ "summary": {
+  "repetitions": 5,
+  "crashes": 0,
+  "crash_signals": [],
+  "statuses": {
+   "200": 225
+  },
+  "concurrent_latency_s": {
+   "n": 200,
+   "p50": 9.264,
+   "p95": 16.728,
+   "max": 21.929
+  },
+  "single_latency_s": {
+   "n": 25,
+   "p50": 1.52,
+   "p95": 1.69,
+   "mean": 1.491
+  }
+ },
+ "repetitions": [
+  {
+   "repetition": 1,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 11.027,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.621,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.391,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.915,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.81,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.113,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.29,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.462,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.738,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.199,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 2.69,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.839,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.765,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.583,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.292,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.099,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.225,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.005,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.921,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.381,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 1.587,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.946,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.69,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.774,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.861,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.354,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.053,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.185,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.264,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.461,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 2.77,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.512,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.232,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.872,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.112,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.615,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.992,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.38,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.781,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.648,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.197,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.219,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.218,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.219,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.218,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4630.8,
+    "warmup_ms": 1436.5,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "deterministic",
+     "active": "deterministic",
+     "model": "not_used"
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 2,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 9.414,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.865,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.058,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.98,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.014,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.678,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.173,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.504,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.728,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.27,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 5.561,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.841,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.314,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.103,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.813,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.634,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.093,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.375,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.186,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.916,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 4.497,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.222,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.725,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.804,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.4,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.111,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.038,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.923,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.782,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.496,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 3.294,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.917,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.579,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.228,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.947,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.893,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.943,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.566,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.247,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.565,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.48,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.394,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.388,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.52,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.695,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4657.4,
+    "warmup_ms": 1312.9,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "deterministic",
+     "active": "deterministic",
+     "model": "not_used"
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 3,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 9.591,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.654,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.295,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.192,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.227,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.93,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.892,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 18.997,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.641,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.57,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 7.376,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.434,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.964,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.068,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.025,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.686,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.112,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.363,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.779,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.713,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 10.251,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.691,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.038,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.998,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.548,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.361,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.954,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.905,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.592,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.308,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 1.998,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.209,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.673,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.973,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.313,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.976,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.658,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.705,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.157,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.57,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.668,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.69,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.653,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.66,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.633,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4671.4,
+    "warmup_ms": 1545.5,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "deterministic",
+     "active": "deterministic",
+     "model": "not_used"
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 4,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 14.168,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.117,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.627,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 20.403,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.085,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.548,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 18.858,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 21.929,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.313,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.765,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 3.888,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.383,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.311,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.912,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.451,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.97,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.12,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.047,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.515,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.624,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 7.021,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.294,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.428,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.57,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.874,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.107,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.226,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.172,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.707,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.633,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 6.863,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.254,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.333,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.437,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.809,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.535,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.186,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.078,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.995,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.637,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.63,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.616,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.619,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.625,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.623,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 5090.0,
+    "warmup_ms": 1634.6,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "deterministic",
+     "active": "deterministic",
+     "model": "not_used"
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 5,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 9.26,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.832,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 21.755,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.826,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.482,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 18.675,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 20.224,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.101,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.41,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.956,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 2.252,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.986,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.807,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.872,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.301,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.413,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.08,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.508,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.619,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.174,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 8.854,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.022,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.268,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.454,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.675,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.631,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.551,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.931,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.248,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.283,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 7.405,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.773,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.7,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.99,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.897,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.38,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.05,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.537,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.143,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.285,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.411,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.46,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.424,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.45,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.559,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4988.7,
+    "warmup_ms": 1368.8,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "deterministic",
+     "active": "deterministic",
+     "model": "not_used"
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  }
+ ]
+}

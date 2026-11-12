@@ -361,5 +361,39 @@
    "results": "experiments/inlegalbert/results/e1_results.json",
    "status": "UNREVIEWED"
   }
+ },
+ "e3_integration": {
+  "decision": "docs/experiments/INLEGALBERT_E3_INTEGRATION_DECISION.md (commit 919d5fe, before any measurement)",
+  "flag": "LEGALAI_NER_BACKEND = deterministic (default) | combined; LEGALAI_NER_CHECKPOINT_DIR = models/inlegalbert_ner/seed-22",
+  "checkpoint": {
+   "seed": 22,
+   "model_safetensors_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+   "config_json_sha256": "316dbb9d2285b0046977adf540bf7b0f329353148f2ce369cd259249966a367a",
+   "tokenizer_json_sha256": "da6e2f936693e0e0d2d3edb22ff23bc497978a436095ee5e6572d4ac1cdf5a67",
+   "tokenizer_config_json_sha256": "26a625a4a190d929da9fc2332a5ee99498a559c2906ba2e3fb8a31d01ba5b24e"
+  },
+  "inlegalner_excluded_ids": {
+   "path": "experiments/inlegalbert/inlegalner_excluded_ids.json",
+   "sha256": "7659e472992a0adba39d139fdb011fd03c5a85825ce7f0d3354238a94793a375",
+   "train": 108,
+   "dev": 23
+  },
+  "results": {
+   "retrieval": "results/e3_retrieval.json",
+   "briefs": "results/e3_briefs.json",
+   "cost": [
+    "results/e3_cost.json",
+    "results/e3_cost_ner_stage.json",
+    "results/e3_stress_deterministic.json",
+    "results/e3_stress_combined.json"
+   ]
+  },
+  "verdicts": {
+   "retrieval": "PASS (no drop; no gain, delta 0)",
+   "briefs": "PASS (0 expected items lost)",
+   "cost": "PASS (0 crashes; +~10-13 ms/query, +~0.84 GB footprint)"
+  },
+  "recommendation": "keep deterministic as the default",
+  "status": "UNREVIEWED"
  }
 }
