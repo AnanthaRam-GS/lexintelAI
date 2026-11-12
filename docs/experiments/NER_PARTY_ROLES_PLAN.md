@@ -56,7 +56,8 @@ model, under this rule (frozen here; implemented in `local_document_map.py`, uni
    - or *after* it, separated only by spaces, dots, commas, dashes or "(" and an optional "the", possibly on the next
      line (cause titles: "Venus Goyal and anr.\n.... Petitioners", "X (complainant)", "X, the accused");
    - or a **list continuation**: the entity follows another candidate of the same chunk that took its role from a
-     cue before it, with only ",", "and" or "&" between them ("the accused A, B and C").
+     cue before it (directly, or through the list, as C in the example), with only ",", "and" or "&" between them
+     ("the accused A, B and C").
    The cue before the entity wins over the cue after it.
 4. **Role.**
    - OTHER_PERSON / ORG: the cue's role.
@@ -64,8 +65,12 @@ model, under this rule (frozen here; implemented in `local_document_map.py`, uni
      appellant, applicant, complainant, informant; respondent side: respondent, accused); otherwise PETITIONER takes
      the document's "left party" role (the existing "X vs Y" rule: its most frequent of appellant / petitioner /
      applicant, else "petitioner/appellant") and RESPONDENT takes "respondent".
-5. **Name.** The entity text with surrounding spaces and punctuation stripped, passed through the existing
-   `_clean_party_name` (which drops generic words such as "accused" or "State" alone and names under 3 characters).
+5. **Name.** The entity text with whitespace collapsed and surrounding spaces and punctuation stripped, then the
+   filter of the existing `_clean_party_name`: generic words alone ("accused", "State", ...) and names under 3
+   characters are dropped. *Amendment (2026-11-12, made while implementing, before any flag-on run):* the first
+   version said the name is "passed through `_clean_party_name`"; that function also cuts a regex capture at ". "
+   or "," (its captures run to the end of the line), which would cut "Orchid Fictional Traders Pvt. Ltd." to
+   "Orchid Fictional Traders Pvt". Model spans are already bounded, so only the filter is applied.
 6. **Merge with the regex parties** (deterministic):
    - regex parties first, in their existing order, unchanged;
    - model parties appended in document order (chunk order, then position);
