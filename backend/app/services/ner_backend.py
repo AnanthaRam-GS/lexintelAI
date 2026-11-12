@@ -2,11 +2,11 @@
 
 ``LEGALAI_NER_BACKEND``:
 
-- ``deterministic`` (default): ``legal_ner.extract_deterministic_entities``, unchanged.
-- ``combined``: the E1 system (docs/experiments/INLEGALBERT_E1_PROTOCOL.md, PASS in INLEGALBERT_E1_RESULTS.md).
+- ``combined`` (default since step E4c, docs/experiments/INLEGALBERT_DECISION.md): the E1 system (docs/experiments/INLEGALBERT_E1_PROTOCOL.md, PASS in INLEGALBERT_E1_RESULTS.md).
   InLegalBERT fine-tuned on InLegalNER (seed 22 checkpoint) predicts InLegalNER's native types, they are mapped to
   ``legalai-ner-schema-v1`` with the frozen E1 mapping, and the deterministic entities are combined with them by the
   product's existing ``merge_hybrid_entities`` (``hybrid`` mode, threshold 0.70). Nothing here is tuned.
+- ``deterministic``: ``legal_ner.extract_deterministic_entities``, unchanged. Also used for an unknown value.
 
 The model runs on ``LEGALAI_MODEL_DEVICE`` (MPS when available, CPU otherwise, CPU fallback on failure) in fp32, as
 trained. Every load and inference holds the process-wide model lock (``inference_lock``; via ``DeviceFallbackModel``).
@@ -36,7 +36,8 @@ from backend.app.services.legal_ner import extract_deterministic_entities
 logger = logging.getLogger("legalai.ner")
 
 NER_BACKENDS = ("deterministic", "combined")
-DEFAULT_NER_BACKEND = "deterministic"
+DEFAULT_NER_BACKEND = "combined"  # when the setting is empty (step E4c)
+SAFE_NER_BACKEND = "deterministic"  # for an unknown value, and the fallback when the model is unavailable
 
 # E1 seed 22 (the median seed by combined F1); recorded in experiments/inlegalbert/manifest.json.
 CHECKPOINT_SHA256 = "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c"
@@ -218,7 +219,7 @@ def configured_backend(settings: Any = None) -> str:
     value = str((settings or _settings()).legalai_ner_backend or DEFAULT_NER_BACKEND).strip().lower()
     if value not in NER_BACKENDS:
         logger.warning("ner_backend_invalid requested=%s using=deterministic", value)
-        return DEFAULT_NER_BACKEND
+        return SAFE_NER_BACKEND
     return value
 
 

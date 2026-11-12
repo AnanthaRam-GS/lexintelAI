@@ -74,10 +74,11 @@ class Settings(BaseSettings):
     legalai_reranker_fp16: bool = True
     # Load the query models and run one tiny inference at startup.
     legalai_model_warmup: bool = True
-    # Step E3: NER backend (services/ner_backend.py). deterministic = the rule-based NER (default, unchanged);
-    # combined = InLegalBERT NER (E1 seed 22) + the rules under the frozen E1 combination policy. Falls back to
-    # deterministic if the checkpoint is missing or fails to load.
-    legalai_ner_backend: str = "deterministic"
+    # Step E3: NER backend (services/ner_backend.py). combined = InLegalBERT NER (E1 seed 22) + the rules under the
+    # frozen E1 combination policy (the default since step E4c: docs/experiments/INLEGALBERT_DECISION.md);
+    # deterministic = the rule-based NER only. combined falls back to deterministic, with a warning and /health
+    # "ner", if the checkpoint is missing or fails to load (as in CI, which has no checkpoint).
+    legalai_ner_backend: str = "combined"
     # The combined backend's checkpoint directory (gitignored; see docs/experiments/INLEGALBERT_E3_RESULTS.md).
     legalai_ner_checkpoint_dir: str = "models/inlegalbert_ner/seed-22"
     # Step 18: how long a request waits for the process-wide model lock (inference_lock.py) before it is answered

@@ -80,12 +80,22 @@ class NerBackendTests(unittest.TestCase):
 
     # -- flag off ------------------------------------------------------------------------------------------------
 
-    def test_default_backend_is_deterministic(self) -> None:
+    def test_default_backend_is_combined_and_unknown_values_use_the_rules(self) -> None:
         from backend.app.core.config import Settings
 
-        self.assertEqual(Settings().legalai_ner_backend, "deterministic")
-        self.assertEqual(ner_backend.configured_backend(settings("")), "deterministic")
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("LEGALAI_NER_BACKEND", None)
+            self.assertEqual(Settings(_env_file=None).legalai_ner_backend, "combined")  # step E4c
+        self.assertEqual(ner_backend.configured_backend(settings("")), "combined")
         self.assertEqual(ner_backend.configured_backend(settings("bogus")), "deterministic")
+
+    def test_default_without_a_checkpoint_falls_back_to_the_rules(self) -> None:
+        # CI has no checkpoint: the combined default must give the deterministic entities and say so in /health.
+        result = ner_backend.extract_entities(TEXT, settings("combined", "models/does-not-exist"))
+        expected = extract_deterministic_entities(TEXT)
+        self.assertEqual([e.model_dump() for e in result.entities], [e.model_dump() for e in expected.entities])
+        status = ner_backend.ner_status(settings("combined", "models/does-not-exist"))
+        self.assertEqual((status["active"], status["fallback"]), ("deterministic", True))
 
     def test_flag_off_returns_the_deterministic_result_and_loads_no_model(self) -> None:
         factory = patch.object(ner_backend, "engine_factory", side_effect=AssertionError("model loaded"))

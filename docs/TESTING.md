@@ -134,6 +134,11 @@ results locally only. One test (`test_bulk_dry_run_makes_no_provider_or_raw_call
 into `os.environ` through `load_project_env`; it is patched now. Running a module directly
 (`python -m unittest backend.scripts.tests.<module>`) still reads `.env` unless you set `LEGALAI_ENV_FILE=none`.
 
+Both runners also export `LEGALAI_NER_BACKEND=deterministic` (step E4c). The product default is `combined`
+(InLegalBERT), which falls back to the rules when the checkpoint is missing, as in CI; pinning the rules keeps local
+results the same as CI even when `models/inlegalbert_ner/seed-22/` exists. Tests of the combined backend set it
+themselves with a mocked model.
+
 On macOS both runners keep the machine awake while they run (`caffeinate -i`, `backend/scripts/dev/keep_awake.sh`;
 `LEGALAI_ALLOW_SLEEP=1` opts out). Step 23 found that unattended runs on battery took up to ~29 minutes per module
 because the Mac idle-slept (`pmset -g log`), although the tests themselves ran in seconds. unittest's timer stops
