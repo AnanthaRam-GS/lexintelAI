@@ -464,29 +464,104 @@ def _model_party_name(value: str) -> str | None:
     return name[:120]
 
 
-def extract_model_parties(chunks: list[PrivateChunk], model_entities: list[list[Any]], left_role: str) -> list[PartyRole]:
+# Step E4b (docs/experiments/NER_PARTY_ROLES_E4B_PLAN.md section 3, frozen before this code).
+_WORD_JOINERS = "-'\u2019"
+_ACCUSED_DOCUMENT_TYPES = {"FIR", "chargesheet"}
+_ACCUSED_NUMBER = r"(?:\bA\s?-?\s?\d+|\baccused\s+(?:no\.?\s*)?\d+)"
+_ACCUSED_PREFIX = re.compile(
+    rf"{_ACCUSED_NUMBER}(?:\s*(?:[:\-.),]|(?:shri|smt|sri|mr|mrs|ms|dr|m/s)\b\.?))*\s*$", re.IGNORECASE)
+_ACCUSED_HEADING = re.compile(r"\baccused\b.*:\s*$", re.IGNORECASE)
+_LIST_MARKER = re.compile(rf"^\s*(?:\(?[ivxlc]+\)|\(?\d+[.)]|[-\u2022*]|{_ACCUSED_NUMBER}[.):\-]?)(?=\s)", re.IGNORECASE)
+
+
+def _is_word_char(char: str) -> bool:
+    return char.isalnum() or char == "_"
+
+
+def snap_to_words(text: str, start: int, end: int) -> tuple[int, int]:
+    """A span trimmed of edge whitespace/punctuation, then widened to whole words (E4b fix 1).
+
+    It widens across letters and digits, and across an apostrophe or hyphen that has a word character on its far side.
+    """
+    while start < end and not _is_word_char(text[start]):
+        start += 1
+    while end > start and not _is_word_char(text[end - 1]):
+        end -= 1
+    if start == end:
+        return start, end
+    while start > 0 and (_is_word_char(text[start - 1])
+                         or (text[start - 1] in _WORD_JOINERS and start >= 2 and _is_word_char(text[start - 2]))):
+        start -= 1
+    while end < len(text) and (_is_word_char(text[end])
+                               or (text[end] in _WORD_JOINERS and end + 1 < len(text) and _is_word_char(text[end + 1]))):
+        end += 1
+    return start, end
+
+
+def accused_list_lines(text: str) -> list[tuple[int, int]]:
+    """(start, end) of the list lines under an accused heading ("Details of known accused:") (E4b fix 2)."""
+    lines, offset = [], 0
+    for line in text.splitlines(keepends=True):
+        lines.append((offset, offset + len(line), line))
+        offset += len(line)
+    spans: list[tuple[int, int]] = []
+    in_list = False
+    for start, end, line in lines:
+        if in_list and _LIST_MARKER.match(line):
+            spans.append((start, end))
+            continue
+        in_list = bool(_ACCUSED_HEADING.search(line.rstrip("\r\n")))
+    return spans
+
+
+def _accused_prefix(text: str, start: int) -> bool:
+    line_start = text.rfind("\n", 0, start) + 1
+    return bool(_ACCUSED_PREFIX.search(text[max(line_start, start - _CUE_WINDOW):start]))
+
+
+def extract_model_parties(chunks: list[PrivateChunk], model_entities: list[list[Any]], left_role: str,
+                          document_type: str | None = None) -> list[PartyRole]:
     """Parties from the model's entities (one list per chunk, offsets in ``chunk.text``), in document order.
 
     PETITIONER/RESPONDENT entities are parties; OTHER_PERSON/ORG entities only with a role cue; other types never.
     A party-type entity takes the cue's role when the cue is on its side, else PETITIONER -> ``left_role`` and
     RESPONDENT -> "respondent". Each party cites the chunk it was found in.
+
+    E4b: each candidate's span is snapped to whole words; in FIRs and charge sheets (``document_type``), an accused
+    number before the entity ("A-1", "Accused No. 2") or the first candidate on a list line under an accused heading
+    takes the role accused, before every other role rule.
     """
     parties: list[PartyRole] = []
+    accused_documents = document_type in _ACCUSED_DOCUMENT_TYPES
     for chunk, entities in zip(chunks, model_entities):
         chain: tuple[int, str] | None = None  # (end, role) of the last candidate whose role came from a cue before it
+        list_lines = accused_list_lines(chunk.text) if accused_documents else []
+        lines_taken: set[int] = set()
         for entity in sorted(entities, key=lambda item: (item.start_char, item.end_char)):
             native = str((entity.metadata or {}).get("native_type", ""))
             if native not in _MODEL_PARTY_TYPES | _MODEL_CUE_TYPES:
                 continue
-            role, how = _role_cue(chunk.text, entity.start_char, entity.end_char, chain)
-            if native in _MODEL_PARTY_TYPES:
-                side = _PETITIONER_SIDE if native == "PETITIONER" else _RESPONDENT_SIDE
-                if role not in side:
-                    role, how = (left_role if native == "PETITIONER" else "respondent"), None
+            start, end = snap_to_words(chunk.text, entity.start_char, entity.end_char)
+            if start == end:
+                continue
+            role, how = None, None
+            if accused_documents:
+                line = next((i for i, (a, b) in enumerate(list_lines) if a <= start < b), None)
+                in_list = line is not None and line not in lines_taken
+                if line is not None:
+                    lines_taken.add(line)
+                if _accused_prefix(chunk.text, start) or in_list:
+                    role, how = "accused", "before"
+            if role is None:
+                role, how = _role_cue(chunk.text, start, end, chain)
+                if native in _MODEL_PARTY_TYPES:
+                    side = _PETITIONER_SIDE if native == "PETITIONER" else _RESPONDENT_SIDE
+                    if role not in side:
+                        role, how = (left_role if native == "PETITIONER" else "respondent"), None
             if role is None:
                 continue
-            chain = (entity.end_char, role) if how in {"before", "list"} else chain
-            name = _model_party_name(entity.text)
+            chain = (end, role) if how in {"before", "list"} else chain
+            name = _model_party_name(chunk.text[start:end])
             if name:
                 parties.append(PartyRole(role=role, name=name, private_evidence_id=chunk.private_chunk_id,
                                          page_start=chunk.page_start, page_end=chunk.page_end))
@@ -772,7 +847,8 @@ def build_local_document_map(
         sections, parties, dates = extract_sections_and_entities(chunks, ner_results=[result for result, _ in detailed])
         left_role = _versus_left_role(" ".join(chunk.text for chunk in chunks))
         parties_and_roles = merge_model_parties(
-            extract_parties_and_roles(chunks), extract_model_parties(chunks, [model for _, model in detailed], left_role))
+            extract_parties_and_roles(chunks),
+            extract_model_parties(chunks, [model for _, model in detailed], left_role, document_type))
     else:
         sections, parties, dates = extract_sections_and_entities(chunks)
         parties_and_roles = extract_parties_and_roles(chunks)

@@ -1,0 +1,745 @@
+{
+ "documents": 15,
+ "gold_parties": 47,
+ "micro": {
+  "regex": {
+   "tp": 14,
+   "fp": 0,
+   "fn": 33,
+   "gold": 47,
+   "predicted": 14,
+   "duplicates": 0,
+   "precision": 1.0,
+   "recall": 0.2978723404255319,
+   "f1": 0.45901639344262296,
+   "partial": {
+    "precision": 1.0,
+    "recall": 0.2978723404255319,
+    "f1": 0.45901639344262296
+   }
+  },
+  "combined": {
+   "tp": 37,
+   "fp": 1,
+   "fn": 10,
+   "gold": 47,
+   "predicted": 38,
+   "duplicates": 0,
+   "precision": 0.9736842105263158,
+   "recall": 0.7872340425531915,
+   "f1": 0.8705882352941177,
+   "partial": {
+    "precision": 0.9868421052631579,
+    "recall": 0.7978723404255319,
+    "f1": 0.8823529411764706
+   }
+  }
+ },
+ "per_role": {
+  "regex": {
+   "accused": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 15,
+    "f1": 0.2857142857142857,
+    "recall": 0.16666666666666666
+   },
+   "appellant": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 3,
+    "f1": 0.0,
+    "recall": 0.0
+   },
+   "applicant": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 2,
+    "f1": 0.5,
+    "recall": 0.3333333333333333
+   },
+   "complainant": {
+    "tp": 5,
+    "fp": 0,
+    "fn": 3,
+    "f1": 0.7692307692307693,
+    "recall": 0.625
+   },
+   "informant": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "petitioner": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 2,
+    "f1": 0.5,
+    "recall": 0.3333333333333333
+   },
+   "respondent": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 8,
+    "f1": 0.42857142857142855,
+    "recall": 0.2727272727272727
+   }
+  },
+  "combined": {
+   "accused": {
+    "tp": 10,
+    "fp": 1,
+    "fn": 8,
+    "f1": 0.6896551724137931,
+    "recall": 0.5555555555555556
+   },
+   "appellant": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "applicant": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "complainant": {
+    "tp": 7,
+    "fp": 0,
+    "fn": 1,
+    "f1": 0.9333333333333333,
+    "recall": 0.875
+   },
+   "informant": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "petitioner": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "respondent": {
+    "tp": 10,
+    "fp": 0,
+    "fn": 1,
+    "f1": 0.9523809523809523,
+    "recall": 0.9090909090909091
+   }
+  }
+ },
+ "bootstrap": {
+  "precision": {
+   "regex": {
+    "value": 1.0,
+    "ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "combined": {
+    "value": 0.9736842105263158,
+    "ci95": [
+     0.9231,
+     1.0
+    ]
+   },
+   "difference": {
+    "value": -0.02631578947368418,
+    "ci95": [
+     -0.0769,
+     0.0
+    ]
+   },
+   "resamples_used": 10000
+  },
+  "recall": {
+   "regex": {
+    "value": 0.2978723404255319,
+    "ci95": [
+     0.1207,
+     0.5238
+    ]
+   },
+   "combined": {
+    "value": 0.7872340425531915,
+    "ci95": [
+     0.64,
+     0.9231
+    ]
+   },
+   "difference": {
+    "value": 0.4893617021276596,
+    "ci95": [
+     0.2439,
+     0.7209
+    ]
+   },
+   "resamples_used": 10000
+  },
+  "f1": {
+   "regex": {
+    "value": 0.45901639344262296,
+    "ci95": [
+     0.2154,
+     0.6875
+    ]
+   },
+   "combined": {
+    "value": 0.8705882352941177,
+    "ci95": [
+     0.7711,
+     0.9524
+    ]
+   },
+   "difference": {
+    "value": 0.4115718418514947,
+    "ci95": [
+     0.1795,
+     0.6794
+    ]
+   },
+   "resamples_used": 10000
+  }
+ },
+ "rules": {
+  "J1_precision_at_least_0.90": {
+   "pass": true,
+   "combined_precision": 0.9736842105263158
+  },
+  "J2_recall_gain_at_least_0.10": {
+   "pass": true,
+   "delta": 0.4893617021276596
+  },
+  "J3_no_wrong_accused_role": {
+   "pass": true,
+   "wrong": {}
+  },
+  "J4_no_regex_party_lost": {
+   "pass": true,
+   "lost": {}
+  },
+  "J5_valid_reference": {
+   "pass": true,
+   "invalid": {},
+   "checked": 38
+  },
+  "J6_none_invented_on_empty_docs": {
+   "pass": true,
+   "empty_docs": [
+    "f_unknown",
+    "s10_unknown_legal_aid_minutes"
+   ],
+   "invented": {},
+   "vacuous": false
+  },
+  "overall": "PASS"
+ },
+ "per_document": {
+  "f_chargesheet": {
+   "gold": 3,
+   "regex": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Asha Testwoman | complainant",
+     "Dev Fakename | accused",
+     "Sunil Mockwala | accused"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Asha Testwoman | complainant",
+     "Dev Fakename | accused",
+     "Sunil Mockwala | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "accused: Dev Fakename [P1]",
+    "accused: Sunil Mockwala [P1]",
+    "complainant: Asha Testwoman [P1]"
+   ]
+  },
+  "f_fir": {
+   "gold": 2,
+   "regex": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Meera Placeholder | complainant",
+     "Ravi Sampleton | accused"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Meera Placeholder | complainant",
+     "Ravi Sampleton | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "accused: Ravi Sampleton [P1]",
+    "complainant: Meera Placeholder [P1]"
+   ]
+  },
+  "f_judgment": {
+   "gold": 2,
+   "regex": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Neelam @ Neeraj | applicant",
+     "The State Of Madhya Pradesh | respondent"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Neelam @ Neeraj | applicant",
+     "The State Of Madhya Pradesh | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "applicant: NEELAM @ NEERAJ [P1]",
+    "respondent: THE STATE OF MADHYA PRADESH [P1]"
+   ]
+  },
+  "f_petition": {
+   "gold": 3,
+   "regex": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Nikhil Placeholder | petitioner",
+     "Priya Testcase | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Nikhil Placeholder | petitioner",
+     "Priya Testcase | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "respondent: State of Fictionaland [P1]",
+    "respondent: Priya Testcase [P1]",
+    "petitioner: Nikhil Placeholder [P1]"
+   ]
+  },
+  "f_unknown": {
+   "gold": 0,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": []
+  },
+  "s01_fir_multi_accused": {
+   "gold": 4,
+   "regex": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [
+     "Lakshmi Varadkar | complainant"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [
+     "Lakshmi Varadkar | complainant"
+    ],
+    "missed_gold": [
+     "Suresh Kotwalkar @ Sonu | accused",
+     "Imran Bhaldar | accused",
+     "Deepak Zambre | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "informant: Lakshmi Varadkar [P1]"
+   ]
+  },
+  "s02_fir_org_complainant": {
+   "gold": 5,
+   "regex": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [
+     "Nitin Deshmane | informant",
+     "Samplepur Urban Co-operative Bank Ltd. | complainant"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [
+     "Nitin Deshmane | informant",
+     "Samplepur Urban Co-operative Bank Ltd. | complainant"
+    ],
+    "missed_gold": [
+     "Rakesh Bhosrekar | accused",
+     "Orchid Fictional Traders Pvt. Ltd. | accused",
+     "Pallavi Bhosrekar | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "complainant: Samplepur Urban Co-operative Bank Ltd [P1]",
+    "informant: Nitin Deshmane [P1]"
+   ]
+  },
+  "s03_chargesheet_four_accused": {
+   "gold": 5,
+   "regex": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 4,
+    "found_gold": [
+     "Prakash Hingmire | complainant"
+    ],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 4,
+    "fp": 1,
+    "fn": 1,
+    "found_gold": [
+     "Farhan Shaikhwadi | accused",
+     "Kavita Dongrekar | accused",
+     "Manoj Gaikar @ Bunty | accused",
+     "Prakash Hingmire | complainant"
+    ],
+    "missed_gold": [
+     "Raju Tambolkar @ Raja | accused"
+    ],
+    "false_positives": [
+     "accused: Raju Tambolkar"
+    ],
+    "partial_matches": [
+     {
+      "prediction": "Raju Tambolkar",
+      "gold": "Raju Tambolkar @ Raja",
+      "credit": 0.5
+     }
+    ]
+   },
+   "combined_items": [
+    "complainant: Prakash Hingmire [P1]",
+    "accused: Manoj Gaikar @ Bunty [P1]",
+    "accused: Farhan Shaikhwadi [P1]",
+    "accused: Kavita Dongrekar [P1]",
+    "accused: Raju Tambolkar [P1]"
+   ]
+  },
+  "s04_chargesheet_company_accused": {
+   "gold": 4,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 1,
+    "found_gold": [
+     "Harshad Malvankar | accused",
+     "Jitendra Sawlekar | accused",
+     "Testgarh Agricultural Produce Market Committee | complainant"
+    ],
+    "missed_gold": [
+     "Greenleaf Fictional Agro Pvt. Ltd. | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "complainant: Testgarh Agricultural Produce Market Committee [P1]",
+    "accused: Harshad Malvankar [P1]",
+    "accused: Jitendra Sawlekar [P1]"
+   ]
+  },
+  "s05_petition_bail": {
+   "gold": 4,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Ajay Phadtare | accused",
+     "Shabana Mulani | respondent",
+     "State of Fictionaland | respondent",
+     "Vikas Rangnekar @ Vicky | applicant"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "applicant: Vikas Rangnekar @ Vicky [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "respondent: Shabana Mulani [P1]",
+    "accused: Ajay Phadtare [P1]"
+   ]
+  },
+  "s06_petition_quashing_multi": {
+   "gold": 5,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 5,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 5,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Anil Saraswat | petitioner",
+     "Fictional Housing Finance Ltd. | respondent",
+     "Neha Saraswat | petitioner",
+     "Rohit Jadhavkar | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "petitioner: Neha Saraswat [P1]",
+    "petitioner: Anil Saraswat [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "respondent: Fictional Housing Finance Ltd [P1]",
+    "respondent: Rohit Jadhavkar [P1]"
+   ]
+  },
+  "s07_judgment_criminal_appeal": {
+   "gold": 5,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 5,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 4,
+    "fp": 0,
+    "fn": 1,
+    "found_gold": [
+     "Bharat Ninave @ Bhau | appellant",
+     "Gopal Ninave | appellant",
+     "Sitaram Ninave | appellant",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [
+     "Yamuna Ninave | complainant"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "appellant: Gopal Ninave [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "appellant: Sitaram Ninave [P1]",
+    "appellant: Bharat Ninave @ Bhau [P1]"
+   ]
+  },
+  "s08_order_bail_cancellation": {
+   "gold": 3,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 1,
+    "found_gold": [
+     "Kamini Bhagwat | applicant",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [
+     "Sameer Lonkar | respondent"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "applicant: Kamini Bhagwat [P1]",
+    "respondent: State of Fictionaland [P1]"
+   ]
+  },
+  "s09_order_cheque_complaint": {
+   "gold": 2,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 2,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Mahesh Tidke | accused",
+     "Sunrise Fictional Traders | complainant"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "complainant: Sunrise Fictional Traders [P1]",
+    "accused: Mahesh Tidke [P1]"
+   ]
+  },
+  "s10_unknown_legal_aid_minutes": {
+   "gold": 0,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": []
+  }
+ },
+ "label": "REGRESSION CHECK ONLY - NOT THE JUDGE (NER_PARTY_ROLES_E4B_PLAN.md section 5)",
+ "status": "UNREVIEWED",
+ "ner_status_combined": {
+  "backend": "combined",
+  "active": "combined",
+  "model": {
+   "status": "ready",
+   "device": "mps",
+   "load_ms": 2718.0,
+   "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c"
+  },
+  "calls": {
+   "combined_calls": 15,
+   "fallback_calls": 0
+  },
+  "fallback": false
+ },
+ "e4_correct_parties_lost": {},
+ "e4_errors_still_present": {
+  "f_chargesheet": {
+   "accused: Dev Fake": false
+  },
+  "s03_chargesheet_four_accused": {
+   "respondent: Manoj Gaikar @ Bunty": false,
+   "respondent: Farhan Shaikhwadi": false,
+   "respondent: Kavita Dongrekar": false,
+   "respondent: Raju Tam": false
+  },
+  "s07_judgment_criminal_appeal": {
+   "appellant: Bharat Ninave @ Bha": false
+  }
+ },
+ "e4_combined_micro": {
+  "tp": 33,
+  "fp": 6,
+  "fn": 14,
+  "gold": 47,
+  "predicted": 39,
+  "duplicates": 0,
+  "precision": 0.8461538461538461,
+  "recall": 0.7021276595744681,
+  "f1": 0.7674418604651163,
+  "partial": {
+   "precision": 0.8589743589743589,
+   "recall": 0.7127659574468085,
+   "f1": 0.7790697674418605
+  }
+ }
+}
