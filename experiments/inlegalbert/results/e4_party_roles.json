@@ -1,0 +1,1855 @@
+{
+ "status": "UNREVIEWED",
+ "plan": "docs/experiments/NER_PARTY_ROLES_PLAN.md",
+ "ner_status_combined": {
+  "backend": "combined",
+  "active": "combined",
+  "model": {
+   "status": "ready",
+   "device": "mps",
+   "load_ms": 3207.2,
+   "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c"
+  },
+  "calls": {
+   "combined_calls": 15,
+   "fallback_calls": 0
+  },
+  "fallback": false
+ },
+ "public_pending": [
+  "p01_gujarat_hc_2021",
+  "p02_andhra_hc_2023",
+  "p03_punjab_hc_2023",
+  "p04_supreme_court_2022",
+  "p05_allahabad_hc_2019"
+ ],
+ "evaluation_sets": {
+  "fixtures+synthetic": {
+   "documents": 15,
+   "gold_parties": 47,
+   "micro": {
+    "regex": {
+     "tp": 14,
+     "fp": 0,
+     "fn": 33,
+     "gold": 47,
+     "predicted": 14,
+     "duplicates": 0,
+     "precision": 1.0,
+     "recall": 0.2978723404255319,
+     "f1": 0.45901639344262296,
+     "partial": {
+      "precision": 1.0,
+      "recall": 0.2978723404255319,
+      "f1": 0.45901639344262296
+     }
+    },
+    "combined": {
+     "tp": 33,
+     "fp": 6,
+     "fn": 14,
+     "gold": 47,
+     "predicted": 39,
+     "duplicates": 0,
+     "precision": 0.8461538461538461,
+     "recall": 0.7021276595744681,
+     "f1": 0.7674418604651163,
+     "partial": {
+      "precision": 0.8589743589743589,
+      "recall": 0.7127659574468085,
+      "f1": 0.7790697674418605
+     }
+    }
+   },
+   "per_role": {
+    "regex": {
+     "accused": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 15,
+      "f1": 0.2857142857142857,
+      "recall": 0.16666666666666666
+     },
+     "appellant": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "f1": 0.0,
+      "recall": 0.0
+     },
+     "applicant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "f1": 0.5,
+      "recall": 0.3333333333333333
+     },
+     "complainant": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 3,
+      "f1": 0.7692307692307693,
+      "recall": 0.625
+     },
+     "informant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "f1": 0.5,
+      "recall": 0.3333333333333333
+     },
+     "respondent": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 8,
+      "f1": 0.42857142857142855,
+      "recall": 0.2727272727272727
+     }
+    },
+    "combined": {
+     "accused": {
+      "tp": 7,
+      "fp": 1,
+      "fn": 11,
+      "f1": 0.5384615384615384,
+      "recall": 0.3888888888888889
+     },
+     "appellant": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "f1": 0.6666666666666666,
+      "recall": 0.6666666666666666
+     },
+     "applicant": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "complainant": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 1,
+      "f1": 0.9333333333333333,
+      "recall": 0.875
+     },
+     "informant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "respondent": {
+      "tp": 10,
+      "fp": 4,
+      "fn": 1,
+      "f1": 0.8,
+      "recall": 0.9090909090909091
+     }
+    }
+   },
+   "bootstrap": {
+    "precision": {
+     "regex": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "combined": {
+      "value": 0.8461538461538461,
+      "ci95": [
+       0.6585,
+       1.0
+      ]
+     },
+     "difference": {
+      "value": -0.15384615384615385,
+      "ci95": [
+       -0.3415,
+       0.0
+      ]
+     },
+     "resamples_used": 10000
+    },
+    "recall": {
+     "regex": {
+      "value": 0.2978723404255319,
+      "ci95": [
+       0.1207,
+       0.5238
+      ]
+     },
+     "combined": {
+      "value": 0.7021276595744681,
+      "ci95": [
+       0.5273,
+       0.8788
+      ]
+     },
+     "difference": {
+      "value": 0.4042553191489362,
+      "ci95": [
+       0.1579,
+       0.6585
+      ]
+     },
+     "resamples_used": 10000
+    },
+    "f1": {
+     "regex": {
+      "value": 0.45901639344262296,
+      "ci95": [
+       0.2154,
+       0.6875
+      ]
+     },
+     "combined": {
+      "value": 0.7674418604651163,
+      "ci95": [
+       0.6,
+       0.9189
+      ]
+     },
+     "difference": {
+      "value": 0.30842546702249335,
+      "ci95": [
+       0.0539,
+       0.6029
+      ]
+     },
+     "resamples_used": 10000
+    }
+   },
+   "rules": {
+    "R1_recall_gain": {
+     "pass": true,
+     "delta": 0.4042553191489362,
+     "ci95": [
+      0.1579,
+      0.6585
+     ],
+     "threshold": 0.1
+    },
+    "R2_precision_not_lower": {
+     "pass": false,
+     "regex": 1.0,
+     "combined": 0.8461538461538461,
+     "delta_ci95": [
+      -0.3415,
+      0.0
+     ]
+    },
+    "R3_no_regex_party_lost": {
+     "pass": true,
+     "lost": {}
+    },
+    "R4_no_role_worse": {
+     "pass": true,
+     "worse": {},
+     "regex": {
+      "accused": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 15,
+       "f1": 0.2857142857142857,
+       "recall": 0.16666666666666666
+      },
+      "appellant": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 3,
+       "f1": 0.0,
+       "recall": 0.0
+      },
+      "applicant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 2,
+       "f1": 0.5,
+       "recall": 0.3333333333333333
+      },
+      "complainant": {
+       "tp": 5,
+       "fp": 0,
+       "fn": 3,
+       "f1": 0.7692307692307693,
+       "recall": 0.625
+      },
+      "informant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 2,
+       "f1": 0.5,
+       "recall": 0.3333333333333333
+      },
+      "respondent": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 8,
+       "f1": 0.42857142857142855,
+       "recall": 0.2727272727272727
+      }
+     },
+     "combined": {
+      "accused": {
+       "tp": 7,
+       "fp": 1,
+       "fn": 11,
+       "f1": 0.5384615384615384,
+       "recall": 0.3888888888888889
+      },
+      "appellant": {
+       "tp": 2,
+       "fp": 1,
+       "fn": 1,
+       "f1": 0.6666666666666666,
+       "recall": 0.6666666666666666
+      },
+      "applicant": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "complainant": {
+       "tp": 7,
+       "fp": 0,
+       "fn": 1,
+       "f1": 0.9333333333333333,
+       "recall": 0.875
+      },
+      "informant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "respondent": {
+       "tp": 10,
+       "fp": 4,
+       "fn": 1,
+       "f1": 0.8,
+       "recall": 0.9090909090909091
+      }
+     }
+    },
+    "R5_valid_reference": {
+     "pass": true,
+     "invalid": {},
+     "checked": 39
+    },
+    "R6_none_invented_on_empty_docs": {
+     "pass": true,
+     "empty_docs": [
+      "f_unknown",
+      "s10_unknown_legal_aid_minutes"
+     ],
+     "invented": {}
+    },
+    "overall": "FAIL"
+   }
+  },
+  "fixtures": {
+   "documents": 5,
+   "gold_parties": 10,
+   "micro": {
+    "regex": {
+     "tp": 10,
+     "fp": 0,
+     "fn": 0,
+     "gold": 10,
+     "predicted": 10,
+     "duplicates": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "partial": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     }
+    },
+    "combined": {
+     "tp": 10,
+     "fp": 1,
+     "fn": 0,
+     "gold": 10,
+     "predicted": 11,
+     "duplicates": 0,
+     "precision": 0.9090909090909091,
+     "recall": 1.0,
+     "f1": 0.9523809523809523,
+     "partial": {
+      "precision": 0.9090909090909091,
+      "recall": 1.0,
+      "f1": 0.9523809523809523
+     }
+    }
+   },
+   "per_role": {
+    "regex": {
+     "accused": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "applicant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "complainant": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "respondent": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     }
+    },
+    "combined": {
+     "accused": {
+      "tp": 3,
+      "fp": 1,
+      "fn": 0,
+      "f1": 0.8571428571428571,
+      "recall": 1.0
+     },
+     "applicant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "complainant": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "respondent": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     }
+    }
+   },
+   "bootstrap": {
+    "precision": {
+     "regex": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "combined": {
+      "value": 0.9090909090909091,
+      "ci95": [
+       0.7857,
+       1.0
+      ]
+     },
+     "difference": {
+      "value": -0.09090909090909094,
+      "ci95": [
+       -0.2143,
+       0.0
+      ]
+     },
+     "resamples_used": 10000
+    },
+    "recall": {
+     "regex": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "combined": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "difference": {
+      "value": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ]
+     },
+     "resamples_used": 10000
+    },
+    "f1": {
+     "regex": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "combined": {
+      "value": 0.9523809523809523,
+      "ci95": [
+       0.88,
+       1.0
+      ]
+     },
+     "difference": {
+      "value": -0.04761904761904767,
+      "ci95": [
+       -0.12,
+       0.0
+      ]
+     },
+     "resamples_used": 10000
+    }
+   },
+   "rules": {
+    "R1_recall_gain": {
+     "pass": false,
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "threshold": 0.1
+    },
+    "R2_precision_not_lower": {
+     "pass": false,
+     "regex": 1.0,
+     "combined": 0.9090909090909091,
+     "delta_ci95": [
+      -0.2143,
+      0.0
+     ]
+    },
+    "R3_no_regex_party_lost": {
+     "pass": true,
+     "lost": {}
+    },
+    "R4_no_role_worse": {
+     "pass": false,
+     "worse": {
+      "accused": {
+       "regex_f1": 1.0,
+       "combined_f1": 0.8571428571428571
+      }
+     },
+     "regex": {
+      "accused": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "applicant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "complainant": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "respondent": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      }
+     },
+     "combined": {
+      "accused": {
+       "tp": 3,
+       "fp": 1,
+       "fn": 0,
+       "f1": 0.8571428571428571,
+       "recall": 1.0
+      },
+      "applicant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "complainant": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "respondent": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      }
+     }
+    },
+    "R5_valid_reference": {
+     "pass": true,
+     "invalid": {},
+     "checked": 11
+    },
+    "R6_none_invented_on_empty_docs": {
+     "pass": true,
+     "empty_docs": [
+      "f_unknown"
+     ],
+     "invented": {}
+    },
+    "overall": "FAIL"
+   }
+  },
+  "synthetic": {
+   "documents": 10,
+   "gold_parties": 37,
+   "micro": {
+    "regex": {
+     "tp": 4,
+     "fp": 0,
+     "fn": 33,
+     "gold": 37,
+     "predicted": 4,
+     "duplicates": 0,
+     "precision": 1.0,
+     "recall": 0.10810810810810811,
+     "f1": 0.1951219512195122,
+     "partial": {
+      "precision": 1.0,
+      "recall": 0.10810810810810811,
+      "f1": 0.1951219512195122
+     }
+    },
+    "combined": {
+     "tp": 23,
+     "fp": 5,
+     "fn": 14,
+     "gold": 37,
+     "predicted": 28,
+     "duplicates": 0,
+     "precision": 0.8214285714285714,
+     "recall": 0.6216216216216216,
+     "f1": 0.7076923076923077,
+     "partial": {
+      "precision": 0.8392857142857143,
+      "recall": 0.6351351351351351,
+      "f1": 0.7230769230769231
+     }
+    }
+   },
+   "per_role": {
+    "regex": {
+     "accused": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "f1": 0.0,
+      "recall": 0.0
+     },
+     "appellant": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "f1": 0.0,
+      "recall": 0.0
+     },
+     "applicant": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "f1": 0.0,
+      "recall": 0.0
+     },
+     "complainant": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 3,
+      "f1": 0.6666666666666666,
+      "recall": 0.5
+     },
+     "informant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "f1": 0.0,
+      "recall": 0.0
+     },
+     "respondent": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 8,
+      "f1": 0.0,
+      "recall": 0.0
+     }
+    },
+    "combined": {
+     "accused": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 11,
+      "f1": 0.42105263157894735,
+      "recall": 0.26666666666666666
+     },
+     "appellant": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "f1": 0.6666666666666666,
+      "recall": 0.6666666666666666
+     },
+     "applicant": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "complainant": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 1,
+      "f1": 0.9090909090909091,
+      "recall": 0.8333333333333334
+     },
+     "informant": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "petitioner": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0,
+      "recall": 1.0
+     },
+     "respondent": {
+      "tp": 7,
+      "fp": 4,
+      "fn": 1,
+      "f1": 0.7368421052631579,
+      "recall": 0.875
+     }
+    }
+   },
+   "bootstrap": {
+    "precision": {
+     "regex": {
+      "value": 1.0,
+      "ci95": [
+       1.0,
+       1.0
+      ]
+     },
+     "combined": {
+      "value": 0.8214285714285714,
+      "ci95": [
+       0.5758,
+       1.0
+      ]
+     },
+     "difference": {
+      "value": -0.1785714285714286,
+      "ci95": [
+       -0.4242,
+       0.0
+      ]
+     },
+     "resamples_used": 9710
+    },
+    "recall": {
+     "regex": {
+      "value": 0.10810810810810811,
+      "ci95": [
+       0.0,
+       0.2121
+      ]
+     },
+     "combined": {
+      "value": 0.6216216216216216,
+      "ci95": [
+       0.4286,
+       0.8333
+      ]
+     },
+     "difference": {
+      "value": 0.5135135135135135,
+      "ci95": [
+       0.2326,
+       0.8077
+      ]
+     },
+     "resamples_used": 10000
+    },
+    "f1": {
+     "regex": {
+      "value": 0.1951219512195122,
+      "ci95": [
+       0.0,
+       0.35
+      ]
+     },
+     "combined": {
+      "value": 0.7076923076923077,
+      "ci95": [
+       0.5,
+       0.898
+      ]
+     },
+     "difference": {
+      "value": 0.5125703564727955,
+      "ci95": [
+       0.19,
+       0.8541
+      ]
+     },
+     "resamples_used": 10000
+    }
+   },
+   "rules": {
+    "R1_recall_gain": {
+     "pass": true,
+     "delta": 0.5135135135135135,
+     "ci95": [
+      0.2326,
+      0.8077
+     ],
+     "threshold": 0.1
+    },
+    "R2_precision_not_lower": {
+     "pass": false,
+     "regex": 1.0,
+     "combined": 0.8214285714285714,
+     "delta_ci95": [
+      -0.4242,
+      0.0
+     ]
+    },
+    "R3_no_regex_party_lost": {
+     "pass": true,
+     "lost": {}
+    },
+    "R4_no_role_worse": {
+     "pass": true,
+     "worse": {},
+     "regex": {
+      "accused": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 15,
+       "f1": 0.0,
+       "recall": 0.0
+      },
+      "appellant": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 3,
+       "f1": 0.0,
+       "recall": 0.0
+      },
+      "applicant": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 2,
+       "f1": 0.0,
+       "recall": 0.0
+      },
+      "complainant": {
+       "tp": 3,
+       "fp": 0,
+       "fn": 3,
+       "f1": 0.6666666666666666,
+       "recall": 0.5
+      },
+      "informant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 2,
+       "f1": 0.0,
+       "recall": 0.0
+      },
+      "respondent": {
+       "tp": 0,
+       "fp": 0,
+       "fn": 8,
+       "f1": 0.0,
+       "recall": 0.0
+      }
+     },
+     "combined": {
+      "accused": {
+       "tp": 4,
+       "fp": 0,
+       "fn": 11,
+       "f1": 0.42105263157894735,
+       "recall": 0.26666666666666666
+      },
+      "appellant": {
+       "tp": 2,
+       "fp": 1,
+       "fn": 1,
+       "f1": 0.6666666666666666,
+       "recall": 0.6666666666666666
+      },
+      "applicant": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "complainant": {
+       "tp": 5,
+       "fp": 0,
+       "fn": 1,
+       "f1": 0.9090909090909091,
+       "recall": 0.8333333333333334
+      },
+      "informant": {
+       "tp": 1,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "petitioner": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "f1": 1.0,
+       "recall": 1.0
+      },
+      "respondent": {
+       "tp": 7,
+       "fp": 4,
+       "fn": 1,
+       "f1": 0.7368421052631579,
+       "recall": 0.875
+      }
+     }
+    },
+    "R5_valid_reference": {
+     "pass": true,
+     "invalid": {},
+     "checked": 28
+    },
+    "R6_none_invented_on_empty_docs": {
+     "pass": true,
+     "empty_docs": [
+      "s10_unknown_legal_aid_minutes"
+     ],
+     "invented": {}
+    },
+    "overall": "FAIL"
+   }
+  }
+ },
+ "per_document": {
+  "f_chargesheet": {
+   "source": "fixture",
+   "document_type": "chargesheet",
+   "gold": 3,
+   "regex": {
+    "predicted": 3,
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 3.0,
+    "found_gold": [
+     "Asha Testwoman | complainant",
+     "Dev Fakename | accused",
+     "Sunil Mockwala | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 4,
+    "tp": 3,
+    "fp": 1,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 3.0,
+    "found_gold": [
+     "Asha Testwoman | complainant",
+     "Dev Fakename | accused",
+     "Sunil Mockwala | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [
+     "accused: Dev Fake"
+    ],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Accused: Dev Fakename [P1, pp. 1-2]",
+    "Accused: Sunil Mockwala [P1, pp. 1-2]",
+    "Complainant: Asha Testwoman [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Accused: Dev Fakename [P1, pp. 1-2]",
+    "Accused: Sunil Mockwala [P1, pp. 1-2]",
+    "Complainant: Asha Testwoman [P1, pp. 1-2]",
+    "Accused: Dev Fake [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "accused: Dev Fake [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "f_fir": {
+   "source": "fixture",
+   "document_type": "FIR",
+   "gold": 2,
+   "regex": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Meera Placeholder | complainant",
+     "Ravi Sampleton | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Meera Placeholder | complainant",
+     "Ravi Sampleton | accused"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Accused: Ravi Sampleton [P1, pp. 1-2]",
+    "Complainant: Meera Placeholder [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Accused: Ravi Sampleton [P1, pp. 1-2]",
+    "Complainant: Meera Placeholder [P1, pp. 1-2]"
+   ],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "f_judgment": {
+   "source": "fixture",
+   "document_type": "judgment",
+   "gold": 2,
+   "regex": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Neelam @ Neeraj | applicant",
+     "The State Of Madhya Pradesh | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Neelam @ Neeraj | applicant",
+     "The State Of Madhya Pradesh | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Applicant: NEELAM @ NEERAJ [P1, p. 1]",
+    "Respondent: THE STATE OF MADHYA PRADESH [P1, p. 1]"
+   ],
+   "combined_items": [
+    "Applicant: NEELAM @ NEERAJ [P1, p. 1]",
+    "Respondent: THE STATE OF MADHYA PRADESH [P1, p. 1]"
+   ],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "f_petition": {
+   "source": "fixture",
+   "document_type": "petition",
+   "gold": 3,
+   "regex": {
+    "predicted": 3,
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 3.0,
+    "found_gold": [
+     "Nikhil Placeholder | petitioner",
+     "Priya Testcase | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 3,
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 3.0,
+    "found_gold": [
+     "Nikhil Placeholder | petitioner",
+     "Priya Testcase | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Respondent: Priya Testcase [P1, pp. 1-2]",
+    "Petitioner: Nikhil Placeholder [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Respondent: Priya Testcase [P1, pp. 1-2]",
+    "Petitioner: Nikhil Placeholder [P1, pp. 1-2]"
+   ],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "f_unknown": {
+   "source": "fixture",
+   "document_type": "unknown",
+   "gold": 0,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "s01_fir_multi_accused": {
+   "source": "synthetic",
+   "document_type": "FIR",
+   "gold": 4,
+   "regex": {
+    "predicted": 1,
+    "tp": 1,
+    "fp": 0,
+    "fn": 3,
+    "duplicates": 0,
+    "partial_tp": 1.0,
+    "found_gold": [
+     "Lakshmi Varadkar | complainant"
+    ],
+    "missed_gold": [
+     "Suresh Kotwalkar @ Sonu | accused",
+     "Imran Bhaldar | accused",
+     "Deepak Zambre | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 1,
+    "tp": 1,
+    "fp": 0,
+    "fn": 3,
+    "duplicates": 0,
+    "partial_tp": 1.0,
+    "found_gold": [
+     "Lakshmi Varadkar | complainant"
+    ],
+    "missed_gold": [
+     "Suresh Kotwalkar @ Sonu | accused",
+     "Imran Bhaldar | accused",
+     "Deepak Zambre | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Informant: Lakshmi Varadkar [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Informant: Lakshmi Varadkar [P1, pp. 1-2]"
+   ],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "s02_fir_org_complainant": {
+   "source": "synthetic",
+   "document_type": "FIR",
+   "gold": 5,
+   "regex": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 3,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Nitin Deshmane | informant",
+     "Samplepur Urban Co-operative Bank Ltd. | complainant"
+    ],
+    "missed_gold": [
+     "Rakesh Bhosrekar | accused",
+     "Orchid Fictional Traders Pvt. Ltd. | accused",
+     "Pallavi Bhosrekar | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 3,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Nitin Deshmane | informant",
+     "Samplepur Urban Co-operative Bank Ltd. | complainant"
+    ],
+    "missed_gold": [
+     "Rakesh Bhosrekar | accused",
+     "Orchid Fictional Traders Pvt. Ltd. | accused",
+     "Pallavi Bhosrekar | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Complainant: Samplepur Urban Co-operative Bank Ltd [P1, pp. 1-2]",
+    "Informant: Nitin Deshmane [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Complainant: Samplepur Urban Co-operative Bank Ltd [P1, pp. 1-2]",
+    "Informant: Nitin Deshmane [P1, pp. 1-2]"
+   ],
+   "combined_added": [],
+   "combined_invalid_references": []
+  },
+  "s03_chargesheet_four_accused": {
+   "source": "synthetic",
+   "document_type": "chargesheet",
+   "gold": 5,
+   "regex": {
+    "predicted": 1,
+    "tp": 1,
+    "fp": 0,
+    "fn": 4,
+    "duplicates": 0,
+    "partial_tp": 1.0,
+    "found_gold": [
+     "Prakash Hingmire | complainant"
+    ],
+    "missed_gold": [
+     "Manoj Gaikar @ Bunty | accused",
+     "Farhan Shaikhwadi | accused",
+     "Kavita Dongrekar | accused",
+     "Raju Tambolkar @ Raja | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 5,
+    "tp": 1,
+    "fp": 4,
+    "fn": 4,
+    "duplicates": 0,
+    "partial_tp": 1.0,
+    "found_gold": [
+     "Prakash Hingmire | complainant"
+    ],
+    "missed_gold": [
+     "Manoj Gaikar @ Bunty | accused",
+     "Farhan Shaikhwadi | accused",
+     "Kavita Dongrekar | accused",
+     "Raju Tambolkar @ Raja | accused"
+    ],
+    "false_positives": [
+     "respondent: Manoj Gaikar @ Bunty",
+     "respondent: Farhan Shaikhwadi",
+     "respondent: Kavita Dongrekar",
+     "respondent: Raju Tam"
+    ],
+    "partial_matches": []
+   },
+   "regex_items": [
+    "Complainant: Prakash Hingmire [P1, pp. 1-2]"
+   ],
+   "combined_items": [
+    "Complainant: Prakash Hingmire [P1, pp. 1-2]",
+    "Respondent: Manoj Gaikar @ Bunty [P1, pp. 1-2]",
+    "Respondent: Farhan Shaikhwadi [P1, pp. 1-2]",
+    "Respondent: Kavita Dongrekar [P1, pp. 1-2]",
+    "Respondent: Raju Tam [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "respondent: Manoj Gaikar @ Bunty [P1]",
+    "respondent: Farhan Shaikhwadi [P1]",
+    "respondent: Kavita Dongrekar [P1]",
+    "respondent: Raju Tam [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s04_chargesheet_company_accused": {
+   "source": "synthetic",
+   "document_type": "chargesheet",
+   "gold": 4,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Testgarh Agricultural Produce Market Committee | complainant",
+     "Greenleaf Fictional Agro Pvt. Ltd. | accused",
+     "Harshad Malvankar | accused",
+     "Jitendra Sawlekar | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 3,
+    "tp": 3,
+    "fp": 0,
+    "fn": 1,
+    "duplicates": 0,
+    "partial_tp": 3.0,
+    "found_gold": [
+     "Harshad Malvankar | accused",
+     "Jitendra Sawlekar | accused",
+     "Testgarh Agricultural Produce Market Committee | complainant"
+    ],
+    "missed_gold": [
+     "Greenleaf Fictional Agro Pvt. Ltd. | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Complainant: Testgarh Agricultural Produce Market Committee [P1, pp. 1-2]",
+    "Accused: Harshad Malvankar [P1, pp. 1-2]",
+    "Accused: Jitendra Sawlekar [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "complainant: Testgarh Agricultural Produce Market Committee [P1]",
+    "accused: Harshad Malvankar [P1]",
+    "accused: Jitendra Sawlekar [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s05_petition_bail": {
+   "source": "synthetic",
+   "document_type": "petition",
+   "gold": 4,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Vikas Rangnekar @ Vicky | applicant",
+     "State of Fictionaland | respondent",
+     "Shabana Mulani | respondent",
+     "Ajay Phadtare | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 4,
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 4.0,
+    "found_gold": [
+     "Ajay Phadtare | accused",
+     "Shabana Mulani | respondent",
+     "State of Fictionaland | respondent",
+     "Vikas Rangnekar @ Vicky | applicant"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Applicant: Vikas Rangnekar @ Vicky [P1, pp. 1-2]",
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Respondent: Shabana Mulani [P1, pp. 1-2]",
+    "Accused: Ajay Phadtare [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "applicant: Vikas Rangnekar @ Vicky [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "respondent: Shabana Mulani [P1]",
+    "accused: Ajay Phadtare [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s06_petition_quashing_multi": {
+   "source": "synthetic",
+   "document_type": "petition",
+   "gold": 5,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 5,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Neha Saraswat | petitioner",
+     "Anil Saraswat | petitioner",
+     "State of Fictionaland | respondent",
+     "Fictional Housing Finance Ltd. | respondent",
+     "Rohit Jadhavkar | respondent"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 5,
+    "tp": 5,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 5.0,
+    "found_gold": [
+     "Anil Saraswat | petitioner",
+     "Fictional Housing Finance Ltd. | respondent",
+     "Neha Saraswat | petitioner",
+     "Rohit Jadhavkar | respondent",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Petitioner: Neha Saraswat [P1, pp. 1-2]",
+    "Petitioner: Anil Saraswat [P1, pp. 1-2]",
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Respondent: Fictional Housing Finance Ltd [P1, pp. 1-2]",
+    "Respondent: Rohit Jadhavkar [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "petitioner: Neha Saraswat [P1]",
+    "petitioner: Anil Saraswat [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "respondent: Fictional Housing Finance Ltd [P1]",
+    "respondent: Rohit Jadhavkar [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s07_judgment_criminal_appeal": {
+   "source": "synthetic",
+   "document_type": "judgment",
+   "gold": 5,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 5,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Gopal Ninave | appellant",
+     "Sitaram Ninave | appellant",
+     "Bharat Ninave @ Bhau | appellant",
+     "State of Fictionaland | respondent",
+     "Yamuna Ninave | complainant"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 4,
+    "tp": 3,
+    "fp": 1,
+    "fn": 2,
+    "duplicates": 0,
+    "partial_tp": 3.5,
+    "found_gold": [
+     "Gopal Ninave | appellant",
+     "Sitaram Ninave | appellant",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [
+     "Bharat Ninave @ Bhau | appellant",
+     "Yamuna Ninave | complainant"
+    ],
+    "false_positives": [
+     "appellant: Bharat Ninave @ Bha"
+    ],
+    "partial_matches": [
+     {
+      "prediction": "Bharat Ninave @ Bha",
+      "gold": "Bharat Ninave @ Bhau",
+      "credit": 0.5
+     }
+    ]
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Appellant: Gopal Ninave [P1, pp. 1-2]",
+    "Respondent: State of Fictionaland [P1, pp. 1-2]",
+    "Appellant: Sitaram Ninave [P1, pp. 1-2]",
+    "Appellant: Bharat Ninave @ Bha [P1, pp. 1-2]"
+   ],
+   "combined_added": [
+    "appellant: Gopal Ninave [P1]",
+    "respondent: State of Fictionaland [P1]",
+    "appellant: Sitaram Ninave [P1]",
+    "appellant: Bharat Ninave @ Bha [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s08_order_bail_cancellation": {
+   "source": "synthetic",
+   "document_type": "order",
+   "gold": 3,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 3,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Kamini Bhagwat | applicant",
+     "State of Fictionaland | respondent",
+     "Sameer Lonkar | respondent"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 1,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Kamini Bhagwat | applicant",
+     "State of Fictionaland | respondent"
+    ],
+    "missed_gold": [
+     "Sameer Lonkar | respondent"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Applicant: Kamini Bhagwat [P1, p. 1]",
+    "Respondent: State of Fictionaland [P1, p. 1]"
+   ],
+   "combined_added": [
+    "applicant: Kamini Bhagwat [P1]",
+    "respondent: State of Fictionaland [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s09_order_cheque_complaint": {
+   "source": "synthetic",
+   "document_type": "order",
+   "gold": 2,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 2,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [
+     "Sunrise Fictional Traders | complainant",
+     "Mahesh Tidke | accused"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 2.0,
+    "found_gold": [
+     "Mahesh Tidke | accused",
+     "Sunrise Fictional Traders | complainant"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [
+    "Complainant: Sunrise Fictional Traders [P1, p. 1]",
+    "Accused: Mahesh Tidke [P1, p. 1]"
+   ],
+   "combined_added": [
+    "complainant: Sunrise Fictional Traders [P1]",
+    "accused: Mahesh Tidke [P1]"
+   ],
+   "combined_invalid_references": []
+  },
+  "s10_unknown_legal_aid_minutes": {
+   "source": "synthetic",
+   "document_type": "unknown",
+   "gold": 0,
+   "regex": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined": {
+    "predicted": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "duplicates": 0,
+    "partial_tp": 0.0,
+    "found_gold": [],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "regex_items": [],
+   "combined_items": [],
+   "combined_added": [],
+   "combined_invalid_references": []
+  }
+ },
+ "regex_output_kept_first_and_unchanged": {
+  "f_chargesheet": true,
+  "f_fir": true,
+  "f_judgment": true,
+  "f_petition": true,
+  "f_unknown": true,
+  "s01_fir_multi_accused": true,
+  "s02_fir_org_complainant": true,
+  "s03_chargesheet_four_accused": true,
+  "s04_chargesheet_company_accused": true,
+  "s05_petition_bail": true,
+  "s06_petition_quashing_multi": true,
+  "s07_judgment_criminal_appeal": true,
+  "s08_order_bail_cancellation": true,
+  "s09_order_cheque_complaint": true,
+  "s10_unknown_legal_aid_minutes": true
+ },
+ "map_ms": {
+  "deterministic": {
+   "f_chargesheet": 10.1,
+   "f_fir": 6.1,
+   "f_judgment": 7.1,
+   "f_petition": 6.7,
+   "f_unknown": 4.4,
+   "s01_fir_multi_accused": 5.8,
+   "s02_fir_org_complainant": 5.0,
+   "s03_chargesheet_four_accused": 6.1,
+   "s04_chargesheet_company_accused": 5.7,
+   "s05_petition_bail": 5.5,
+   "s06_petition_quashing_multi": 5.6,
+   "s07_judgment_criminal_appeal": 6.1,
+   "s08_order_bail_cancellation": 5.0,
+   "s09_order_cheque_complaint": 5.3,
+   "s10_unknown_legal_aid_minutes": 5.0
+  },
+  "combined": {
+   "f_chargesheet": 132.9,
+   "f_fir": 44.1,
+   "f_judgment": 44.0,
+   "f_petition": 43.7,
+   "f_unknown": 23.1,
+   "s01_fir_multi_accused": 42.7,
+   "s02_fir_org_complainant": 42.1,
+   "s03_chargesheet_four_accused": 43.4,
+   "s04_chargesheet_company_accused": 42.8,
+   "s05_petition_bail": 42.1,
+   "s06_petition_quashing_multi": 42.1,
+   "s07_judgment_criminal_appeal": 42.9,
+   "s08_order_bail_cancellation": 171.8,
+   "s09_order_cheque_complaint": 26.8,
+   "s10_unknown_legal_aid_minutes": 72.2
+  }
+ }
+}

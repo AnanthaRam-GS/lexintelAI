@@ -1,0 +1,35 @@
+{
+ "doc_id": "s08_order_bail_cancellation",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "order",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s08_order_bail_cancellation.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "'Opposite Party' cause title",
+  "respondent who is the accused",
+  "applicant who is the complainant"
+ ],
+ "parties": [
+  {
+   "name": "Kamini Bhagwat",
+   "role": "applicant",
+   "alternative_roles": [
+    "complainant"
+   ]
+  },
+  {
+   "name": "State of Fictionaland",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Sameer Lonkar",
+   "role": "respondent",
+   "alternative_roles": [
+    "accused"
+   ]
+  }
+ ],
+ "non_parties": []
+}

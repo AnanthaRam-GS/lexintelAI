@@ -18,6 +18,10 @@ Reused, not reinvented:
   the deterministic NER by default; with `LEGALAI_NER_BACKEND=combined`, the
   E1 InLegalBERT NER combined with it under the frozen policy (step E3), which
   falls back to the deterministic NER if the model is unavailable.
+- Parties and roles: the regular expressions below; with `combined` only, also
+  the model's party entities, added under the step E4 rule
+  (docs/experiments/NER_PARTY_ROLES_PLAN.md section 3; `extract_model_parties`,
+  `merge_model_parties`). With `deterministic` the output is unchanged.
 - `token_budget.estimate_tokens` for bounding.
 
 Additive and outside the 5 frozen files - it only imports read-only from
@@ -32,7 +36,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from backend.app.services.ner_backend import extract_entities
+from backend.app.services.ner_backend import configured_backend as configured_ner_backend
+from backend.app.services.ner_backend import extract_entities, extract_entities_detailed
 from backend.app.services.private_pdf_rag import (
     PrivateChunk,
     PrivateEvidenceItem,
@@ -336,10 +341,11 @@ def _event_for_context(context: str) -> str | None:
     return None
 
 
-def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str], list[str], list[str]]:
+def extract_sections_and_entities(chunks: list[PrivateChunk], ner_results: list[Any] | None = None) -> tuple[list[str], list[str], list[str]]:
     """Returns (explicit_sections, parties, important_dates), each deduped
     and capped, extracted via `ner_backend.extract_entities` (the deterministic
-    NER by default; no provider call)."""
+    NER by default; no provider call). ``ner_results`` (one per chunk) reuses
+    entities already extracted for the chunks instead of extracting them again."""
     sections: list[str] = []
     parties: list[str] = []
     dates: list[str] = []
@@ -347,7 +353,7 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
     seen_parties: set[str] = set()
     seen_dates: set[str] = set()
 
-    for chunk in chunks:
+    for index, chunk in enumerate(chunks):
         for match in _SECTION_PATTERN.finditer(chunk.text):
             statute = match.group(2)
             label = f"Section {match.group(1).strip()} {statute or ''}".strip()
@@ -360,7 +366,7 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
             if key not in seen_sections and len(sections) < _MAX_SECTIONS:
                 seen_sections.add(key)
                 sections.append(match.group(1))
-        result = extract_entities(chunk.text)
+        result = extract_entities(chunk.text) if ner_results is None else ner_results[index]
         for entity in result.entities:
             if entity.entity_type == "SECTION":
                 suffix = _statute_suffix_after(chunk.text, entity.end_char)
@@ -409,6 +415,115 @@ def extract_parties_and_roles(chunks: list[PrivateChunk]) -> list[PartyRole]:
                     seen.add(key)
                     parties.append(PartyRole(role=role, name=name, private_evidence_id=chunk.private_chunk_id, page_start=chunk.page_start, page_end=chunk.page_end))
     return parties
+
+
+# ---------------------------------------------------------------------------
+# Step E4: parties from the model, with LEGALAI_NER_BACKEND=combined only
+# (docs/experiments/NER_PARTY_ROLES_PLAN.md section 3, frozen before measuring)
+# ---------------------------------------------------------------------------
+
+# InLegalNER types that are parties by themselves, and types that become parties only with a role cue.
+_MODEL_PARTY_TYPES = {"PETITIONER", "RESPONDENT"}
+_MODEL_CUE_TYPES = {"OTHER_PERSON", "ORG"}
+_PETITIONER_SIDE = {"petitioner", "appellant", "applicant", "complainant", "informant"}
+_RESPONDENT_SIDE = {"respondent", "accused"}
+_ROLE_WORD = r"(co-accused|appellant|respondent|petitioner|applicant|accused|complainant|informant)s?"
+_CUE_NUMBER = r"(?:\s*nos?\.?\s*\d+(?:\s*(?:,|and|&)\s*\d+)*)?"
+_CUE_FILLER = r"(?:\s*(?:(?:namely|viz|i\.e|the|is|was|being|shri|smt|sri|mr|mrs|ms|dr|m/s)\b\.?|[:,(\-\u2013\u2014]))*"
+_CUE_BEFORE = re.compile(rf"\b{_ROLE_WORD}{_CUE_NUMBER}{_CUE_FILLER}\s*$", re.IGNORECASE)
+_CUE_AFTER = re.compile(rf"^[\s.,(\-\u2013\u2014\u2026]*(?:the\s+)?{_ROLE_WORD}\b", re.IGNORECASE)
+_LIST_GAP = re.compile(r"^\s*(?:,|,?\s*and|,?\s*&)\s*$", re.IGNORECASE)
+_CUE_WINDOW = 80
+_NAME_STRIP = " \t\n.,;:()[]{}-\u2013\u2014"
+
+
+def _cue_role(word: str) -> str:
+    """The role named by a cue word (the pattern keeps a plural "s" outside the group)."""
+    word = word.lower()
+    return "accused" if word == "co-accused" else word
+
+
+def _role_cue(text: str, start: int, end: int, chain: tuple[int, str] | None) -> tuple[str | None, str | None]:
+    """(role, how) from the text around an entity: "before", "list" or "after"; (None, None) without a cue."""
+    line_start = text.rfind("\n", 0, start) + 1
+    before = _CUE_BEFORE.search(text[max(line_start, start - _CUE_WINDOW):start])
+    if before:
+        return _cue_role(before.group(1)), "before"
+    if chain is not None and chain[0] <= start and _LIST_GAP.match(text[chain[0]:start]):
+        return chain[1], "list"
+    after = _CUE_AFTER.match(text[end:end + _CUE_WINDOW])
+    if after:
+        return _cue_role(after.group(1)), "after"
+    return None, None
+
+
+def _model_party_name(value: str) -> str | None:
+    name = re.sub(r"\s+", " ", value).strip(_NAME_STRIP)
+    if not name or name.lower() in _GENERIC_PARTY_NAMES or len(name) < 3:
+        return None
+    return name[:120]
+
+
+def extract_model_parties(chunks: list[PrivateChunk], model_entities: list[list[Any]], left_role: str) -> list[PartyRole]:
+    """Parties from the model's entities (one list per chunk, offsets in ``chunk.text``), in document order.
+
+    PETITIONER/RESPONDENT entities are parties; OTHER_PERSON/ORG entities only with a role cue; other types never.
+    A party-type entity takes the cue's role when the cue is on its side, else PETITIONER -> ``left_role`` and
+    RESPONDENT -> "respondent". Each party cites the chunk it was found in.
+    """
+    parties: list[PartyRole] = []
+    for chunk, entities in zip(chunks, model_entities):
+        chain: tuple[int, str] | None = None  # (end, role) of the last candidate whose role came from a cue before it
+        for entity in sorted(entities, key=lambda item: (item.start_char, item.end_char)):
+            native = str((entity.metadata or {}).get("native_type", ""))
+            if native not in _MODEL_PARTY_TYPES | _MODEL_CUE_TYPES:
+                continue
+            role, how = _role_cue(chunk.text, entity.start_char, entity.end_char, chain)
+            if native in _MODEL_PARTY_TYPES:
+                side = _PETITIONER_SIDE if native == "PETITIONER" else _RESPONDENT_SIDE
+                if role not in side:
+                    role, how = (left_role if native == "PETITIONER" else "respondent"), None
+            if role is None:
+                continue
+            chain = (entity.end_char, role) if how in {"before", "list"} else chain
+            name = _model_party_name(entity.text)
+            if name:
+                parties.append(PartyRole(role=role, name=name, private_evidence_id=chunk.private_chunk_id,
+                                         page_start=chunk.page_start, page_end=chunk.page_end))
+    return parties
+
+
+def _person_key(name: str) -> str:
+    text = re.sub(r"\b(?:alias|urf|aka)\b", " @ ", name.casefold())
+    text = re.sub(r"^(?:(?:the|shri|smt|sri|mr|mrs|ms|dr|m/s)\b\.?\s*)+", "", text.strip())
+    text = re.sub(r"[^\w@\s]", " ", text).replace("@", " @ ")
+    return " ".join(text.split())
+
+
+def _same_person(left: str, right: str) -> bool:
+    """Equal normalized names, a shared alias part, or one name's words a contiguous run of the other's."""
+    a, b = _person_key(left), _person_key(right)
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    if {part.strip() for part in a.split("@") if part.strip()} & {part.strip() for part in b.split("@") if part.strip()}:
+        return True
+    ta, tb = [t for t in a.split() if t != "@"], [t for t in b.split() if t != "@"]
+    short, long = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
+    return bool(short) and any(long[i:i + len(short)] == short for i in range(len(long) - len(short) + 1))
+
+
+def merge_model_parties(regex_parties: list[PartyRole], model_parties: list[PartyRole]) -> list[PartyRole]:
+    """Regex parties first and unchanged; then model parties in order, skipping the same person (any role); cap 10."""
+    merged = list(regex_parties)
+    for party in model_parties:
+        if len(merged) >= _MAX_PARTIES:
+            break
+        if any(existing.name and party.name and _same_person(existing.name, party.name) for existing in merged):
+            continue
+        merged.append(party)
+    return merged
 
 
 def extract_chronology(chunks: list[PrivateChunk]) -> list[ChronologyEntry]:
@@ -652,8 +767,15 @@ def build_local_document_map(
     are returned as empty lists rather than invented content when nothing
     relevant is found."""
     document_type, confidence = detect_document_type_with_confidence(filename, chunks)
-    sections, parties, dates = extract_sections_and_entities(chunks)
-    parties_and_roles = extract_parties_and_roles(chunks)
+    if configured_ner_backend() == "combined":
+        detailed = [extract_entities_detailed(chunk.text) for chunk in chunks]  # one inference per chunk
+        sections, parties, dates = extract_sections_and_entities(chunks, ner_results=[result for result, _ in detailed])
+        left_role = _versus_left_role(" ".join(chunk.text for chunk in chunks))
+        parties_and_roles = merge_model_parties(
+            extract_parties_and_roles(chunks), extract_model_parties(chunks, [model for _, model in detailed], left_role))
+    else:
+        sections, parties, dates = extract_sections_and_entities(chunks)
+        parties_and_roles = extract_parties_and_roles(chunks)
     chronology = extract_chronology(chunks)
     procedural_stages = extract_procedural_stages(chunks)
     evidence_items = extract_evidence_items(chunks)

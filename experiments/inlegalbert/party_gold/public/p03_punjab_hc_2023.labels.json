@@ -1,0 +1,11 @@
+{
+ "doc_id": "p03_punjab_hc_2023",
+ "source": "public",
+ "synthetic": false,
+ "text_file": "experiments/inlegalbert/party_gold/public/p03_punjab_hc_2023.txt",
+ "label_status": "unlabelled",
+ "labeller": null,
+ "labelled_on": null,
+ "parties": [],
+ "notes": ""
+}

@@ -1,0 +1,59 @@
+{
+ "doc_id": "s03_chargesheet_four_accused",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "chargesheet",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s03_chargesheet_four_accused.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "four accused with numbers",
+  "two aliases",
+  "complainant also listed as witness",
+  "doctor, panch and officer as non-parties"
+ ],
+ "parties": [
+  {
+   "name": "Prakash Hingmire",
+   "role": "complainant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Manoj Gaikar @ Bunty",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Farhan Shaikhwadi",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Kavita Dongrekar",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Raju Tambolkar @ Raja",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Sneha Wavikar",
+   "kind": "witness"
+  },
+  {
+   "name": "Vinod Pathrekar",
+   "kind": "witness"
+  },
+  {
+   "name": "Ganesh Ubale",
+   "kind": "witness"
+  },
+  {
+   "name": "Shailesh Mokashi",
+   "kind": "investigating_officer"
+  }
+ ]
+}

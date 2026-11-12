@@ -1,0 +1,21 @@
+{
+ "doc_id": "f_fir",
+ "source": "fixture",
+ "synthetic": true,
+ "document_type": "FIR",
+ "text_file": "backend/scripts/tests/fixtures/briefs/fir_synthetic.txt",
+ "label_status": "from_expected_file",
+ "parties": [
+  {
+   "name": "Meera Placeholder",
+   "role": "complainant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Ravi Sampleton",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": []
+}

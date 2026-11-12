@@ -310,10 +310,21 @@ def reset_ner_backend() -> None:
 
 def extract_entities(text: str, settings: Any = None) -> NERExtractionResult:
     """Entities from the configured backend. ``deterministic`` returns the rule-based result unchanged."""
+    return extract_entities_detailed(text, settings)[0]
+
+
+def extract_entities_detailed(text: str, settings: Any = None) -> tuple[NERExtractionResult, list[CanonicalEntity]]:
+    """(the configured backend's entities, the model's own entities) from one inference.
+
+    The second list holds the model's predictions mapped with the frozen E1 mapping and kept at the frozen E1
+    threshold (confidence >= 0.70), before the hybrid merge, each with its InLegalNER type in
+    ``metadata["native_type"]`` (step E4 party roles: the merge can drop that type when a rule entity has the same
+    span). It is empty with ``deterministic`` and whenever the model falls back.
+    """
     deterministic = extract_deterministic_entities(text)
     settings = settings or _settings()
     if configured_backend(settings) != "combined":
-        return deterministic
+        return deterministic, []
     started = perf_counter()
     try:
         engine = load_engine(settings)
@@ -327,9 +338,10 @@ def extract_entities(text: str, settings: Any = None) -> NERExtractionResult:
         raw = None
     if raw is None:
         _count("fallback_calls")
-        return deterministic
+        return deterministic, []
     entities = combine(text, deterministic.entities, raw)
     _count("combined_calls")
+    model_entities = [entity for entity in to_canonical(text, raw) if entity.confidence >= MIN_CONFIDENCE]
     return NERExtractionResult(
         text=text,
         entities=entities,
@@ -337,7 +349,7 @@ def extract_entities(text: str, settings: Any = None) -> NERExtractionResult:
         model_name=MODEL_NAME,
         latency_ms=round(deterministic.latency_ms + (perf_counter() - started) * 1000, 3),
         entity_count=len(entities),
-    )
+    ), model_entities
 
 
 def with_backend_entities(understanding: Any, settings: Any = None) -> Any:

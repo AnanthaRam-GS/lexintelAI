@@ -1,0 +1,26 @@
+{
+ "doc_id": "f_petition",
+ "source": "fixture",
+ "synthetic": true,
+ "document_type": "petition",
+ "text_file": "backend/scripts/tests/fixtures/briefs/petition_synthetic.txt",
+ "label_status": "from_expected_file",
+ "parties": [
+  {
+   "name": "Nikhil Placeholder",
+   "role": "petitioner",
+   "alternative_roles": []
+  },
+  {
+   "name": "State of Fictionaland",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Priya Testcase",
+   "role": "respondent",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": []
+}

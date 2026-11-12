@@ -1,0 +1,21 @@
+{
+ "doc_id": "f_judgment",
+ "source": "fixture",
+ "synthetic": false,
+ "document_type": "judgment",
+ "text_file": "backend/scripts/tests/fixtures/briefs/judgment.txt",
+ "label_status": "from_expected_file",
+ "parties": [
+  {
+   "name": "Neelam @ Neeraj",
+   "role": "applicant",
+   "alternative_roles": []
+  },
+  {
+   "name": "The State Of Madhya Pradesh",
+   "role": "respondent",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": []
+}

@@ -270,7 +270,7 @@ sets the same value unless noted.
 | `LEGALAI_MODEL_WARMUP` | load the models at startup | `true` | no |
 | `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` | wait for the model lock before a 503 | `30` | no |
 | `LEGALAI_QUERY_DEBUG` | timings in query responses (debug only) | `false` | no |
-| `LEGALAI_NER_BACKEND`, `LEGALAI_NER_CHECKPOINT_DIR` | NER backend: `deterministic` (rules) or `combined` (InLegalBERT NER + rules, step E3; needs the checkpoint, see below); `/health` shows `ner` | `deterministic`, `models/inlegalbert_ner/seed-22` | no |
+| `LEGALAI_NER_BACKEND`, `LEGALAI_NER_CHECKPOINT_DIR` | NER backend: `deterministic` (rules) or `combined` (InLegalBERT NER + rules, step E3; needs the checkpoint, see below; with `combined` the brief's Parties & Roles also take the model's parties, step E4, which failed its precision rule, see `docs/experiments/NER_PARTY_ROLES_RESULTS.md`); `/health` shows `ner` | `deterministic`, `models/inlegalbert_ner/seed-22` | no |
 | `CHROMA_PERSIST_DIR`, `CHROMA_COLLECTION_NAME` | vector store location | `./chroma_store`, `legalai_trusted_judgments_v1` | no |
 | `EMBEDDING_*`, `BGE_*`, `RERANKER_*`, `RETRIEVAL_TOP_K`, `RERANK_TOP_K` | index-build embedder and retrieval settings | see `.env.example` (`EMBEDDING_DEVICE=cpu`) | no |
 | `JWT_ALGORITHM`, `JWT_EXPIRY_MINUTES`, `AUTH_COOKIE_SAMESITE` | auth tokens and cookie | `HS256`, `60`, `lax` | no |

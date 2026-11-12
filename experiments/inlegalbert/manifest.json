@@ -395,5 +395,50 @@
   },
   "recommendation": "keep deterministic as the default",
   "status": "UNREVIEWED"
+ },
+ "e4_party_roles": {
+  "plan": "docs/experiments/NER_PARTY_ROLES_PLAN.md (commit f3957e2, before any flag-on run; amendment in 3996174, before any flag-on run)",
+  "gold_set": "experiments/inlegalbert/party_gold/ (5 fixtures, 10 synthetic by construction, 5 public excerpts pending labels)",
+  "flag_off_snapshot": "backend/scripts/tests/fixtures/party_roles_flag_off_snapshot.json (commit 60eabb7, code before the change)",
+  "checkpoint_seed": 22,
+  "results": "results/e4_party_roles.json",
+  "evaluation_set": "fixtures+synthetic, 15 documents, 47 gold parties (provisional; public excerpts pending)",
+  "strict_micro": {
+   "regex": {
+    "precision": 1.0,
+    "recall": 0.2979,
+    "f1": 0.459
+   },
+   "combined": {
+    "precision": 0.8462,
+    "recall": 0.7021,
+    "f1": 0.7674
+   },
+   "delta_recall_ci95": [
+    0.1579,
+    0.6585
+   ],
+   "delta_precision_ci95": [
+    -0.3415,
+    0.0
+   ]
+  },
+  "verdicts": {
+   "R1_recall_gain": "PASS",
+   "R2_precision_not_lower": "FAIL",
+   "R3_no_regex_party_lost": "PASS",
+   "R4_no_role_worse": "PASS",
+   "R5_valid_reference": "PASS",
+   "R6_none_invented_on_empty_docs": "PASS",
+   "overall": "FAIL"
+  },
+  "recommendation": "keep deterministic as the default",
+  "checkpoint_backup": {
+   "path": "~/legalai_backups/models/inlegalbert-ner-seed22/",
+   "mode": "700",
+   "hash_file": "SHA256SUMS",
+   "verified": "2026-11-12, shasum -c OK, model.safetensors = pinned hash, loads in the backend"
+  },
+  "status": "UNREVIEWED"
  }
 }

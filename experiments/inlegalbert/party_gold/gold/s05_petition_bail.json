@@ -1,0 +1,42 @@
+{
+ "doc_id": "s05_petition_bail",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "petition",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s05_petition_bail.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "applicant who is also the accused",
+  "State and complainant as respondents",
+  "co-accused",
+  "alias (@)"
+ ],
+ "parties": [
+  {
+   "name": "Vikas Rangnekar @ Vicky",
+   "role": "applicant",
+   "alternative_roles": [
+    "accused",
+    "petitioner"
+   ]
+  },
+  {
+   "name": "State of Fictionaland",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Shabana Mulani",
+   "role": "respondent",
+   "alternative_roles": [
+    "complainant"
+   ]
+  },
+  {
+   "name": "Ajay Phadtare",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": []
+}

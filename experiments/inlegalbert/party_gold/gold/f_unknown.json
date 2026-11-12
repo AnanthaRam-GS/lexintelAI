@@ -1,0 +1,10 @@
+{
+ "doc_id": "f_unknown",
+ "source": "fixture",
+ "synthetic": true,
+ "document_type": "unknown",
+ "text_file": "backend/scripts/tests/fixtures/briefs/unknown_synthetic.txt",
+ "label_status": "from_expected_file",
+ "parties": [],
+ "non_parties": []
+}

@@ -1,0 +1,27 @@
+{
+ "doc_id": "s10_unknown_legal_aid_minutes",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "unknown",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s10_unknown_legal_aid_minutes.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "no parties: named people without any legal role",
+  "role words used generically"
+ ],
+ "parties": [],
+ "non_parties": [
+  {
+   "name": "Shobha Kale",
+   "kind": "other"
+  },
+  {
+   "name": "Dinesh Yewale",
+   "kind": "other"
+  },
+  {
+   "name": "Varsha Inamdar",
+   "kind": "other"
+  }
+ ]
+}

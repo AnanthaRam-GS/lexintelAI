@@ -1,0 +1,67 @@
+{
+ "doc_id": "s07_judgment_criminal_appeal",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "judgment",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s07_judgment_criminal_appeal.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "three appellants who were the accused",
+  "one alias",
+  "complainant who is a prosecution witness",
+  "deceased, witnesses and judge as non-parties"
+ ],
+ "parties": [
+  {
+   "name": "Gopal Ninave",
+   "role": "appellant",
+   "alternative_roles": [
+    "accused"
+   ]
+  },
+  {
+   "name": "Sitaram Ninave",
+   "role": "appellant",
+   "alternative_roles": [
+    "accused"
+   ]
+  },
+  {
+   "name": "Bharat Ninave @ Bhau",
+   "role": "appellant",
+   "alternative_roles": [
+    "accused"
+   ]
+  },
+  {
+   "name": "State of Fictionaland",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Yamuna Ninave",
+   "role": "complainant",
+   "alternative_roles": [
+    "informant"
+   ]
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Tukaram Ninave",
+   "kind": "victim"
+  },
+  {
+   "name": "Dilip Kharat",
+   "kind": "witness"
+  },
+  {
+   "name": "Meena Joglekar",
+   "kind": "witness"
+  },
+  {
+   "name": "R. K. Fictionwala",
+   "kind": "judge"
+  }
+ ]
+}
