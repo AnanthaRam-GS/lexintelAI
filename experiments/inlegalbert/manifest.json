@@ -24,7 +24,9 @@
   },
   "weights_hash_matches_hub_lfs": true,
   "mps_check": {
-   "torch": "2.14.0", "transformers": "5.16.1", "device": "mps",
+   "torch": "2.14.0",
+   "transformers": "5.16.1",
+   "device": "mps",
    "forward": "batch 8 x 512 tokens: last_hidden_state (8, 512, 768) float32, all finite; 262 ms per batch; 430 MiB MPS allocated; peak RSS 0.61 GiB",
    "fill_mask": "'The accused was convicted of [MASK] under Section 302 of the Indian Penal Code.' -> offence, offences, charge, rape, murder",
    "tokenizer_note": "'BNS' tokenizes as b ##n ##s: the vocabulary predates the 2023 codes"
@@ -36,18 +38,67 @@
    "task": "NER",
    "official_source": "https://huggingface.co/datasets/opennyaiorg/InLegalNER (linked from the authors' https://github.com/Legal-NLP-EkStep/legal_NER)",
    "license": "MIT (dataset card); code repository Apache-2.0",
-   "access": "gated (auto): requires a Hugging Face login and accepting the terms. Unauthenticated download of NER_TRAIN.zip returned HTTP 401.",
-   "status": "STOPPED: not downloaded (requires a login). Needs a decision.",
+   "access": "gated (auto): terms accepted by the project owner; token read from .env, never printed or committed",
+   "status": "DOWNLOADED (step E1, 2026-11-11) with the project's Hub token after accepting the terms; train and dev only (the official test split was not downloaded). Stored outside the repository at ~/legalai_datasets/inlegalner_2e32a46e6714/.",
    "size_documented": "train: 9,435 judgment sentences (17,485 entities) and 1,560 preambles (12,479 entities); separate dev and test files",
-   "schema": ["COURT", "PETITIONER", "RESPONDENT", "JUDGE", "LAWYER", "DATE", "ORG", "GPE", "STATUTE", "PROVISION", "PRECEDENT", "CASE_NUMBER", "WITNESS", "OTHER_PERSON"],
+   "schema": [
+    "COURT",
+    "PETITIONER",
+    "RESPONDENT",
+    "JUDGE",
+    "LAWYER",
+    "DATE",
+    "ORG",
+    "GPE",
+    "STATUTE",
+    "PROVISION",
+    "PRECEDENT",
+    "CASE_NUMBER",
+    "WITNESS",
+    "OTHER_PERSON"
+   ],
    "mapping_to_legalai_ner_schema_v1": {
-    "COURT": "COURT", "DATE": "DATE", "STATUTE": "STATUTE", "PROVISION": "SECTION", "ORG": "ORGANIZATION (their ORG includes police stations: POLICE_STATION partly)",
-    "GPE": "LOCATION", "PRECEDENT": "CASE_NAME / CASE_CITATION (combined span)", "CASE_NUMBER": "CASE_CITATION (partly)",
+    "COURT": "COURT",
+    "DATE": "DATE",
+    "STATUTE": "STATUTE",
+    "PROVISION": "SECTION",
+    "ORG": "ORGANIZATION (their ORG includes police stations: POLICE_STATION partly)",
+    "GPE": "LOCATION",
+    "PRECEDENT": "CASE_NAME / CASE_CITATION (combined span)",
+    "CASE_NUMBER": "CASE_CITATION (partly)",
     "PETITIONER|RESPONDENT|JUDGE|LAWYER|WITNESS|OTHER_PERSON": "PERSON",
-    "no source label": ["OFFENCE", "LEGAL_PROCEDURE", "LEGAL_ROLE", "FIR_NUMBER"]
+    "no source label": [
+     "OFFENCE",
+     "LEGAL_PROCEDURE",
+     "LEGAL_ROLE",
+     "FIR_NUMBER"
+    ]
    },
    "training_allowed": "yes under MIT, once access is granted",
-   "redistribution": "allowed under MIT; we do not redistribute"
+   "redistribution": "allowed under MIT; we do not redistribute",
+   "revision": "2e32a46e6714424979db8677b39dbc0aa7e308e7",
+   "license_verified": "MIT (dataset card front matter at that revision)",
+   "citation": "Kalamkar et al. Named Entity Recognition in Indian court judgments. NLLP 2022 (kalamkar-etal-2022-named)",
+   "files_sha256": {
+    "README.md": "feb99492a233eecff56e1f6b78c5eb557ec651277958c37e4b3d132d94fb1251",
+    "NER_TRAIN.zip": "8cf1ba0d066580952c5d2ea69ae94a2090db01ee2b7d2eab6b09c3147d794e7b",
+    "NER_DEV.zip": "10df6cfd58957db6273efbf056f773badd72c82c69f1975b121a987b3007f48f"
+   },
+   "counts": {
+    "train": {
+     "judgment_sentences": 9435,
+     "judgment_entities": 17485,
+     "preambles": 1560,
+     "preamble_entities": 12479
+    },
+    "dev": {
+     "judgment_sentences": 949,
+     "judgment_entities": 1876,
+     "preambles": 125,
+     "preamble_entities": 1385
+    }
+   },
+   "format": "Label Studio JSON: id, data.text, annotations[0].result[].value {start, end, text, labels}; meta.source = Indian Kanoon URL"
   },
   {
    "name": "ILSI (Indian Legal Statute Identification, LeSICiN)",
@@ -56,13 +107,37 @@
    "license": "CC-BY-4.0 (Zenodo record), access: open",
    "status": "DOWNLOADED to ~/legalai_datasets/ilsi_zenodo_6053791/ (outside the repository); all MD5s match the Zenodo record",
    "files_md5": {
-    "train.jsonl": "a1994d1aaa8ae7a987fcb1c2e2dc52f1", "dev.jsonl": "237b1776f5a535eb3f079bfd0ea0b200", "test.jsonl": "09a554405680830c6d3818320eb055af",
-    "secs.jsonl": "b2768e06377ab032df2d8f8c323886ff", "label_vocab.json": "5758e3117c37788045308e03a531a03d", "schemas.json": "b669b98a334191953aa4832404813796",
+    "train.jsonl": "a1994d1aaa8ae7a987fcb1c2e2dc52f1",
+    "dev.jsonl": "237b1776f5a535eb3f079bfd0ea0b200",
+    "test.jsonl": "09a554405680830c6d3818320eb055af",
+    "secs.jsonl": "b2768e06377ab032df2d8f8c323886ff",
+    "label_vocab.json": "5758e3117c37788045308e03a531a03d",
+    "schemas.json": "b669b98a334191953aa4832404813796",
     "label_tree.json": "910a4c9f55f387d93c060a73f7d9e4b1"
    },
-   "not_downloaded": ["ils2v.bin (2.25 GB embeddings)", "best_model.pt (authors' model)", "type_map.json", "citation_network.json"],
-   "counts": {"train": 42835, "dev": 10200, "test": 13039, "labels": 100, "labels_per_case_mean": {"train": 3.70, "dev": 3.91, "test": 3.90},
-              "fact_words_median": {"train": 458, "dev": 579, "test": 567}, "fact_words_p90_train": 2898},
+   "not_downloaded": [
+    "ils2v.bin (2.25 GB embeddings)",
+    "best_model.pt (authors' model)",
+    "type_map.json",
+    "citation_network.json"
+   ],
+   "counts": {
+    "train": 42835,
+    "dev": 10200,
+    "test": 13039,
+    "labels": 100,
+    "labels_per_case_mean": {
+     "train": 3.7,
+     "dev": 3.91,
+     "test": 3.9
+    },
+    "fact_words_median": {
+     "train": 458,
+     "dev": 579,
+     "test": 567
+    },
+    "fact_words_p90_train": 2898
+   },
    "schema": "id, text (list of fact sentences), labels (e.g. 'Section 302 in The Indian Penal Code'): IPC only, 100 sections",
    "mapping_to_legalai": "label 'Section N in The Indian Penal Code' -> (IPC, N). No BNS, BNSS, CrPC or special Acts.",
    "coverage_of_legalai_section_gold": "22 of 60 positive gold labels (all IPC); 12 of 15 distinct IPC gold sections (missing 361, 378, 408); 15 of 36 queries have at least one expressible positive, 7 have all; 17 of 20 catalog IPC entries",
@@ -93,29 +168,198 @@
  "leakage_check": {
   "script": "experiments/inlegalbert/leakage_check.py",
   "ilsi_vs_corpus": {
-   "train": {"cases": 42835, "id_in_corpus": 3, "shares_13word_shingle_with_corpus": 3707},
-   "dev": {"cases": 10200, "id_in_corpus": 1, "shares_13word_shingle_with_corpus": 945},
-   "test": {"cases": 13039, "id_in_corpus": 1, "shares_13word_shingle_with_corpus": 1233}
+   "train": {
+    "cases": 42835,
+    "id_in_corpus": 3,
+    "shares_13word_shingle_with_corpus": 3707
+   },
+   "dev": {
+    "cases": 10200,
+    "id_in_corpus": 1,
+    "shares_13word_shingle_with_corpus": 945
+   },
+   "test": {
+    "cases": 13039,
+    "id_in_corpus": 1,
+    "shares_13word_shingle_with_corpus": 1233
+   }
   },
   "ilsi_vs_gold": "0 shingle overlaps; 0 of 72 gold texts (36 NER, 36 section queries) appear verbatim in any ILSI case",
-  "rule": "exclude every public instance whose Indian Kanoon ID is a corpus document or that shares a 13-word shingle with the corpus or gold texts"
+  "rule": "exclude every public instance whose Indian Kanoon ID is a corpus document or that shares a 13-word shingle with the corpus or gold texts",
+  "inlegalner_vs_corpus_and_gold": {
+   "train": {
+    "items": 10995,
+    "source_in_corpus": 0,
+    "shares_13word_shingle_with_corpus": 108,
+    "shares_shingle_with_gold": 0,
+    "gold_text_inside_item": 0,
+    "item_inside_gold_text": 0,
+    "excluded": 108
+   },
+   "dev": {
+    "items": 1074,
+    "source_in_corpus": 0,
+    "shares_13word_shingle_with_corpus": 23,
+    "shares_shingle_with_gold": 0,
+    "gold_text_inside_item": 0,
+    "item_inside_gold_text": 0,
+    "excluded": 23
+   },
+   "after_exclusion": {
+    "train": 10887,
+    "dev": 1051
+   },
+   "excluded_ids": "written to ~/legalai_datasets/inlegalner_2e32a46e6714/excluded_ids.json (IDs only)"
+  }
  },
  "timing_probe": {
   "script": "experiments/inlegalbert/timing_probe.py",
   "method": "forward passes only on synthetic token IDs (a training step was blocked by the ml-pipeline hook); training step estimated as 3 x forward",
   "machine": "Apple M5, 24 GiB unified memory, MPS",
   "results": [
-   {"kind": "ner", "batch": 16, "seq_len": 128, "median_forward_s": 0.1194, "estimated_train_step_s": 0.358, "estimated_train_examples_per_s": 44.7},
-   {"kind": "ner", "batch": 8, "seq_len": 256, "median_forward_s": 0.1228, "estimated_train_step_s": 0.368, "estimated_train_examples_per_s": 21.7},
-   {"kind": "classifier", "batch": 8, "seq_len": 512, "median_forward_s": 0.2581, "estimated_train_step_s": 0.774, "estimated_train_examples_per_s": 10.3},
-   {"kind": "classifier", "batch": 16, "seq_len": 256, "median_forward_s": 0.2537, "estimated_train_step_s": 0.761, "estimated_train_examples_per_s": 21.0}
+   {
+    "kind": "ner",
+    "batch": 16,
+    "seq_len": 128,
+    "median_forward_s": 0.1194,
+    "estimated_train_step_s": 0.358,
+    "estimated_train_examples_per_s": 44.7
+   },
+   {
+    "kind": "ner",
+    "batch": 8,
+    "seq_len": 256,
+    "median_forward_s": 0.1228,
+    "estimated_train_step_s": 0.368,
+    "estimated_train_examples_per_s": 21.7
+   },
+   {
+    "kind": "classifier",
+    "batch": 8,
+    "seq_len": 512,
+    "median_forward_s": 0.2581,
+    "estimated_train_step_s": 0.774,
+    "estimated_train_examples_per_s": 10.3
+   },
+   {
+    "kind": "classifier",
+    "batch": 16,
+    "seq_len": 256,
+    "median_forward_s": 0.2537,
+    "estimated_train_step_s": 0.761,
+    "estimated_train_examples_per_s": 21.0
+   }
   ],
   "memory": "forward: 1.01 GiB MPS driver allocation; weights + gradients + AdamW moments: 1.62 GiB (computed); activations for training not measured"
  },
  "baseline_bootstrap": {
   "method": "10,000 resamples of examples, seed 20261111",
-  "ner_d0_exact_f1": {"value": 0.787879, "ci95": [0.700, 0.865], "tp_fp_fn": [65, 11, 24]},
-  "section_hx1_all_33_scored_queries": {"p_at_1": [0.879, 0.758, 0.970], "mrr": [0.909, 0.818, 0.985], "ndcg_at_5": [0.831, 0.739, 0.910], "recall_at_5": [0.854, 0.747, 0.944]},
-  "section_hx1_ilsi_expressible_15_queries": {"p_at_1": [0.867, 0.667, 1.0], "mrr": [0.933, 0.833, 1.0], "ndcg_at_5": [0.851, 0.769, 0.925], "recall_at_5": [0.889, 0.789, 0.978]}
+  "ner_d0_exact_f1": {
+   "value": 0.787879,
+   "ci95": [
+    0.7,
+    0.865
+   ],
+   "tp_fp_fn": [
+    65,
+    11,
+    24
+   ]
+  },
+  "section_hx1_all_33_scored_queries": {
+   "p_at_1": [
+    0.879,
+    0.758,
+    0.97
+   ],
+   "mrr": [
+    0.909,
+    0.818,
+    0.985
+   ],
+   "ndcg_at_5": [
+    0.831,
+    0.739,
+    0.91
+   ],
+   "recall_at_5": [
+    0.854,
+    0.747,
+    0.944
+   ]
+  },
+  "section_hx1_ilsi_expressible_15_queries": {
+   "p_at_1": [
+    0.867,
+    0.667,
+    1.0
+   ],
+   "mrr": [
+    0.933,
+    0.833,
+    1.0
+   ],
+   "ndcg_at_5": [
+    0.851,
+    0.769,
+    0.925
+   ],
+   "recall_at_5": [
+    0.889,
+    0.789,
+    0.978
+   ]
+  }
+ },
+ "e1_training": {
+  "protocol": "docs/experiments/INLEGALBERT_E1_PROTOCOL.md",
+  "script": "experiments/inlegalbert/train_ner.py",
+  "base_checkpoint": "law-ai/InLegalBERT@b5ecfed8ed6cf9d25a3cb8225a8c52f161f7401a",
+  "data": "InLegalNER@2e32a46e6714424979db8677b39dbc0aa7e308e7 train/dev after leakage exclusion (10,887 / 1,051 items; 11,457 training windows, 717 steps per epoch)",
+  "environment": {
+   "device": "mps",
+   "torch": "2.14.0",
+   "transformers": "5.16.1",
+   "precision": "fp32"
+  },
+  "wall_clock": {
+   "start": "2026-11-11 22:06:07 IST",
+   "end": "2026-11-12 01:35:45 IST",
+   "hours": 3.49,
+   "plan_cap_hours": 3,
+   "plan_stop_at_hours": 4.5,
+   "brief_stop_at_hours": 6
+  },
+  "backend_stopped_during_training": true,
+  "checkpoints_not_committed": {
+   "11": {
+    "local_path": "models/inlegalbert_ner/seed-11",
+    "model_safetensors_sha256": "0dc0a349b8342b15af0dd6c46b1eb590e237c6c716437d6a887d237c1fd1112c",
+    "best_epoch": 5,
+    "best_dev_exact_f1": 0.814231,
+    "train_seconds_total": 3879.7
+   },
+   "22": {
+    "local_path": "models/inlegalbert_ner/seed-22",
+    "model_safetensors_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+    "best_epoch": 4,
+    "best_dev_exact_f1": 0.812038,
+    "train_seconds_total": 4354.2
+   },
+   "33": {
+    "local_path": "models/inlegalbert_ner/seed-33",
+    "model_safetensors_sha256": "9a66fab959aa22e28ce282170cd6ab16def3cb3d70843fffdebbf3e860e3ab5c",
+    "best_epoch": 4,
+    "best_dev_exact_f1": 0.811755,
+    "train_seconds_total": 4327.2
+   }
+  },
+  "runs": "experiments/inlegalbert/runs/seed-<n>.json (curves, per-epoch timings), runs/wallclock.txt",
+  "gold_scoring": {
+   "script": "experiments/inlegalbert/score_gold.py",
+   "scored_once": "2026-11-12",
+   "results": "experiments/inlegalbert/results/e1_results.json",
+   "status": "UNREVIEWED"
+  }
  }
 }

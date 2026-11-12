@@ -1,0 +1,359 @@
+{
+ "seed": 11,
+ "checkpoint": "models/inlegalbert_ner/seed-11",
+ "raw_predictions": {
+  "ner-q001": [
+   {
+    "start": 0,
+    "end": 11,
+    "type": "PROVISION",
+    "confidence": 0.996526
+   },
+   {
+    "start": 12,
+    "end": 15,
+    "type": "STATUTE",
+    "confidence": 0.993522
+   },
+   {
+    "start": 38,
+    "end": 51,
+    "type": "COURT",
+    "confidence": 0.996766
+   }
+  ],
+  "ner-q002": [
+   {
+    "start": 28,
+    "end": 39,
+    "type": "PROVISION",
+    "confidence": 0.994902
+   },
+   {
+    "start": 40,
+    "end": 44,
+    "type": "STATUTE",
+    "confidence": 0.993129
+   }
+  ],
+  "ner-q003": [
+   {
+    "start": 16,
+    "end": 27,
+    "type": "PROVISION",
+    "confidence": 0.995756
+   },
+   {
+    "start": 28,
+    "end": 32,
+    "type": "STATUTE",
+    "confidence": 0.966526
+   },
+   {
+    "start": 50,
+    "end": 70,
+    "type": "COURT",
+    "confidence": 0.997073
+   }
+  ],
+  "ner-q004": [
+   {
+    "start": 6,
+    "end": 7,
+    "type": "STATUTE",
+    "confidence": 0.733583
+   },
+   {
+    "start": 34,
+    "end": 45,
+    "type": "DATE",
+    "confidence": 0.987461
+   }
+  ],
+  "ner-q005": [
+   {
+    "start": 4,
+    "end": 20,
+    "type": "COURT",
+    "confidence": 0.995956
+   },
+   {
+    "start": 41,
+    "end": 53,
+    "type": "OTHER_PERSON",
+    "confidence": 0.994153
+   },
+   {
+    "start": 62,
+    "end": 81,
+    "type": "ORG",
+    "confidence": 0.804965
+   },
+   {
+    "start": 81,
+    "end": 83,
+    "type": "GPE",
+    "confidence": 0.791197
+   }
+  ],
+  "ner-q006": [
+   {
+    "start": 38,
+    "end": 69,
+    "type": "ORG",
+    "confidence": 0.987845
+   }
+  ],
+  "ner-q007": [
+   {
+    "start": 25,
+    "end": 49,
+    "type": "ORG",
+    "confidence": 0.990415
+   }
+  ],
+  "ner-q008": [
+   {
+    "start": 0,
+    "end": 35,
+    "type": "PRECEDENT",
+    "confidence": 0.99266
+   },
+   {
+    "start": 45,
+    "end": 56,
+    "type": "PROVISION",
+    "confidence": 0.987947
+   },
+   {
+    "start": 57,
+    "end": 60,
+    "type": "STATUTE",
+    "confidence": 0.987598
+   }
+  ],
+  "ner-q009": [],
+  "ner-q010": [
+   {
+    "start": 28,
+    "end": 37,
+    "type": "GPE",
+    "confidence": 0.991553
+   }
+  ],
+  "ner-q011": [],
+  "ner-q012": [
+   {
+    "start": 25,
+    "end": 41,
+    "type": "PRECEDENT",
+    "confidence": 0.634345
+   },
+   {
+    "start": 53,
+    "end": 66,
+    "type": "COURT",
+    "confidence": 0.997083
+   }
+  ],
+  "ner-q013": [
+   {
+    "start": 21,
+    "end": 37,
+    "type": "PRECEDENT",
+    "confidence": 0.939221
+   }
+  ],
+  "ner-q014": [
+   {
+    "start": 3,
+    "end": 13,
+    "type": "PROVISION",
+    "confidence": 0.996979
+   },
+   {
+    "start": 14,
+    "end": 22,
+    "type": "STATUTE",
+    "confidence": 0.996315
+   }
+  ],
+  "ner-q015": [
+   {
+    "start": 44,
+    "end": 53,
+    "type": "STATUTE",
+    "confidence": 0.996055
+   }
+  ],
+  "ner-q016": [
+   {
+    "start": 66,
+    "end": 79,
+    "type": "ORG",
+    "confidence": 0.985002
+   }
+  ],
+  "ner-q017": [
+   {
+    "start": 19,
+    "end": 26,
+    "type": "GPE",
+    "confidence": 0.991321
+   }
+  ],
+  "ner-q018": [
+   {
+    "start": 18,
+    "end": 22,
+    "type": "STATUTE",
+    "confidence": 0.989296
+   },
+   {
+    "start": 47,
+    "end": 50,
+    "type": "STATUTE",
+    "confidence": 0.948497
+   }
+  ],
+  "ner-q019": [
+   {
+    "start": 41,
+    "end": 42,
+    "type": "STATUTE",
+    "confidence": 0.665064
+   }
+  ],
+  "ner-q020": [
+   {
+    "start": 4,
+    "end": 16,
+    "type": "STATUTE",
+    "confidence": 0.993403
+   }
+  ],
+  "ner-q021": [
+   {
+    "start": 17,
+    "end": 23,
+    "type": "OTHER_PERSON",
+    "confidence": 0.994397
+   },
+   {
+    "start": 28,
+    "end": 33,
+    "type": "OTHER_PERSON",
+    "confidence": 0.993542
+   }
+  ],
+  "ner-q022": [
+   {
+    "start": 57,
+    "end": 62,
+    "type": "GPE",
+    "confidence": 0.989648
+   }
+  ],
+  "ner-q023": [
+   {
+    "start": 36,
+    "end": 48,
+    "type": "PROVISION",
+    "confidence": 0.997164
+   },
+   {
+    "start": 49,
+    "end": 52,
+    "type": "STATUTE",
+    "confidence": 0.992658
+   }
+  ],
+  "ner-q024": [],
+  "ner-q025": [
+   {
+    "start": 17,
+    "end": 31,
+    "type": "ORG",
+    "confidence": 0.987474
+   }
+  ],
+  "ner-q026": [],
+  "ner-q027": [
+   {
+    "start": 5,
+    "end": 16,
+    "type": "PROVISION",
+    "confidence": 0.996981
+   }
+  ],
+  "ner-q028": [
+   {
+    "start": 43,
+    "end": 60,
+    "type": "COURT",
+    "confidence": 0.996888
+   }
+  ],
+  "ner-q029": [],
+  "ner-q030": [],
+  "ner-q031": [
+   {
+    "start": 4,
+    "end": 13,
+    "type": "STATUTE",
+    "confidence": 0.994766
+   },
+   {
+    "start": 37,
+    "end": 48,
+    "type": "PROVISION",
+    "confidence": 0.997198
+   },
+   {
+    "start": 49,
+    "end": 52,
+    "type": "STATUTE",
+    "confidence": 0.994813
+   }
+  ],
+  "ner-q032": [
+   {
+    "start": 27,
+    "end": 36,
+    "type": "GPE",
+    "confidence": 0.992301
+   }
+  ],
+  "ner-q033": [
+   {
+    "start": 23,
+    "end": 39,
+    "type": "ORG",
+    "confidence": 0.99144
+   }
+  ],
+  "ner-q034": [
+   {
+    "start": 35,
+    "end": 38,
+    "type": "STATUTE",
+    "confidence": 0.949009
+   },
+   {
+    "start": 43,
+    "end": 45,
+    "type": "STATUTE",
+    "confidence": 0.686164
+   }
+  ],
+  "ner-q035": [
+   {
+    "start": 31,
+    "end": 43,
+    "type": "DATE",
+    "confidence": 0.997962
+   }
+  ],
+  "ner-q036": []
+ }
+}
