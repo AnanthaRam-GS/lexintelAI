@@ -75,6 +75,7 @@ from backend.app.services.llm_daily_quota import DailyCapacityReached, daily_quo
 from backend.app.services.llm_provider_chain import GenerationQueueTimeout, build_answer_adapter, configure_pacing, daily_limits
 from backend.app.services.openai_compatible_adapter import PROFILE_NAMES, OpenAICompatibleAnswerAdapter, provider_profile
 from backend.app.services.legal_query_understanding import understand_legal_query
+from backend.app.services.ner_backend import configured_backend as configured_ner_backend, with_backend_entities
 from backend.app.services.legal_rag_retrieval import LegalRetrievalResult, retrieve_legal_evidence
 from backend.app.services import professional_brief, section_labels
 from backend.app.services.private_pdf_rag import (
@@ -763,6 +764,12 @@ def run_frozen_query_pipeline(
         stage_started = perf_counter()
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
         timings["query_understanding_ms"] = elapsed_since(stage_started)
+        if configured_ner_backend(settings) != "deterministic":
+            # Step E3: the pinned query understanding always uses the deterministic NER; the combined backend
+            # replaces its entities here. Retrieval reads only the original query, so it is not affected.
+            stage_started = perf_counter()
+            understanding = with_backend_entities(understanding, settings)
+            timings["ner_backend_ms"] = elapsed_since(stage_started)
         stage_started = perf_counter()
         retrieval = retrieve_legal_evidence(understanding, retrieval_service=retrieval_service)
         timings.update(retrieval_stage_timings(retrieval, total_ms=elapsed_since(stage_started)))
@@ -1082,6 +1089,8 @@ def finish_query_diagnostics(endpoint: str, outcome: QueryPipelineOutcome, *, st
     timings = dict(outcome.timings or {})
     timings["total_ms"] = elapsed_since(started)
     ordered = {key: timings[key] for key in QUERY_STAGES if key in timings}
+    if "ner_backend_ms" in timings:  # step E3: only with LEGALAI_NER_BACKEND=combined
+        ordered["ner_backend_ms"] = timings["ner_backend_ms"]
     backend = answer_backend(outcome.result)
     devices = active_model_device()
     logger.info(
