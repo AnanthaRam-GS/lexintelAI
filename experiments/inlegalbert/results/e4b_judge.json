@@ -1,0 +1,387 @@
+{
+ "documents": 5,
+ "gold_parties": 17,
+ "micro": {
+  "regex": {
+   "tp": 0,
+   "fp": 1,
+   "fn": 17,
+   "gold": 17,
+   "predicted": 1,
+   "duplicates": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "partial": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+   }
+  },
+  "combined": {
+   "tp": 13,
+   "fp": 1,
+   "fn": 4,
+   "gold": 17,
+   "predicted": 14,
+   "duplicates": 0,
+   "precision": 0.9285714285714286,
+   "recall": 0.7647058823529411,
+   "f1": 0.8387096774193549,
+   "partial": {
+    "precision": 0.9285714285714286,
+    "recall": 0.7647058823529411,
+    "f1": 0.8387096774193549
+   }
+  }
+ },
+ "per_role": {
+  "regex": {
+   "accused": {
+    "tp": 0,
+    "fp": 1,
+    "fn": 0,
+    "f1": 0.0,
+    "recall": null
+   },
+   "appellant": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "f1": 0.0,
+    "recall": 0.0
+   },
+   "applicant": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 1,
+    "f1": 0.0,
+    "recall": 0.0
+   },
+   "petitioner": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "f1": 0.0,
+    "recall": 0.0
+   },
+   "respondent": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 8,
+    "f1": 0.0,
+    "recall": 0.0
+   }
+  },
+  "combined": {
+   "accused": {
+    "tp": 0,
+    "fp": 1,
+    "fn": 0,
+    "f1": 0.0,
+    "recall": null
+   },
+   "appellant": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 2,
+    "f1": 0.6666666666666666,
+    "recall": 0.5
+   },
+   "applicant": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "f1": 1.0,
+    "recall": 1.0
+   },
+   "petitioner": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 1,
+    "f1": 0.8571428571428571,
+    "recall": 0.75
+   },
+   "respondent": {
+    "tp": 7,
+    "fp": 0,
+    "fn": 1,
+    "f1": 0.9333333333333333,
+    "recall": 0.875
+   }
+  }
+ },
+ "bootstrap": {
+  "precision": {
+   "regex": {
+    "value": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "combined": {
+    "value": 0.9285714285714286,
+    "ci95": [
+     0.8125,
+     0.9375
+    ]
+   },
+   "difference": {
+    "value": 0.9285714285714286,
+    "ci95": [
+     0.8125,
+     0.9375
+    ]
+   },
+   "resamples_used": 6648
+  },
+  "recall": {
+   "regex": {
+    "value": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "combined": {
+    "value": 0.7647058823529411,
+    "ci95": [
+     0.6,
+     1.0
+    ]
+   },
+   "difference": {
+    "value": 0.7647058823529411,
+    "ci95": [
+     0.6,
+     1.0
+    ]
+   },
+   "resamples_used": 10000
+  },
+  "f1": {
+   "regex": {
+    "value": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "combined": {
+    "value": 0.8387096774193549,
+    "ci95": [
+     0.7368,
+     0.963
+    ]
+   },
+   "difference": {
+    "value": 0.8387096774193549,
+    "ci95": [
+     0.7368,
+     0.963
+    ]
+   },
+   "resamples_used": 10000
+  }
+ },
+ "rules": {
+  "J1_precision_at_least_0.90": {
+   "pass": true,
+   "combined_precision": 0.9285714285714286
+  },
+  "J2_recall_gain_at_least_0.10": {
+   "pass": true,
+   "delta": 0.7647058823529411
+  },
+  "J3_no_wrong_accused_role": {
+   "pass": true,
+   "wrong": {}
+  },
+  "J4_no_regex_party_lost": {
+   "pass": true,
+   "lost": {}
+  },
+  "J5_valid_reference": {
+   "pass": true,
+   "invalid": {},
+   "checked": 14
+  },
+  "J6_none_invented_on_empty_docs": {
+   "pass": true,
+   "empty_docs": [],
+   "invented": {},
+   "vacuous": true
+  },
+  "overall": "PASS"
+ },
+ "per_document": {
+  "p01_gujarat_hc_2021": {
+   "gold": 5,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 5,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 2,
+    "found_gold": [
+     "Karmanbhai Revabhai Bharwad | petitioner",
+     "P.S.I. Tarapur Police Station | respondent",
+     "State of Gujarat | respondent"
+    ],
+    "missed_gold": [
+     "Vijay Karamanbhai Bharvad | petitioner",
+     "District Superintendent of Police | respondent"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "petitioner: KARMANBHAI REVABHAI BHARWAD [P1]",
+    "respondent: STATE OF GUJARAT [P1]",
+    "respondent: P.S.I., Tarapur Police Station [P1]"
+   ]
+  },
+  "p02_andhra_hc_2023": {
+   "gold": 2,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 2,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "A. Kuppaiah | appellant",
+     "State of Andhra Pradesh | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "appellant: A. Kuppaiah [P1]",
+    "respondent: State of Andhra Pradesh [P1]"
+   ]
+  },
+  "p03_punjab_hc_2023": {
+   "gold": 3,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 3,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "found_gold": [
+     "Sourabh Goyal | petitioner",
+     "State of Punjab | respondent",
+     "Venus Goyal | petitioner"
+    ],
+    "missed_gold": [],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "petitioner: Venus Goyal [P1]",
+    "respondent: State of Punjab [P1]",
+    "petitioner: Sourabh Goyal [P1]"
+   ]
+  },
+  "p04_supreme_court_2022": {
+   "gold": 4,
+   "regex": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 4,
+    "found_gold": [],
+    "false_positives": []
+   },
+   "combined": {
+    "tp": 2,
+    "fp": 0,
+    "fn": 2,
+    "found_gold": [
+     "Devender Singh | appellant",
+     "State of Uttarakhand | respondent"
+    ],
+    "missed_gold": [
+     "Jagdish Singh | appellant",
+     "Kunja Devi | appellant"
+    ],
+    "false_positives": [],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "appellant: Devender Singh [P1]",
+    "respondent: State of Uttarakhand [P1]"
+   ]
+  },
+  "p05_allahabad_hc_2019": {
+   "gold": 3,
+   "regex": {
+    "tp": 0,
+    "fp": 1,
+    "fn": 3,
+    "found_gold": [],
+    "false_positives": [
+     "accused: respondent- 2"
+    ]
+   },
+   "combined": {
+    "tp": 3,
+    "fp": 1,
+    "fn": 0,
+    "found_gold": [
+     "Arun Bhandari | applicant",
+     "Raghuvendra Singh | respondent",
+     "State of U.P. | respondent"
+    ],
+    "missed_gold": [],
+    "false_positives": [
+     "accused: respondent- 2"
+    ],
+    "partial_matches": []
+   },
+   "combined_items": [
+    "accused: respondent- 2 [P1]",
+    "applicant: Arun Bhandari [P1]",
+    "respondent: State of U.P [P1]",
+    "respondent: Raghuvendra Singh [P1]"
+   ]
+  }
+ },
+ "label": "E4b JUDGE: the 5 public excerpts, scored once",
+ "status": "UNREVIEWED",
+ "ner_status_combined": {
+  "backend": "combined",
+  "active": "combined",
+  "model": {
+   "status": "ready",
+   "device": "mps",
+   "load_ms": 3302.5,
+   "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c"
+  },
+  "calls": {
+   "combined_calls": 5,
+   "fallback_calls": 0
+  },
+  "fallback": false
+ },
+ "labellers": [
+  "AI-labelled (Claude, chat assistant; blind to system output; not human-verified)"
+ ]
+}
