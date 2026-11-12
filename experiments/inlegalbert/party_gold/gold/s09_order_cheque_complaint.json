@@ -1,0 +1,30 @@
+{
+ "doc_id": "s09_order_cheque_complaint",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "order",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s09_order_cheque_complaint.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "firm as complainant acting through a partner (partner is not a party)",
+  "single accused"
+ ],
+ "parties": [
+  {
+   "name": "Sunrise Fictional Traders",
+   "role": "complainant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Mahesh Tidke",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Ravindra Ostwal",
+   "kind": "representative"
+  }
+ ]
+}

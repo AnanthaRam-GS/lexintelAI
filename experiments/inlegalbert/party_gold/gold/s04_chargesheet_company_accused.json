@@ -1,0 +1,42 @@
+{
+ "doc_id": "s04_chargesheet_company_accused",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "chargesheet",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s04_chargesheet_company_accused.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "company as accused",
+  "director and absconder",
+  "organisation complainant",
+  "witness as non-party"
+ ],
+ "parties": [
+  {
+   "name": "Testgarh Agricultural Produce Market Committee",
+   "role": "complainant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Greenleaf Fictional Agro Pvt. Ltd.",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Harshad Malvankar",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Jitendra Sawlekar",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Rupali Kadamwar",
+   "kind": "witness"
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "doc_id": "s01_fir_multi_accused",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "FIR",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s01_fir_multi_accused.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "three accused",
+  "alias (@)",
+  "witness and officer as non-parties"
+ ],
+ "parties": [
+  {
+   "name": "Lakshmi Varadkar",
+   "role": "complainant",
+   "alternative_roles": [
+    "informant"
+   ]
+  },
+  {
+   "name": "Suresh Kotwalkar @ Sonu",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Imran Bhaldar",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Deepak Zambre",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Mohan Pethkar",
+   "kind": "witness"
+  },
+  {
+   "name": "Arvind Nagre",
+   "kind": "investigating_officer"
+  }
+ ]
+}

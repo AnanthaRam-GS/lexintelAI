@@ -1,0 +1,47 @@
+{
+ "doc_id": "s02_fir_org_complainant",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "FIR",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s02_fir_org_complainant.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "organisation complainant",
+  "informant acting for it",
+  "company accused",
+  "witness as non-party"
+ ],
+ "parties": [
+  {
+   "name": "Samplepur Urban Co-operative Bank Ltd.",
+   "role": "complainant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Nitin Deshmane",
+   "role": "informant",
+   "alternative_roles": []
+  },
+  {
+   "name": "Rakesh Bhosrekar",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Orchid Fictional Traders Pvt. Ltd.",
+   "role": "accused",
+   "alternative_roles": []
+  },
+  {
+   "name": "Pallavi Bhosrekar",
+   "role": "accused",
+   "alternative_roles": []
+  }
+ ],
+ "non_parties": [
+  {
+   "name": "Anjali Kurhade",
+   "kind": "witness"
+  }
+ ]
+}

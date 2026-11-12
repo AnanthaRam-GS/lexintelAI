@@ -1,0 +1,11 @@
+{
+ "doc_id": "p01_gujarat_hc_2021",
+ "source": "public",
+ "synthetic": false,
+ "text_file": "experiments/inlegalbert/party_gold/public/p01_gujarat_hc_2021.txt",
+ "label_status": "unlabelled",
+ "labeller": null,
+ "labelled_on": null,
+ "parties": [],
+ "notes": ""
+}

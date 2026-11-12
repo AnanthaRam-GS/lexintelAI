@@ -1,0 +1,11 @@
+{
+ "doc_id": "p05_allahabad_hc_2019",
+ "source": "public",
+ "synthetic": false,
+ "text_file": "experiments/inlegalbert/party_gold/public/p05_allahabad_hc_2019.txt",
+ "label_status": "unlabelled",
+ "labeller": null,
+ "labelled_on": null,
+ "parties": [],
+ "notes": ""
+}

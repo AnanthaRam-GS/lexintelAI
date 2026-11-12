@@ -1,0 +1,15 @@
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD. All names, places and numbers below are fictional and were invented for software testing. Any resemblance to real persons or organisations is coincidental.
+
+FIRST INFORMATION REPORT
+Police Station: Economic Offences Wing, Samplepur. FIR No. 0058/2024 dated 02.02.2024.
+Sections: 318(4), 316(5) and 61(2) BNS.
+
+Informant: Nitin Deshmane, Branch Manager, Station Road branch.
+Complainant: Samplepur Urban Co-operative Bank Ltd., acting through the informant.
+
+Statement:
+The informant states that Rakesh Bhosrekar, managing director of Orchid Fictional Traders Pvt. Ltd., and his wife Pallavi Bhosrekar, a director of the same company, obtained a cash credit facility of Rs. 85,00,000 from the bank in 2022 by pledging stock that did not exist.
+\f
+When the bank's inspection team, including clerk Anjali Kurhade, visited the godown on 15.01.2024, it was found empty. The accused company and both directors are alleged to have diverted the loan amount. The complainant bank requests action against all three accused.
+
+SYNTHETIC TEST DOCUMENT - NOT A REAL RECORD.

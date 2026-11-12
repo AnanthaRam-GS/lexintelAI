@@ -1,0 +1,43 @@
+{
+ "doc_id": "s06_petition_quashing_multi",
+ "source": "synthetic",
+ "synthetic": true,
+ "document_type": "petition",
+ "text_file": "experiments/inlegalbert/party_gold/synthetic/s06_petition_quashing_multi.txt",
+ "label_status": "by_construction",
+ "covers": [
+  "two petitioners",
+  "three respondents including a company",
+  "complainant who is also a respondent"
+ ],
+ "parties": [
+  {
+   "name": "Neha Saraswat",
+   "role": "petitioner",
+   "alternative_roles": []
+  },
+  {
+   "name": "Anil Saraswat",
+   "role": "petitioner",
+   "alternative_roles": []
+  },
+  {
+   "name": "State of Fictionaland",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Fictional Housing Finance Ltd.",
+   "role": "respondent",
+   "alternative_roles": []
+  },
+  {
+   "name": "Rohit Jadhavkar",
+   "role": "respondent",
+   "alternative_roles": [
+    "complainant"
+   ]
+  }
+ ],
+ "non_parties": []
+}

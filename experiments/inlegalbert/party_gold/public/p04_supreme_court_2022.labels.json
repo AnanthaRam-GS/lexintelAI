@@ -1,0 +1,11 @@
+{
+ "doc_id": "p04_supreme_court_2022",
+ "source": "public",
+ "synthetic": false,
+ "text_file": "experiments/inlegalbert/party_gold/public/p04_supreme_court_2022.txt",
+ "label_status": "unlabelled",
+ "labeller": null,
+ "labelled_on": null,
+ "parties": [],
+ "notes": ""
+}
