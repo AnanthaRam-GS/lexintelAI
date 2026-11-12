@@ -210,10 +210,12 @@ LegalAI's trusted sources before it reaches a response (`services/section_labels
   | `unverified` | no trusted title | null | the model's label, shown marked "unverified" |
   | `conflict` | the trusted source gives different titles for the section | null | null |
 
-  `source` is `section_catalog` or `ipc_bns_mapping` (CYTRAIN rows) and `source_key` the entry used. Both sources are
-  UNREVIEWED.
+  `source` is `official_heading` (since step 26: the Act's marginal note from India Code; IPC, Evidence Act, BNS,
+  BNSS, BSA), `section_catalog` or `ipc_bns_mapping` (CYTRAIN rows), and `source_key` the entry used. All sources are
+  UNREVIEWED. Since step 26 `label.other_sources` lists, when the title is an official heading, the catalog and mapping
+  titles for the same section: `[{"source", "source_key", "title", "agrees"}]` (empty otherwise).
 - `case_brief.statutory_provisions` stays a list of strings, now display text: `"Section 309(4) BNS — Robbery"`,
-  `"Section 173 BNSS — registration of FIR (statute corrected from BNS; unverified label)"`, `"Section 113B Evidence
+  `"Section 173 BNSS — Information in cognizable cases (statute corrected from BNS)"`, `"Section 113B Evidence
   Act — … (unverified label)"`, `"Section 900 BNS (title not shown: trusted sources disagree)"`.
   `case_brief.statutory_provision_references` (new) lists the same sections with their labels.
 - Public `sections[].title` is display text in the same form, and `sections[].references` (new) lists the sections
@@ -238,6 +240,8 @@ backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
   pacing queue gave the request to the fallback model; `PRIMARY_DAILY_CAPACITY` when the primary had no daily
   capacity left). Since step 24 `fallback_policy` (`no_fallback` for professional answers, `immediate` for
   public ones; `wait_for_primary` only with `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED`) and `primary_wait_ms`.
+  Since step 26 `citations_total` (structured citations in the answer) and `citations_valid` (those that passed
+  citation validation).
   Since step 23 also
   `queue_wait_ms` (time queued for model capacity), `rate_limit_wait_ms` (time
   waiting for a provider's `retry-after`), `rate_limit_retries` and
@@ -321,6 +325,12 @@ The top-level `status` still reflects the database only.
 the answer starts with "The available sources do not cover this question."
 and the response carries no provisions (`sections: []`), no sources and only
 generic guidance to consult a professional.
+
+**Professional no-coverage answers (step 26).** A professional answer may also be a no-coverage answer: the model
+puts the statement in its top-level summary and leaves the brief's fields empty. The response then says so instead
+of returning a blank brief: `case_brief.summary` is the statement and `case_brief.limitations` includes
+"LegalAI's trusted sources did not cover this request, so no legal analysis was generated. …". Document fields
+(parties, chronology, procedure, evidence) still come from the uploaded document's local map.
 
 **Answer errors.**
 - `502 MODEL_OUTPUT_MISSING_CITATIONS`: the model returned no structured
