@@ -1,0 +1,1318 @@
+{
+ "device": {
+  "model_device": "mps",
+  "reranker_fp16": true
+ },
+ "system": "hybrid_rerank",
+ "flag_off_vs_frozen": {
+  "metrics_rerun": {
+   "P@5": 0.873333,
+   "R@5": 0.29011,
+   "R@20": 0.723272,
+   "MRR@5": 0.961111,
+   "nDCG@5": 0.819445
+  },
+  "metrics_frozen": {
+   "P@5": 0.873333,
+   "R@5": 0.29011,
+   "R@20": 0.723272,
+   "MRR@5": 0.961111,
+   "nDCG@5": 0.819445
+  },
+  "metrics_identical": true,
+  "identical_rankings": "30/30"
+ },
+ "query_sent_to_retrieval_is_original_query": true,
+ "queries_whose_entities_changed": 1,
+ "overall": {
+  "deterministic": {
+   "P@5": 0.873333,
+   "R@5": 0.29011,
+   "R@20": 0.723272,
+   "MRR@5": 0.961111,
+   "nDCG@5": 0.819445
+  },
+  "combined": {
+   "P@5": 0.873333,
+   "R@5": 0.29011,
+   "R@20": 0.723272,
+   "MRR@5": 0.961111,
+   "nDCG@5": 0.819445
+  }
+ },
+ "bootstrap": {
+  "P@5": {
+   "deterministic": {
+    "mean": 0.873333,
+    "ci95": [
+     0.8,
+     0.94
+    ]
+   },
+   "combined": {
+    "mean": 0.873333,
+    "ci95": [
+     0.8,
+     0.94
+    ]
+   },
+   "paired_difference": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "R@5": {
+   "deterministic": {
+    "mean": 0.29011,
+    "ci95": [
+     0.2647,
+     0.3201
+    ]
+   },
+   "combined": {
+    "mean": 0.29011,
+    "ci95": [
+     0.2647,
+     0.3201
+    ]
+   },
+   "paired_difference": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "R@20": {
+   "deterministic": {
+    "mean": 0.723272,
+    "ci95": [
+     0.674,
+     0.7666
+    ]
+   },
+   "combined": {
+    "mean": 0.723272,
+    "ci95": [
+     0.674,
+     0.7666
+    ]
+   },
+   "paired_difference": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "MRR@5": {
+   "deterministic": {
+    "mean": 0.961111,
+    "ci95": [
+     0.9,
+     1.0
+    ]
+   },
+   "combined": {
+    "mean": 0.961111,
+    "ci95": [
+     0.9,
+     1.0
+    ]
+   },
+   "paired_difference": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "nDCG@5": {
+   "deterministic": {
+    "mean": 0.819445,
+    "ci95": [
+     0.7538,
+     0.8782
+    ]
+   },
+   "combined": {
+    "mean": 0.819445,
+    "ci95": [
+     0.7538,
+     0.8782
+    ]
+   },
+   "paired_difference": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "unjudged": {
+  "deterministic": null,
+  "combined": null
+ },
+ "rank_changes": [
+  {
+   "query_id": "eval-q001",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q002",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q003",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q004",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q005",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q006",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q007",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q008",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q009",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q010",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q011",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q012",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q013",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q014",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q015",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q016",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q017",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q018",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q019",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q020",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q021",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q022",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q023",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q024",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q025",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q026",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q027",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q028",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q029",
+   "identical_top20": true,
+   "moved_chunks": {}
+  },
+  {
+   "query_id": "eval-q030",
+   "identical_top20": true,
+   "moved_chunks": {}
+  }
+ ],
+ "ner_status_combined": {
+  "backend": "combined",
+  "active": "combined",
+  "model": {
+   "status": "ready",
+   "device": "mps",
+   "load_ms": 453.6,
+   "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c"
+  },
+  "calls": {
+   "combined_calls": 120,
+   "fallback_calls": 0
+  },
+  "fallback": false
+ },
+ "entities": {
+  "eval-q001": {
+   "deterministic": [
+    [
+     0,
+     6,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ],
+    [
+     18,
+     29,
+     "SECTION",
+     "section 302",
+     "deterministic"
+    ],
+    [
+     30,
+     33,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     6,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ],
+    [
+     18,
+     29,
+     "SECTION",
+     "section 302",
+     "deterministic"
+    ],
+    [
+     30,
+     33,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q002": {
+   "deterministic": [
+    [
+     0,
+     5,
+     "OFFENCE",
+     "dowry",
+     "deterministic"
+    ],
+    [
+     12,
+     24,
+     "SECTION",
+     "section 304B",
+     "deterministic"
+    ],
+    [
+     25,
+     28,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     5,
+     "OFFENCE",
+     "dowry",
+     "deterministic"
+    ],
+    [
+     12,
+     24,
+     "SECTION",
+     "section 304B",
+     "deterministic"
+    ],
+    [
+     25,
+     28,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q003": {
+   "deterministic": [
+    [
+     0,
+     24,
+     "OFFENCE",
+     "criminal breach of trust",
+     "deterministic"
+    ],
+    [
+     25,
+     36,
+     "SECTION",
+     "section 406",
+     "deterministic"
+    ],
+    [
+     37,
+     40,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     24,
+     "OFFENCE",
+     "criminal breach of trust",
+     "deterministic"
+    ],
+    [
+     25,
+     36,
+     "SECTION",
+     "section 406",
+     "deterministic"
+    ],
+    [
+     37,
+     40,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q004": {
+   "deterministic": [
+    [
+     8,
+     19,
+     "SECTION",
+     "section 392",
+     "deterministic"
+    ],
+    [
+     20,
+     23,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     8,
+     19,
+     "SECTION",
+     "section 392",
+     "deterministic"
+    ],
+    [
+     20,
+     23,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q005": {
+   "deterministic": [
+    [
+     0,
+     4,
+     "OFFENCE",
+     "rape",
+     "deterministic"
+    ],
+    [
+     5,
+     16,
+     "SECTION",
+     "section 376",
+     "deterministic"
+    ],
+    [
+     17,
+     20,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     4,
+     "OFFENCE",
+     "rape",
+     "deterministic"
+    ],
+    [
+     5,
+     16,
+     "SECTION",
+     "section 376",
+     "deterministic"
+    ],
+    [
+     17,
+     20,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q006": {
+   "deterministic": [
+    [
+     0,
+     16,
+     "OFFENCE",
+     "common intention",
+     "deterministic"
+    ],
+    [
+     17,
+     27,
+     "SECTION",
+     "section 34",
+     "deterministic"
+    ],
+    [
+     28,
+     31,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     16,
+     "OFFENCE",
+     "common intention",
+     "deterministic"
+    ],
+    [
+     17,
+     27,
+     "SECTION",
+     "section 34",
+     "deterministic"
+    ],
+    [
+     28,
+     31,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q007": {
+   "deterministic": [
+    [
+     11,
+     22,
+     "SECTION",
+     "section 363",
+     "deterministic"
+    ],
+    [
+     23,
+     26,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     11,
+     22,
+     "SECTION",
+     "section 363",
+     "deterministic"
+    ],
+    [
+     23,
+     26,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q008": {
+   "deterministic": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ],
+    [
+     9,
+     20,
+     "SECTION",
+     "section 420",
+     "deterministic"
+    ],
+    [
+     21,
+     24,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ],
+    [
+     9,
+     20,
+     "SECTION",
+     "section 420",
+     "deterministic"
+    ],
+    [
+     21,
+     24,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q009": {
+   "deterministic": [
+    [
+     25,
+     36,
+     "SECTION",
+     "section 323",
+     "deterministic"
+    ],
+    [
+     37,
+     40,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     25,
+     36,
+     "SECTION",
+     "section 323",
+     "deterministic"
+    ],
+    [
+     37,
+     40,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q010": {
+   "deterministic": [
+    [
+     0,
+     19,
+     "OFFENCE",
+     "criminal conspiracy",
+     "deterministic"
+    ],
+    [
+     20,
+     32,
+     "SECTION",
+     "section 120B",
+     "deterministic"
+    ],
+    [
+     33,
+     36,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     19,
+     "STATUTE",
+     "criminal conspiracy",
+     "merged"
+    ],
+    [
+     20,
+     32,
+     "SECTION",
+     "section 120B",
+     "deterministic"
+    ],
+    [
+     33,
+     36,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q011": {
+   "deterministic": [
+    [
+     28,
+     37,
+     "OFFENCE",
+     "narcotics",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     28,
+     37,
+     "OFFENCE",
+     "narcotics",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q012": {
+   "deterministic": [
+    [
+     8,
+     15,
+     "LEGAL_ROLE",
+     "accused",
+     "deterministic"
+    ],
+    [
+     19,
+     24,
+     "OFFENCE",
+     "dowry",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     8,
+     15,
+     "LEGAL_ROLE",
+     "accused",
+     "deterministic"
+    ],
+    [
+     19,
+     24,
+     "OFFENCE",
+     "dowry",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q013": {
+   "deterministic": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q014": {
+   "deterministic": [
+    [
+     6,
+     13,
+     "OFFENCE",
+     "assault",
+     "deterministic"
+    ],
+    [
+     19,
+     35,
+     "OFFENCE",
+     "shared intention",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     6,
+     13,
+     "OFFENCE",
+     "assault",
+     "deterministic"
+    ],
+    [
+     19,
+     35,
+     "OFFENCE",
+     "shared intention",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q015": {
+   "deterministic": [],
+   "combined": []
+  },
+  "eval-q016": {
+   "deterministic": [
+    [
+     31,
+     37,
+     "LEGAL_ROLE",
+     "victim",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     31,
+     37,
+     "LEGAL_ROLE",
+     "victim",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q017": {
+   "deterministic": [
+    [
+     0,
+     14,
+     "OFFENCE",
+     "sexual assault",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     14,
+     "OFFENCE",
+     "sexual assault",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q018": {
+   "deterministic": [],
+   "combined": []
+  },
+  "eval-q019": {
+   "deterministic": [
+    [
+     0,
+     17,
+     "LEGAL_PROCEDURE",
+     "anticipatory bail",
+     "deterministic"
+    ],
+    [
+     24,
+     28,
+     "STATUTE",
+     "BNSS",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     17,
+     "LEGAL_PROCEDURE",
+     "anticipatory bail",
+     "deterministic"
+    ],
+    [
+     24,
+     28,
+     "STATUTE",
+     "BNSS",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q020": {
+   "deterministic": [
+    [
+     0,
+     12,
+     "LEGAL_PROCEDURE",
+     "quashing FIR",
+     "deterministic"
+    ],
+    [
+     19,
+     30,
+     "SECTION",
+     "section 482",
+     "deterministic"
+    ],
+    [
+     31,
+     35,
+     "STATUTE",
+     "CrPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     12,
+     "LEGAL_PROCEDURE",
+     "quashing FIR",
+     "deterministic"
+    ],
+    [
+     19,
+     30,
+     "SECTION",
+     "section 482",
+     "deterministic"
+    ],
+    [
+     31,
+     35,
+     "STATUTE",
+     "CrPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q021": {
+   "deterministic": [
+    [
+     26,
+     41,
+     "LEGAL_PROCEDURE",
+     "criminal appeal",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     26,
+     41,
+     "LEGAL_PROCEDURE",
+     "criminal appeal",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q022": {
+   "deterministic": [
+    [
+     0,
+     12,
+     "LEGAL_PROCEDURE",
+     "regular bail",
+     "deterministic"
+    ],
+    [
+     19,
+     27,
+     "STATUTE",
+     "NDPS Act",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     12,
+     "LEGAL_PROCEDURE",
+     "regular bail",
+     "deterministic"
+    ],
+    [
+     19,
+     27,
+     "STATUTE",
+     "NDPS Act",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q023": {
+   "deterministic": [
+    [
+     30,
+     36,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     30,
+     36,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q024": {
+   "deterministic": [
+    [
+     11,
+     18,
+     "LEGAL_ROLE",
+     "accused",
+     "deterministic"
+    ],
+    [
+     26,
+     37,
+     "SECTION",
+     "section 41A",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     11,
+     18,
+     "LEGAL_ROLE",
+     "accused",
+     "deterministic"
+    ],
+    [
+     26,
+     37,
+     "SECTION",
+     "section 41A",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q025": {
+   "deterministic": [
+    [
+     14,
+     17,
+     "STATUTE",
+     "BNS",
+     "deterministic"
+    ],
+    [
+     18,
+     33,
+     "DATE",
+     "after July 2024",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     14,
+     17,
+     "STATUTE",
+     "BNS",
+     "deterministic"
+    ],
+    [
+     18,
+     33,
+     "DATE",
+     "after July 2024",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q026": {
+   "deterministic": [
+    [
+     0,
+     4,
+     "STATUTE",
+     "BNSS",
+     "deterministic"
+    ],
+    [
+     5,
+     22,
+     "LEGAL_PROCEDURE",
+     "anticipatory bail",
+     "deterministic"
+    ],
+    [
+     32,
+     35,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     4,
+     "STATUTE",
+     "BNSS",
+     "deterministic"
+    ],
+    [
+     5,
+     22,
+     "LEGAL_PROCEDURE",
+     "anticipatory bail",
+     "deterministic"
+    ],
+    [
+     32,
+     35,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q027": {
+   "deterministic": [
+    [
+     0,
+     3,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     3,
+     "STATUTE",
+     "IPC",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q028": {
+   "deterministic": [
+    [
+     0,
+     6,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     6,
+     "OFFENCE",
+     "murder",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q029": {
+   "deterministic": [
+    [
+     23,
+     37,
+     "OFFENCE",
+     "sexual assault",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     23,
+     37,
+     "OFFENCE",
+     "sexual assault",
+     "deterministic"
+    ]
+   ]
+  },
+  "eval-q030": {
+   "deterministic": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ],
+    [
+     13,
+     37,
+     "OFFENCE",
+     "criminal breach of trust",
+     "deterministic"
+    ]
+   ],
+   "combined": [
+    [
+     0,
+     8,
+     "OFFENCE",
+     "cheating",
+     "deterministic"
+    ],
+    [
+     13,
+     37,
+     "OFFENCE",
+     "criminal breach of trust",
+     "deterministic"
+    ]
+   ]
+  }
+ },
+ "verdict": {
+  "no_drop": {
+   "P@5": [
+    0.873333,
+    0.873
+   ],
+   "nDCG@5": [
+    0.819445,
+    0.814
+   ],
+   "pass": true
+  },
+  "gain": {
+   "delta_ndcg5": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "threshold": 0.02,
+   "claimed": false
+  },
+  "overall": "PASS"
+ }
+}

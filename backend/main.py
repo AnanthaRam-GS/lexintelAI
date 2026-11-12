@@ -28,6 +28,7 @@ from backend.app.services.llm_daily_quota import daily_quota
 from backend.app.services.llm_pacing import llm_pacer
 from backend.app.services.ocr import tesseract_status
 from backend.app.services.query_models import model_status, start_warm_up
+from backend.app.services.ner_backend import ner_status, start_ner_warm_up
 
 settings = Settings()
 logger = logging.getLogger("legalai.startup")
@@ -50,6 +51,8 @@ async def lifespan(_app: FastAPI):
     if settings.legalai_model_warmup:
         # Load the query embedder and reranker in the background; /health reports the progress.
         start_warm_up(get_retrieval_service)
+        # Step E3: with LEGALAI_NER_BACKEND=combined, load the NER model too (it waits for the model lock).
+        start_ner_warm_up(settings)
     try:
         # Step 23: register the configured answer models' rate-limit buckets so /health shows them from the start.
         configure_answer_pacing(settings)
@@ -118,6 +121,8 @@ def health_check() -> dict:
         },
         # Query embedder and reranker: not_loaded | loading | loaded | failed, with devices once loaded.
         "models": model_status(),
+        # Step E3 NER backend: requested and active backend; with combined, the model state and fallback counts.
+        "ner": ner_status(settings),
         # Tesseract OCR for scanned PDFs: available, version, languages (or the reason it is unavailable).
         "ocr": tesseract_status(settings),
         # Step 23 answer pacing: requests waiting for model capacity, the estimated wait of the last one, and each

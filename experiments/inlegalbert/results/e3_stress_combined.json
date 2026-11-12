@@ -1,0 +1,1406 @@
+{
+ "backend": "combined",
+ "command": "backend/scripts/dev/stress_inference.py --repetitions 5 (concurrency 10, 3 rounds, 5 single; warm-up on; fake LLM; real models on MPS)",
+ "summary": {
+  "repetitions": 5,
+  "crashes": 0,
+  "crash_signals": [],
+  "statuses": {
+   "200": 225
+  },
+  "concurrent_latency_s": {
+   "n": 200,
+   "p50": 8.353,
+   "p95": 15.216,
+   "max": 17.914
+  },
+  "single_latency_s": {
+   "n": 25,
+   "p50": 1.305,
+   "p95": 1.364,
+   "mean": 1.279
+  }
+ },
+ "repetitions": [
+  {
+   "repetition": 1,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 8.525,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.328,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.396,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.445,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.352,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.479,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.527,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.216,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.268,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.173,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 4.859,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.648,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.583,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.781,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.812,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.654,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.708,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.747,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.853,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.678,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 4.453,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.535,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.503,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.394,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.37,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.424,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.479,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.383,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.374,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.372,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 2.578,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.62,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.635,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.561,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.699,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.642,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.641,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.694,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.65,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.693,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.13,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.181,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.081,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.153,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.047,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4753.8,
+    "warmup_ms": 2068.3,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "combined",
+     "active": "combined",
+     "model": {
+      "status": "ready",
+      "device": "mps",
+      "load_ms": 3390.5,
+      "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+      "warmup_ms": 82.7
+     },
+     "calls": {
+      "combined_calls": 45,
+      "fallback_calls": 0
+     },
+     "fallback": false
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 2,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 12.071,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.88,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.811,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.182,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.521,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.178,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.045,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.384,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.278,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.93,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 2.987,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.367,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.808,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.108,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.226,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.505,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.136,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.982,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.846,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.652,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 4.319,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.092,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.833,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.113,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.673,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.696,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.458,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.044,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.959,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.855,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 10.435,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.774,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.328,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.564,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.65,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.9,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.141,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.221,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.878,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.987,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.286,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.308,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.305,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.315,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.301,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 5027.2,
+    "warmup_ms": 1575.7,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "combined",
+     "active": "combined",
+     "model": {
+      "status": "ready",
+      "device": "mps",
+      "load_ms": 3606.1,
+      "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+      "warmup_ms": 82.1
+     },
+     "calls": {
+      "combined_calls": 45,
+      "fallback_calls": 0
+     },
+     "fallback": false
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 3,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 10.185,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.048,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.377,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.877,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.256,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.504,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.464,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.596,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.481,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.815,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 6.906,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.581,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.475,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.691,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.017,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.11,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.266,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.334,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.988,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.774,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 3.142,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.34,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.736,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.165,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.582,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.881,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.965,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.789,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.544,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.381,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 7.952,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.757,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.152,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.333,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.54,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.885,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.161,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.356,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.567,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.787,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.272,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.295,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.289,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.297,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.304,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4790.6,
+    "warmup_ms": 1086.1,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "combined",
+     "active": "combined",
+     "model": {
+      "status": "ready",
+      "device": "mps",
+      "load_ms": 3420.6,
+      "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+      "warmup_ms": 78.1
+     },
+     "calls": {
+      "combined_calls": 45,
+      "fallback_calls": 0
+     },
+     "fallback": false
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 4,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 12.358,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.978,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.768,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.573,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.467,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.572,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.341,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.164,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.189,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.98,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 4.358,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.795,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.571,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.899,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.695,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.162,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.289,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.007,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.49,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.945,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 11.897,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.025,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.659,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.277,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.493,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.717,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.2,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.434,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.956,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.133,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 5.671,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 6.917,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.223,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.639,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.417,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.907,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.164,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.406,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.906,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.141,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.317,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.322,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.316,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.334,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.311,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4732.7,
+    "warmup_ms": 1085.4,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "combined",
+     "active": "combined",
+     "model": {
+      "status": "ready",
+      "device": "mps",
+      "load_ms": 3383.9,
+      "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+      "warmup_ms": 82.2
+     },
+     "calls": {
+      "combined_calls": 45,
+      "fallback_calls": 0
+     },
+     "fallback": false
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  },
+  {
+   "repetition": 5,
+   "login": 200,
+   "rounds": [
+    [
+     {
+      "status": 200,
+      "seconds": 6.605,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.882,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.403,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.128,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.632,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 15.396,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 11.626,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 14.148,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 17.914,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 16.659,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 5.767,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.504,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.048,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.299,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.979,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.275,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.84,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.563,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.388,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.108,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 12.179,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 1.96,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.529,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 5.82,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.059,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.277,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.452,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.62,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.893,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.353,
+      "code": ""
+     }
+    ],
+    [
+     {
+      "status": 200,
+      "seconds": 5.874,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 9.695,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 8.4,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 3.328,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 4.568,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 2.035,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 7.133,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 12.247,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 10.988,
+      "code": ""
+     },
+     {
+      "status": 200,
+      "seconds": 13.521,
+      "code": ""
+     }
+    ]
+   ],
+   "single": [
+    {
+     "status": 200,
+     "seconds": 1.364,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.359,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.35,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.361,
+     "code": ""
+    },
+    {
+     "status": 200,
+     "seconds": 1.366,
+     "code": ""
+    }
+   ],
+   "health_models": {
+    "status": "loaded",
+    "load_ms": 4707.9,
+    "warmup_ms": 1232.3,
+    "warm_up": "ready",
+    "devices": {
+     "embedder": "mps/fp32",
+     "reranker": "mps/fp16"
+    },
+    "inference": {
+     "active": 0,
+     "waiting": 0
+    },
+    "ner": {
+     "backend": "combined",
+     "active": "combined",
+     "model": {
+      "status": "ready",
+      "device": "mps",
+      "load_ms": 3364.5,
+      "checkpoint_sha256": "427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c",
+      "warmup_ms": 77.7
+     },
+     "calls": {
+      "combined_calls": 45,
+      "fallback_calls": 0
+     },
+     "fallback": false
+    }
+   },
+   "crashed": false,
+   "exit_code": null,
+   "exit_signal": null,
+   "segfault_in_log": false,
+   "fatal_threads": []
+  }
+ ]
+}

@@ -166,6 +166,14 @@ The models go to the Hugging Face cache (`~/.cache/huggingface/hub`). The backen
 To check yours, run `cat ~/.cache/huggingface/hub/models--BAAI--bge-m3/refs/main`. If the upstream `main` has moved
 since, your vectors can differ slightly from the team's.
 
+**Optional: the InLegalBERT NER checkpoint** (only for `LEGALAI_NER_BACKEND=combined`; the default `deterministic`
+needs nothing). It is not in Git and not on the Hub. Rebuild it as described in
+[docs/experiments/INLEGALBERT_E3_RESULTS.md](docs/experiments/INLEGALBERT_E3_RESULTS.md#reproducing-the-checkpoint)
+(InLegalNER access on the Hub, about 75 minutes on Apple MPS), or copy it from the team's private storage into
+`models/inlegalbert_ner/seed-22/`. The backend checks its SHA-256
+(`427c3fd99c8b98c73b4adc161794e49ef39c852052a28ac6ed7c2d8ec9be0a4c`) and falls back to the rule-based NER if it is
+missing or different.
+
 ### 8. Produce the analytics
 
 ```bash
@@ -262,6 +270,7 @@ sets the same value unless noted.
 | `LEGALAI_MODEL_WARMUP` | load the models at startup | `true` | no |
 | `LEGALAI_INFERENCE_LOCK_TIMEOUT_SECONDS` | wait for the model lock before a 503 | `30` | no |
 | `LEGALAI_QUERY_DEBUG` | timings in query responses (debug only) | `false` | no |
+| `LEGALAI_NER_BACKEND`, `LEGALAI_NER_CHECKPOINT_DIR` | NER backend: `deterministic` (rules) or `combined` (InLegalBERT NER + rules, step E3; needs the checkpoint, see below); `/health` shows `ner` | `deterministic`, `models/inlegalbert_ner/seed-22` | no |
 | `CHROMA_PERSIST_DIR`, `CHROMA_COLLECTION_NAME` | vector store location | `./chroma_store`, `legalai_trusted_judgments_v1` | no |
 | `EMBEDDING_*`, `BGE_*`, `RERANKER_*`, `RETRIEVAL_TOP_K`, `RERANK_TOP_K` | index-build embedder and retrieval settings | see `.env.example` (`EMBEDDING_DEVICE=cpu`) | no |
 | `JWT_ALGORITHM`, `JWT_EXPIRY_MINUTES`, `AUTH_COOKIE_SAMESITE` | auth tokens and cookie | `HS256`, `60`, `lax` | no |

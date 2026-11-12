@@ -1,0 +1,908 @@
+{
+ "fixtures": {
+  "judgment": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 5555.9,
+    "combined": 4373.4
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 4,
+     "found_off": 4,
+     "found_on": 4,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 4,
+     "found_off": 4,
+     "found_on": 4,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 0,
+     "found_off": 0,
+     "found_on": 0,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 3,
+     "found_off": 3,
+     "found_on": 3,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [],
+     "combined": [
+      "NEELAM @ NEERAJ",
+      "STATE OF MADHYA PRADESH"
+     ],
+     "gained": [
+      "NEELAM @ NEERAJ",
+      "STATE OF MADHYA PRADESH"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2018",
+      "2019",
+      "2015",
+      "2016",
+      "2013",
+      "2011"
+     ],
+     "combined": [
+      "2018",
+      "2019",
+      "2015",
+      "2016",
+      "2013",
+      "2011"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_sections": {
+     "deterministic": [
+      "Section 397/401",
+      "Section 379",
+      "IPC",
+      "Cr.P.C",
+      "Section\n379",
+      "Sections 379"
+     ],
+     "combined": [
+      "Section 397/401",
+      "Section 379",
+      "IPC",
+      "Cr.P.C",
+      "Section\n379",
+      "Sections 379"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [
+      "IPC"
+     ],
+     "combined": [
+      "IPC"
+     ],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "Section 397/401 Section 379 IPC Cr.P.C Section\n379 08-02-2019  14.8.2015 order pronounced 30.10.2013 judgment delivered 11.10.2018",
+    "combined": "Section 397/401 Section 379 IPC Cr.P.C Section\n379 08-02-2019  14.8.2015 order pronounced 30.10.2013 judgment delivered 11.10.2018"
+   },
+   "rendered_map_identical": true,
+   "rendered_map_diff": {
+    "gained": [],
+    "lost": []
+   }
+  },
+  "fir": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 3680.9,
+    "combined": 3721.7
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 3,
+     "found_off": 3,
+     "found_on": 3,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [
+      "Complainant",
+      "Accused"
+     ],
+     "combined": [
+      "Complainant",
+      "Meera Placeholder",
+      "Accused",
+      "Ravi Sampleton",
+      "Kiran Exampleton"
+     ],
+     "gained": [
+      "Meera Placeholder",
+      "Ravi Sampleton",
+      "Kiran Exampleton"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2023",
+      "2024"
+     ],
+     "combined": [
+      "2023",
+      "2024"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_sections": {
+     "deterministic": [
+      "Section 173",
+      "Section 309(4) BNS",
+      "Section 115(2) BNS",
+      "BNS",
+      "Bharatiya Nagarik Suraksha Sanhita"
+     ],
+     "combined": [
+      "Section 173",
+      "Section 309(4) BNS",
+      "Section 115(2) BNS",
+      "BNS",
+      "Bharatiya Nagarik Suraksha Sanhita"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [
+      "BNS"
+     ],
+     "combined": [
+      "BNS"
+     ],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "Section 173 Section 309(4) BNS Section 115(2) BNS BNS Bharatiya Nagarik Suraksha Sanhita 04-03-2024  03-03-2024 incident occurred 04-03-2024 FIR registered 04-03-2024 medical examination",
+    "combined": "Section 173 Section 309(4) BNS Section 115(2) BNS BNS Bharatiya Nagarik Suraksha Sanhita 04-03-2024  03-03-2024 incident occurred 04-03-2024 FIR registered 04-03-2024 medical examination"
+   },
+   "rendered_map_identical": true,
+   "rendered_map_diff": {
+    "gained": [],
+    "lost": []
+   }
+  },
+  "chargesheet": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 4309.6,
+    "combined": 4349.2
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 3,
+     "found_off": 3,
+     "found_on": 3,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 6,
+     "found_off": 6,
+     "found_on": 6,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 5,
+     "found_off": 5,
+     "found_on": 5,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 4,
+     "found_off": 4,
+     "found_on": 4,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [
+      "Complainant",
+      "Accused"
+     ],
+     "combined": [
+      "Complainant",
+      "Asha Testwoman",
+      "Accused",
+      "Dev Fake",
+      "Sunil Mockwala"
+     ],
+     "gained": [
+      "Asha Testwoman",
+      "Dev Fake",
+      "Sunil Mockwala"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2023",
+      "2022"
+     ],
+     "combined": [
+      "2023",
+      "2022",
+      "10.01.2023",
+      "20.01.2023",
+      "02.02.2023"
+     ],
+     "gained": [
+      "10.01.2023",
+      "20.01.2023",
+      "02.02.2023"
+     ],
+     "lost": []
+    },
+    "explicit_sections": {
+     "deterministic": [
+      "Section 173(2) Cr.P.C.",
+      "Section 420, 406 and 120B IPC",
+      "Section 161 Cr.P.C.",
+      "IPC",
+      "Section 173(2)",
+      "Cr.P.C",
+      "Sections 420",
+      "406",
+      "120B IPC",
+      "Section 16",
+      "Sections 42",
+      " 40",
+      " 120"
+     ],
+     "combined": [
+      "Section 173(2) Cr.P.C.",
+      "Section 420, 406 and 120B IPC",
+      "Section 161 Cr.P.C.",
+      "IPC",
+      "Section 173(2)",
+      "Cr.P.C",
+      "Sections 420",
+      "406",
+      "120B IPC",
+      "Section 16",
+      "Sections 42",
+      " 40",
+      " 120"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [
+      "IPC"
+     ],
+     "combined": [
+      "IPC"
+     ],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "Section 173(2) Cr.P.C. Section 420, 406 and 120B IPC Section 161 Cr.P.C. IPC Section 173(2) 10.01.2023 FIR registered 20.01.2023 arrest 02.02.2023 bail 25.01.2023 recovery/seizure",
+    "combined": "Section 173(2) Cr.P.C. Section 420, 406 and 120B IPC Section 161 Cr.P.C. IPC Section 173(2) 10.01.2023 FIR registered 20.01.2023 arrest 02.02.2023 bail 25.01.2023 recovery/seizure"
+   },
+   "rendered_map_identical": true,
+   "rendered_map_diff": {
+    "gained": [],
+    "lost": []
+   }
+  },
+  "petition": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 4308.3,
+    "combined": 4346.8
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 3,
+     "found_off": 3,
+     "found_on": 3,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 5,
+     "found_off": 5,
+     "found_on": 5,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 4,
+     "found_off": 4,
+     "found_on": 4,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [
+      "Petitioner",
+      "Respondent"
+     ],
+     "combined": [
+      "Petitioner",
+      "Nikhil Placeholder",
+      "Respondent",
+      "State of Fictionaland",
+      "Priya Testcase",
+      "Police\nStation Hilltop"
+     ],
+     "gained": [
+      "Nikhil Placeholder",
+      "State of Fictionaland",
+      "Priya Testcase",
+      "Police\nStation Hilltop"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2024",
+      "2023"
+     ],
+     "combined": [
+      "2024",
+      "2023",
+      "12.05.2024",
+      "20.05.2024"
+     ],
+     "gained": [
+      "12.05.2024",
+      "20.05.2024"
+     ],
+     "lost": []
+    },
+    "explicit_sections": {
+     "deterministic": [
+      "Section 528",
+      "Section 318(4) and 316(2) BNS",
+      "BNS",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "Sections 318(4)",
+      "316(2) BNS"
+     ],
+     "combined": [
+      "Section 528",
+      "Section 318(4) and 316(2) BNS",
+      "BNS",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "Sections 318(4)",
+      "316(2) BNS"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [
+      "BNS"
+     ],
+     "combined": [
+      "BNS"
+     ],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "Section 528 Section 318(4) and 316(2) BNS BNS Bharatiya Nagarik Suraksha Sanhita Sections 318(4) 15.01.2024  12.05.2024 FIR registered 20.05.2024 bail 01.08.2024 charge sheet filed",
+    "combined": "Section 528 Section 318(4) and 316(2) BNS BNS Bharatiya Nagarik Suraksha Sanhita Sections 318(4) 15.01.2024  12.05.2024 FIR registered 20.05.2024 bail 01.08.2024 charge sheet filed"
+   },
+   "rendered_map_identical": true,
+   "rendered_map_diff": {
+    "gained": [],
+    "lost": []
+   }
+  },
+  "unknown": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 2083.0,
+    "combined": 2106.0
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 0,
+     "found_off": 0,
+     "found_on": 0,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 0,
+     "found_off": 0,
+     "found_on": 0,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 0,
+     "found_off": 0,
+     "found_on": 0,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 5,
+     "found_off": 5,
+     "found_on": 5,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [],
+     "combined": [
+      "Maple Grove Housing Society"
+     ],
+     "gained": [
+      "Maple Grove Housing Society"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2024"
+     ],
+     "combined": [
+      "07-07-2024"
+     ],
+     "gained": [
+      "07-07-2024"
+     ],
+     "lost": [
+      "2024"
+     ]
+    },
+    "explicit_sections": {
+     "deterministic": [],
+     "combined": [],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [],
+     "combined": [],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "07-07-2024",
+    "combined": "07-07-2024"
+   },
+   "rendered_map_identical": false,
+   "rendered_map_diff": {
+    "gained": [
+     "parties: Maple Grove Housing Society"
+    ],
+    "lost": []
+   }
+  },
+  "fir_scanned": {
+   "chunks": 1,
+   "map_ms": {
+    "deterministic": 3704.0,
+    "combined": 3747.8
+   },
+   "expected_items": {
+    "document_type": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "parties": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "dated_events": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "procedural_stages": {
+     "expected": 2,
+     "found_off": 2,
+     "found_on": 2,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "evidence_categories": {
+     "expected": 3,
+     "found_off": 3,
+     "found_on": 3,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    },
+    "absent_evidence_categories": {
+     "expected": 1,
+     "found_off": 1,
+     "found_on": 1,
+     "gained": [],
+     "lost": [],
+     "missing_on": []
+    }
+   },
+   "brief_fields_identical": true,
+   "brief_fields_diff": {
+    "parties_and_roles": {
+     "gained": [],
+     "lost": []
+    },
+    "chronology": {
+     "gained": [],
+     "lost": []
+    },
+    "procedural_considerations": {
+     "gained": [],
+     "lost": []
+    },
+    "evidence_identified": {
+     "gained": [],
+     "lost": []
+    }
+   },
+   "ner_fields": {
+    "parties": {
+     "deterministic": [
+      "Complainant",
+      "Accused"
+     ],
+     "combined": [
+      "Complainant",
+      "Meera Placeholder",
+      "Accused",
+      "Ravi Sampleton",
+      "Kiran Exampleton"
+     ],
+     "gained": [
+      "Meera Placeholder",
+      "Ravi Sampleton",
+      "Kiran Exampleton"
+     ],
+     "lost": []
+    },
+    "important_dates": {
+     "deterministic": [
+      "2023",
+      "2024"
+     ],
+     "combined": [
+      "2023",
+      "2024"
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_sections": {
+     "deterministic": [
+      "Section 173",
+      "Section 309(4) BNS",
+      "Section 115(2) BNS",
+      "BNS",
+      "Section 17",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "n 309(",
+      "n 115("
+     ],
+     "combined": [
+      "Section 173",
+      "Section 309(4) BNS",
+      "Section 115(2) BNS",
+      "BNS",
+      "Section 17",
+      "Bharatiya Nagarik Suraksha Sanhita",
+      "n 309(",
+      "n 115("
+     ],
+     "gained": [],
+     "lost": []
+    },
+    "explicit_statutes": {
+     "deterministic": [
+      "BNS"
+     ],
+     "combined": [
+      "BNS"
+     ],
+     "gained": [],
+     "lost": []
+    }
+   },
+   "trusted_query_identical": true,
+   "trusted_query": {
+    "deterministic": "Section 173 Section 309(4) BNS Section 115(2) BNS BNS Section 17 04-03-2024  03-03-2024 incident occurred 04-03-2024 FIR registered 04-03-2024 medical examination",
+    "combined": "Section 173 Section 309(4) BNS Section 115(2) BNS BNS Section 17 04-03-2024  03-03-2024 incident occurred 04-03-2024 FIR registered 04-03-2024 medical examination"
+   },
+   "rendered_map_identical": true,
+   "rendered_map_diff": {
+    "gained": [],
+    "lost": []
+   }
+  }
+ },
+ "lost_expected_items": 0,
+ "verdict": "PASS"
+}

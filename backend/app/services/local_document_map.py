@@ -14,9 +14,10 @@ regardless of document length.
 Reused, not reinvented:
 - `private_pdf_rag.build_private_chunks` / `select_query_focused_private_evidence`
   for chunking and BGE-M3-backed (or lexical-fallback) ranking.
-- `legal_ner.extract_deterministic_entities` for parties/dates/statutes/
-  sections/courts - already deterministic, already used elsewhere in
-  LegalAI, no InLegalBERT or any other model dependency.
+- `ner_backend.extract_entities` for parties/dates/statutes/sections/courts:
+  the deterministic NER by default; with `LEGALAI_NER_BACKEND=combined`, the
+  E1 InLegalBERT NER combined with it under the frozen policy (step E3), which
+  falls back to the deterministic NER if the model is unavailable.
 - `token_budget.estimate_tokens` for bounding.
 
 Additive and outside the 5 frozen files - it only imports read-only from
@@ -31,7 +32,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from backend.app.services.legal_ner import extract_deterministic_entities
+from backend.app.services.ner_backend import extract_entities
 from backend.app.services.private_pdf_rag import (
     PrivateChunk,
     PrivateEvidenceItem,
@@ -337,8 +338,8 @@ def _event_for_context(context: str) -> str | None:
 
 def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str], list[str], list[str]]:
     """Returns (explicit_sections, parties, important_dates), each deduped
-    and capped, extracted purely via `legal_ner.extract_deterministic_entities`
-    (regex/pattern-based, no model, no provider call)."""
+    and capped, extracted via `ner_backend.extract_entities` (the deterministic
+    NER by default; no provider call)."""
     sections: list[str] = []
     parties: list[str] = []
     dates: list[str] = []
@@ -359,7 +360,7 @@ def extract_sections_and_entities(chunks: list[PrivateChunk]) -> tuple[list[str]
             if key not in seen_sections and len(sections) < _MAX_SECTIONS:
                 seen_sections.add(key)
                 sections.append(match.group(1))
-        result = extract_deterministic_entities(chunk.text)
+        result = extract_entities(chunk.text)
         for entity in result.entities:
             if entity.entity_type == "SECTION":
                 suffix = _statute_suffix_after(chunk.text, entity.end_char)
