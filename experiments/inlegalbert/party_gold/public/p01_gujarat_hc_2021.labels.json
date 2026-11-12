@@ -1,11 +1,37 @@
 {
- "doc_id": "p01_gujarat_hc_2021",
- "source": "public",
- "synthetic": false,
- "text_file": "experiments/inlegalbert/party_gold/public/p01_gujarat_hc_2021.txt",
- "label_status": "unlabelled",
- "labeller": null,
- "labelled_on": null,
- "parties": [],
- "notes": ""
+  "doc_id": "p01_gujarat_hc_2021",
+  "source": "public",
+  "synthetic": false,
+  "text_file": "experiments/inlegalbert/party_gold/public/p01_gujarat_hc_2021.txt",
+  "label_status": "labelled",
+  "labeller": "AI-labelled (Claude, chat assistant; blind to system output; not human-verified)",
+  "labelled_on": "2026-11-12",
+  "parties": [
+    {
+      "name": "Karmanbhai Revabhai Bharwad",
+      "role": "petitioner",
+      "alternative_roles": []
+    },
+    {
+      "name": "Vijay Karamanbhai Bharvad",
+      "role": "petitioner",
+      "alternative_roles": []
+    },
+    {
+      "name": "State of Gujarat",
+      "role": "respondent",
+      "alternative_roles": []
+    },
+    {
+      "name": "District Superintendent of Police",
+      "role": "respondent",
+      "alternative_roles": []
+    },
+    {
+      "name": "P.S.I. Tarapur Police Station",
+      "role": "respondent",
+      "alternative_roles": []
+    }
+  ],
+  "notes": "Original petitioner (decd.) and his substituted son are both petitioner per the guide. Respondent nos. 2 and 3 are named only by designation and are labelled as written. The FIR (C.R. No. II/72/2019) presumably names the petitioner as accused, but the excerpt never says so, so no 'accused' role is added. Suit defendants and sale-deed parties are unnamed."
 }
