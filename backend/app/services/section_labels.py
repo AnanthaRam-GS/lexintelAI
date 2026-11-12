@@ -13,6 +13,12 @@ section (the extractor leaves "Section 113B Evidence Act" without one). The clau
 the string. The model's label is what remains after the section and statute references are removed.
 
 **Trusted sources, in order of trust.**
+0. Official headings (step 26): the marginal notes of the Acts as published on India Code, the official legislative
+   repository (``data/structured/statute_headings/<act>.csv``, sources in ``SOURCES.md`` there). An exact
+   (statute, section) entry, else the base section's heading (``309(4)`` -> ``309``): a sub-section inherits its
+   section's heading. Omitted or repealed sections are recorded there but never used as a title. An Act without a
+   file simply has no official headings (the catalog and mapping apply as before). When an official heading is shown,
+   the catalog and mapping titles for the same section are kept in ``label.other_sources`` with whether they agree.
 1. The legal section catalog (``data/structured/manifests/legal_section_catalog.json``): canonical name, description,
    aliases and concepts. An exact (statute, section) entry, else the entry for the base section (``309(4)`` ->
    ``309``) when the catalog lists the base section itself.
@@ -21,7 +27,7 @@ the string. The model's label is what remains after the section and statute refe
    IPC section listed on its own (rows keyed by an IPC group label such as "415 to 420" give no IPC title). The
    mapping's NCRB rows are not used: NCRB prints crime-head names that cover several sections, not section titles.
 
-Both sources are UNREVIEWED for legal review, so a "verified" title is only as good as they are.
+All sources are UNREVIEWED for legal review, so a "verified" title is only as good as they are.
 
 **States** (``SectionLabel.state``):
 - ``verified``: a trusted title exists; it replaces the model's label.
@@ -50,12 +56,14 @@ from functools import lru_cache
 from pathlib import Path
 
 from backend.app.core.config import REPO_ROOT
-from backend.app.models.common import SectionLabel, SectionReference
+from backend.app.models.common import OtherSourceTitle, SectionLabel, SectionReference
 from backend.app.services.judgment_sections import canonical_section, prepare_judgment_text
 from backend.app.services.legal_section_prediction import load_section_catalog
 from backend.app.services.query_analysis import extract_sections, extract_statutes
 
 MAPPING_PATH = REPO_ROOT / "data/processed/ipc_bns/ipc_bns_mapping.csv"
+HEADINGS_DIR = REPO_ROOT / "data/structured/statute_headings"
+OFFICIAL_SOURCE = "official_heading"
 CATALOG_SOURCE = "section_catalog"
 MAPPING_SOURCE = "ipc_bns_mapping"
 GENERATED_CONTEXT = "generated_from_grounded_answer"
@@ -74,6 +82,10 @@ _STATUTE_FIRST = re.compile(
     rf"({_NUMBER_LIST})",
 )
 _SECTION_SIGN = re.compile(r"§§?\s*")
+# Step 26: the Bharatiya Sakshya Adhiniyam is not one of the extractor's statutes (query_analysis.py also serves
+# retrieval and is not changed here), so the resolver reads "Section 63 BSA" / "BSA Section 63" itself.
+_BSA = re.compile(r"\b(?:BSA|Bharatiya\s+Sakshya\s+Adhiniyam(?:,\s*2023)?)\b", re.IGNORECASE)
+_BSA_SECTIONS = re.compile(rf"\b(?:Sections?|Sec\.?|S\.)\s*({_NUMBER_LIST})", re.IGNORECASE)
 _STATUTE_WORDS = re.compile(
     r"(?:\bof\s+the\s+)?(?:\bIPC\b|\bBNSS\b|\bBNS\b|\bCrPC\b|\bCr\.?\s*P\.?\s*C\b\.?|\bIndian Penal Code(?:,\s*1860)?\b|"
     r"\bCode of Criminal Procedure(?:,\s*1973)?\b|\bBharatiya Nyaya Sanhita(?:,\s*2023)?\b|"
@@ -105,23 +117,35 @@ class TrustedEntry:
 class LabelSources:
     """Trusted titles keyed by (statute, section), each a list of entries from the highest-trust source that has them."""
 
+    official: dict[tuple[str, str], list[TrustedEntry]] = field(default_factory=dict)
     catalog: dict[tuple[str, str], list[TrustedEntry]] = field(default_factory=dict)
     mapping: dict[tuple[str, str], list[TrustedEntry]] = field(default_factory=dict)
 
     def entries(self, statute: str, section: str) -> list[TrustedEntry]:
-        """Catalog first (exact, then the base section), then the mapping (exact, then base); never both."""
+        """Official headings first, then the catalog, then the mapping (each exact, then the base section); never mixed."""
         base = canonical_section(section) or section
-        for table in (self.catalog, self.mapping):
+        for table in (self.official, self.catalog, self.mapping):
             for key in ((statute, section), (statute, base)):
                 if key in table:
                     return table[key]
         return []
 
+    def lower_entries(self, statute: str, section: str) -> list[TrustedEntry]:
+        """The catalog and mapping entries for a section (exact, then base), for review next to an official heading."""
+        base = canonical_section(section) or section
+        found: list[TrustedEntry] = []
+        for table in (self.catalog, self.mapping):
+            for key in ((statute, section), (statute, base)):
+                if key in table:
+                    found.extend(table[key])
+                    break
+        return found
+
     def has_number(self, statute: str, section: str) -> list[TrustedEntry]:
         """Any entry of ``statute`` whose base section is the same number (including sub-section entries)."""
         base = canonical_section(section) or section
         found = []
-        for table in (self.catalog, self.mapping):
+        for table in (self.official, self.catalog, self.mapping):
             for (entry_statute, entry_section), entries in table.items():
                 if entry_statute == statute and (canonical_section(entry_section) or entry_section) == base:
                     found.extend(entries)
@@ -168,8 +192,15 @@ def clean_title(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip().rstrip(".").strip()
 
 
-def build_sources(catalog: list[dict] | None = None, mapping_rows: list[dict] | None = None) -> LabelSources:
+def build_sources(catalog: list[dict] | None = None, mapping_rows: list[dict] | None = None,
+                  heading_rows: list[dict] | None = None) -> LabelSources:
     sources = LabelSources()
+    for row in heading_rows if heading_rows is not None else load_heading_rows():
+        heading = clean_title(row.get("heading") or "")
+        if (row.get("status") or "in_force") != "in_force" or not heading:
+            continue  # omitted or repealed sections are recorded in the data, never shown as a title
+        key = (row["statute"], normalize_section(row["section"]))
+        add_unique(sources.official, key, TrustedEntry(key[0], key[1], heading, OFFICIAL_SOURCE, content_words(heading)))
     for entry in catalog if catalog is not None else load_section_catalog():
         title = clean_title(entry.get("canonical_name") or "")
         if not title:
@@ -202,6 +233,15 @@ def add_unique(table: dict[tuple[str, str], list[TrustedEntry]], key: tuple[str,
 
 def comparable(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", title.casefold()).strip()
+
+
+def load_heading_rows(directory: Path = HEADINGS_DIR) -> list[dict]:
+    """Every row of every ``<act>.csv`` (columns: statute, section, heading, status); none when the folder is absent."""
+    rows: list[dict] = []
+    for path in sorted(directory.glob("*.csv")) if directory.is_dir() else []:
+        with path.open(encoding="utf-8", newline="") as handle:
+            rows.extend(csv.DictReader(handle))
+    return rows
 
 
 def load_mapping_rows(path: Path = MAPPING_PATH) -> list[dict]:
@@ -255,6 +295,13 @@ def parse_provision(text: str) -> ParsedProvision:
         section = normalize_section(section)
         if (statute, section) not in mentions:
             mentions.append((statute, section))
+    if not mentions and _BSA.search(normalized):
+        for match in _BSA_SECTIONS.finditer(normalized):
+            for number in re.findall(_NUMBER, match.group(1)):
+                key = ("BSA", normalize_section(number))
+                if key not in mentions:
+                    mentions.append(key)
+        normalized = _BSA.sub(" ", normalized)
     label = _SECTION_WORDS.sub(" ", normalized)
     label = _STATUTE_WORDS.sub(" ", label)
     label = re.sub(r"\s+", " ", label).strip(_EDGE_PUNCTUATION)
@@ -273,9 +320,14 @@ def resolve_section(statute: str, section: str, label: str | None, sources: Labe
         other = sources.has_number(companion, section)
         if agrees(label, other):
             exact = sources.entries(companion, section)
-            exact_ok = bool(exact) and len({comparable(entry.title) for entry in exact}) == 1 and agrees(label, exact)
+            single = bool(exact) and len({comparable(entry.title) for entry in exact}) == 1
+            # Step 26: an official heading of the corrected section is shown even when its wording differs from the
+            # answer's label (the correction itself rests on the agreeing catalog/mapping entry).
+            exact_ok = single and (agrees(label, exact) or exact[0].source == OFFICIAL_SOURCE)
             note = (f"The answer cited this as {statute} {section}; the section number with this subject is in the "
                     f"{companion}.")
+            if exact_ok and exact[0].source == OFFICIAL_SOURCE and not agrees(label, exact):
+                note += f" The answer's own label (\"{label}\") is not shown; the official heading is."
             return SectionReference(
                 statute=companion, section=section, context=GENERATED_CONTEXT,
                 label=SectionLabel(
@@ -297,11 +349,17 @@ def resolve_section(statute: str, section: str, label: str | None, sources: Labe
             )
         entry = stated[0]
         replaced = bool(label) and not agrees(label, stated)
+        others = other_source_titles(sources, statute, section, entry) if entry.source == OFFICIAL_SOURCE else []
+        notes = []
+        if replaced:
+            notes.append("The answer's own label for this section did not match the trusted title and is not shown.")
+        if any(not other.agrees for other in others):
+            notes.append("A lower-trust source gives a different title; the official heading is shown.")
         return SectionReference(
             statute=statute, section=section, context=GENERATED_CONTEXT,
             label=SectionLabel(
                 state="verified", title=entry.title, source=entry.source, source_key=f"{statute} {entry.section}",
-                note="The answer's own label for this section did not match the trusted title and is not shown." if replaced else None,
+                note=" ".join(notes) or None, other_sources=others,
             ),
         )
     return SectionReference(
@@ -309,6 +367,13 @@ def resolve_section(statute: str, section: str, label: str | None, sources: Labe
         label=SectionLabel(state="unverified", model_label=label,
                            note="No trusted title is available for this section; the label is the answer's own."),
     )
+
+
+def other_source_titles(sources: LabelSources, statute: str, section: str, official: TrustedEntry) -> list[OtherSourceTitle]:
+    """Catalog and mapping titles for a section shown with its official heading, and whether each agrees with it."""
+    return [OtherSourceTitle(source=entry.source, source_key=f"{statute} {entry.section}", title=entry.title,
+                             agrees=agrees(entry.title, [official]) or agrees(official.title, [entry]))
+            for entry in sources.lower_entries(statute, section)]
 
 
 def resolve_provision(text: str, sources: LabelSources | None = None) -> list[SectionReference]:

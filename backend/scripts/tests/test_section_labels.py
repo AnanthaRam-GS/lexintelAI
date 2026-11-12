@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
@@ -30,13 +31,26 @@ KNOWN_ERRORS = {
 }
 
 
+# Step 26 added official headings as the first source. The step 25 tests below check the catalog/mapping logic exactly
+# as written then, so they run against the step 25 sources (no official headings); the known errors are checked again
+# with the official headings in KnownErrorsWithOfficialHeadingsTests.
+STEP25_SOURCES = build_sources(heading_rows=[])
+
+
+class Step25Sources(unittest.TestCase):
+    def setUp(self) -> None:
+        patcher = patch.object(section_labels, "default_sources", lambda: STEP25_SOURCES)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+
 def one(text: str, sources=None):
     references = resolve_provision(text, sources)
     assert len(references) == 1, references
     return references[0]
 
 
-class KnownErrorRegressionTests(unittest.TestCase):
+class KnownErrorRegressionTests(Step25Sources):
     def test_bns_309_4_is_robbery_not_suicide(self) -> None:
         reference = one(KNOWN_ERRORS["robbery"])
         self.assertEqual((reference.statute, reference.section), ("BNS", "309(4)"))
@@ -67,7 +81,7 @@ class KnownErrorRegressionTests(unittest.TestCase):
                          "Section 173 BNSS — registration of FIR (statute corrected from BNS; unverified label)")
 
 
-class StateTests(unittest.TestCase):
+class StateTests(Step25Sources):
     def test_no_trusted_title_is_unverified_and_keeps_the_model_label_marked(self) -> None:
         reference = one("Section 113B Evidence Act – presumption as to dowry death")
         self.assertEqual((reference.statute, reference.section), ("Evidence Act", "113B"))
@@ -125,7 +139,7 @@ class StateTests(unittest.TestCase):
         self.assertEqual((reference.label.state, reference.label.title, reference.label.note), ("verified", "Dowry death", None))
 
 
-class ParsingTests(unittest.TestCase):
+class ParsingTests(Step25Sources):
     def test_model_wordings(self) -> None:
         cases = {
             "IPC Sec. 302 (murder).": ("IPC", "302"),
@@ -178,7 +192,7 @@ def result(mode: AnswerMode, answer) -> LegalAnswerResult:
     )
 
 
-class ResponseMappingTests(unittest.TestCase):
+class ResponseMappingTests(Step25Sources):
     def test_professional_sections_and_brief_provisions_use_the_resolver(self) -> None:
         answer = ProfessionalLegalBrief(
             issue_summary="Brief",
@@ -213,3 +227,129 @@ class ResponseMappingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def heading(statute: str, section: str, text: str, status: str = "in_force") -> dict:
+    return {"statute": statute, "section": section, "heading": text, "status": status}
+
+
+# Step 26: official headings (India Code marginal notes) as the first trust source. The rows here are test data in the
+# CSV shape of data/structured/statute_headings/; the tests do not depend on the committed files.
+OFFICIAL = [
+    heading("BNS", "309", "Robbery."),
+    heading("BNS", "115", "Voluntarily causing hurt."),
+    heading("BNS", "173", "Punishment for bribery."),
+    heading("BNSS", "173", "Information in cognizable cases."),
+    heading("IPC", "120B", "Punishment of criminal conspiracy."),
+    heading("IPC", "304B", "Dowry death."),
+    heading("IPC", "498A", "Husband or relative of husband of a woman subjecting her to cruelty."),
+    heading("IPC", "124A", "", status="omitted"),
+    heading("IPC", "377", "Unnatural offences."),
+]
+
+
+class OfficialHeadingTests(unittest.TestCase):
+    sources = build_sources(heading_rows=OFFICIAL)
+    without = build_sources(heading_rows=[])
+
+    def test_official_heading_is_the_first_source(self) -> None:
+        reference = one(KNOWN_ERRORS["robbery"], self.sources)
+        self.assertEqual((reference.label.state, reference.label.title, reference.label.source, reference.label.source_key),
+                         ("verified", "Robbery", "official_heading", "BNS 309"))
+        self.assertNotIn("suicide", display_text(reference))
+        # The catalog's title is kept next to it, not dropped.
+        self.assertEqual([(o.source, o.title, o.agrees) for o in reference.label.other_sources],
+                         [("section_catalog", "Robbery", True)])
+
+    def test_step_25_regressions_hold_with_official_headings(self) -> None:
+        hurt = one(KNOWN_ERRORS["hurt"], self.sources)
+        self.assertEqual((hurt.statute, hurt.section, hurt.label.state, hurt.label.title),
+                         ("BNS", "115(2)", "verified", "Voluntarily causing hurt"))
+        fir = one(KNOWN_ERRORS["fir"], self.sources)
+        self.assertEqual((fir.statute, fir.section, fir.label.state, fir.label.statute_corrected_from),
+                         ("BNSS", "173", "corrected_statute", "BNS"))
+        # The corrected section's official heading is shown; the answer's own wording only in the note.
+        self.assertEqual((fir.label.title, fir.label.source, fir.label.model_label),
+                         ("Information in cognizable cases", "official_heading", None))
+        self.assertEqual(display_text(fir), "Section 173 BNSS — Information in cognizable cases (statute corrected from BNS)")
+        self.assertIn("registration of FIR", fir.label.note)
+
+    def test_lettered_sections(self) -> None:
+        for text, title in (("Section 120B IPC – conspiracy", "Punishment of criminal conspiracy"),
+                            ("Section 304-B IPC", "Dowry death"),
+                            ("IPC Sec. 498A – cruelty by husband", "Husband or relative of husband of a woman subjecting her to cruelty")):
+            with self.subTest(text=text):
+                reference = one(text, self.sources)
+                self.assertEqual((reference.label.state, reference.label.title, reference.label.source),
+                                 ("verified", title, "official_heading"))
+
+    def test_sub_sections_inherit_the_parent_heading(self) -> None:
+        reference = one("Section 309(6) BNS", self.sources)
+        self.assertEqual((reference.section, reference.label.title, reference.label.source_key), ("309(6)", "Robbery", "BNS 309"))
+
+    def test_official_heading_wins_a_conflict_with_the_catalog_and_the_disagreement_is_recorded(self) -> None:
+        catalog = [{"statute": "IPC", "section": "377", "canonical_name": "Sexual offences against minors",
+                    "brief_description": "", "aliases": [], "concepts": []}]
+        sources = build_sources(catalog=catalog, mapping_rows=[], heading_rows=OFFICIAL)
+        reference = one("Section 377 IPC", sources)
+        self.assertEqual((reference.label.title, reference.label.source), ("Unnatural offences", "official_heading"))
+        self.assertEqual([(o.source, o.title, o.agrees) for o in reference.label.other_sources],
+                         [("section_catalog", "Sexual offences against minors", False)])
+        self.assertIn("lower-trust source gives a different title", reference.label.note)
+
+    def test_omitted_sections_are_never_shown_as_titles(self) -> None:
+        reference = one("Section 124A IPC – sedition", self.sources)
+        self.assertNotEqual(reference.label.source, "official_heading")
+
+    def test_an_act_without_official_headings_falls_back_unchanged(self) -> None:
+        # The rows have no CrPC, Evidence Act or NDPS headings: those resolve exactly as without any official data.
+        for text in ("Section 438 CrPC – anticipatory bail", "Section 65B Evidence Act – electronic records",
+                     "Section 21 NDPS Act – small quantity", "Section 482 IPC – inherent powers"):
+            with self.subTest(text=text):
+                self.assertEqual(resolve_provision(text, self.sources), resolve_provision(text, self.without))
+
+    def test_no_heading_files_means_no_official_source(self) -> None:
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as empty:
+            self.assertEqual(section_labels.load_heading_rows(Path(empty)), [])
+            self.assertEqual(section_labels.load_heading_rows(Path(empty) / "missing"), [])
+
+
+class KnownErrorsWithOfficialHeadingsTests(unittest.TestCase):
+    """The step 25 regressions against the committed official headings (data/structured/statute_headings/)."""
+
+    def test_bns_309_4_is_robbery(self) -> None:
+        reference = one(KNOWN_ERRORS["robbery"])
+        self.assertEqual((reference.statute, reference.section, reference.label.state, reference.label.title, reference.label.source),
+                         ("BNS", "309(4)", "verified", "Robbery", "official_heading"))
+        self.assertNotIn("suicide", display_text(reference))
+
+    def test_bns_115_2_is_voluntarily_causing_hurt(self) -> None:
+        reference = one(KNOWN_ERRORS["hurt"])
+        self.assertEqual((reference.section, reference.label.state, reference.label.title), ("115(2)", "verified", "Voluntarily causing hurt"))
+        self.assertNotIn("medical", display_text(reference))
+
+    def test_173_is_corrected_to_the_bnss(self) -> None:
+        reference = one(KNOWN_ERRORS["fir"])
+        self.assertEqual((reference.statute, reference.section, reference.label.state, reference.label.statute_corrected_from),
+                         ("BNSS", "173", "corrected_statute", "BNS"))
+        self.assertNotIn("bribery", display_text(reference).lower())
+        self.assertEqual(reference.label.title, "Information in cognizable cases")
+
+    def test_committed_headings_cover_the_lettered_sections(self) -> None:
+        for text, title in (("Section 120B IPC", "Punishment of criminal conspiracy"), ("Section 304B IPC", "Dowry death"),
+                            ("Section 498A IPC", "Husband or relative of husband of a woman subjecting her to cruelty"),
+                            ("Section 65B Evidence Act", "Admissibility of electronic records")):
+            with self.subTest(text=text):
+                reference = one(text)
+                self.assertEqual((reference.label.state, reference.label.title, reference.label.source), ("verified", title, "official_heading"))
+
+    def test_bsa_sections_are_read_by_the_resolver(self) -> None:
+        for text, section in (("Section 63 BSA – electronic evidence", "63"), ("BSA Section 23(1)", "23(1)"),
+                              ("Section 118 of the Bharatiya Sakshya Adhiniyam, 2023", "118")):
+            with self.subTest(text=text):
+                reference = one(text)
+                self.assertEqual((reference.statute, reference.section, reference.label.source), ("BSA", section, "official_heading"))
+        self.assertEqual(one("Section 63 BSA – electronic evidence").label.title, "Admissibility of electronic records")
+        self.assertEqual(one("Section 63 BSA").label.title, "Admissibility of electronic records")
