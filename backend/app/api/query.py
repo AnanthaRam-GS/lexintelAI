@@ -1081,6 +1081,9 @@ def answer_backend(result: LegalAnswerResult) -> dict[str, Any]:
         # wait_for_primary (professional with LEGALAI_PROFESSIONAL_FALLBACK_ENABLED) or immediate (public).
         "fallback_policy": fallback_policy_name(result.timings),
         "primary_wait_ms": result.timings.get("primary_wait_ms"),
+        # Step 26: structured citations in the answer, and how many passed citation validation (debug only).
+        "citations_total": len(result.citations),
+        "citations_valid": len(validated_citations(result)),
     }
 
 
@@ -1418,6 +1421,13 @@ def professional_response_from_result(
         if party not in parties:
             parties.append(party)
     limitations = [item.message for item in answer.uncertainties]
+    summary = answer.issue_summary
+    if answer_is_no_coverage(result):
+        # Step 26: a no-coverage answer (prompt v2 rule) carries the statement in the top-level summary and may leave
+        # every brief field empty; say so rather than return a blank brief. Document fields still come from the map.
+        summary = summary.strip() or result.summary.strip() or NO_COVERAGE_STATEMENT
+        if PROFESSIONAL_NO_COVERAGE_LIMITATION not in limitations:
+            limitations.append(PROFESSIONAL_NO_COVERAGE_LIMITATION)
     limitations += [item for item in professional_brief.document_limitations(document_map) if item not in limitations]
     provision_references = section_labels.resolve_provisions(answer.explicit_legal_provisions)
     return ProfessionalQueryResponse(
@@ -1426,7 +1436,7 @@ def professional_response_from_result(
             retrieval, max_chars=excerpt_max_chars, cited_evidence_ids=validated_cited_evidence_ids(result)
         ),
         case_brief=ProfessionalCaseBrief(
-            summary=answer.issue_summary,
+            summary=summary,
             parties_and_roles=parties,
             material_facts=answer.material_facts_from_query,
             chronology=professional_brief.chronology(document_map),
@@ -1443,6 +1453,10 @@ def professional_response_from_result(
     )
 
 
+PROFESSIONAL_NO_COVERAGE_LIMITATION = (
+    "LegalAI's trusted sources did not cover this request, so no legal analysis was generated. Any parties, chronology, "
+    "procedure and evidence shown come from the uploaded document only."
+)
 NO_COVERAGE_GUIDANCE = (
     "LegalAI's sources do not cover this question. Consider asking a qualified professional who handles this area of law."
 )

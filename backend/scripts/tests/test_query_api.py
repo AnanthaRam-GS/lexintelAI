@@ -97,8 +97,9 @@ class QueryApiTests(unittest.TestCase):
                 "explanation": "You may have procedural protections.",
                 "sections": [
                     {
-                        # Step 25: the model's "BNSS section 35" resolved against the section catalog.
-                        "title": "Section 35 BNSS — Arrest safeguards",
+                        # Step 25: the model's "BNSS section 35" resolved against the trusted sources; since step 26
+                        # the official heading comes first and the catalog's title is kept in other_sources.
+                        "title": "Section 35 BNSS — When police may arrest without warrant",
                         "explanation": "Applicability depends on the specific facts and documents.",
                         "link": "https://www.indiacode.nic.in/",
                         "references": [
@@ -109,12 +110,14 @@ class QueryApiTests(unittest.TestCase):
                                 "context": "generated_from_grounded_answer",
                                 "label": {
                                     "state": "verified",
-                                    "title": "Arrest safeguards",
-                                    "source": "section_catalog",
+                                    "title": "When police may arrest without warrant",
+                                    "source": "official_heading",
                                     "source_key": "BNSS 35",
                                     "model_label": None,
                                     "statute_corrected_from": None,
                                     "note": None,
+                                    "other_sources": [{"source": "section_catalog", "source_key": "BNSS 35",
+                                                       "title": "Arrest safeguards", "agrees": True}],
                                 },
                             }
                         ],
@@ -1620,6 +1623,9 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertTrue(all(value >= 0 for value in debug["timings_ms"].values()))
         self.assertGreaterEqual(debug["timings_ms"]["total_ms"], debug["timings_ms"]["generation_ms"])
         self.assertEqual(debug["backend"]["provider"], "mock")
+        # Step 26: citation counts, all of them valid for the mock answer.
+        self.assertGreater(debug["backend"]["citations_total"], 0)
+        self.assertEqual(debug["backend"]["citations_valid"], debug["backend"]["citations_total"])
         text_timings = text.json()["debug"]["timings_ms"]
         self.assertEqual(set(query_api.QUERY_STAGES) - set(text_timings), {"parse_ms", "document_map_ms"})
 
@@ -1724,6 +1730,26 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
         self.assertEqual(body["nextStepGuidance"], query_api.NO_COVERAGE_GUIDANCE)
         self.assertNotIn("TM-A", json.dumps(body))
         self.assertIn("no substantive legal answer", adapter.prompts[-1])  # prompt v2 rule sent to the model
+
+    def test_professional_no_coverage_answer_says_so_instead_of_an_empty_brief(self) -> None:
+        # Step 26 Part C: the step 25 FIR run (question mode, "Analyze this legal document.") returned HTTP 200 with
+        # every model field empty. A no-coverage answer puts the statement in the top-level summary only, with no claims
+        # and an empty issue_summary; the professional mapper used issue_summary alone, so the brief was blank.
+        statement = query_api.NO_COVERAGE_STATEMENT
+        self.adapter_returning({"issue_summary": "", "legal_regime": "bns_bnss"}, claims=[], summary=statement)
+        response = self.client.post("/query/professional", json={"text": "Analyze this legal document."})
+        self.assertEqual(response.status_code, 200, response.text)
+        brief = response.json()["case_brief"]
+        self.assertTrue(brief["summary"].startswith(statement), brief["summary"])
+        self.assertIn(query_api.PROFESSIONAL_NO_COVERAGE_LIMITATION, brief["limitations"])
+        self.assertEqual((brief["statutory_provisions"], brief["applicable_law"]), ([], []))
+
+    def test_professional_answer_keeps_its_own_summary(self) -> None:
+        statement = query_api.NO_COVERAGE_STATEMENT
+        self.adapter_returning({"issue_summary": f"{statement} Only the FIR is available.", "legal_regime": "bns_bnss"},
+                               claims=[], summary=statement)
+        response = self.client.post("/query/professional", json={"text": "Analyze this legal document."})
+        self.assertEqual(response.json()["case_brief"]["summary"], f"{statement} Only the FIR is available.")
 
     def test_truncated_output_is_a_generation_failure_without_fallback(self) -> None:
         fallback = MockBriefAdapter()
@@ -1863,10 +1889,11 @@ class ProfessionalMapperTests(unittest.TestCase):
         self.assertEqual(brief.chronology, professional_brief.chronology(document_map))  # document map, dated
         self.assertEqual(brief.evidence_identified, professional_brief.evidence_identified(document_map))  # document map
         self.assertEqual(brief.procedural_considerations, professional_brief.procedural_considerations(document_map, MOCK_POSTURE))
-        # Step 25: provisions are shown through the label resolver; BNSS 480 has no trusted title (catalog or mapping).
-        self.assertEqual(brief.statutory_provisions, ["Section 480 BNSS (no trusted title)"])
-        self.assertEqual([(r.statute, r.section, r.label.state) for r in brief.statutory_provision_references],
-                         [("BNSS", "480", "unverified")])
+        # Step 25: provisions are shown through the label resolver. BNSS 480 had no catalog or mapping title; since
+        # step 26 it has its official heading.
+        self.assertEqual(brief.statutory_provisions, ["Section 480 BNSS — When bail may be taken in case of non-bailable offence"])
+        self.assertEqual([(r.statute, r.section, r.label.state, r.label.source) for r in brief.statutory_provision_references],
+                         [("BNSS", "480", "verified", "official_heading")])
         self.assertEqual(brief.key_issues, ["Bail"])
         self.assertEqual(brief.applicable_law, ["Grounded principle"])
         self.assertEqual(brief.precedent_analysis, ["Grounded analysis"])
