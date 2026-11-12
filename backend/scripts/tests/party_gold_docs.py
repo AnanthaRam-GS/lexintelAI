@@ -36,14 +36,17 @@ TOKEN_BUDGET = 5000
 
 
 def documents() -> dict[str, dict]:
-    """doc_id -> {"text_file", "source"} for every gold document, the public excerpts included (labelled or not)."""
+    """doc_id -> {"text_file", "source"} for every gold document, the public excerpts included (labelled or not).
+
+    The public excerpts are found from their text files, never from their label files (step E4b: the label files are
+    the held-out judge and are not opened by tests).
+    """
     out = {}
     for path in sorted((GOLD_DIR / "gold").glob("*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
         out[record["doc_id"]] = {"text_file": record["text_file"], "source": record["source"]}
-    for path in sorted((GOLD_DIR / "public").glob("*.labels.json")):
-        record = json.loads(path.read_text(encoding="utf-8"))
-        out[record["doc_id"]] = {"text_file": record["text_file"], "source": record["source"]}
+    for path in sorted((GOLD_DIR / "public").glob("p*.txt")):
+        out[path.stem] = {"text_file": str(path.relative_to(REPO)), "source": "public"}
     return out
 
 
