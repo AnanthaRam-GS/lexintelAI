@@ -287,6 +287,38 @@ shown for those sub-sections; they stay in `other_sources`.
 
 </details>
 
+## Step 26c: document-evidence statute correction (frozen 2026-11-13, before any test) — UNREVIEWED
+
+**Rule** (`section_labels.document_evidence`; frozen here before it was implemented or tested):
+
+1. **Scope.** Professional answers with an uploaded document (`/query/professional/pdf`, brief and question mode).
+   Text queries and public answers are never touched.
+2. **When it is considered.** A section the answer names as statute S, number n, with S in a sister pair (BNS/BNSS,
+   IPC/CrPC, Evidence Act/BSA), whose step 25-26b resolution is **neither** `corrected_statute` **nor** flagged
+   `model_label_differs`: that is, the answer gave no label, a label with no content words, or a label that agrees with
+   S's trusted entries.
+3. **Document citations.** The uploaded document's own text (every private chunk) is read with the project's existing
+   extractor (`judgment_sections.prepare_judgment_text` + `query_analysis.extract_sections`), which attaches a section
+   to the statute written next to it, by full name ("Section 173 of the Bharatiya Nagarik Suraksha Sanhita, 2023") or
+   standard abbreviation (BNS, BNSS, IPC, CrPC, Cr.P.C., Evidence Act); the Bharatiya Sakshya Adhiniyam / BSA, which the
+   extractor does not know, is read with the resolver's BSA pattern ("Section N BSA", "BSA Section N", "Section N of the
+   Bharatiya Sakshya Adhiniyam"). Before that, a full Act name followed by an abbreviation in parentheses has the
+   abbreviation removed: **the full name outranks the abbreviation** ("Bharatiya Nagarik Suraksha Sanhita (BNS)" counts
+   as BNSS). Numbers are compared on the section (sub-sections included: "173(2)" is a citation of 173).
+4. **Correction.** If the document cites n under the sister statute S' **and never cites n under S**, the reference
+   becomes `corrected_statute` to S' with `correction_reason = "document_evidence"`, `document_evidence_id` = the first
+   private chunk (P#) that cites S' n, S' n's trusted title when it has exactly one (the official heading first), and
+   the answer's `model_label` kept.
+5. **No change** when the document cites n under both statutes, or under neither, or when step 2 does not hold.
+   Label-based corrections (step 26b) get `correction_reason = "label"`.
+
+**Test plan, before any live call.** Every saved brief or private-PDF output of steps 22-26b (step 22 B1-B5, the five
+brief fixtures; step 25 charge sheet and FIR; step 26 FIR; step 26b charge sheet and FIR), each with the document it was
+run on (the fixture, rendered and parsed as an upload), and a fixture probe (every section each fixture cites, named
+once under its own statute and once under the sister statute, with no label). Each named section is judged by hand
+*before* the rule is run: the statute the answer meant. Outcomes: correct correction, wrong correction, no-op. **Wrong
+corrections must be 0**, or no live call is made.
+
 ## Step 26b: label checks, sub-section titles, flagged mapping rows (2026-11-13) — UNREVIEWED
 
 **The model's label is always kept** in `label.model_label`, for audit; it is never shown as a trusted title.
