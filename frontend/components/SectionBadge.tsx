@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { sectionLabelParts, sectionNumberText } from '../lib/section-labels';
+import { statuteCode, type StatuteCode } from '../lib/statutes';
 import type { SectionReference } from '../lib/types/api';
 import { SectionLabelText } from './SectionLabelText';
 
@@ -12,66 +13,40 @@ export interface SectionBadgeProps {
   className?: string;
 }
 
-/**
- * Derives visual styling for different Indian statutory frameworks.
- */
-function getStatuteStyle(statute: string): {
+interface StatuteStyle {
   bg: string;
   text: string;
   border: string;
   prefix: string;
-} {
-  const normalized = statute.toLowerCase();
-  if (normalized.includes('penal code') || normalized.includes('ipc')) {
-    return {
-      bg: 'bg-[#fbf0dc]',
-      text: 'text-[#75440d]',
-      border: 'border-[#e7bd75]',
-      prefix: 'IPC',
-    };
-  }
-  if (normalized.includes('nyaya sanhita') || normalized.includes('bns')) {
-    return {
-      bg: 'bg-[#e8f1fa]',
-      text: 'text-[#174d85]',
-      border: 'border-[#9fc0e1]',
-      prefix: 'BNS',
-    };
-  }
-  if (normalized.includes('nagarik suraksha') || normalized.includes('bnss')) {
-    return {
-      bg: 'bg-[#e8f4ec]',
-      text: 'text-[#155437]',
-      border: 'border-[#9acdad]',
-      prefix: 'BNSS',
-    };
-  }
-  if (normalized.includes('criminal procedure') || normalized.includes('crpc')) {
-    return {
-      bg: 'bg-[#f4ebf7]',
-      text: 'text-[#5e2b6e]',
-      border: 'border-[#cfb3d8]',
-      prefix: 'CrPC',
-    };
-  }
-  if (
-    normalized.includes('evidence') ||
-    normalized.includes('sakshya') ||
-    normalized.includes('bsa')
-  ) {
-    return {
-      bg: 'bg-[#fdf4e8]',
-      text: 'text-[#8b591f]',
-      border: 'border-[#e0c497]',
-      prefix: 'BSA/IEA',
-    };
-  }
-  return {
-    bg: 'bg-[var(--color-surface-subtle)]',
-    text: 'text-[var(--color-ink)]',
-    border: 'border-[var(--color-border)]',
-    prefix: 'ACT',
-  };
+}
+
+const NEUTRAL = {
+  bg: 'bg-[var(--color-surface-subtle)]',
+  text: 'text-[var(--color-ink)]',
+  border: 'border-[var(--color-border)]',
+};
+
+const EVIDENCE = { bg: 'bg-[#fdf4e8]', text: 'text-[#8b591f]', border: 'border-[#e0c497]' };
+
+const STATUTE_STYLES: Record<StatuteCode, StatuteStyle> = {
+  IPC: { bg: 'bg-[#fbf0dc]', text: 'text-[#75440d]', border: 'border-[#e7bd75]', prefix: 'IPC' },
+  BNS: { bg: 'bg-[#e8f1fa]', text: 'text-[#174d85]', border: 'border-[#9fc0e1]', prefix: 'BNS' },
+  BNSS: { bg: 'bg-[#e8f4ec]', text: 'text-[#155437]', border: 'border-[#9acdad]', prefix: 'BNSS' },
+  CrPC: { bg: 'bg-[#f4ebf7]', text: 'text-[#5e2b6e]', border: 'border-[#cfb3d8]', prefix: 'CrPC' },
+  BSA: { ...EVIDENCE, prefix: 'BSA' },
+  'Evidence Act': { ...EVIDENCE, prefix: 'IEA' },
+  'NDPS Act': { ...NEUTRAL, prefix: 'NDPS' },
+  'POCSO Act': { ...NEUTRAL, prefix: 'POCSO' },
+  'SC/ST Act': { ...NEUTRAL, prefix: 'SC/ST' },
+};
+
+/**
+ * Visual styling for a statute. Step 27: the statute is recognised by exact, normalized name (`statuteCode`), not
+ * by substring, so "BNSS" is never shown as "BNS". Unknown statutes get a neutral "ACT" badge.
+ */
+function getStatuteStyle(statute: string): StatuteStyle {
+  const code = statuteCode(statute);
+  return code ? STATUTE_STYLES[code] : { ...NEUTRAL, prefix: 'ACT' };
 }
 
 export function SectionBadge({
@@ -98,6 +73,7 @@ export function SectionBadge({
         <span
           className={`rounded-xs px-1 py-0.5 text-[0.6875rem] font-bold tracking-wider uppercase ${style.text}`}
           title={section.statute}
+          data-testid="statute-prefix"
         >
           {style.prefix}
         </span>
