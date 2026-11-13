@@ -11,6 +11,7 @@ which were unchanged before and after the run. Full method and results: `docs/ev
 | `retrieval/trace_comparison_{cpu_fp32,product}.json` | Per query and system, whether the pooled ranking equals the frozen one, with the differing chunks |
 | `generation/summary.json` | Three-configuration generation results: overall, per mode and the paired subset, with provenance (provider, models, prompt versions and hashes, pacing) |
 | `generation/per_query_scores.json` | Per query and configuration: status, scores, model, latency, tokens and evidence chunk IDs (no answer text) |
+| `human_review/result.json` | Review of the 15 x 3 sample, imported 2026-11-13 with `import_human_review.py`: per configuration, citation-support and legal-correctness counts and rates (aggregates only, no answer text). The reviewer is an AI chat assistant (not Claude Code), blind to configuration and not human-verified; evidence excerpts were cut at 600 characters |
 
 ## Provenance
 
@@ -42,5 +43,6 @@ which were unchanged before and after the run. Full method and results: `docs/ev
 - The generation run is **complete**: all 90 cells have a record, and 84 are schema-valid answers.
   - The 6 that are not: 2 schema failures (A ans-q019, B ans-q016), 3 Groq 400s (C ans-q014 from step 24's public
     half; A ans-q017 and ans-q020) and 1 BUSY (C ans-q010, public).
-- The human-review sheet has been regenerated for the full sample (15 queries x 3 configurations) and is not yet
-  filled.
+- The review sheet for the sample (15 queries x 3 configurations) was reviewed by an AI chat assistant (not Claude
+  Code), blind to configuration and not human-verified, and imported on 2026-11-13 (`human_review/result.json`;
+  `docs/evaluation/EVALUATION_2026-10.md`, section 4). A check by a person is still to be done.
