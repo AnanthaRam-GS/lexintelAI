@@ -423,3 +423,89 @@ class SubSectionTitleTests(unittest.TestCase):
     def test_without_a_sub_section_title_the_official_heading_stays_primary(self) -> None:
         label = one("Section 309(4) BNS").label
         self.assertEqual((label.title, label.source, label.section_heading), ("Robbery", "official_heading", None))
+
+
+class DocumentEvidenceTests(unittest.TestCase):
+    """Step 26c: an uploaded document's own citations correct a statute the answer named without a fitting label."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from backend.scripts.tests.brief_fixtures import fixture_private_chunks
+
+        cls.chunks = {name: fixture_private_chunks(name)[1] for name in ("judgment", "fir", "chargesheet", "petition", "unknown")}
+
+    def doc(self, text: str):
+        from types import SimpleNamespace
+
+        return [SimpleNamespace(text=text, private_chunk_id="P1")]
+
+    def test_fir_bns_173_without_a_label_becomes_bnss_173(self) -> None:
+        [reference] = resolve_provisions(["Section 173 BNS"], document_chunks=self.chunks["fir"])
+        label = reference.label
+        self.assertEqual((reference.statute, label.state, label.correction_reason, label.document_evidence_id, label.statute_corrected_from),
+                         ("BNSS", "corrected_statute", "document_evidence", "P1", "BNS"))
+        self.assertEqual(label.title, "Information in cognizable cases")
+        self.assertIn("cites section 173 only under the BNSS", label.note)
+
+    def test_the_model_label_is_kept(self) -> None:
+        # "procedure" has no content word (generic legal word), so neither label rule fires; the document decides.
+        [reference] = resolve_provisions(["Section 173 BNS – procedure"], document_chunks=self.chunks["fir"])
+        self.assertEqual((reference.statute, reference.label.correction_reason, reference.label.model_label),
+                         ("BNSS", "document_evidence", "procedure"))
+
+    def test_the_full_act_name_outranks_a_wrong_abbreviation(self) -> None:
+        chunks = self.doc("Registered under Sections 173 of the Bharatiya Nagarik Suraksha Sanhita (BNS), 2023.")
+        [reference] = resolve_provisions(["Section 173 BNS"], document_chunks=chunks)
+        self.assertEqual((reference.statute, reference.label.correction_reason), ("BNSS", "document_evidence"))
+
+    def test_no_change_when_the_document_cites_both_or_neither(self) -> None:
+        both = self.doc("Section 173 BNSS was invoked. Section 173 BNS was also mentioned.")
+        self.assertEqual(resolve_provisions(["Section 173 BNS"], document_chunks=both)[0].statute, "BNS")
+        neither = self.doc("The FIR was registered at the police station.")
+        self.assertEqual(resolve_provisions(["Section 173 BNS"], document_chunks=neither)[0].statute, "BNS")
+
+    def test_named_correctly_is_left_alone(self) -> None:
+        [reference] = resolve_provisions(["Section 309(4) BNS"], document_chunks=self.chunks["fir"])
+        self.assertEqual((reference.statute, reference.label.state, reference.label.correction_reason), ("BNS", "verified", None))
+
+    def test_a_label_rule_outcome_is_not_overridden(self) -> None:
+        # A differing label keeps its flag (no sister fits it); the document rule only considers labels that trigger neither rule.
+        chunks = self.doc("Section 309 BNSS was cited.")
+        [reference] = resolve_provisions(["Section 309(4) BNS – offences relating to suicide attempts"], document_chunks=chunks)
+        self.assertEqual((reference.statute, reference.label.model_label_differs), ("BNS", True))
+        [label_corrected] = resolve_provisions(["Section 173 BNS – registration of FIR"], document_chunks=self.chunks["fir"])
+        self.assertEqual(label_corrected.label.correction_reason, "label")
+
+    def test_evidence_act_and_bsa(self) -> None:
+        chunks = self.doc("The certificate under Section 63 of the Bharatiya Sakshya Adhiniyam, 2023 is annexed.")
+        [reference] = resolve_provisions(["Section 63 Evidence Act"], document_chunks=chunks)
+        self.assertEqual((reference.statute, reference.label.correction_reason), ("BSA", "document_evidence"))
+
+    def test_without_a_document_nothing_changes(self) -> None:
+        self.assertEqual(resolve_provisions(["Section 173 BNS"])[0].statute, "BNS")
+
+    def test_no_wrong_correction_on_the_saved_outputs(self) -> None:
+        import json
+
+        cases = json.loads((Path(__file__).resolve().parent / "fixtures" / "document_evidence_cases.json").read_text(encoding="utf-8"))["cases"]
+        document_corrections, wrong = [], []
+        for run, fixture, text, truth in cases:
+            for reference in resolve_provisions([text], document_chunks=self.chunks[fixture]):
+                reason = reference.label.correction_reason if reference.label else None
+                if reason == "document_evidence":
+                    document_corrections.append((run, reference.statute))
+                if reason and reference.statute != truth:
+                    wrong.append((run, text, reference.statute, truth))
+        self.assertEqual(wrong, [])
+        self.assertEqual(document_corrections, [("step26 B-fir", "BNSS"), ("step26b B-fir", "BNSS")])
+
+    def test_the_professional_pdf_response_applies_it_and_a_text_answer_does_not(self) -> None:
+        answer = ProfessionalLegalBrief(issue_summary="Brief", legal_regime="bns_bnss",
+                                        explicit_legal_provisions=["Section 173 BNS", "Section 309(4) BNS"])
+        with_document = query_api.professional_response_from_result(result(AnswerMode.PROFESSIONAL, answer), private_chunks=self.chunks["fir"])
+        self.assertEqual([(s.statute, s.label.correction_reason) for s in with_document.identified_sections],
+                         [("BNSS", "document_evidence"), ("BNS", None)])
+        self.assertEqual(with_document.case_brief.statutory_provisions[0],
+                         "Section 173 BNSS — Information in cognizable cases (statute corrected from BNS)")
+        text_only = query_api.professional_response_from_result(result(AnswerMode.PROFESSIONAL, answer))
+        self.assertEqual([s.statute for s in text_only.identified_sections], ["BNS", "BNS"])

@@ -1499,9 +1499,11 @@ def professional_response_from_result(
         if PROFESSIONAL_NO_COVERAGE_LIMITATION not in limitations:
             limitations.append(PROFESSIONAL_NO_COVERAGE_LIMITATION)
     limitations += [item for item in professional_brief.document_limitations(document_map) if item not in limitations]
-    provision_references = section_labels.resolve_provisions(answer.explicit_legal_provisions)
+    # Step 26c: with an uploaded document, its own citations can correct a statute the answer named without a label.
+    provision_references = section_labels.resolve_provisions(answer.explicit_legal_provisions, document_chunks=private_chunks or None)
     return ProfessionalQueryResponse(
-        identified_sections=section_references(answer.explicit_legal_provisions + answer.potential_additional_provisions),
+        identified_sections=section_references(answer.explicit_legal_provisions + answer.potential_additional_provisions,
+                                               document_chunks=private_chunks or None),
         precedents=professional_brief.precedents_from_retrieval(
             retrieval, max_chars=excerpt_max_chars, cited_evidence_ids=validated_cited_evidence_ids(result)
         ),
@@ -1571,6 +1573,7 @@ def safe_public_link(value: Any) -> str:
     return "https://www.indiacode.nic.in/"
 
 
-def section_references(values: list[str]) -> list[SectionReference]:
-    """Sections the answer names, each resolved against the trusted sources (services/section_labels.py, step 25)."""
-    return section_labels.resolve_provisions(values)
+def section_references(values: list[str], document_chunks: list[PrivateChunk] | None = None) -> list[SectionReference]:
+    """Sections the answer names, each resolved against the trusted sources (services/section_labels.py, step 25);
+    with an uploaded document, also against its own citations (step 26c)."""
+    return section_labels.resolve_provisions(values, document_chunks=document_chunks)

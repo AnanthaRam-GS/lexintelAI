@@ -63,6 +63,11 @@ class SectionLabel(BaseModel):
     section_heading: str | None = None
     section_heading_source: str | None = None
     section_heading_key: str | None = None
+    # Step 26c: why a statute was corrected: "label" (the answer's label fits the sister statute) or
+    # "document_evidence" (the uploaded document cites this number only under the sister statute, at
+    # ``document_evidence_id``, a P# chunk).
+    correction_reason: str | None = None
+    document_evidence_id: str | None = None
 
 
 

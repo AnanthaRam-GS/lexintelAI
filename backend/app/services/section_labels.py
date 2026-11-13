@@ -54,6 +54,7 @@ import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 from backend.app.core.config import REPO_ROOT
 from backend.app.models.common import OtherSourceTitle, SectionLabel, SectionReference
@@ -348,7 +349,7 @@ def resolve_section(statute: str, section: str, label: str | None, sources: Labe
                     title=exact.title if exact else None,
                     source=exact.source if exact else other[0].source,
                     source_key=f"{sister} {exact.section if exact else other[0].section}",
-                    model_label=original, statute_corrected_from=statute, note=note,
+                    model_label=original, statute_corrected_from=statute, note=note, correction_reason="label",
                     other_sources=other_source_titles(sources, sister, section, exact) if exact and exact.source == OFFICIAL_SOURCE else [],
                 ),
             )
@@ -441,10 +442,67 @@ def display_text(reference: SectionReference) -> str:
     return f"{head} (no trusted title)"
 
 
-def resolve_provisions(values: list[str], sources: LabelSources | None = None) -> list[SectionReference]:
+# ---------------------------------------------------------------------------
+# Step 26c: document-evidence statute correction (docs/SECTION_LABELS.md, frozen before it was tested)
+# ---------------------------------------------------------------------------
+
+_FULL_NAME_THEN_ABBREVIATION = re.compile(
+    r"(\b(?:Bharatiya\s+Nagarik\s+Suraksha\s+Sanhita|Bharatiya\s+Nyaya\s+Sanhita|Bharatiya\s+Sakshya\s+Adhiniyam|"
+    r"Indian\s+Penal\s+Code|Code\s+of\s+Criminal\s+Procedure|Indian\s+Evidence\s+Act)(?:,?\s*\d{4})?)\s*\(\s*[A-Za-z.\s]{2,12}\)")
+
+
+def document_citations(chunks: list[Any]) -> dict[tuple[str, str], str]:
+    """(statute, section number) -> the first private chunk id citing it, read from the uploaded document's text."""
+    found: dict[tuple[str, str], str] = {}
+    for chunk in chunks:
+        text = _FULL_NAME_THEN_ABBREVIATION.sub(lambda m: m.group(1), getattr(chunk, "text", "") or "")
+        prepared = prepare_judgment_text(text)
+        cited = [(signal.statute, signal.section) for signal in extract_sections(prepared, extract_statutes(prepared)) if signal.statute]
+        if _BSA.search(text):
+            for sentence in re.split(r"(?<=[.;])\s+|\n", text):
+                if _BSA.search(sentence):
+                    cited += [("BSA", number) for match in _BSA_SECTIONS.finditer(sentence) for number in re.findall(_NUMBER, match.group(1))]
+        for statute, section in cited:
+            base = canonical_section(normalize_section(section)) or normalize_section(section)
+            found.setdefault((statute, base), getattr(chunk, "private_chunk_id", None) or "")
+    return found
+
+
+def document_evidence(reference: SectionReference, citations: dict[tuple[str, str], str],
+                      sources: LabelSources | None = None) -> SectionReference:
+    """The reference corrected to the sister statute when the document cites its number only there (step 26c)."""
+    label = reference.label
+    sister = COMPANION_STATUTE.get(reference.statute)
+    if sister is None or label is None or label.state == "corrected_statute" or label.model_label_differs:
+        return reference
+    base = canonical_section(reference.section) or reference.section
+    if (reference.statute, base) in citations or (sister, base) not in citations:
+        return reference
+    sources = sources or default_sources()
+    exact = _single_title(sources.entries(sister, reference.section))
+    evidence_id = citations[(sister, base)]
+    return SectionReference(
+        statute=sister, section=reference.section, context=reference.context,
+        label=SectionLabel(
+            state="corrected_statute", title=exact.title if exact else None,
+            source=exact.source if exact else None, source_key=f"{sister} {exact.section}" if exact else None,
+            model_label=label.model_label, statute_corrected_from=reference.statute,
+            correction_reason="document_evidence", document_evidence_id=evidence_id,
+            note=(f"The answer cited this as {reference.statute} {reference.section}; the uploaded document cites section "
+                  f"{base} only under the {sister} [{evidence_id}]."),
+            other_sources=other_source_titles(sources, sister, reference.section, exact) if exact and exact.source == OFFICIAL_SOURCE else [],
+        ),
+    )
+
+
+def resolve_provisions(values: list[str], sources: LabelSources | None = None, document_chunks: list[Any] | None = None) -> list[SectionReference]:
+    """Resolve the answer's provisions; with ``document_chunks`` (an uploaded document) the step 26c rule applies too."""
+    citations = document_citations(document_chunks) if document_chunks else None
     references: list[SectionReference] = []
     for value in values:
         for reference in resolve_provision(value, sources):
+            if citations:
+                reference = document_evidence(reference, citations, sources)
             if all((existing.statute, existing.section) != (reference.statute, reference.section) for existing in references):
                 references.append(reference)
     return references

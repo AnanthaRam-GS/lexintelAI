@@ -1,0 +1,251 @@
+{
+ "note": "Step 26c: every section named in the saved brief / private-PDF outputs of steps 22-26b, with the fixture document the run used and the statute the answer meant, judged by hand before the document-evidence rule was implemented or run ('neither': the label fits neither statute of the pair). Strings of steps 25-26b are rebuilt from the saved statute, section and model_label (step 25-26 responses dropped labels of verified sections, so those appear without one). Step 22 Article 20(1) (no section) is left out. UNREVIEWED. Evaluated 2026-11-13: the string 'Section 464/465 Cr.P.C. (pari materia to BNSS §§510-511)' also yields a BNSS 510 reference, which is BNSS as named (the hand judgment was made per string, as CrPC); it is a no-op either way.",
+ "cases": [
+  [
+   "step22 B1",
+   "judgment",
+   "Section 379, Indian Penal Code (IPC) – theft.",
+   "IPC"
+  ],
+  [
+   "step22 B1",
+   "judgment",
+   "Section 397, Code of Criminal Procedure (CrPC) – revision of orders of subordinate courts.",
+   "CrPC"
+  ],
+  [
+   "step22 B1",
+   "judgment",
+   "Section 401, CrPC – revision of orders of courts exercising original jurisdiction.",
+   "CrPC"
+  ],
+  [
+   "step22 B1",
+   "judgment",
+   "Section 432, CrPC – suspension of sentence pending appeal.",
+   "CrPC"
+  ],
+  [
+   "step22 B1",
+   "judgment",
+   "Section 439, CrPC – grant of bail in non‑bailable offences.",
+   "CrPC"
+  ],
+  [
+   "step22 B2",
+   "fir",
+   "Section 173 BNS – registration of FIR.",
+   "BNSS"
+  ],
+  [
+   "step22 B2",
+   "fir",
+   "Section 309(4) BNS – offences relating to suicide attempts.",
+   "BNS"
+  ],
+  [
+   "step22 B2",
+   "fir",
+   "Section 115(2) BNS – offences relating to false statements.",
+   "BNS"
+  ],
+  [
+   "step22 B2",
+   "fir",
+   "Section 154 Cr.P.C. – registration of FIR (repealed by BNS).",
+   "CrPC"
+  ],
+  [
+   "step22 B3",
+   "chargesheet",
+   "Section 173(2) Cr.P.C.",
+   "CrPC"
+  ],
+  [
+   "step22 B3",
+   "chargesheet",
+   "Sections 420, 406 and 120B IPC.",
+   "IPC"
+  ],
+  [
+   "step22 B3",
+   "chargesheet",
+   "Section 161 Cr.P.C. (recording of witness statements).",
+   "CrPC"
+  ],
+  [
+   "step22 B3",
+   "chargesheet",
+   "Section 438 Cr.P.C. (anticipatory bail) – relevant if bail is sought again.",
+   "CrPC"
+  ],
+  [
+   "step22 B4",
+   "petition",
+   "Section 528 BNS – power to quash FIRs.",
+   "BNSS"
+  ],
+  [
+   "step22 B4",
+   "petition",
+   "Section 318(4) BNS – offence relating to ... (as alleged in FIR).",
+   "BNS"
+  ],
+  [
+   "step22 B4",
+   "petition",
+   "Section 316(2) BNS – offence relating to ...",
+   "BNS"
+  ],
+  [
+   "step22 B4",
+   "petition",
+   "Section 531(2)(a) BNS – saving clause for pending investigations.",
+   "BNSS"
+  ],
+  [
+   "step22 B4",
+   "petition",
+   "Section 173 BNS – investigation report filing.",
+   "neither"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 531(2)(a) BNSS (saves pending investigation, trial, appeal).",
+   "BNSS"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 173 BNSS (registration of FIR under BNSS).",
+   "BNSS"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 154 Cr.P.C. (registration of FIR under the Code).",
+   "CrPC"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 415(2) BNSS (appeal filing post‑01‑07‑2024).",
+   "BNSS"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 176 BNSS (investigation procedure).",
+   "BNSS"
+  ],
+  [
+   "step22 B5",
+   "unknown",
+   "Section 464/465 Cr.P.C. (pari materia to BNSS §§510‑511).",
+   "CrPC"
+  ],
+  [
+   "step25 B-chargesheet",
+   "chargesheet",
+   "Section 164 CrPC – recording of confessions",
+   "CrPC"
+  ],
+  [
+   "step25 B-chargesheet",
+   "chargesheet",
+   "Section 65B Evidence Act – admissibility of electronic records",
+   "Evidence Act"
+  ],
+  [
+   "step25 B-chargesheet",
+   "chargesheet",
+   "IPC §§420, 406, 120B – fraud, criminal breach of trust, criminal conspiracy",
+   "IPC"
+  ],
+  [
+   "step25 B-chargesheet",
+   "chargesheet",
+   "Section 161 CrPC – examination of witnesses",
+   "CrPC"
+  ],
+  [
+   "step26 B-fir",
+   "fir",
+   "Section 173 BNS",
+   "BNSS"
+  ],
+  [
+   "step26 B-fir",
+   "fir",
+   "Section 309(4) BNS",
+   "BNS"
+  ],
+  [
+   "step26 B-fir",
+   "fir",
+   "Section 115(2) BNS",
+   "BNS"
+  ],
+  [
+   "step26 B-fir",
+   "fir",
+   "Section 154 CrPC – Registration of FIR (repealed as of 01‑07‑2024)",
+   "CrPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 173(2) CrPC",
+   "CrPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 420 IPC",
+   "IPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 406 IPC",
+   "IPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 120B IPC",
+   "IPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 161 CrPC",
+   "CrPC"
+  ],
+  [
+   "step26b B-chargesheet",
+   "chargesheet",
+   "Section 438 CrPC – anticipatory bail, as illustrated in E1",
+   "CrPC"
+  ],
+  [
+   "step26b B-fir",
+   "fir",
+   "Section 173 BNS",
+   "BNSS"
+  ],
+  [
+   "step26b B-fir",
+   "fir",
+   "Section 309(4) BNS",
+   "BNS"
+  ],
+  [
+   "step26b B-fir",
+   "fir",
+   "Section 115(2) BNS",
+   "BNS"
+  ]
+ ]
+}
