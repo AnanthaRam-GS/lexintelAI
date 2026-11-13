@@ -1,0 +1,171 @@
+statute,section,heading,status,basis
+BSA,1,"Short title, application and commencement",in_force,section_record
+BSA,2,Definitions,in_force,section_record
+BSA,3,Evidence may be given of facts in issue and relevant facts,in_force,section_record
+BSA,4,Relevancy of facts forming part of same transaction,in_force,section_record
+BSA,5,"Facts which are occasion, cause or effect of facts in issue or relevant facts",in_force,section_record
+BSA,6,"Motive, preparation and previous or subsequent conduct",in_force,section_record
+BSA,7,Facts necessary to explain or introduce fact in issue or relevant facts,in_force,section_record
+BSA,8,Things said or done by conspirator in reference to common design,in_force,section_record
+BSA,9,When facts not otherwise relevant become relevant,in_force,section_record
+BSA,10,Facts tending to enable Court to determine amount are relevant in suits for damages,in_force,section_record
+BSA,11,Facts relevant when right or custom is in question,in_force,section_record
+BSA,12,"Facts showing existence of state of mind, or of body or bodily feeling",in_force,section_record
+BSA,13,Facts bearing on question whether act was accidental or intentional,in_force,section_record
+BSA,14,Existence of course of business when relevant,in_force,section_record
+BSA,15,Admission defined,in_force,section_record
+BSA,16,Admission by party to proceeding or his agent,in_force,section_record
+BSA,17,Admissions by persons whose position must be proved as against party to suit,in_force,section_record
+BSA,18,Admissions by persons expressly referred to by party to suit,in_force,section_record
+BSA,19,"Proof of admissions against persons making them, and by or on their behalf",in_force,section_record
+BSA,20,When oral admissions as to contents of documents are relevant,in_force,section_record
+BSA,21,Admissions in civil cases when relevant,in_force,section_record
+BSA,22,"Confession caused by inducement, threat, coercion or promise, when irrelevant in criminal proceeding",in_force,section_record
+BSA,23,Confession to police officer,in_force,section_record
+BSA,24,Consideration of proved confession affecting person making it and others jointly under trial for same offence,in_force,section_record
+BSA,25,"Admissions not conclusive proof, but may estop",in_force,section_record
+BSA,26,"Cases in which statement of relevant fact by person who is dead or cannot be found, etc., is relevant",in_force,section_record
+BSA,27,"Relevancy of certain evidence for proving, in subsequent proceeding, truth of facts therein stated",in_force,section_record
+BSA,28,Entries in books of account when relevant,in_force,section_record
+BSA,29,Relevancy of entry in public record or an electronic record made in performance of duty,in_force,section_record
+BSA,30,"Relevancy of statements in maps, charts and plans",in_force,section_record
+BSA,31,Relevancy of statement as to fact of public nature contained in certain Acts or notifications,in_force,section_record
+BSA,32,Relevancy of statements as to any law contained in law books including electronic or digital form,in_force,section_record
+BSA,33,"What evidence to be given when statement forms part of a conversation, document, electronic record, book or series of letters or papers",in_force,section_record
+BSA,34,Previous judgments relevant to bar a second suit or trial,in_force,section_record
+BSA,35,"Relevancy of certain judgments in probate, etc., jurisdiction",in_force,section_record
+BSA,36,"Relevancy and effect of judgments, orders or decrees, other than those mentioned in section 35",in_force,section_record
+BSA,37,"Judgments, etc., other than those mentioned in sections 34, 35 and 36 when relevant",in_force,section_record
+BSA,38,"Fraud or collusion in obtaining judgment, or incompetency of Court, may be proved",in_force,section_record
+BSA,39,Opinions of experts,in_force,section_record
+BSA,40,Facts bearing upon opinions of experts,in_force,section_record
+BSA,41,"Opinion as to handwriting and signature, when relevant",in_force,section_record
+BSA,42,"Opinion as to existence of general custom or right, when relevant",in_force,section_record
+BSA,43,"Opinion as to usages, tenets, etc., when relevant",in_force,section_record
+BSA,44,"Opinion on relationship, when relevant",in_force,section_record
+BSA,45,"Grounds of opinion, when relevant",in_force,section_record
+BSA,46,"In civil cases character to prove conduct imputed, irrelevant",in_force,section_record
+BSA,47,In criminal cases previous good character relevant,in_force,section_record
+BSA,48,Evidence of character or previous sexual experience not relevant in certain cases,in_force,section_record
+BSA,49,"Previous bad character not relevant, except in reply",in_force,section_record
+BSA,50,Character as affecting damages,in_force,section_record
+BSA,51,Fact judicially noticeable need not be proved,in_force,section_record
+BSA,52,Facts of which Court shall take judicial notice,in_force,section_record
+BSA,53,Facts admitted need not be proved,in_force,section_record
+BSA,54,Proof of facts by oral evidence,in_force,section_record
+BSA,55,Oral evidence to be direct,in_force,section_record
+BSA,56,Proof of contents of documents,in_force,section_record
+BSA,57,Primary evidence,in_force,section_record
+BSA,58,Secondary evidence,in_force,section_record
+BSA,59,Proof of documents by primary evidence,in_force,section_record
+BSA,60,Cases in which secondary evidence relating to documents maybe given,in_force,section_record
+BSA,61,Electronic or digital record,in_force,section_record
+BSA,62,Special provisions as to evidence relating to electronic record,in_force,section_record
+BSA,63,Admissibility of electronic records,in_force,section_record
+BSA,64,Rules as to notice to produce,in_force,section_record
+BSA,65,Proof of signature and handwriting of person alleged to have signed or written document produced,in_force,section_record
+BSA,66,Proof as to electronic signature,in_force,section_record
+BSA,67,Proof of execution of document required by law to be attested,in_force,section_record
+BSA,68,Proof where no attesting witness found,in_force,section_record
+BSA,69,Admission of execution by party to attested document,in_force,section_record
+BSA,70,Proof when attesting witness denies execution,in_force,section_record
+BSA,71,Proof of document not required by law to be attested,in_force,section_record
+BSA,72,"Comparison of signature, writing or seal with others admitted or proved",in_force,section_record
+BSA,73,Proof as to verification of digital signature,in_force,section_record
+BSA,74,Public and private documents,in_force,section_record
+BSA,75,Certified copies of public documents,in_force,section_record
+BSA,76,Proof of documents by production of certified copies,in_force,section_record
+BSA,77,Proof of other official documents,in_force,section_record
+BSA,78,Presumption as to genuineness of certified copies,in_force,section_record
+BSA,79,"Presumption as to documents produced as record of evidence, etc",in_force,section_record
+BSA,80,"Presumption as to Gazettes, newspapers, and other documents",in_force,section_record
+BSA,81,Presumption as to Gazettes in electronic or digital record,in_force,section_record
+BSA,82,Presumption as to maps or plans made by authority of Government,in_force,section_record
+BSA,83,Presumption as to collections of laws and reports of decisions,in_force,section_record
+BSA,84,Presumption as to powers-of-attorney,in_force,section_record
+BSA,85,Presumption as to electronic agreements,in_force,section_record
+BSA,86,Presumption as to electronic records and electronic signatures,in_force,section_record
+BSA,87,Presumption as to Electronic Signature Certificates,in_force,section_record
+BSA,88,Presumption as to certified copies of foreign judicial records,in_force,section_record
+BSA,89,"Presumption as to books, maps and charts",in_force,section_record
+BSA,90,Presumption as to electronic messages,in_force,section_record
+BSA,91,"Presumption as to due execution, etc., of documents not produced",in_force,section_record
+BSA,92,Presumption as to documents thirty years old,in_force,section_record
+BSA,93,Presumption as to electronic records five years old,in_force,section_record
+BSA,94,"Evidence of terms of contracts, grants and other dispositions of property reduced to form of document",in_force,section_record
+BSA,95,Exclusion of evidence of oral agreement,in_force,section_record
+BSA,96,Exclusion of evidence to explain or amend ambiguous document,in_force,section_record
+BSA,97,Exclusion of evidence against application of document to existing facts,in_force,section_record
+BSA,98,Evidence as to document unmeaning in reference to existing facts,in_force,section_record
+BSA,99,Evidence as to application of language which can apply to one only of several persons,in_force,section_record
+BSA,100,". Evidence as to application of language to one of two sets of facts, to neither of which the whole correctly applies",in_force,section_record
+BSA,101,"Evidence as to meaning of illegible characters, etc",in_force,section_record
+BSA,102,Who may give evidence of agreement varying terms of document,in_force,section_record
+BSA,103,Saving of provisions of Indian Succession Act relating to wills,in_force,section_record
+BSA,104,Burden of proof,in_force,section_record
+BSA,105,On whom burden of proof lies,in_force,section_record
+BSA,106,Burden of proof as to particular fact,in_force,section_record
+BSA,107,Burden of proving fact to be proved to make evidence admissible,in_force,section_record
+BSA,108,Burden of proving that case of accused comes within exceptions,in_force,section_record
+BSA,109,Burden of proving fact especially within knowledge,in_force,section_record
+BSA,110,Burden of proving death of person known to have been alive within thirty years,in_force,section_record
+BSA,111,Burden of proving that person is alive who has not been heard of for seven years,in_force,section_record
+BSA,112,"Burden of proof as to relationship in the cases of partners, landlord and tenant, principal and agent",in_force,section_record
+BSA,113,Burden of proof as to ownership,in_force,section_record
+BSA,114,Proof of good faith in transactions where one party is in relation of active confidence,in_force,section_record
+BSA,115,Presumption as to certain offences,in_force,section_record
+BSA,116,"Birth during marriage, conclusive proof of legitimacy",in_force,section_record
+BSA,117,Presumption as to abetment of suicide by a married woman,in_force,section_record
+BSA,118,Presumption as to dowry death,in_force,section_record
+BSA,119,Court may presume existence of certain facts,in_force,section_record
+BSA,120,Presumption as to absence of consent in certain prosecution for rape,in_force,section_record
+BSA,121,Estoppel,in_force,section_record
+BSA,122,Estoppel of tenant and of licensee of person in possession,in_force,section_record
+BSA,123,"Estoppel of acceptor of bill of exchange, bailee or licensee",in_force,section_record
+BSA,124,Who may testify,in_force,section_record
+BSA,125,Witness unable to communicate verbally,in_force,section_record
+BSA,126,Competency of husband and wife as witnesses in certain cases,in_force,section_record
+BSA,127,Judges and Magistrates,in_force,section_record
+BSA,128,Communications during marriage,in_force,section_record
+BSA,129,Evidence as to affairs of State,in_force,section_record
+BSA,130,Official communications,in_force,section_record
+BSA,131,Information as to commission of offences,in_force,section_record
+BSA,132,Professional communications,in_force,section_record
+BSA,133,Privilege not waived by volunteering evidence,in_force,section_record
+BSA,134,Confidential communication with legal advisers,in_force,section_record
+BSA,135,Production of title-deeds of witness not a party,in_force,section_record
+BSA,136,"Production of documents or electronic records which another person, having possession, could refuse to produce",in_force,section_record
+BSA,137,Witness not excused from answering on ground that answer will criminate,in_force,section_record
+BSA,138,Accomplice,in_force,section_record
+BSA,139,Number of witnesses,in_force,section_record
+BSA,140,Order of production and examination of witnesses,in_force,section_record
+BSA,141,Judge to decide as to admissibility of evidence,in_force,section_record
+BSA,142,Examination of witnesses,in_force,section_record
+BSA,143,Order of examinations,in_force,section_record
+BSA,144,Cross examination of person called to produce a document,in_force,section_record
+BSA,145,Witnesses to character,in_force,section_record
+BSA,146,Leading questions,in_force,section_record
+BSA,147,Evidence as to matters in writing,in_force,section_record
+BSA,148,Cross examination as to previous statements in writing,in_force,section_record
+BSA,149,Questions lawful in cross examination,in_force,section_record
+BSA,150,When witness to be compelled to answer,in_force,section_record
+BSA,151,Court to decide when question shall be asked and when witness compelled to answer,in_force,section_record
+BSA,152,Question not to be asked without reasonable grounds,in_force,section_record
+BSA,153,Procedure of Court in case of question being asked without reasonable grounds,in_force,section_record
+BSA,154,Indecent and scandalous questions,in_force,section_record
+BSA,155,Questions intended to insult or annoy,in_force,section_record
+BSA,156,Exclusion of evidence to contradict answers to questions testing veracity,in_force,section_record
+BSA,157,Question by party to his own witness,in_force,section_record
+BSA,158,Impeaching credit of witness,in_force,section_record
+BSA,159,"Questions tending to corroborate evidence of relevant fact, admissible",in_force,section_record
+BSA,160,Former statements of witness may be proved to corroborate later testimony as to same fact,in_force,section_record
+BSA,161,What matters may be proved in connection with proved statement relevant under section 26 or 27,in_force,section_record
+BSA,162,Refreshing memory,in_force,section_record
+BSA,163,Testimony to facts stated in document mentioned in section 162,in_force,section_record
+BSA,164,Right of adverse party as to writing used to refresh memory,in_force,section_record
+BSA,165,Production of documents,in_force,section_record
+BSA,166,"Giving, as evidence, of document called for and produced on notice",in_force,section_record
+BSA,167,"Using, as evidence, of document production of which was refused on notice",in_force,section_record
+BSA,168,Judge's power to put questions or order production,in_force,section_record
+BSA,169,No new trial for improper admission or rejection of evidence,in_force,section_record
+BSA,170,Repeal and savings,in_force,section_record

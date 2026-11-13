@@ -1,0 +1,460 @@
+{
+ "method": "For each Act, 14 sections (10 fixed: lettered and frequently cited; 4 drawn with random.Random(20261112)) were located in the official India Code PDF of the Act, the region of the page with the section head was rendered to an image, and the image was compared by eye with the CSV heading (2026-11-12). The BNSS sample uses the English India Code PDF (A2023-46.pdf). Evidence Act 66 was re-rendered on its own because the first render showed section 166.",
+ "reviewer": "Claude Code (assistant), UNREVIEWED by a person",
+ "acts": {
+  "IPC": {
+   "checked": 14,
+   "matches": 14,
+   "samples": [
+    {
+     "section": "120B",
+     "csv_heading": "Punishment of criminal conspiracy",
+     "pdf_page": 35,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "304B",
+     "csv_heading": "Dowry death",
+     "pdf_page": 75,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "498A",
+     "csv_heading": "Husband or relative of husband of a woman subjecting her to cruelty",
+     "pdf_page": 114,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "302",
+     "csv_heading": "Punishment for murder",
+     "pdf_page": 74,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "379",
+     "csv_heading": "Punishment for theft",
+     "pdf_page": 95,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "420",
+     "csv_heading": "Cheating and dishonestly inducing delivery of property",
+     "pdf_page": 103,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "376D",
+     "csv_heading": "Gang rape",
+     "pdf_page": 93,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "34",
+     "csv_heading": "Acts done by several persons in furtherance of common intention",
+     "pdf_page": 19,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "149",
+     "csv_heading": "Every member of unlawful assembly guilty of offence committed in prosecution of common object",
+     "pdf_page": 4,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "511",
+     "csv_heading": "Punishment for attempting to commit offences punishable with imprisonment for life or other imprisonment",
+     "pdf_page": 119,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "210",
+     "csv_heading": "Fraudulently obtaining decree for sum not due",
+     "pdf_page": 6,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "489D",
+     "csv_heading": "Making or possessing instruments or materials for forging or counterfeiting currency notes or bank-notes",
+     "pdf_page": 113,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "205",
+     "csv_heading": "False personation for purpose of act or proceeding in suit or prosecution",
+     "pdf_page": 54,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "369",
+     "csv_heading": "Kidnapping or abducting child under ten years with intent to steal from its person",
+     "pdf_page": 88,
+     "matches_rendered_source": true
+    }
+   ]
+  },
+  "Evidence Act": {
+   "checked": 14,
+   "matches": 14,
+   "samples": [
+    {
+     "section": "65B",
+     "csv_heading": "Admissibility of electronic records",
+     "pdf_page": 34,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "113B",
+     "csv_heading": "Presumption as to dowry death",
+     "pdf_page": 48,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "27",
+     "csv_heading": "How much of information received from accused may be proved",
+     "pdf_page": 21,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "25",
+     "csv_heading": "Confession to police-officer not to be proved",
+     "pdf_page": 21,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "45",
+     "csv_heading": "Opinions of experts",
+     "pdf_page": 27,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "114A",
+     "csv_heading": "Presumption as to absence of consent in certain prosecution for rape",
+     "pdf_page": 6,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "3",
+     "csv_heading": "Interpretation-clause",
+     "pdf_page": 9,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "106",
+     "csv_heading": "Burden of proving fact especially within knowledge",
+     "pdf_page": 47,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "145",
+     "csv_heading": "Cross-examination as to previous statements in writing",
+     "pdf_page": 55,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "161",
+     "csv_heading": "Right of adverse party as to writing used to refresh memory",
+     "pdf_page": 59,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "66",
+     "csv_heading": "Rules as to notice to produce",
+     "pdf_page": 35,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "150",
+     "csv_heading": "Procedure of Court in case of question being asked without reasonable grounds",
+     "pdf_page": 57,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "35",
+     "csv_heading": "Relevancy of entry in public record made in performance of duty",
+     "pdf_page": 25,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "65A",
+     "csv_heading": "Special provisions as to evidence relating to electronic record",
+     "pdf_page": 34,
+     "matches_rendered_source": true
+    }
+   ]
+  },
+  "BNS": {
+   "checked": 14,
+   "matches": 14,
+   "samples": [
+    {
+     "section": "309",
+     "csv_heading": "Robbery",
+     "pdf_page": 91,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "115",
+     "csv_heading": "Voluntarily causing hurt",
+     "pdf_page": 51,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "303",
+     "csv_heading": "Theft",
+     "pdf_page": 88,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "103",
+     "csv_heading": "Punishment for murder",
+     "pdf_page": 47,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "61",
+     "csv_heading": "Criminal conspiracy",
+     "pdf_page": 35,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "80",
+     "csv_heading": "Dowry death",
+     "pdf_page": 41,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "85",
+     "csv_heading": "Husband or relative of husband of a woman subjecting her to cruelty",
+     "pdf_page": 42,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "318",
+     "csv_heading": "Cheating",
+     "pdf_page": 95,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "351",
+     "csv_heading": "Criminal intimidation",
+     "pdf_page": 106,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "3",
+     "csv_heading": "General explanations",
+     "pdf_page": 20,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "229",
+     "csv_heading": "Punishment for false evidence",
+     "pdf_page": 75,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "188",
+     "csv_heading": "Unlawfully taking coining instrument from mint",
+     "pdf_page": 66,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "95",
+     "csv_heading": "Hiring, employing or engaging a child to commit an offence",
+     "pdf_page": 43,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "249",
+     "csv_heading": "Harbouring offender",
+     "pdf_page": 79,
+     "matches_rendered_source": true
+    }
+   ]
+  },
+  "BNSS": {
+   "checked": 14,
+   "matches": 14,
+   "samples": [
+    {
+     "section": "173",
+     "csv_heading": "Information in cognizable cases",
+     "pdf_page": 69,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "482",
+     "csv_heading": "Direction for grant of bail to person apprehending arrest",
+     "pdf_page": 163,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "528",
+     "csv_heading": "Saving of inherent powers of High Court",
+     "pdf_page": 173,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "35",
+     "csv_heading": "When police may arrest without warrant",
+     "pdf_page": 29,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "180",
+     "csv_heading": "Examination of witnesses by police",
+     "pdf_page": 72,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "187",
+     "csv_heading": "Procedure when investigation cannot be completed in twenty-four hours",
+     "pdf_page": 75,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "193",
+     "csv_heading": "Report of police officer on completion of investigation",
+     "pdf_page": 78,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "230",
+     "csv_heading": "Supply to accused of copy of police report and other documents",
+     "pdf_page": 90,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "531",
+     "csv_heading": "Repeal and savings",
+     "pdf_page": 174,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "4",
+     "csv_heading": "Trial of offences under Bharatiya Nyaya Sanhita, 2023 and other laws",
+     "pdf_page": 20,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "222",
+     "csv_heading": "Prosecution for defamation",
+     "pdf_page": 87,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "526",
+     "csv_heading": "Practising advocate not to sit as Magistrate in certain Courts",
+     "pdf_page": 173,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "217",
+     "csv_heading": "Prosecution for offences against State and for criminal conspiracy to commit such offence",
+     "pdf_page": 85,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "399",
+     "csv_heading": "Compensation to persons groundlessly arrested",
+     "pdf_page": 141,
+     "matches_rendered_source": true
+    }
+   ]
+  },
+  "BSA": {
+   "checked": 14,
+   "matches": 14,
+   "samples": [
+    {
+     "section": "63",
+     "csv_heading": "Admissibility of electronic records",
+     "pdf_page": 30,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "23",
+     "csv_heading": "Confession to police officer",
+     "pdf_page": 19,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "24",
+     "csv_heading": "Consideration of proved confession affecting person making it and others jointly under trial for same offence",
+     "pdf_page": 20,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "39",
+     "csv_heading": "Opinions of experts",
+     "pdf_page": 24,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "118",
+     "csv_heading": "Presumption as to dowry death",
+     "pdf_page": 41,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "2",
+     "csv_heading": "Definitions",
+     "pdf_page": 10,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "57",
+     "csv_heading": "Primary evidence",
+     "pdf_page": 28,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "105",
+     "csv_heading": "On whom burden of proof lies",
+     "pdf_page": 39,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "141",
+     "csv_heading": "Judge to decide as to admissibility of evidence",
+     "pdf_page": 45,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "170",
+     "csv_heading": "Repeal and savings",
+     "pdf_page": 51,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "120",
+     "csv_heading": "Presumption as to absence of consent in certain prosecution for rape",
+     "pdf_page": 42,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "8",
+     "csv_heading": "Things said or done by conspirator in reference to common design",
+     "pdf_page": 14,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "143",
+     "csv_heading": "Order of examinations",
+     "pdf_page": 46,
+     "matches_rendered_source": true
+    },
+    {
+     "section": "84",
+     "csv_heading": "Presumption as to powers-of-attorney",
+     "pdf_page": 34,
+     "matches_rendered_source": true
+    }
+   ]
+  },
+  "CrPC": {
+   "checked": 0,
+   "skipped": "no headings extracted (scanned PDF with noisy OCR text)"
+  }
+ }
+}

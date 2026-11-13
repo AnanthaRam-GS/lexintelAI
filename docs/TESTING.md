@@ -227,6 +227,10 @@ takes the database URL from `DATABASE_URL` or `.env` and never prints it.
   or a `_test` database), then compares row counts. Without `--clean` the
   target must be empty; with `--clean`, `pg_restore --clean` replaces an
   earlier rehearsal.
+- **Take backups with the backend stopped** (step 26b). A running backend opens Chroma, and SQLite then rewrites
+  `chroma_store/chroma.sqlite3` without any data change, so a later `verify_backup_restore.sh` reports that file as
+  differing from the live store. That drift is expected and accepted: the integrity check of the stores is
+  `verify_store_consistency.py` (PostgreSQL vs Chroma vs BM25), not the byte comparison of the SQLite file.
 - `backend/scripts/reconcile_cleanup.py`, `reconcile_backfill.py` and
   `verify_store_consistency.py` remove the inventory's test pollution,
   backfill the curated corpus into PostgreSQL, and check PostgreSQL against

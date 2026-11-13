@@ -28,6 +28,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from backend.app.services.llm_output_cap import effective_max_output_tokens
 from backend.app.core.config import Settings
 from backend.app.services.legal_answer_generation import (
     AnswerMode,
@@ -79,7 +80,8 @@ class GroqAnswerAdapter:
 
     @property
     def max_output_tokens(self) -> int:
-        return self.settings.legalai_llm_max_output_tokens
+        # Step 26b: a brief-mode cap set for this request (llm_output_cap.py), else LEGALAI_LLM_MAX_OUTPUT_TOKENS.
+        return effective_max_output_tokens(self.settings.legalai_llm_max_output_tokens)
 
     def generate_structured_answer(self, prompt: str, *, schema: type[BaseModel], mode: AnswerMode) -> LegalAnswerModelResponse:
         model = self.model_for(mode)
@@ -91,7 +93,7 @@ class GroqAnswerAdapter:
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
-            "max_completion_tokens": self.settings.legalai_llm_max_output_tokens,
+            "max_completion_tokens": self.max_output_tokens,
             **groq_reasoning_options(self.settings, model),
             "response_format": {
                 "type": "json_schema",
@@ -138,7 +140,7 @@ class GroqAnswerAdapter:
             finish_reason,
             usage.get("completion_tokens"),
             (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
-            self.settings.legalai_llm_max_output_tokens,
+            self.max_output_tokens,
         )
         if finish_reason == "length":
             # A cut-off answer is never presented as complete (and is not a provider failure, so no fallback).

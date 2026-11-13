@@ -1,0 +1,32 @@
+{
+ "note": "Step 26b: the 27 step 22-24 provision strings that were mismatches after step 26 (the BNS 173 'registration of FIR' case included), each with a hand judgment made before the rule was applied: 'correct' (the label describes the named section, perhaps in other words or by its use), 'wrong_statute' (the label describes the same number in the sister statute: BNS/BNSS, IPC/CrPC, Evidence Act/BSA), or 'wrong_label' (the label is wrong and the sister statute's section does not fit it either). UNREVIEWED.",
+ "cases": [
+  ["BNSS Section 173 (registration of FIR)", "correct"],
+  ["BNSS 103 (transitional provision)", "wrong_label"],
+  ["BNSS 173 (FIR amendment)", "correct"],
+  ["BNSS Sec. 103 (murder).", "wrong_statute"],
+  ["IPC Sec. 354B (obscene material)", "wrong_label"],
+  ["IPC Section 318 – Fraudulent or dishonest conduct", "wrong_label"],
+  ["IPC Section 406 – Dishonest dealing", "correct"],
+  ["IPC Section 482 – Inherent powers of the court to prevent abuse of process", "wrong_statute"],
+  ["NDPS Act, Section 21 – procedural safeguards for search and seizure", "wrong_label"],
+  ["NDPS Act, s.21 (commercial quantity offence)", "correct"],
+  ["Section 115(2) BNS – offences relating to false statements.", "wrong_label"],
+  ["Section 120B(2) IPC (if overt act required by statute)", "correct"],
+  ["Section 138 IPC – Dishonour of cheque (if a cheque was involved)", "wrong_label"],
+  ["Section 173 BNS – investigation report filing.", "wrong_label"],
+  ["Section 173 BNS – registration of FIR.", "wrong_statute"],
+  ["Section 173 BNSS (registration of FIR under BNSS).", "correct"],
+  ["Section 27, Indian Evidence Act (re: deemed custody)", "correct"],
+  ["Section 309(4) BNS – offences relating to suicide attempts.", "wrong_label"],
+  ["Section 318(4) BNS – offence relating to ... (as alleged in FIR).", "wrong_label"],
+  ["Section 528 BNS – power to quash FIRs.", "wrong_statute"],
+  ["Section 531(2)(a) BNS – saving clause for pending investigations.", "wrong_statute"],
+  ["Section 173 BNSS (FIR registration)", "correct"],
+  ["Section 173 BNSS – Registration of offences", "correct"],
+  ["Section 173, BNSS – Investigation report", "wrong_label"],
+  ["Section 176, BNSS – Chargesheet filing", "wrong_label"],
+  ["Section 528 BNSS (challenge to charge‑sheet)", "correct"],
+  ["Section 528, BNSS – Challenge to investigation", "correct"]
+ ]
+}

@@ -85,6 +85,69 @@ describe('Professional Analytics Dashboard', () => {
     expect(screen.queryByText('Section 302')).not.toBeInTheDocument();
   });
 
+  it('shows the official heading first and marks a source description that conflicts with it', async () => {
+    vi.spyOn(analyticsApi, 'getIpcBnsMap').mockResolvedValue([
+      {
+        ipc_section: '376',
+        ipc_description: 'Gang rape.',
+        bns_section: '70',
+        bns_description: 'Gang rape. 70(1)',
+        change_type: 'DIRECT',
+        source: 'CYTRAIN',
+        source_page: null,
+        ipc_official_heading: 'Punishment for rape',
+        bns_official_heading: 'Gang rape',
+        ipc_description_conflicts_with_official: true,
+        bns_description_conflicts_with_official: false,
+      },
+      {
+        ipc_section: '415 to 420',
+        ipc_description: 'Cheating (group)',
+        bns_section: '318',
+        bns_description: 'Cheating.',
+        change_type: 'DIRECT',
+        source: 'CYTRAIN',
+        source_page: null,
+        ipc_official_heading: null,
+        bns_official_heading: 'Cheating',
+      },
+    ]);
+    render(<ProfessionalAnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByTestId('tab-offense-trends')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /IPC-BNS Map/i }));
+
+    const official = screen
+      .getAllByTestId('mapping-official-heading')
+      .map((cell) => cell.textContent);
+    expect(official).toEqual([
+      'Punishment for rapeOfficial heading',
+      'Gang rapeOfficial heading',
+      'CheatingOfficial heading',
+    ]);
+    // The source text is kept, and marked only where it conflicts.
+    const descriptions = screen
+      .getAllByTestId('mapping-source-description')
+      .map((cell) => cell.textContent);
+    expect(descriptions).toEqual([
+      'Source: Gang rape.',
+      'Source: Gang rape. 70(1)',
+      'Cheating (group)',
+      'Source: Cheating.',
+    ]);
+    const conflicts = screen.getAllByTestId('mapping-conflict');
+    expect(conflicts).toHaveLength(1);
+    expect(conflicts[0]).toHaveTextContent('Conflicts with the official heading');
+
+    // The search also finds rows by their official heading.
+    fireEvent.change(screen.getByPlaceholderText(/Search section or description.../i), {
+      target: { value: 'punishment for rape' },
+    });
+    expect(screen.getByText('376')).toBeInTheDocument();
+    expect(screen.queryByText('415 to 420')).not.toBeInTheDocument();
+  });
+
   it('shows each mapping row source and "Not specified" for a missing change type', async () => {
     vi.spyOn(analyticsApi, 'getIpcBnsMap').mockResolvedValue([
       {

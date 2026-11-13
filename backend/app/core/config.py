@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     legalai_llm_max_retries: int | None = None
     # Output token limit sent to every answer provider; a length stop is a generation failure.
     legalai_llm_max_output_tokens: int = 2048
+    # Step 26b: the output cap for whole-document brief mode with Groq. A brief answer covers the whole document map
+    # and ran past 2048 (live charge-sheet fixture, gpt-oss reasoning tokens included). The request-size guard reserves
+    # this cap, so the lowest-ranked trusted evidence is trimmed until the request still fits the per-request ceiling.
+    legalai_brief_max_output_tokens: int = 3000
     # Groq reasoning effort for gpt-oss models (low | medium | high); empty sends none.
     legalai_groq_reasoning_effort: str = "low"
     # Groq per-request token ceiling (the account's tokens-per-minute limit); unset disables the size guard.

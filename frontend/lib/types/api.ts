@@ -43,6 +43,17 @@ export interface SectionLabel {
   model_label?: string | null;
   statute_corrected_from?: string | null;
   note?: string | null;
+  /** Step 26: catalog/mapping titles kept next to an official heading. */
+  other_sources?: { source: string; source_key: string; title: string; agrees: boolean }[];
+  /** Step 26b: the answer's own label does not match the trusted title shown. */
+  model_label_differs?: boolean;
+  /** Step 26b: when `title` is a catalog sub-section title, the section's official heading. */
+  section_heading?: string | null;
+  section_heading_source?: string | null;
+  section_heading_key?: string | null;
+  /** Step 26c: "label" or "document_evidence"; the P# chunk citing the corrected statute. */
+  correction_reason?: string | null;
+  document_evidence_id?: string | null;
 }
 
 export interface SectionReference {
@@ -164,6 +175,12 @@ export interface IpcBnsMappingRow {
   source: string;
   /** The printed table page of an NCRB row. */
   source_page?: number | null;
+  /** Step 26b: the official India Code heading of the IPC / BNS section, when one exists. */
+  ipc_official_heading?: string | null;
+  bns_official_heading?: string | null;
+  /** Step 26b: the source description differs in meaning from the official heading (it is kept, and marked). */
+  ipc_description_conflicts_with_official?: boolean;
+  bns_description_conflicts_with_official?: boolean;
 }
 
 /** "NCRB 2024, Table 1A.4, p. 50" for a PDF-printed pair; the CYTRAIN table otherwise. */
