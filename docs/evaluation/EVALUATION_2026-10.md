@@ -14,10 +14,14 @@ blind to configuration and not human-verified (section 4).**
     - schema failures: A ans-q019, B ans-q016;
     - Groq "json_validate_failed" 400s: A ans-q017, A ans-q020, C ans-q014;
     - BUSY: C ans-q010 (public).
-- **Review:** the 15 x 3 sample was reviewed by an AI chat assistant (not Claude Code), blind to configuration and
-  not human-verified, and imported on 2026-11-13 (section 4). Round 2, with full cited passages, is pending.
+- **Review:** the 15 x 3 sample was reviewed in two rounds by an AI chat assistant (not Claude Code), blind to
+  configuration and not human-verified: round 1 on 600-character excerpts, round 2 on the full cited passages for
+  the rows round 1 did not judge supported. Both were imported on 2026-11-13 (section 4).
 
-**Headline (grounding):** All structured citations point to real retrieved evidence (structural 100%); on AI review, about 60% are at least partly supported and about 20% fully (round 1, excerpts cut at 600 characters).
+**Headline (grounding, round 2):** All structured citations point to real retrieved evidence (structural 100%); on AI
+review with the full cited passages, about 77% are at least partly supported and about 67% fully (B 0.650 and C 0.690
+strict; B 0.775 and C 0.762 lenient; round 2, AI reviewer, not human-verified). Round 1, on excerpts cut at 600
+characters, gave about 65% and about 21%; the cut caused most of that gap (section 4).
 
 ## 1. What exists and how it works
 
@@ -226,7 +230,77 @@ and 2 out-of-scope queries.
   item, and the sheet shows that). Every one of the 82 excerpts is exactly 600 characters, often ending mid-sentence,
   while a chunk can be up to about 900 tokens. The reviewer saw only the start of each cited passage.
 
-### Review (2026-11-13) — UNREVIEWED by a person
+### Round 2 (2026-11-13): full cited passages — the headline result, UNREVIEWED by a person
+
+**Reviewer provenance:** the reviewer is an AI chat assistant (not Claude Code), working from full passages, blind to
+configuration and not human-verified. The `reviewer` column of every round 2 row reads "AI (Claude chat; not Claude
+Code); round 2 with full passages; blind to configuration; not human-verified". The completed sheet is
+`~/legalai_reviews/eval_runs/2026-10_v3_groq/human_review/review_sheet_round2_reviewed.csv` (outside the
+repository). It re-judged the 66 authority rows that round 1 did not judge `supported` (65 structured citations and
+the "BNS v. Section" text reference), seeing each cited chunk in full and round 1's judgment and notes. The import
+(`import_human_review.py --round 2`) is in `data/evaluation/runs/2026-10_v3_groq/human_review/result_round2.json`
+(aggregates only); round 1's `result.json` is unchanged.
+
+**Round 1 vs round 2, structured citations** (round 2 = round 1 with the 65 re-judged citations replaced):
+
+| | A, LLM-only | B, dense RAG, round 1 | B, round 2 | C, full LegalAI, round 1 | C, round 2 |
+|---|---:|---:|---:|---:|---:|
+| Structured citations | 0 | 40 | 40 | 42 | 42 |
+| Structural grounding (valid / total) | n/a | 1.00 | 1.00 | 1.00 | 1.00 |
+| Strict (supported) | n/a | 0.225 (9) | **0.650** (26) | 0.190 (8) | **0.690** (29) |
+| Lenient (supported or partly) | n/a | 0.700 (28) | **0.775** (31) | 0.595 (25) | **0.762** (32) |
+| not_supported / incorrect_law | — | 8 / 4 | 5 / 4 | 13 / 4 | 7 / 3 |
+| Change, strict / lenient | — | | +0.425 / +0.075 | | +0.500 / +0.167 |
+
+With C's two text-named cases (the importer's headline figure; round 2 leaves "BNS v. Section" `not_applicable`), C is
+0.209 / 0.605 in round 1 and **0.698 / 0.767** in round 2 over 43 judged authorities (change +0.488 / +0.163).
+Incorrect-law share: B 0.100 in both rounds; C 0.093 -> 0.070.
+
+**Movement** (round 1 -> round 2, the re-judged rows):
+
+| Round 1 -> round 2 | B (31 rows) | C (35 rows) |
+|---|---:|---:|
+| partly -> supported | 13 | 15 |
+| not_supported -> supported | 4 | 5 |
+| incorrect_law -> supported | 0 | 1 |
+| not_supported -> partly | 0 | 1 |
+| partly -> partly | 5 | 2 |
+| not_supported -> not_supported | 4 | 7 |
+| incorrect_law -> incorrect_law | 4 | 3 |
+| partly -> not_supported | 1 | 0 |
+| not_applicable -> not_applicable | 0 | 1 |
+| **Up / unchanged / down** | **17 / 13 / 1** | **22 / 13 / 0** |
+
+**The 600-character cut caused most of the round 1 gap.** Round 2 changed only what the reviewer saw (the full chunk
+instead of its first 600 characters). With that, strict support rose from 17 to 55 of the 82 structured citations
+(B+C), closing 58% of round 1's gap to full support (B 55%, C 62%). The lenient rate moved less (53 -> 63 of 82),
+because round 1 had already counted most of these citations as `partly`. What remains after round 2 is the residual
+gap: about a third of citations are not fully supported (B 14, C 13), including 12 judged `not_supported` and 7
+`incorrect_law`.
+
+**Remaining incorrect-law citations (7: B 4, C 3).** They cluster in IPC→BNS transition reasoning: 3 of the 7, and
+2 of C's 3, misstate how the IPC and the BNS apply across 1 July 2024. The other 4 are each a different error.
+- **Transition (3):**
+  - C ans-q007 ("murder remains under IPC 302 after the transition"; an offence after 1 July 2024 is BNS 103);
+  - C ans-q026 ("302 IPC is the proper charge if homicide is proven"; the offence date, not proof, decides 302 vs
+    103);
+  - B ans-q026 ("BNS 103 and IPC 302 may both apply"; they cannot both apply to the same act).
+- **Other (4):**
+  - B ans-q001: "bail is a constitutional right", which in the passage is only a party's submission (the passage is
+    about suspension of sentence);
+  - C ans-q003: the case is said to have found robbery, while the court held the s.392 conviction unsustainable;
+  - B ans-q015: misdescribes the content of SC/ST Act s.3(2)(v)/(va);
+  - B ans-q023: says NDPS s.35 presumes possession; it presumes a culpable mental state.
+
+**Reading round 2.**
+- **C and B are still not distinguishable.** C is slightly higher on strict support (0.690 vs 0.650), B on lenient
+  (0.775 vs 0.762). One judgment moves a rate by about 2.5 points.
+- **Round 2 can mostly only move up.** It re-judged only rows round 1 did not call `supported`, and the reviewer saw
+  round 1's judgments, so it may anchor on them. One row moved down (B, partly -> not_supported).
+- **Same reviewer type as round 1,** AI, not human-verified, of the same model family as the assistant that built
+  the pipeline; its errors may be correlated with the system's.
+
+### Round 1 (2026-11-13): 600-character excerpts — kept for history, UNREVIEWED by a person
 
 **Reviewer provenance:** the reviewer is an AI chat assistant (not Claude Code), blind to configuration and not
 human-verified. The `reviewer` column of every row reads "AI (Claude chat; not Claude Code); blind to configuration;
@@ -243,6 +317,13 @@ one a possible corpus gap on a question POCSO covers (B ans-q014)),
 artefact, not a case). By the project owner's decision these are kept **one-to-one as their own categories**: the
 importer accepts them, counts them, and leaves them out of the denominators like `cannot_judge`. No judgment was
 edited or merged.
+
+**Erratum (2026-11-13, verdict unchanged), row `ans-q020-X-01`** (answer, `partly_correct`): the round 1 note's
+"exception backwards" reasoning was wrong. The full passage (paras 24-25) adopts the view that cured filings continue
+under the CrPC (round 2, ans-q020-X-05: incorrect_law -> supported). The `partly_correct` verdict stands because
+remand is not addressed. The note is appended to that row's `notes` in `review_sheet_reviewed.csv` (the sheet before
+the erratum is kept as `review_sheet_reviewed.before_erratum_20261113.csv`); no other cell changed, and re-importing
+round 1 gives an identical `result.json`.
 
 **Reviewed grounding next to structural grounding** (the same sampled answers; structural = the validator's valid /
 total structured citations):
@@ -268,14 +349,15 @@ judged authorities.
 | abstained / no_answer | 0 / 1 | 4 / 0 | 1 / 1 |
 | Share correct (of answers judged) | 0.43 (6/14) | 0.55 (6/11) | 0.46 (6/13) |
 
-**The gap between structural and reviewed grounding.** Every structured citation in B and C is structurally valid
+**The gap between structural and reviewed grounding (round 1; see round 2 above).** Every structured citation in B and C is structurally valid
 (1.00), but the reviewer judged only about one in five fully supported by the excerpt shown (B 0.225, C 0.190), and
 six to seven in ten at least partly supported. Structural validity proves that a citation points at real retrieved
 evidence with matching metadata; it does not show that the passage supports the claim. That second question is
 where most citations fall short. Reading the gap:
 - **The excerpt cut lowers the reviewed rate.** In 11 of the 83 judged authority rows the notes say the supporting
   content was not in the excerpt shown (2 of them say the excerpt was cut off). With full passages some `partly` and
-  `not_supported` judgments could move up, so the strict rate is a lower bound for these citations.
+  `not_supported` judgments could move up, so the strict rate is a lower bound for these citations. (Round 2
+  confirmed this: strict support rose from 0.21 to 0.67 with full passages.)
 - **Not all of it is the cut.** Many notes describe an excerpt on a different point (for example a bail claim
   citing a passage about section 313 statements), and 8 citations (B 4, C 4) were judged to state the wrong law.
 - **C is not better than B on this sample.** C's reviewed rates are slightly lower (strict 0.190 vs 0.225, lenient
@@ -285,28 +367,19 @@ where most citations fall short. Reading the gap:
   its errors may be correlated with the system's. These rates are evidence about the gap, not a final grounding
   figure.
 
-### Round 2 pending: full cited passages (step 28)
+### How round 2 was built (step 28)
 
-Round 2 re-asks the round 1 authority rows not judged `supported`, with the **full text of each cited chunk** instead
-of the 600-character excerpt. It is **not filled yet**; round 1 stays as recorded and is never overwritten.
-- **Sheet:** `~/legalai_reviews/eval_runs/2026-10_v3_groq/human_review/review_sheet_round2.csv` (outside the
-  repository), built by `backend/scripts/build_review_round2.py`. 66 rows: 65 structured citations (round 1: partly
-  36, not_supported 21, incorrect_law 8) and 1 text reference ("BNS v. Section",
-  round 1 not_applicable, which cites no chunk). The 18 rows judged `supported` in round 1 are not re-asked.
+- **Sheet:** `review_sheet_round2.csv`, built by `backend/scripts/build_review_round2.py`: the 66 round 1 authority
+  rows not judged `supported` (65 structured citations: round 1 partly 36, not_supported 21, incorrect_law 8; and the
+  "BNS v. Section" text reference, which cites no chunk). The 18 rows judged `supported` in round 1 were not re-asked.
 - **Full passages:** each citation's chunk is read from PostgreSQL (read-only, `chunks.chroma_id`). All 92 chunk IDs
-  saved for the run are found, and all 65 citation rows match exactly one chunk whose text starts with the round 1
+  saved for the run were found, and all 65 citation rows matched exactly one chunk whose text starts with the round 1
   excerpt (33 distinct chunks, 1,764 to 4,024 characters).
 - **Blinding kept:** rows keep their `review_id`, `example_id` and X/Y/Z label; the builder never reads
-  `review_key.json`. It finds each chunk among the evidence of all three configurations of the query, so no row is
-  linked to a configuration.
-- **What the reviewer sees:** the full passage (`evidence_excerpt`, with `chunk_id` and `chunk_chars`), and round 1's
-  judgment and notes (`r1_support`, `r1_notes`); `citation_support`, `reviewer` and `notes` are empty to fill.
-- **Import:** `import_human_review.py --round 2 --sheet …round2.csv --round1-sheet …reviewed.csv --key … --output
-  data/evaluation/runs/2026-10_v3_groq/human_review/result_round2.json` writes, per configuration, the round 1
-  rates, the round 2 rates (round 1 with the re-reviewed rows replaced) and the change, plus the round 1 -> round 2
-  transitions. It refuses to write over the round 1 `result.json`.
-
-Until round 2 is imported, the round 1 figures above are the result, and the strict rate is a lower bound.
+  `review_key.json` and finds each chunk among the evidence of all three configurations of the query.
+- **Import:** `import_human_review.py --round 2 --sheet …round2_reviewed.csv --round1-sheet …reviewed.csv --key …
+  --output data/evaluation/runs/2026-10_v3_groq/human_review/result_round2.json`; it refuses to write over the round
+  1 `result.json`.
 
 ## 5. Labelling kit (about 70 new retrieval queries)
 
@@ -332,8 +405,9 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
   counts are given beside them.
 - **Structural is not reviewed grounding:** a valid citation points at real retrieved evidence, but that is not proof
   the evidence supports the claim or that the law is correct. On the review sample, structural grounding is 1.00 for
-  B and C while the AI-reviewed strict rate is 0.225 and 0.190 (section 4).
-- **Review excerpts cut at 600 characters,** and the reviewer is an AI chat assistant, not human-verified (section 4).
+  B and C while the AI-reviewed strict rate with full passages (round 2) is 0.650 and 0.690 (section 4).
+- **The review is AI, not human-verified,** in both rounds; round 1 saw excerpts cut at 600 characters, round 2 the
+  full passages for the rows round 1 did not judge supported (section 4).
 - **Pooled recall** for retrieval (above).
 - **Provider change:** the historical generation run used Gemini with prompt v1, this one Groq gpt-oss with prompt
   v3. The two are not directly comparable.
@@ -356,6 +430,6 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
 
 ## 8. Next steps
 
-1. Fill round 2 (full cited passages, section 4) and import it with `import_human_review.py --round 2`; a person
-   checks the AI review of the 15 x 3 sample.
+1. A person checks the AI review of the 15 x 3 sample (both rounds), starting with the 7 incorrect-law citations and
+   the 12 judged `not_supported` in round 2.
 2. Collect the about 70 new benchmark queries and labels with the kit, then recompute retrieval metrics on v2.
