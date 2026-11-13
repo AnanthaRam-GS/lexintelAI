@@ -60,7 +60,7 @@ class KnownErrorRegressionTests(Step25Sources):
         # Step 26b: the answer's label is kept for audit and flagged; it is never displayed as the title.
         self.assertEqual((reference.label.model_label, reference.label.model_label_differs), ("offences relating to suicide attempts", True))
         self.assertIn("does not match", reference.label.note)
-        self.assertEqual(display_text(reference), "Section 309(4) BNS — Robbery (the answer's own label differs)")
+        self.assertEqual(display_text(reference), "Section 309(4) BNS — Robbery")  # step 26c: no display note
         self.assertNotIn("suicide", display_text(reference))
 
     def test_bns_115_2_is_voluntarily_causing_hurt(self) -> None:
@@ -206,7 +206,7 @@ class ResponseMappingTests(Step25Sources):
         self.assertEqual(states, [("BNS", "309(4)", "verified"), ("BNS", "115(2)", "verified"),
                                   ("BNSS", "173", "corrected_statute"), ("Evidence Act", "113B", "unverified")])
         brief = response.case_brief
-        self.assertEqual(brief.statutory_provisions[0], "Section 309(4) BNS — Robbery (the answer's own label differs)")
+        self.assertEqual(brief.statutory_provisions[0], "Section 309(4) BNS — Robbery")
         self.assertEqual(len(brief.statutory_provision_references), 3)  # explicit provisions only
         joined = " ".join(brief.statutory_provisions)
         for wrong in ("suicide", "medical examination"):
@@ -219,7 +219,7 @@ class ResponseMappingTests(Step25Sources):
                                                                                  "Section 113B Evidence Act – presumption"])
         response = query_api.public_response_from_result(result(AnswerMode.PUBLIC, answer))
         self.assertEqual([s.title for s in response.sections], [
-            "Section 309(4) BNS — Robbery (the answer's own label differs)",
+            "Section 309(4) BNS — Robbery",
             "Section 173 BNSS — registration of FIR (statute corrected from BNS; unverified label)",
             "Section 113B Evidence Act — presumption (unverified label)",
         ])

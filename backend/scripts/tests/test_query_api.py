@@ -122,6 +122,8 @@ class QueryApiTests(unittest.TestCase):
                                     "section_heading": None,
                                     "section_heading_source": None,
                                     "section_heading_key": None,
+                                    "correction_reason": None,
+                                    "document_evidence_id": None,
                                 },
                             }
                         ],

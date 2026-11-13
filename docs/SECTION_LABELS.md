@@ -334,7 +334,7 @@ corrections must be 0**, or no live call is made.
   `corrected_statute`: the sister statute, its trusted title (the official heading when there is one), and a note with
   the reason. Sister statutes: BNS/BNSS, IPC/CrPC, Evidence Act/BSA.
 - If it clearly does not match and no sister statute matches, the trusted title is shown with
-  `label.model_label_differs = true` and a note ("the answer's own label differs").
+  `label.model_label_differs = true` (since step 26c a data flag only: no note or suffix is displayed).
 
 **Confusion table** on the 27 saved step 22-24 mismatches (`backend/scripts/tests/fixtures/wrong_statute_cases.json`,
 judged by hand before the rule was run; the BNS 173 "registration of FIR" case is one of them):
@@ -386,6 +386,28 @@ at 2048, one finished at 1318); it is to be revisited with more live data.
 **Display of `model_label_differs` (step 26c).** The flag stays in the API data, for audit, but the UI shows no note for
 it: the trusted title is what is displayed, and the flag also marks correct labels written as synonyms (6 of 11 correct
 labels in the confusion table above).
+
+**Step 26c offline test (before the live call), as frozen above.** 41 hand-judged sections in the saved step 22-26b
+brief/PDF outputs (`backend/scripts/tests/fixtures/document_evidence_cases.json`), each against the fixture document
+the run used, parsed as an upload:
+
+| Outcome | Saved outputs | Fixture probe |
+|---|---:|---:|
+| correct correction, document evidence | 2 (step 26 and 26b FIR: BNS 173 -> BNSS 173, P1) | 14 |
+| correct correction, label (step 26b rule) | 3 (BNS 173, 528, 531(2)(a) -> BNSS) | 0 |
+| correct no-op | 42 | 14 |
+| **wrong correction** | **0** | **0** |
+
+(The fixture probe names every section each fixture cites once under its own statute and once under the sister
+statute, with no label.) One saved string, "Section 464/465 Cr.P.C. (pari materia to BNSS §§510-511)", also yields a
+BNSS 510 reference, correct as named and left alone.
+
+**Live (step 26c, 1 call).** The FIR brief: the answer labelled BNS 173 "registration of FIR" this time, so the label
+rule corrected it to BNSS 173 (Information in cognizable cases), model label kept; it also corrected "BNS 176 -
+investigation procedures" to BNSS 176 (Procedure for investigation). BNS 309(4) and 115(2) stayed BNS. Citations 4/4
+valid, not truncated (1683 output tokens). Seen there: the label "offences relating to sexual assault" for BNS 115(2)
+counts as matching because the catalog lists "assault" as an alias of BNS 115; the official heading ("Voluntarily causing
+hurt") is what is shown.
 
 ## Coverage of the trusted sources before step 26 (2026-11-08)
 

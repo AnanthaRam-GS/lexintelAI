@@ -427,7 +427,8 @@ def display_text(reference: SectionReference) -> str:
     if label.state == "verified":
         if label.section_heading:
             return f"{head} — {label.title} (sub-section, catalog); {label.section_heading} (section heading, official)"
-        return f"{head} — {label.title}" + (" (the answer's own label differs)" if label.model_label_differs else "")
+        # Step 26c: a differing answer label is kept in the data (model_label, model_label_differs), not in the display.
+        return f"{head} — {label.title}"
     if label.state == "corrected_statute":
         corrected = f"statute corrected from {label.statute_corrected_from}"
         if label.title:
