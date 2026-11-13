@@ -90,7 +90,7 @@ def label_check(occurrences: list[tuple[str, str]], sources) -> dict:
         if len(parsed.mentions) == 1 and parsed.label and references[0].label.state in ("verified", "corrected_statute"):
             checkable += 1
             label = references[0].label
-            if label.state == "corrected_statute" or (label.note or "").startswith("The answer's own label"):
+            if label.state == "corrected_statute" or label.model_label_differs or (label.note or "").startswith("The answer's own label"):
                 mismatches += 1
                 per_origin[origin] += 1
                 mismatch_list.append(f"{text!r} -> {references[0].statute} {references[0].section}: "
@@ -152,12 +152,40 @@ def crosscheck(sources) -> list[dict]:
     return rows
 
 
+def mapping_conflicts(sources, crosscheck_rows: list[dict]) -> list[dict]:
+    """The mapping (CYTRAIN) rows whose IPC or BNS description is judged to differ in meaning from the official heading.
+
+    Each crosscheck row judged "meaning differs" for the mapping is matched back to every CSV row with the same section
+    and the same description (compared as in the resolver). The source descriptions are not edited; the analytics API
+    flags these rows (step 26b).
+    """
+    from backend.app.services.section_labels import clean_title, load_mapping_rows, normalize_section  # noqa: PLC0415
+
+    wanted = {(r["statute"], r["section"], comparable(r["other_title"])): r for r in crosscheck_rows
+              if r["source"] == "ipc_bns_mapping" and r["judgment"] == "meaning differs"}
+    out = []
+    for row in load_mapping_rows():
+        ipc = re.sub(r"(?<=\d)-(?=[A-Za-z]\b)", "", (row.get("ipc_section") or "").strip())
+        for side, section, description in (("ipc", ipc, row.get("ipc_description") or ""), ("bns", (row.get("bns_section") or "").strip(),
+                                                                                              row.get("bns_description") or "")):
+            statute = "IPC" if side == "ipc" else "BNS"
+            if not re.fullmatch(r"\d+[A-Za-z]*(?:\([0-9A-Za-z]+\))*", section):
+                continue
+            key = (statute, normalize_section(section), comparable(clean_title(description)))
+            if key in wanted:
+                out.append({"source": "CYTRAIN", "ipc_section": row.get("ipc_section"), "bns_section": row.get("bns_section"),
+                            "side": side, "description": description, "official_heading": wanted[key]["official_heading"],
+                            "reason": wanted[key]["reason"]})
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--database-url-env", default="DATABASE_URL")
     parser.add_argument("--reviews-dir", type=Path, default=Path.home() / "legalai_reviews")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--crosscheck", type=Path, help="write the official-vs-catalog/mapping disagreements (CSV) and exit")
+    parser.add_argument("--mapping-conflicts", type=Path, help="with --crosscheck: also write the flagged mapping rows (CSV)")
     args = parser.parse_args()
     if args.crosscheck:
         rows = crosscheck(build_sources())
@@ -166,6 +194,13 @@ def main() -> int:
             writer.writeheader()
             writer.writerows(rows)
         print(collections.Counter((r["source"], r["judgment"]) for r in rows))
+        if args.mapping_conflicts:
+            flagged = mapping_conflicts(build_sources(), rows)
+            with args.mapping_conflicts.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(flagged[0]), lineterminator="\n")
+                writer.writeheader()
+                writer.writerows(flagged)
+            print("flagged mapping rows:", len(flagged))
         return 0
     from sqlalchemy import create_engine, text  # noqa: PLC0415
 

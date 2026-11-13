@@ -56,6 +56,13 @@ class SectionLabel(BaseModel):
     # Step 26: when the official heading is shown, the lower-trust titles for the same section (catalog, mapping),
     # kept for review rather than dropped; ``agrees`` is False when one shares no content word with the heading.
     other_sources: list[OtherSourceTitle] = Field(default_factory=list)
+    # Step 26b: the answer's label clearly does not match the section's trusted entries (and no sister statute matched);
+    # the trusted title is shown and ``model_label`` keeps the answer's wording for audit.
+    model_label_differs: bool = False
+    # Step 26b: when ``title`` is the catalog's title of the exact sub-section, the section's official heading.
+    section_heading: str | None = None
+    section_heading_source: str | None = None
+    section_heading_key: str | None = None
 
 
 

@@ -69,7 +69,7 @@ MAPPING_SOURCE = "ipc_bns_mapping"
 GENERATED_CONTEXT = "generated_from_grounded_answer"
 
 # A substantive code and its procedural companion in the same regime.
-COMPANION_STATUTE = {"BNS": "BNSS", "BNSS": "BNS", "IPC": "CrPC", "CrPC": "IPC"}
+COMPANION_STATUTE = {"BNS": "BNSS", "BNSS": "BNS", "IPC": "CrPC", "CrPC": "IPC", "Evidence Act": "BSA", "BSA": "Evidence Act"}
 
 _SPACES = re.compile(r"[    ]")
 _SEC_ABBREVIATION = re.compile(r"\b(?:Sec|S)\.\s*(?=\d)|\bSec\s+(?=\d)", re.IGNORECASE)
@@ -311,33 +311,45 @@ def parse_provision(text: str) -> ParsedProvision:
     return ParsedProvision(mentions, label or None)
 
 
+def label_matches_section(label: str | None, sources: LabelSources, statute: str, section: str) -> bool:
+    """Step 26b rule: the label agrees with *any* trusted entry for the statute and section number.
+
+    "Clearly does not match" is the negation: the label shares no content word (``agrees``: stop words and generic
+    legal words ignored, words compared on their stem) with the official heading, nor with any catalog title,
+    description, alias or concept, nor with any mapping description, of that statute's section with this number
+    (sub-section entries included).
+    """
+    return agrees(label, sources.has_number(statute, section))
+
+
+def _single_title(entries: list[TrustedEntry]) -> TrustedEntry | None:
+    return entries[0] if entries and len({comparable(entry.title) for entry in entries}) == 1 else None
+
+
 def resolve_section(statute: str, section: str, label: str | None, sources: LabelSources | None = None) -> SectionReference:
+    """Resolve one model-named section (step 25 states; step 26/26b rules). The model's label is always kept."""
     sources = sources or default_sources()
+    original = label.strip() if label and label.strip() else None
     label = meaningful(label)
     stated = sources.entries(statute, section)
-    companion = COMPANION_STATUTE.get(statute)
-    if label and companion and (not stated or not agrees(label, stated)):
-        other = sources.has_number(companion, section)
+    sister = COMPANION_STATUTE.get(statute)
+    matches_named = bool(label) and label_matches_section(label, sources, statute, section)
+    # Wrong statute: the label clearly does not match the named section, and it matches the sister statute's section.
+    if label and not matches_named and sister:
+        other = sources.has_number(sister, section)
         if agrees(label, other):
-            exact = sources.entries(companion, section)
-            single = bool(exact) and len({comparable(entry.title) for entry in exact}) == 1
-            # Step 26: an official heading of the corrected section is shown even when its wording differs from the
-            # answer's label (the correction itself rests on the agreeing catalog/mapping entry).
-            exact_ok = single and (agrees(label, exact) or exact[0].source == OFFICIAL_SOURCE)
-            note = (f"The answer cited this as {statute} {section}; the section number with this subject is in the "
-                    f"{companion}.")
-            if exact_ok and exact[0].source == OFFICIAL_SOURCE and not agrees(label, exact):
-                note += f" The answer's own label (\"{label}\") is not shown; the official heading is."
+            exact = _single_title(sources.entries(sister, section))
+            note = (f"The answer cited this as {statute} {section} (\"{original}\"); that label does not match "
+                    f"{statute} {section}, and it matches {sister} {section}.")
             return SectionReference(
-                statute=companion, section=section, context=GENERATED_CONTEXT,
+                statute=sister, section=section, context=GENERATED_CONTEXT,
                 label=SectionLabel(
                     state="corrected_statute",
-                    title=exact[0].title if exact_ok else None,
-                    source=exact[0].source if exact_ok else other[0].source,
-                    source_key=f"{companion} {exact[0].section if exact_ok else other[0].section}",
-                    model_label=None if exact_ok else label,
-                    statute_corrected_from=statute,
-                    note=note,
+                    title=exact.title if exact else None,
+                    source=exact.source if exact else other[0].source,
+                    source_key=f"{sister} {exact.section if exact else other[0].section}",
+                    model_label=original, statute_corrected_from=statute, note=note,
+                    other_sources=other_source_titles(sources, sister, section, exact) if exact and exact.source == OFFICIAL_SOURCE else [],
                 ),
             )
     if stated:
@@ -345,31 +357,41 @@ def resolve_section(statute: str, section: str, label: str | None, sources: Labe
             return SectionReference(
                 statute=statute, section=section, context=GENERATED_CONTEXT,
                 label=SectionLabel(state="conflict", source=stated[0].source, source_key=f"{statute} {stated[0].section}",
+                                   model_label=original,
                                    note="The trusted sources give different titles for this section, so none is shown."),
             )
         entry = stated[0]
-        replaced = bool(label) and not agrees(label, stated)
-        others = other_source_titles(sources, statute, section, entry) if entry.source == OFFICIAL_SOURCE else []
+        differs = bool(label) and not matches_named
         notes = []
-        if replaced:
-            notes.append("The answer's own label for this section did not match the trusted title and is not shown.")
-        if any(not other.agrees for other in others):
-            notes.append("A lower-trust source gives a different title; the official heading is shown.")
-        return SectionReference(
-            statute=statute, section=section, context=GENERATED_CONTEXT,
-            label=SectionLabel(
-                state="verified", title=entry.title, source=entry.source, source_key=f"{statute} {entry.section}",
-                note=" ".join(notes) or None, other_sources=others,
-            ),
-        )
+        if differs:
+            notes.append("The answer's own label for this section does not match its trusted title; the trusted title is shown.")
+        reference_label = SectionLabel(state="verified", title=entry.title, source=entry.source,
+                                       source_key=f"{statute} {entry.section}", model_label=original,
+                                       model_label_differs=differs)
+        # Step 26b: a catalog title for the exact sub-section is the primary title, with the section's official heading
+        # alongside ("Common intention" for BNS 3(5), "General explanations" for section 3).
+        sub = sources.catalog.get((statute, section)) if section != (canonical_section(section) or section) else None
+        if entry.source == OFFICIAL_SOURCE and sub and _single_title(sub):
+            reference_label = reference_label.model_copy(update={
+                "title": sub[0].title, "source": CATALOG_SOURCE, "source_key": f"{statute} {section}",
+                "section_heading": entry.title, "section_heading_source": OFFICIAL_SOURCE,
+                "section_heading_key": f"{statute} {entry.section}",
+            })
+        elif entry.source == OFFICIAL_SOURCE:
+            others = other_source_titles(sources, statute, section, entry)
+            if any(not other.agrees for other in others):
+                notes.append("A lower-trust source gives a different title; the official heading is shown.")
+            reference_label = reference_label.model_copy(update={"other_sources": others})
+        return SectionReference(statute=statute, section=section, context=GENERATED_CONTEXT,
+                                label=reference_label.model_copy(update={"note": " ".join(notes) or None}))
     return SectionReference(
         statute=statute, section=section, context=GENERATED_CONTEXT,
-        label=SectionLabel(state="unverified", model_label=label,
+        label=SectionLabel(state="unverified", model_label=label or original,
                            note="No trusted title is available for this section; the label is the answer's own."),
     )
 
 
-def other_source_titles(sources: LabelSources, statute: str, section: str, official: TrustedEntry) -> list[OtherSourceTitle]:
+def other_source_titles(sources: LabelSources, statute: str, section: str, official: TrustedEntry | None) -> list[OtherSourceTitle]:
     """Catalog and mapping titles for a section shown with its official heading, and whether each agrees with it."""
     return [OtherSourceTitle(source=entry.source, source_key=f"{statute} {entry.section}", title=entry.title,
                              agrees=agrees(entry.title, [official]) or agrees(official.title, [entry]))
@@ -402,7 +424,9 @@ def display_text(reference: SectionReference) -> str:
     if label is None:
         return head
     if label.state == "verified":
-        return f"{head} — {label.title}"
+        if label.section_heading:
+            return f"{head} — {label.title} (sub-section, catalog); {label.section_heading} (section heading, official)"
+        return f"{head} — {label.title}" + (" (the answer's own label differs)" if label.model_label_differs else "")
     if label.state == "corrected_statute":
         corrected = f"statute corrected from {label.statute_corrected_from}"
         if label.title:
