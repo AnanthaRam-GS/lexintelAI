@@ -196,6 +196,43 @@ class ReviewSheetTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, "problem"):
                 import_human_review.main(["--sheet", str(filled), "--key", str(out / "review_key.json")])
 
+    def test_extra_review_values_are_own_categories_outside_the_denominators(self) -> None:
+        from backend.scripts import import_human_review
+
+        key = {"key": {"q1": {"X": "C_full_legalai", "Y": "B_dense_rag"}}}
+
+        def row(review_id, label, row_type, correctness="", support=""):
+            return {"review_id": review_id, "example_id": "q1", "answer_label": label, "row_type": row_type,
+                    "legal_correctness": correctness, "citation_support": support, "reviewer": "r"}
+
+        rows = [
+            row("a1", "X", "answer", correctness="correct"),
+            row("a2", "X", "answer", correctness="abstained"),
+            row("a3", "X", "answer", correctness="no_answer"),
+            row("a4", "X", "answer", correctness="incorrect"),
+            row("c1", "X", "citation", support="supported"),
+            row("c2", "X", "citation", support="partly"),
+            row("t1", "X", "text_reference", support="not_applicable"),
+            row("t2", "X", "text_reference", support="not_supported"),
+            row("a5", "Y", "answer", correctness="abstained"),
+        ]
+        self.assertEqual(import_human_review.validate(rows), [])
+        result = import_human_review.compute(rows, key)
+        c = result["C_full_legalai"]
+        # One-to-one: every value is counted under its own name; nothing is merged into cannot_judge.
+        self.assertEqual(c["legal_correctness"], {"correct": 1, "abstained": 1, "no_answer": 1, "incorrect": 1})
+        self.assertEqual(c["citation_support"], {"supported": 1, "partly": 1, "not_applicable": 1, "not_supported": 1})
+        # not_applicable is not a judged authority; abstained and no_answer are not judged for correctness.
+        self.assertEqual(c["authorities_judged"], 3)
+        self.assertEqual((c["human_grounding_rate_strict"], c["human_grounding_rate_lenient"]), (0.3333, 0.6667))
+        self.assertEqual((c["answers_judged"], c["answers_judged_for_correctness"], c["answers_correct_share"]), (4, 2, 0.5))
+        self.assertEqual(c["by_row_type"]["citation"]["human_grounding_rate_strict"], 0.5)
+        self.assertEqual(c["by_row_type"]["text_reference"]["authorities_judged"], 1)
+        # Only abstentions: nothing judged for correctness, so no share rather than 0.
+        self.assertIsNone(result["B_dense_rag"]["answers_correct_share"])
+        # Values outside both scales are still refused.
+        self.assertTrue(import_human_review.validate([row("z", "X", "answer", correctness="mostly")]))
+
     def test_the_sheet_goes_outside_the_repository(self) -> None:
         from backend.scripts import build_review_sheet
 
