@@ -51,6 +51,9 @@ export interface SectionLabel {
   section_heading?: string | null;
   section_heading_source?: string | null;
   section_heading_key?: string | null;
+  /** Step 26c: "label" or "document_evidence"; the P# chunk citing the corrected statute. */
+  correction_reason?: string | null;
+  document_evidence_id?: string | null;
 }
 
 export interface SectionReference {

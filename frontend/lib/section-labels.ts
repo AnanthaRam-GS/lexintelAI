@@ -57,21 +57,19 @@ export function sectionLabelParts(reference: SectionReference): SectionLabelPart
           state: 'verified',
         };
       }
-      return {
-        heading,
-        text: label.title ?? null,
-        marker: null,
-        note: label.model_label_differs
-          ? "The answer's own label for this section differs from this title."
-          : null,
-        state: 'verified',
-      };
+      // Step 26c: `model_label_differs` stays in the data (for audit) but no note is shown: the trusted title is what
+      // is displayed, and the flag also marks correct labels written as synonyms.
+      return { heading, text: label.title ?? null, marker: null, note: null, state: 'verified' };
     case 'corrected_statute':
       return {
         heading,
         text: label.title ?? label.model_label ?? null,
         marker: label.title ? null : 'unverified',
-        note: `Statute corrected: the answer cited ${label.statute_corrected_from ?? 'another statute'} ${reference.section}.`,
+        note:
+          `Statute corrected: the answer cited ${label.statute_corrected_from ?? 'another statute'} ${reference.section}.` +
+          (label.correction_reason === 'document_evidence'
+            ? ` The uploaded document cites it under ${reference.statute}${label.document_evidence_id ? ` [${label.document_evidence_id}]` : ''}.`
+            : ''),
         state: 'corrected_statute',
       };
     case 'conflict':

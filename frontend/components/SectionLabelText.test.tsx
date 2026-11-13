@@ -86,7 +86,7 @@ describe('SectionLabelText', () => {
     expect(screen.getByTestId('section-label-note')).toHaveTextContent('the answer cited BNSS 103');
   });
 
-  it('verified with a differing answer label: the trusted title, never the answer label, and a note', () => {
+  it('verified with a differing answer label: the trusted title, never the answer label, and no note', () => {
     const reference: SectionReference = {
       statute: 'IPC',
       section: '138',
@@ -104,10 +104,32 @@ describe('SectionLabelText', () => {
       'Section 138 IPC — Abetment of act of insubordination by soldier, sailor or airman',
     );
     expect(screen.queryByText(/cheque/i)).not.toBeInTheDocument();
-    expect(screen.getByTestId('section-label-note')).toHaveTextContent(
-      /answer's own label .* differs/,
-    );
+    // Step 26c: the flag stays in the data, but no note is shown with the trusted title.
+    expect(screen.queryByTestId('section-label-note')).not.toBeInTheDocument();
     expect(screen.queryByTestId('section-label-marker')).not.toBeInTheDocument();
+  });
+
+  it('a document-evidence correction says where the uploaded document cites the statute', () => {
+    const reference: SectionReference = {
+      statute: 'BNSS',
+      section: '173',
+      context: GENERATED,
+      label: {
+        state: 'corrected_statute',
+        title: 'Information in cognizable cases',
+        source: 'official_heading',
+        statute_corrected_from: 'BNS',
+        correction_reason: 'document_evidence',
+        document_evidence_id: 'P1',
+      },
+    };
+    render(<SectionLabelText reference={reference} />);
+    expect(screen.getByTestId('section-label')).toHaveTextContent(
+      'Section 173 BNSS — Information in cognizable cases',
+    );
+    expect(screen.getByTestId('section-label-note')).toHaveTextContent(
+      'Statute corrected: the answer cited BNS 173. The uploaded document cites it under BNSS [P1].',
+    );
   });
 
   it('a catalog sub-section title is shown with the official section heading', () => {
