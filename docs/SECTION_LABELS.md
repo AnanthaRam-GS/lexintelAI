@@ -373,6 +373,20 @@ official IPC heading on 50 (most IPC keys are group labels such as "415 to 420, 
 **CrPC retry**: still no official headings (`data/structured/statute_headings/SOURCES.md`), so coverage is unchanged
 from step 26: 214 of 370 cited sections.
 
+**Known coverage gap: CrPC (accepted as catalog-only, step 26c).** The Code of Criminal Procedure, 1973 has no official
+headings: India Code's only copy is a scan of the Act as enacted in 1974, unreadable reliably and without
+later-inserted sections, and the Legislative Department's site serves no official text. CrPC sections show the
+catalog's title where it has one (7 entries: 41A, 154(3), 167(2), 437, 438, 439, 482) or stay unverified. The CrPC was
+repealed and replaced by the BNSS from 1 July 2024, but older judgments, including most of this corpus, still cite it:
+105 distinct CrPC sections are cited, 5 of them with a title.
+
+**Brief-mode output cap.** `LEGALAI_BRIEF_MAX_OUTPUT_TOKENS=3000` is a ceiling chosen from two live briefs (one cut off
+at 2048, one finished at 1318); it is to be revisited with more live data.
+
+**Display of `model_label_differs` (step 26c).** The flag stays in the API data, for audit, but the UI shows no note for
+it: the trusted title is what is displayed, and the flag also marks correct labels written as synonyms (6 of 11 correct
+labels in the confusion table above).
+
 ## Coverage of the trusted sources before step 26 (2026-11-08)
 
 - **Catalog:** 62 entries (IPC 20, BNS 15, BNSS 8, CrPC 7, NDPS Act 6, POCSO Act 3, SC/ST Act 3), every one with a

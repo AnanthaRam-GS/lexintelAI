@@ -361,10 +361,14 @@ documents.
 - **Unreviewed legal extractions:** the outcome fields, the cited sections and the IPC↔BNS mapping were extracted or
   loaded without legal review, and are marked UNREVIEWED. The NCRB-printed IPC↔BNS pairs have no change type
   (none is printed).
-- **Section labels:** the titles shown for sections an answer names come from the section catalog and the IPC↔BNS
-  mapping, both UNREVIEWED, so they are only as good as those sources. Only 57 of the 370 sections cited in the corpus
-  have a trusted title; other labels are the model's own and are marked "unverified"
-  ([docs/SECTION_LABELS.md](docs/SECTION_LABELS.md)).
+- **Section labels:** the titles shown for sections an answer names come first from the Acts' official headings
+  (India Code; IPC, Evidence Act, BNS, BNSS, BSA), then the section catalog and the IPC↔BNS mapping, all UNREVIEWED.
+  214 of the 370 sections cited in the corpus have a trusted title; other labels are the model's own and are marked
+  "unverified" ([docs/SECTION_LABELS.md](docs/SECTION_LABELS.md)).
+- **CrPC headings (known gap):** the Code of Criminal Procedure, 1973 has no official headings here: India Code's only
+  copy is a scan of the Act as enacted in 1974, which cannot be read reliably and lacks later-inserted sections. CrPC
+  sections show the catalog's title (7 entries, 5 of them cited in the corpus) or stay "unverified". The CrPC was repealed and replaced by the BNSS
+  from 1 July 2024, but older judgments, including most of this corpus, still cite it (105 distinct CrPC sections).
 - **Pending scope decisions:** corpus redistribution beyond the team (see above), and any further statute
   correspondence sources (the BPR&D table was not approved).
 

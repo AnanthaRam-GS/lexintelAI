@@ -219,6 +219,10 @@ LegalAI's trusted sources before it reaches a response (`services/section_labels
   section's trusted entries and no sister statute (BNS/BNSS, IPC/CrPC, Evidence Act/BSA) matched it; and
   `label.section_heading`, `section_heading_source`, `section_heading_key` give the section's official heading when
   `title` is the catalog's title of the exact sub-section (`docs/SECTION_LABELS.md`).
+  Since step 26c a `corrected_statute` label carries `correction_reason`: `"label"` (the answer's label fits the
+  sister statute) or `"document_evidence"` (professional PDF answers only: the uploaded document cites the number only
+  under the sister statute), with `document_evidence_id` the P# chunk that cites it. The UI shows no note for
+  `model_label_differs`.
 - `case_brief.statutory_provisions` stays a list of strings, now display text: `"Section 309(4) BNS — Robbery"`,
   `"Section 173 BNSS — Information in cognizable cases (statute corrected from BNS)"`, `"Section 113B Evidence
   Act — … (unverified label)"`, `"Section 900 BNS (title not shown: trusted sources disagree)"`.
