@@ -7,7 +7,8 @@ not checked by a lawyer; the spot checks below are the assistant's.
 
 ## Source
 
-**India Code**, the official legislative repository. On 2026-11-12 `https://www.indiacode.nic.in/` returned a
+**India Code**, the official legislative repository. **`https://indiacode.gov.in` is accepted as India Code's official
+address** (project owner's decision, step 26b, 2026-11-13). On 2026-11-12 `https://www.indiacode.nic.in/` returned a
 "Site Migration" page saying the website "has been migrated from https://www.indiacode.nic.in to
 https://indiacode.gov.in" and redirecting there (page saved during the run, sha256
 `3b64e50fd9a02485b2f452c4090c7ef025bf565e4340256a83cb387b7103318c`); the old site's Act pages timed out (HTTP 504
@@ -63,6 +64,21 @@ was downloaded twice: the text was identical both times; the bytes were identica
 - **CrPC skipped.** India Code holds only `1974-2.pdf` for the CrPC, a scanned document whose text layer is noisy OCR
   ("tiie", "agair\.st sentence", "37'9."). Headings cannot be extracted reliably from it, so none are stored and CrPC
   sections keep their catalog/mapping titles or stay unverified.
+- **CrPC retry (step 26b, 2026-11-13): still skipped.**
+  1. *Legislative Department* (`https://www.legislative.gov.in`, HTTPS): the site is a client-rendered application
+     whose Act listings load from a third-party content host (`cmsmsde.digifootprint.in`), not from a government
+     domain; its sitemap lists another ministry's pages; the usual official file path
+     (`/sites/default/files/A1974-02.pdf`) returns 404. No official CrPC text PDF could be fetched from it, and the
+     third-party host was not used.
+  2. *OCR of India Code's scan* with the project's Tesseract setup (`services/ocr.py`, 259 pages): the result cannot be
+     made reliable, for three reasons. (a) The scan is the **Act as enacted in 1974**: sections inserted later (41A-41D,
+     166A, 357A, 436A, Chapter XXIA plea bargaining, among others) are absent, so its headings are out of date for
+     exactly the provisions most cited today. (b) Its headings are **marginal notes** in the page margin, hyphenated
+     over short lines; the body has no heading of its own, so the "both readings agree" rule used for IPC and the
+     Evidence Act cannot be applied. (c) The arrangement pages OCR column by column (numbers apart from headings,
+     "31." for 311, "» 807." for 307) and several pages are blurred ("Code of Grininal Procedure").
+  No spot check was made because no heading was extracted. CrPC sections keep their catalog titles (5) or stay
+  unverified.
 
 **Published typos are kept as published**, not corrected: e.g. IPC 312 "Causing miscarraige", IPC 209 "Dishonesty
 making false claim in Court", IPC 328 "…with intent to commit and offence", IPC 452 "House-trespass alter preparation…",
@@ -82,6 +98,8 @@ section record).
   confirms that the section records agree with the Act's PDF.
 
 ## Reproduction basis
+
+Accepted as recorded by the project owner (step 26b).
 
 Section 52(1)(q) of the Copyright Act, 1957, as published on India Code
 ([123456789/515607](https://indiacode.gov.in/handle/123456789/515607)), reads in part: "the reproduction or publication

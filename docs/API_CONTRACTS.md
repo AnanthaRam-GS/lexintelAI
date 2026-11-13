@@ -214,6 +214,11 @@ LegalAI's trusted sources before it reaches a response (`services/section_labels
   BNSS, BSA), `section_catalog` or `ipc_bns_mapping` (CYTRAIN rows), and `source_key` the entry used. All sources are
   UNREVIEWED. Since step 26 `label.other_sources` lists, when the title is an official heading, the catalog and mapping
   titles for the same section: `[{"source", "source_key", "title", "agrees"}]` (empty otherwise).
+  Since step 26b: `label.model_label` always keeps the answer's own label (for audit; it is still only *displayed*
+  when no trusted title exists); `label.model_label_differs` is `true` when that label clearly does not match the
+  section's trusted entries and no sister statute (BNS/BNSS, IPC/CrPC, Evidence Act/BSA) matched it; and
+  `label.section_heading`, `section_heading_source`, `section_heading_key` give the section's official heading when
+  `title` is the catalog's title of the exact sub-section (`docs/SECTION_LABELS.md`).
 - `case_brief.statutory_provisions` stays a list of strings, now display text: `"Section 309(4) BNS — Robbery"`,
   `"Section 173 BNSS — Information in cognizable cases (statute corrected from BNS)"`, `"Section 113B Evidence
   Act — … (unverified label)"`, `"Section 900 BNS (title not shown: trusted sources disagree)"`.
@@ -242,6 +247,12 @@ backend sets `LEGALAI_QUERY_DEBUG=true`. When enabled it holds:
   public ones; `wait_for_primary` only with `LEGALAI_PROFESSIONAL_FALLBACK_ENABLED`) and `primary_wait_ms`.
   Since step 26 `citations_total` (structured citations in the answer) and `citations_valid` (those that passed
   citation validation).
+
+**Brief-mode output cap (step 26b).** With Groq, a whole-document brief (`analysis_mode=brief`) is generated with
+`LEGALAI_BRIEF_MAX_OUTPUT_TOKENS` (default 3000) instead of `LEGALAI_LLM_MAX_OUTPUT_TOKENS` (2048). The request-size
+guard reserves the same number, so the lowest-ranked trusted evidence is dropped, and if one trusted item is left
+and the request still exceeds the per-request ceiling, that item is shortened at a sentence boundary (keeping at
+least 150 estimated tokens and its evidence id) until it fits. Question mode and text queries are unchanged.
   Since step 23 also
   `queue_wait_ms` (time queued for model capacity), `rate_limit_wait_ms` (time
   waiting for a provider's `retry-after`), `rate_limit_retries` and
@@ -491,6 +502,11 @@ Data sources, production methods and reconciliation are described in
   every cited section.
 - **`ipc-bns-map` rows** (step 19b, migration 0011; also `/analytics/ipc-bns`):
   `{ipc_section, ipc_description, bns_section, bns_description, change_type, source, source_page}`.
+  - Since step 26b also `ipc_official_heading` and `bns_official_heading` (the India Code heading of that single
+    section, a sub-section taking its section's; `null` for a group label such as "415 to 420, 424" or a section
+    without one) and `ipc_description_conflicts_with_official` / `bns_description_conflicts_with_official` (`true`
+    for the rows listed in `data/structured/statute_headings/mapping_conflicts.csv`, whose description differs in
+    meaning from the official heading). The descriptions themselves are unchanged.
   - `source`: `CYTRAIN` (the NCRB/CYTRAIN correspondence table) or `NCRB_CII_2024_T1A4` (a correspondence printed in
     NCRB Crime in India 2024, Vol. I, Table 1A.4); `source_page` is the printed table page of an NCRB row, else `null`.
   - `change_type`: `DIRECT`, `SPLIT`, `MERGED`, `REPEALED`, `NO_DIRECT_EQUIVALENT`, or **`null`** when the source gives

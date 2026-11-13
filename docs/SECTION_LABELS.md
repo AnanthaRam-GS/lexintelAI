@@ -287,6 +287,60 @@ shown for those sub-sections; they stay in `other_sources`.
 
 </details>
 
+## Step 26b: label checks, sub-section titles, flagged mapping rows (2026-11-13) — UNREVIEWED
+
+**The model's label is always kept** in `label.model_label`, for audit; it is never shown as a trusted title.
+
+**Wrong-statute rule** (`section_labels.label_matches_section`), defined before it was tested:
+- *"Clearly does not match"*: the label shares no content word (the `agrees` rule: stop words and generic legal words
+  ignored, words compared on their stem) with **any** trusted entry of the named statute's section with that number:
+  the official heading, every catalog title, description, alias and concept, and every mapping description
+  (sub-section entries included). Using every trusted description, not only the official heading, keeps synonyms
+  that the catalog records (BNSS 173(4): "refusal to register fir", concept `fir_registration`) from counting as a
+  mismatch.
+- If it clearly does not match **and** the same number in the sister statute matches the label, the state is
+  `corrected_statute`: the sister statute, its trusted title (the official heading when there is one), and a note with
+  the reason. Sister statutes: BNS/BNSS, IPC/CrPC, Evidence Act/BSA.
+- If it clearly does not match and no sister statute matches, the trusted title is shown with
+  `label.model_label_differs = true` and a note ("the answer's own label differs").
+
+**Confusion table** on the 27 saved step 22-24 mismatches (`backend/scripts/tests/fixtures/wrong_statute_cases.json`,
+judged by hand before the rule was run; the BNS 173 "registration of FIR" case is one of them):
+
+| Hand judgment \ rule outcome | keep (verified) | corrected statute | flag "label differs" |
+|---|---:|---:|---:|
+| label correct for the named section (11) | 5 | 0 | 6 |
+| wrong statute, sister statute fits (5) | 0 | **5** | 0 |
+| wrong label, no sister fits (11) | 0 | 0 | **11** |
+
+21 of 27 agree. Every wrong statute is corrected (BNSS 103 "murder" -> BNS 103; IPC 482 -> CrPC 482; BNS 173
+"registration of FIR" -> BNSS 173; BNS 528 -> BNSS 528; BNS 531(2)(a) -> BNSS 531), every wrong label is flagged, and
+no label is corrected wrongly. The 6 disagreements are correct labels written as synonyms or uses ("challenge to
+investigation" for BNSS 528, "dishonest dealing" for IPC 406, "deemed custody" for Evidence Act 27); they are flagged
+although right, and the trusted title is still what is shown.
+
+**Limit seen live (step 26b).** The rule needs a label. In the live FIR brief the answer wrote "Section 173 BNS" with
+no label of its own (its summary calls the Act "the Bharatiya Nagarik Suraksha Sanhita (BNS)"), so BNS 173 was shown
+with its own heading, "Punishment for bribery", and not corrected.
+
+**Exact sub-section titles.** When the catalog has a title for the exact sub-section, it is the primary title and the
+section's official heading is shown alongside (`label.section_heading`, `section_heading_source`,
+`section_heading_key`): `Section 3(5) BNS — Common intention (sub-section, catalog); General explanations (section
+heading, official)`; `Section 173(4) BNSS — Information to Superintendent of Police (sub-section, catalog);
+Information in cognizable cases (section heading, official)`. Otherwise the official section heading stays primary.
+
+**Flagged mapping rows.** The CYTRAIN mapping rows whose description differs in meaning from the official heading are
+listed in `data/structured/statute_headings/mapping_conflicts.csv` (generated with `section_label_coverage.py
+--crosscheck ... --mapping-conflicts ...`): 9 rows, IPC 366B (BNS 87) and eight IPC 376 rows (BNS 65(2), 66, 67, 68,
+70, 70(1), 70(2), 71) carrying the headings of sections 376A-376E. The source descriptions are not edited and no
+migration was needed. The IPC-BNS analytics endpoint and tab show each row's official IPC and BNS heading where one
+exists (a sub-section takes its section's) and keep the source description underneath, marked "Conflicts with the
+official heading" for the flagged rows. On the dev data: 438 rows, 9 flagged, an official BNS heading on 435 and an
+official IPC heading on 50 (most IPC keys are group labels such as "415 to 420, 424", which have no single heading).
+
+**CrPC retry**: still no official headings (`data/structured/statute_headings/SOURCES.md`), so coverage is unchanged
+from step 26: 214 of 370 cited sections.
+
 ## Coverage of the trusted sources before step 26 (2026-11-08)
 
 - **Catalog:** 62 entries (IPC 20, BNS 15, BNSS 8, CrPC 7, NDPS Act 6, POCSO Act 3, SC/ST Act 3), every one with a
