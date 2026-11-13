@@ -11,6 +11,7 @@ which were unchanged before and after the run. Full method and results: `docs/ev
 | `retrieval/trace_comparison_{cpu_fp32,product}.json` | Per query and system, whether the pooled ranking equals the frozen one, with the differing chunks |
 | `generation/summary.json` | Three-configuration generation results: overall, per mode and the paired subset, with provenance (provider, models, prompt versions and hashes, pacing) |
 | `generation/per_query_scores.json` | Per query and configuration: status, scores, model, latency, tokens and evidence chunk IDs (no answer text) |
+| `human_review/result_round2.json` | Round 2 of the review (full cited passages for the 66 authority rows round 1 did not judge supported), imported 2026-11-13 with `import_human_review.py --round 2`: per configuration, round 1 and round 2 rates, the change and the round 1 -> round 2 transitions (aggregates only). Same reviewer provenance, working from full passages |
 | `human_review/result.json` | Review of the 15 x 3 sample, imported 2026-11-13 with `import_human_review.py`: per configuration, citation-support and legal-correctness counts and rates (aggregates only, no answer text). The reviewer is an AI chat assistant (not Claude Code), blind to configuration and not human-verified; evidence excerpts were cut at 600 characters |
 
 ## Provenance
@@ -46,5 +47,6 @@ which were unchanged before and after the run. Full method and results: `docs/ev
 - The review sheet for the sample (15 queries x 3 configurations) was reviewed by an AI chat assistant (not Claude
   Code), blind to configuration and not human-verified, and imported on 2026-11-13 (`human_review/result.json`;
   `docs/evaluation/EVALUATION_2026-10.md`, section 4). A check by a person is still to be done.
-- Round 2 (full cited passages for the 66 authority rows not judged supported) is built outside the repository and
-  pending; it will be imported to `human_review/result_round2.json`, next to the round 1 `result.json`.
+- Round 2 (full cited passages for the 66 authority rows not judged supported; AI chat assistant, not Claude Code,
+  blind to configuration, not human-verified) was imported on 2026-11-13 to `human_review/result_round2.json`, next
+  to the round 1 `result.json`, which is unchanged.

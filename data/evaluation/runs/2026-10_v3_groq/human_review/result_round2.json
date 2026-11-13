@@ -1,0 +1,179 @@
+{
+ "round": 2,
+ "round1_reviewers": [
+  "AI (Claude chat; not Claude Code); blind to configuration; not human-verified"
+ ],
+ "round2_reviewers": [
+  "AI (Claude chat; not Claude Code); round 2 with full passages; blind to configuration; not human-verified"
+ ],
+ "re_reviewed_rows": 66,
+ "configurations": {
+  "A_llm_only": {
+   "round1": null,
+   "round2": null,
+   "change": null,
+   "re_reviewed": 0,
+   "transitions": {}
+  },
+  "B_dense_rag": {
+   "round1": {
+    "authorities_judged": 40,
+    "citation_support": {
+     "incorrect_law": 4,
+     "not_supported": 8,
+     "partly": 19,
+     "supported": 9
+    },
+    "human_grounding_rate_strict": 0.225,
+    "human_grounding_rate_lenient": 0.7,
+    "incorrect_law_share": 0.1,
+    "by_row_type": {
+     "citation": {
+      "authorities_judged": 40,
+      "citation_support": {
+       "incorrect_law": 4,
+       "not_supported": 8,
+       "partly": 19,
+       "supported": 9
+      },
+      "human_grounding_rate_strict": 0.225,
+      "human_grounding_rate_lenient": 0.7,
+      "incorrect_law_share": 0.1
+     }
+    }
+   },
+   "round2": {
+    "authorities_judged": 40,
+    "citation_support": {
+     "incorrect_law": 4,
+     "not_supported": 5,
+     "supported": 26,
+     "partly": 5
+    },
+    "human_grounding_rate_strict": 0.65,
+    "human_grounding_rate_lenient": 0.775,
+    "incorrect_law_share": 0.1,
+    "by_row_type": {
+     "citation": {
+      "authorities_judged": 40,
+      "citation_support": {
+       "incorrect_law": 4,
+       "not_supported": 5,
+       "supported": 26,
+       "partly": 5
+      },
+      "human_grounding_rate_strict": 0.65,
+      "human_grounding_rate_lenient": 0.775,
+      "incorrect_law_share": 0.1
+     }
+    }
+   },
+   "change": {
+    "human_grounding_rate_strict": 0.425,
+    "human_grounding_rate_lenient": 0.075,
+    "incorrect_law_share": 0.0
+   },
+   "re_reviewed": 31,
+   "transitions": {
+    "incorrect_law -> incorrect_law": 4,
+    "not_supported -> not_supported": 4,
+    "not_supported -> supported": 4,
+    "partly -> not_supported": 1,
+    "partly -> partly": 5,
+    "partly -> supported": 13
+   }
+  },
+  "C_full_legalai": {
+   "round1": {
+    "authorities_judged": 43,
+    "citation_support": {
+     "not_supported": 13,
+     "supported": 9,
+     "incorrect_law": 4,
+     "partly": 17,
+     "not_applicable": 1
+    },
+    "human_grounding_rate_strict": 0.2093,
+    "human_grounding_rate_lenient": 0.6047,
+    "incorrect_law_share": 0.093,
+    "by_row_type": {
+     "citation": {
+      "authorities_judged": 42,
+      "citation_support": {
+       "not_supported": 13,
+       "supported": 8,
+       "incorrect_law": 4,
+       "partly": 17
+      },
+      "human_grounding_rate_strict": 0.1905,
+      "human_grounding_rate_lenient": 0.5952,
+      "incorrect_law_share": 0.0952
+     },
+     "text_reference": {
+      "authorities_judged": 1,
+      "citation_support": {
+       "supported": 1,
+       "not_applicable": 1
+      },
+      "human_grounding_rate_strict": 1.0,
+      "human_grounding_rate_lenient": 1.0,
+      "incorrect_law_share": 0.0
+     }
+    }
+   },
+   "round2": {
+    "authorities_judged": 43,
+    "citation_support": {
+     "not_supported": 7,
+     "supported": 30,
+     "incorrect_law": 3,
+     "partly": 3,
+     "not_applicable": 1
+    },
+    "human_grounding_rate_strict": 0.6977,
+    "human_grounding_rate_lenient": 0.7674,
+    "incorrect_law_share": 0.0698,
+    "by_row_type": {
+     "citation": {
+      "authorities_judged": 42,
+      "citation_support": {
+       "not_supported": 7,
+       "supported": 29,
+       "incorrect_law": 3,
+       "partly": 3
+      },
+      "human_grounding_rate_strict": 0.6905,
+      "human_grounding_rate_lenient": 0.7619,
+      "incorrect_law_share": 0.0714
+     },
+     "text_reference": {
+      "authorities_judged": 1,
+      "citation_support": {
+       "supported": 1,
+       "not_applicable": 1
+      },
+      "human_grounding_rate_strict": 1.0,
+      "human_grounding_rate_lenient": 1.0,
+      "incorrect_law_share": 0.0
+     }
+    }
+   },
+   "change": {
+    "human_grounding_rate_strict": 0.4884,
+    "human_grounding_rate_lenient": 0.1627,
+    "incorrect_law_share": -0.0232
+   },
+   "re_reviewed": 35,
+   "transitions": {
+    "incorrect_law -> incorrect_law": 3,
+    "incorrect_law -> supported": 1,
+    "not_applicable -> not_applicable": 1,
+    "not_supported -> not_supported": 7,
+    "not_supported -> partly": 1,
+    "not_supported -> supported": 5,
+    "partly -> partly": 2,
+    "partly -> supported": 15
+   }
+  }
+ }
+}
