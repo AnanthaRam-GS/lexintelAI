@@ -15,7 +15,9 @@ blind to configuration and not human-verified (section 4).**
     - Groq "json_validate_failed" 400s: A ans-q017, A ans-q020, C ans-q014;
     - BUSY: C ans-q010 (public).
 - **Review:** the 15 x 3 sample was reviewed by an AI chat assistant (not Claude Code), blind to configuration and
-  not human-verified, and imported on 2026-11-13 (section 4).
+  not human-verified, and imported on 2026-11-13 (section 4). Round 2, with full cited passages, is pending.
+
+**Headline (grounding):** All structured citations point to real retrieved evidence (structural 100%); on AI review, about 60% are at least partly supported and about 20% fully (round 1, excerpts cut at 600 characters).
 
 ## 1. What exists and how it works
 
@@ -283,6 +285,29 @@ where most citations fall short. Reading the gap:
   its errors may be correlated with the system's. These rates are evidence about the gap, not a final grounding
   figure.
 
+### Round 2 pending: full cited passages (step 28)
+
+Round 2 re-asks the round 1 authority rows not judged `supported`, with the **full text of each cited chunk** instead
+of the 600-character excerpt. It is **not filled yet**; round 1 stays as recorded and is never overwritten.
+- **Sheet:** `~/legalai_reviews/eval_runs/2026-10_v3_groq/human_review/review_sheet_round2.csv` (outside the
+  repository), built by `backend/scripts/build_review_round2.py`. 66 rows: 65 structured citations (round 1: partly
+  36, not_supported 21, incorrect_law 8) and 1 text reference ("BNS v. Section",
+  round 1 not_applicable, which cites no chunk). The 18 rows judged `supported` in round 1 are not re-asked.
+- **Full passages:** each citation's chunk is read from PostgreSQL (read-only, `chunks.chroma_id`). All 92 chunk IDs
+  saved for the run are found, and all 65 citation rows match exactly one chunk whose text starts with the round 1
+  excerpt (33 distinct chunks, 1,764 to 4,024 characters).
+- **Blinding kept:** rows keep their `review_id`, `example_id` and X/Y/Z label; the builder never reads
+  `review_key.json`. It finds each chunk among the evidence of all three configurations of the query, so no row is
+  linked to a configuration.
+- **What the reviewer sees:** the full passage (`evidence_excerpt`, with `chunk_id` and `chunk_chars`), and round 1's
+  judgment and notes (`r1_support`, `r1_notes`); `citation_support`, `reviewer` and `notes` are empty to fill.
+- **Import:** `import_human_review.py --round 2 --sheet …round2.csv --round1-sheet …reviewed.csv --key … --output
+  data/evaluation/runs/2026-10_v3_groq/human_review/result_round2.json` writes, per configuration, the round 1
+  rates, the round 2 rates (round 1 with the re-reviewed rows replaced) and the change, plus the round 1 -> round 2
+  transitions. It refuses to write over the round 1 `result.json`.
+
+Until round 2 is imported, the round 1 figures above are the result, and the strict rate is a lower bound.
+
 ## 5. Labelling kit (about 70 new retrieval queries)
 
 `data/evaluation/labelling_kit/`:
@@ -331,6 +356,6 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
 
 ## 8. Next steps
 
-1. A person checks the AI review of the 15 x 3 sample, ideally with the full cited passages rather than 600-character
-   excerpts, then re-runs `import_human_review.py`.
+1. Fill round 2 (full cited passages, section 4) and import it with `import_human_review.py --round 2`; a person
+   checks the AI review of the 15 x 3 sample.
 2. Collect the about 70 new benchmark queries and labels with the kit, then recompute retrieval metrics on v2.
