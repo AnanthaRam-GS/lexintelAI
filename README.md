@@ -237,7 +237,7 @@ All of this is documented in [docs/TESTING.md](docs/TESTING.md).
 |---|---|---|
 | Backend, non-DB | `backend/scripts/dev/run_nondb_suites.sh` | nothing (Tesseract for the OCR tests) |
 | Backend, DB-backed | `backend/scripts/dev/run_db_suites.sh <log dir>` | `TEST_DATABASE_URL` pointing at a separate `*_test` database |
-| Frontend | `cd frontend && npm run test:run && npm run lint && npm run format:check && npx tsc --noEmit --incremental false` | `npm ci` |
+| Frontend | `cd frontend && npm run test:run && npm run lint && npm run format:check && npm run typecheck` | `npm ci` |
 | End-to-end, fake mode | `DATABASE_URL=<url of a *_e2e database> backend/scripts/e2e/run_e2e.sh` | a `*_e2e` database; no models, no keys, no corpus |
 | End-to-end, local real mode | `REHEARSAL_DATABASE_URL=<url> backend/scripts/e2e/run_e2e_local_real.sh` | a dev setup, the models, `legalai_rehearsal` |
 
