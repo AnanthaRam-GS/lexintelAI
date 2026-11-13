@@ -1,0 +1,10 @@
+source,ipc_section,bns_section,side,description,official_heading,reason
+CYTRAIN,366-B,87,ipc,"Kidnapping, abducting or inducing woman to compel her marriage, etc.",Importation of girl from foreign country,the mapping gives section 366's subject (kidnapping to compel marriage)
+CYTRAIN,376,65(2),ipc,Punishment for rape on woman under twelve years of age.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,66,ipc,Punishment for causing death or resulting in persistent vegetative state of victim.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,67,ipc,Sexual intercourse by husband upon his wife during separation.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,68,ipc,Sexual intercourse by a person in authority.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,70,ipc,Gang rape.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,70(1),ipc,Gang rape.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,70(2),ipc,Punishment for gang rape on woman under sixteen years of age. 376DB. Punishment for gang rape on woman under twelve years of age.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376
+CYTRAIN,376,71,ipc,Punishment for repeat offenders.,Punishment for rape,the mapping files the headings of sections 376A-376E under section 376

@@ -7,14 +7,18 @@ from structured reference tables.
 
 from __future__ import annotations
 
+import csv
 from collections import defaultdict
+from functools import lru_cache
 from itertools import combinations
+from pathlib import Path
 import re
 
 from sqlalchemy import cast, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
+from backend.app.core.config import REPO_ROOT
 from backend.app.db.models import Document, DocumentSection, IpcBnsMapping, NcrbStat
 from backend.app.services.ncrb_display import display_offense_category
 from backend.app.services.ncrb_sections import section_labels
@@ -328,6 +332,7 @@ def get_ipc_bns_mappings(
         query = query.filter(IpcBnsMapping.source == source)
 
     rows = query.order_by(IpcBnsMapping.ipc_section, IpcBnsMapping.bns_section, IpcBnsMapping.id).all()
+    conflicts = mapping_conflict_keys()
     return [
         IpcBnsMappingRow(
             ipc_section=row.ipc_section,
@@ -337,9 +342,56 @@ def get_ipc_bns_mappings(
             change_type=row.change_type,
             source=row.source,
             source_page=row.source_page,
+            ipc_official_heading=official_heading("IPC", row.ipc_section),
+            bns_official_heading=official_heading("BNS", row.bns_section),
+            ipc_description_conflicts_with_official=mapping_key(row.source, row.ipc_section, row.bns_section, "ipc", row.ipc_description) in conflicts,
+            bns_description_conflicts_with_official=mapping_key(row.source, row.ipc_section, row.bns_section, "bns", row.bns_description) in conflicts,
         )
         for row in rows
     ]
+
+
+# ---------------------------------------------------------------------------
+# Step 26b: official headings and flagged mapping descriptions for the IPC-BNS view
+# ---------------------------------------------------------------------------
+
+MAPPING_CONFLICTS_PATH = REPO_ROOT / "data/structured/statute_headings/mapping_conflicts.csv"
+
+
+def _section_key(section: str | None) -> str | None:
+    """'366-B' -> '366B'; None for a group label ('415 to 420, 424') or an empty value."""
+    if not section:
+        return None
+    compact = re.sub(r"(?<=\d)-(?=[A-Za-z]\b)", "", section.strip())
+    return compact if re.fullmatch(r"\d+[A-Za-z]*(?:\(\s*[0-9A-Za-z]+\s*\))*", compact.replace(" ", "")) else None
+
+
+def official_heading(statute: str, section: str | None) -> str | None:
+    """The official heading of a single section (a sub-section takes its section's); None when there is none."""
+    from backend.app.services.section_labels import default_sources, normalize_section  # noqa: PLC0415
+
+    key = _section_key(section)
+    if key is None:
+        return None
+    key = normalize_section(key)
+    official = default_sources().official
+    entries = official.get((statute, key)) or official.get((statute, re.sub(r"\(.*$", "", key)))
+    return entries[0].title if entries else None
+
+
+def mapping_key(source: str | None, ipc_section: str | None, bns_section: str | None, side: str, description: str | None) -> tuple:
+    from backend.app.services.section_labels import comparable  # noqa: PLC0415
+
+    return ((source or "").upper(), _section_key(ipc_section) or (ipc_section or "").strip(), (bns_section or "").strip(), side,
+            comparable(description or ""))
+
+
+@lru_cache(maxsize=1)
+def mapping_conflict_keys(path: Path = MAPPING_CONFLICTS_PATH) -> frozenset[tuple]:
+    if not path.exists():
+        return frozenset()
+    with path.open(encoding="utf-8", newline="") as handle:
+        return frozenset(mapping_key(r["source"], r["ipc_section"], r["bns_section"], r["side"], r["description"]) for r in csv.DictReader(handle))
 
 
 def get_ncrb_stats(

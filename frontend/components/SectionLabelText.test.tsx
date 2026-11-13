@@ -86,6 +86,58 @@ describe('SectionLabelText', () => {
     expect(screen.getByTestId('section-label-note')).toHaveTextContent('the answer cited BNSS 103');
   });
 
+  it('verified with a differing answer label: the trusted title, never the answer label, and a note', () => {
+    const reference: SectionReference = {
+      statute: 'IPC',
+      section: '138',
+      context: GENERATED,
+      label: {
+        state: 'verified',
+        title: 'Abetment of act of insubordination by soldier, sailor or airman',
+        source: 'official_heading',
+        model_label: 'Dishonour of cheque',
+        model_label_differs: true,
+      },
+    };
+    render(<SectionLabelText reference={reference} />);
+    expect(screen.getByTestId('section-label')).toHaveTextContent(
+      'Section 138 IPC — Abetment of act of insubordination by soldier, sailor or airman',
+    );
+    expect(screen.queryByText(/cheque/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId('section-label-note')).toHaveTextContent(
+      /answer's own label .* differs/,
+    );
+    expect(screen.queryByTestId('section-label-marker')).not.toBeInTheDocument();
+  });
+
+  it('a catalog sub-section title is shown with the official section heading', () => {
+    for (const [section, title, heading] of [
+      ['3(5)', 'Common intention', 'General explanations'],
+      ['173(4)', 'Information to Superintendent of Police', 'Information in cognizable cases'],
+    ]) {
+      cleanup();
+      const reference: SectionReference = {
+        statute: section === '3(5)' ? 'BNS' : 'BNSS',
+        section,
+        context: GENERATED,
+        label: {
+          state: 'verified',
+          title,
+          source: 'section_catalog',
+          section_heading: heading,
+          section_heading_source: 'official_heading',
+        },
+      };
+      render(<SectionLabelText reference={reference} />);
+      expect(screen.getByTestId('section-label')).toHaveTextContent(
+        `${title} (sub-section, catalog)`,
+      );
+      expect(screen.getByTestId('section-label-note')).toHaveTextContent(
+        `Section heading (official): ${heading}`,
+      );
+    }
+  });
+
   it('unverified: keeps the answer wording with the unverified marker', () => {
     const label = renderLabel(unverified);
     expect(label).toHaveAttribute('data-label-state', 'unverified');

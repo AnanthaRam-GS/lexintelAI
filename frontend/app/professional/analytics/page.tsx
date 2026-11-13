@@ -142,6 +142,8 @@ export default function ProfessionalAnalyticsPage() {
       (row) =>
         row.ipc_section.toLowerCase().includes(term) ||
         row.ipc_description.toLowerCase().includes(term) ||
+        (row.ipc_official_heading && row.ipc_official_heading.toLowerCase().includes(term)) ||
+        (row.bns_official_heading && row.bns_official_heading.toLowerCase().includes(term)) ||
         (row.bns_section && row.bns_section.toLowerCase().includes(term)) ||
         (row.bns_description && row.bns_description.toLowerCase().includes(term)) ||
         (row.change_type ?? CHANGE_TYPE_NOT_SPECIFIED_LABEL).toLowerCase().includes(term) ||
@@ -497,13 +499,21 @@ export default function ProfessionalAnalyticsPage() {
                           {row.ipc_section}
                         </td>
                         <td className="px-4 py-3 text-[var(--color-body)] max-w-xs">
-                          {row.ipc_description}
+                          <MappingDescription
+                            official={row.ipc_official_heading}
+                            description={row.ipc_description}
+                            conflicts={row.ipc_description_conflicts_with_official}
+                          />
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 font-bold text-[var(--color-info-foreground)]">
                           {row.bns_section || 'Repealed/Omitted'}
                         </td>
                         <td className="px-4 py-3 text-[var(--color-body)] max-w-sm">
-                          {row.bns_description || 'N/A'}
+                          <MappingDescription
+                            official={row.bns_official_heading}
+                            description={row.bns_description || 'N/A'}
+                            conflicts={row.bns_description_conflicts_with_official}
+                          />
                         </td>
                         <td className="whitespace-nowrap px-4 py-3">
                           {row.change_type ? (
@@ -636,6 +646,48 @@ export default function ProfessionalAnalyticsPage() {
             </div>
           )}
         </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Step 26b: the official India Code heading (when there is one) above the mapping source's own description, which
+ * is kept as published and marked when it conflicts with the official heading.
+ */
+function MappingDescription({
+  official,
+  description,
+  conflicts,
+}: {
+  official?: string | null;
+  description: string;
+  conflicts?: boolean;
+}) {
+  return (
+    <div>
+      {official && (
+        <div data-testid="mapping-official-heading">
+          <span className="font-semibold text-[var(--color-ink)]">{official}</span>
+          <span className="ml-1.5 text-[0.6875rem] font-medium text-[var(--color-muted)]">
+            Official heading
+          </span>
+        </div>
+      )}
+      <div
+        className={official ? 'mt-0.5 text-[0.75rem] text-[var(--color-muted)]' : undefined}
+        data-testid="mapping-source-description"
+      >
+        {official ? `Source: ${description}` : description}
+      </div>
+      {conflicts && (
+        <span
+          className="mt-1 inline-flex rounded-full border border-[var(--color-warning-border)] bg-[var(--color-warning-surface)] px-1.5 py-0.5 text-[0.6875rem] font-semibold text-[var(--color-warning-foreground)]"
+          data-testid="mapping-conflict"
+          title="This source description differs in meaning from the official heading; it is shown as published."
+        >
+          Conflicts with the official heading
+        </span>
       )}
     </div>
   );

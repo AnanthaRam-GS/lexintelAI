@@ -47,7 +47,25 @@ export function sectionLabelParts(reference: SectionReference): SectionLabelPart
   }
   switch (label.state) {
     case 'verified':
-      return { heading, text: label.title ?? null, marker: null, note: null, state: 'verified' };
+      if (label.section_heading) {
+        // Step 26b: the catalog's title of the exact sub-section, with the section's official heading alongside.
+        return {
+          heading,
+          text: label.title ? `${label.title} (sub-section, catalog)` : null,
+          marker: null,
+          note: `Section heading (official): ${label.section_heading}`,
+          state: 'verified',
+        };
+      }
+      return {
+        heading,
+        text: label.title ?? null,
+        marker: null,
+        note: label.model_label_differs
+          ? "The answer's own label for this section differs from this title."
+          : null,
+        state: 'verified',
+      };
     case 'corrected_statute':
       return {
         heading,

@@ -42,6 +42,14 @@ class IpcBnsMappingRow(BaseModel):
     # CYTRAIN or NCRB_CII_2024_T1A4; source_page is the printed table page of an NCRB row.
     source: str
     source_page: int | None = None
+    # Step 26b: the official India Code heading of the IPC / BNS section (the parent section's for a sub-section),
+    # when one exists; the source descriptions above are kept as they are.
+    ipc_official_heading: str | None = None
+    bns_official_heading: str | None = None
+    # True when the row's description is listed in data/structured/statute_headings/mapping_conflicts.csv: it differs
+    # in meaning from the official heading (e.g. IPC 376 rows carrying the headings of sections 376A-376E).
+    ipc_description_conflicts_with_official: bool = False
+    bns_description_conflicts_with_official: bool = False
 
 
 class NcrbStatPoint(BaseModel):
