@@ -233,6 +233,137 @@ class ReviewSheetTests(unittest.TestCase):
         # Values outside both scales are still refused.
         self.assertTrue(import_human_review.validate([row("z", "X", "answer", correctness="mostly")]))
 
+    # Step 28: round 2 (full cited passages) is recorded alongside round 1.
+    ROUND2_KEY = {"key": {"q1": {"X": "C_full_legalai", "Y": "B_dense_rag", "Z": "A_llm_only"}}}
+
+    @staticmethod
+    def _r1(review_id, label, row_type, support="", correctness="", notes=""):
+        return {"review_id": review_id, "example_id": "q1", "answer_label": label, "row_type": row_type,
+                "legal_correctness": correctness, "citation_support": support, "reviewer": "r1", "notes": notes,
+                "evidence_excerpt": ""}
+
+    def _round1(self):
+        r = self._r1
+        return [r("a1", "X", "answer", correctness="correct"), r("a2", "Y", "answer", correctness="correct"),
+                r("a3", "Z", "answer", correctness="incorrect"),
+                r("c1", "X", "citation", "supported"), r("c2", "X", "citation", "partly"),
+                r("c3", "X", "citation", "not_supported"), r("c4", "X", "citation", "incorrect_law"),
+                r("t1", "X", "text_reference", "not_applicable"),
+                r("c5", "Y", "citation", "partly"), r("c6", "Y", "citation", "supported")]
+
+    @staticmethod
+    def _r2(review_id, label, row_type, r1_support, support):
+        return {"review_id": review_id, "example_id": "q1", "answer_label": label, "row_type": row_type,
+                "r1_support": r1_support, "citation_support": support, "reviewer": "r2"}
+
+    def _round2(self):
+        r = self._r2
+        return [r("c2", "X", "citation", "partly", "supported"), r("c3", "X", "citation", "not_supported", "partly"),
+                r("c4", "X", "citation", "incorrect_law", "incorrect_law"), r("t1", "X", "text_reference", "not_applicable", "not_applicable"),
+                r("c5", "Y", "citation", "partly", "partly")]
+
+    def test_round2_replaces_only_the_re_reviewed_rows_and_reports_the_change(self) -> None:
+        from backend.scripts import import_human_review as imp
+
+        round1, round2 = self._round1(), self._round2()
+        self.assertEqual(imp.validate_round2(round2, round1), [])
+        before = imp.compute(round1, self.ROUND2_KEY)
+        result = imp.compute_round2(round1, round2, self.ROUND2_KEY)
+        c = result["C_full_legalai"]
+        # Round 1 as it was: 1 supported, 1 partly of 4 judged (not_applicable excluded).
+        self.assertEqual((c["round1"]["human_grounding_rate_strict"], c["round1"]["human_grounding_rate_lenient"]), (0.25, 0.5))
+        self.assertEqual(c["round1"]["human_grounding_rate_strict"], before["C_full_legalai"]["human_grounding_rate_strict"])
+        # Round 2: c2 partly -> supported, c3 not_supported -> partly; c1 (supported in round 1) kept.
+        self.assertEqual((c["round2"]["human_grounding_rate_strict"], c["round2"]["human_grounding_rate_lenient"]), (0.5, 0.75))
+        self.assertEqual(c["change"], {"human_grounding_rate_strict": 0.25, "human_grounding_rate_lenient": 0.25, "incorrect_law_share": 0.0})
+        self.assertEqual(c["re_reviewed"], 4)
+        self.assertEqual(c["transitions"]["partly -> supported"], 1)
+        b = result["B_dense_rag"]
+        self.assertEqual((b["round1"]["human_grounding_rate_strict"], b["round2"]["human_grounding_rate_strict"], b["change"]["human_grounding_rate_strict"]), (0.5, 0.5, 0.0))
+        self.assertIsNone(result["A_llm_only"]["round1"])  # no authorities
+        # Round 1 rows are not modified by the merge.
+        self.assertEqual([row["citation_support"] for row in round1], [row["citation_support"] for row in self._round1()])
+
+    def test_round2_sheet_must_match_round1(self) -> None:
+        from backend.scripts import import_human_review as imp
+
+        round1, r = self._round1(), self._r2
+        errors = imp.validate_round2(self._round2()[:-1] + [
+            r("c6", "Y", "citation", "supported", "supported"),       # supported in round 1: not re-reviewed
+            r("c2", "X", "citation", "partly", "supported"),          # duplicate
+            {**r("c5", "Y", "citation", "not_supported", ""), "reviewer": ""},  # r1 changed, empty judgment and reviewer
+        ], round1)
+        joined = "\n".join(errors)
+        for expected in ("c6: not a round 1 authority row", "c2: duplicate", "c5: r1_support differs",
+                         "c5: citation_support must be", "c5: reviewer is empty"):
+            self.assertIn(expected, joined)
+        self.assertIn("c5: missing from round 2", "\n".join(imp.validate_round2(self._round2()[:-1], round1)))
+
+    def test_round2_import_never_overwrites_round1(self) -> None:
+        import csv
+        import json
+
+        from backend.scripts import import_human_review as imp
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+
+            def write(path, rows):
+                with path.open("w", newline="", encoding="utf-8") as handle:
+                    writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+                    writer.writeheader()
+                    writer.writerows(rows)
+
+            write(tmp / "r1.csv", self._round1())
+            write(tmp / "r2.csv", self._round2())
+            (tmp / "key.json").write_text(json.dumps(self.ROUND2_KEY))
+            imp.main(["--sheet", str(tmp / "r1.csv"), "--key", str(tmp / "key.json"), "--output", str(tmp / "result.json")])
+            round1_result = (tmp / "result.json").read_text()
+            args = ["--round", "2", "--sheet", str(tmp / "r2.csv"), "--round1-sheet", str(tmp / "r1.csv"), "--key", str(tmp / "key.json")]
+            with self.assertRaisesRegex(SystemExit, "never overwrites round 1"):
+                imp.main(args + ["--output", str(tmp / "result.json")])
+            self.assertEqual((tmp / "result.json").read_text(), round1_result)
+            with self.assertRaisesRegex(SystemExit, "needs --round1-sheet"):
+                imp.main(["--round", "2", "--sheet", str(tmp / "r2.csv"), "--key", str(tmp / "key.json")])
+            imp.main(args + ["--output", str(tmp / "result_round2.json")])
+            imp.main(args + ["--output", str(tmp / "result_round2.json")])  # a round 2 result may be rewritten
+            result = json.loads((tmp / "result_round2.json").read_text())
+            self.assertEqual((result["round"], result["re_reviewed_rows"]), (2, 5))
+            self.assertEqual(result["configurations"]["C_full_legalai"]["round2"]["human_grounding_rate_strict"], 0.5)
+            self.assertEqual((tmp / "result.json").read_text(), round1_result)
+
+    def test_round2_sheet_rows_use_the_full_chunk_without_the_key(self) -> None:
+        from backend.scripts import build_review_round2 as b2
+
+        chunk_a, chunk_b = "A" * 600 + " rest of passage A", "B" * 600 + " rest of passage B"
+        round1 = [self._r1("c1", "X", "citation", "supported"), self._r1("c2", "X", "citation", "partly", notes="cut off"),
+                  self._r1("t1", "Y", "text_reference", "not_applicable"), self._r1("a1", "X", "answer", correctness="correct")]
+        round1[0]["evidence_excerpt"], round1[1]["evidence_excerpt"] = chunk_a[:600], chunk_b[:600]
+        round1[2]["evidence_excerpt"] = "(named in the answer text)"
+        pooled = b2.evidence_ids_by_example({"rows": [{"example_id": "q1", "config": "B", "evidence_chunk_ids": ["k:a"]},
+                                                      {"example_id": "q1", "config": "C", "evidence_chunk_ids": ["k:b"]}]})
+        self.assertEqual(pooled, {"q1": {"k:a", "k:b"}})
+        rows = b2.round2_rows(round1, pooled, {"k:a": chunk_a, "k:b": chunk_b})
+        self.assertEqual([row["review_id"] for row in rows], ["c2", "t1"])  # supported and answer rows left out
+        self.assertEqual((rows[0]["evidence_excerpt"], rows[0]["chunk_id"], rows[0]["chunk_chars"]), (chunk_b, "k:b", len(chunk_b)))
+        self.assertEqual((rows[0]["r1_support"], rows[0]["r1_notes"], rows[0]["citation_support"], rows[0]["reviewer"], rows[0]["notes"]),
+                         ("partly", "cut off", "", "", ""))
+        self.assertEqual((rows[1]["chunk_id"], rows[1]["evidence_excerpt"]), ("", "(named in the answer text)"))
+        self.assertNotIn("legal_correctness", b2.ROUND2_COLUMNS)
+        # Two different chunks starting with the same excerpt, or none: refused, nothing guessed.
+        with self.assertRaisesRegex(SystemExit, "c2: 2 matching chunks"):
+            b2.round2_rows(round1, {"q1": {"k:b", "k:b2"}}, {"k:b": chunk_b, "k:b2": chunk_b[:600] + " other"})
+        with self.assertRaisesRegex(SystemExit, "c2: 0 matching chunks"):
+            b2.round2_rows(round1, {"q1": {"k:a"}}, {"k:a": chunk_a})
+
+    def test_round2_builder_never_takes_the_key(self) -> None:
+        from backend.scripts import build_review_round2 as b2
+
+        with self.assertRaisesRegex(SystemExit, "blinding key"):
+            b2.main(["--round1-sheet", "/tmp/review_key.json", "--out", "/tmp/x/round2.csv"])
+        with self.assertRaisesRegex(SystemExit, "outside the repository"):
+            b2.main(["--round1-sheet", "/tmp/r1.csv", "--out", str(REPO_ROOT / "round2.csv")])
+
     def test_the_sheet_goes_outside_the_repository(self) -> None:
         from backend.scripts import build_review_sheet
 

@@ -46,3 +46,5 @@ which were unchanged before and after the run. Full method and results: `docs/ev
 - The review sheet for the sample (15 queries x 3 configurations) was reviewed by an AI chat assistant (not Claude
   Code), blind to configuration and not human-verified, and imported on 2026-11-13 (`human_review/result.json`;
   `docs/evaluation/EVALUATION_2026-10.md`, section 4). A check by a person is still to be done.
+- Round 2 (full cited passages for the 66 authority rows not judged supported) is built outside the repository and
+  pending; it will be imported to `human_review/result_round2.json`, next to the round 1 `result.json`.
