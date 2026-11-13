@@ -3,7 +3,8 @@
 Steps 24-24c, plan Task 4.A.1 (RAG-003, R32). The run data is in `data/evaluation/runs/2026-10_v3_groq/`; the
 full, UNREVIEWED outputs are outside the repository.
 
-**Status: complete for automatic metrics; human review not yet done.**
+**Status: complete for automatic metrics; the review sample is reviewed by an AI chat assistant (not Claude Code),
+blind to configuration and not human-verified (section 4).**
 - **Retrieval:** complete.
 - **Generation:** all 90 cells (30 queries x 3 configurations) have a record.
   - Public half: run on 2026-10-30 (step 24).
@@ -13,7 +14,8 @@ full, UNREVIEWED outputs are outside the repository.
     - schema failures: A ans-q019, B ans-q016;
     - Groq "json_validate_failed" 400s: A ans-q017, A ans-q020, C ans-q014;
     - BUSY: C ans-q010 (public).
-- **Human review:** sheet produced for the full sample, not yet filled.
+- **Review:** the 15 x 3 sample was reviewed by an AI chat assistant (not Claude Code), blind to configuration and
+  not human-verified, and imported on 2026-11-13 (section 4).
 
 ## 1. What exists and how it works
 
@@ -214,10 +216,72 @@ and 2 out-of-scope queries.
 - **Import:** `backend/scripts/import_human_review.py --sheet … --key … --output data/evaluation/runs/2026-10_v3_groq/human_review/result.json`
   validates the sheet and computes the **human-verified grounding rate** per configuration (strict: supported;
   lenient: supported or partly), the incorrect-law share, and legal correctness.
-- **Current state:** regenerated after the professional re-run (same seed, so the same 15 queries: 8 public, 7
+- **Sheet:** regenerated after the professional re-run (same seed, so the same 15 queries: 8 public, 7
   professional). 43 of the 45 sampled answers are real answers. The other 2 are a Groq 400 in C public (ans-q014)
-  and in A professional (ans-q020), shown to reviewers as failed. The sheet has 129 rows. It is ready for review
-  and not yet filled.
+  and in A professional (ans-q020), shown to reviewers as failed. The sheet has 129 rows: 45 answers, 82 cited
+  authorities (B 40, C 42; A cites none) and 2 cases named in C's answer text.
+- **Evidence excerpts were cut at 600 characters** (`run_three_config_eval.py` stores `text[:600]` for each retrieved
+  item, and the sheet shows that). Every one of the 82 excerpts is exactly 600 characters, often ending mid-sentence,
+  while a chunk can be up to about 900 tokens. The reviewer saw only the start of each cited passage.
+
+### Review (2026-11-13) — UNREVIEWED by a person
+
+**Reviewer provenance:** the reviewer is an AI chat assistant (not Claude Code), blind to configuration and not
+human-verified. The `reviewer` column of every row reads "AI (Claude chat; not Claude Code); blind to configuration;
+not human-verified". The completed sheet is
+`~/legalai_reviews/eval_runs/2026-10_v3_groq/human_review/review_sheet_reviewed.csv` (outside the repository); its
+non-review columns are identical to the issued sheet. The aggregates (no answer text) are in
+`data/evaluation/runs/2026-10_v3_groq/human_review/result.json`. The script's "human-verified" field names are kept,
+but these are **AI-reviewed** rates.
+
+**Scale.** The reviewer used the sheet's values plus three it has no counterpart for: `abstained` (5 answers: a
+no-coverage answer instead of a legal answer; the notes call three reasonable, one unwarranted (B ans-q003), and
+one a possible corpus gap on a question POCSO covers (B ans-q014)),
+`no_answer` (2: the two failed cells above) and `not_applicable` (1 authority row: "BNS v. Section", a scorer
+artefact, not a case). By the project owner's decision these are kept **one-to-one as their own categories**: the
+importer accepts them, counts them, and leaves them out of the denominators like `cannot_judge`. No judgment was
+edited or merged.
+
+**Reviewed grounding next to structural grounding** (the same sampled answers; structural = the validator's valid /
+total structured citations):
+
+| | A, LLM-only | B, dense RAG | C, full LegalAI |
+|---|---:|---:|---:|
+| Structured citations reviewed | 0 | 40 | 42 |
+| Structural grounding (valid / total) | n/a (no citations) | 1.00 (40/40) | 1.00 (42/42) |
+| Reviewed grounding, strict (supported) | n/a | **0.225** (9/40) | **0.190** (8/42) |
+| Reviewed grounding, lenient (supported or partly) | n/a | 0.700 (28/40) | 0.595 (25/42) |
+| not_supported / incorrect_law | — | 8 / 4 | 13 / 4 |
+| Incorrect-law share | — | 0.100 | 0.095 |
+| Cases named in the answer text | — | — | 2: 1 supported, 1 not_applicable |
+
+With C's text reference included (the importer's headline figure), C is 0.209 strict and 0.605 lenient over 43
+judged authorities.
+
+**Legal correctness** (answers; `abstained`, `no_answer` and `cannot_judge` are not judged for correctness):
+
+| | A | B | C |
+|---|---:|---:|---:|
+| correct / partly_correct / incorrect | 6 / 5 / 3 | 6 / 3 / 2 | 6 / 7 / 0 |
+| abstained / no_answer | 0 / 1 | 4 / 0 | 1 / 1 |
+| Share correct (of answers judged) | 0.43 (6/14) | 0.55 (6/11) | 0.46 (6/13) |
+
+**The gap between structural and reviewed grounding.** Every structured citation in B and C is structurally valid
+(1.00), but the reviewer judged only about one in five fully supported by the excerpt shown (B 0.225, C 0.190), and
+six to seven in ten at least partly supported. Structural validity proves that a citation points at real retrieved
+evidence with matching metadata; it does not show that the passage supports the claim. That second question is
+where most citations fall short. Reading the gap:
+- **The excerpt cut lowers the reviewed rate.** In 11 of the 83 judged authority rows the notes say the supporting
+  content was not in the excerpt shown (2 of them say the excerpt was cut off). With full passages some `partly` and
+  `not_supported` judgments could move up, so the strict rate is a lower bound for these citations.
+- **Not all of it is the cut.** Many notes describe an excerpt on a different point (for example a bail claim
+  citing a passage about section 313 statements), and 8 citations (B 4, C 4) were judged to state the wrong law.
+- **C is not better than B on this sample.** C's reviewed rates are slightly lower (strict 0.190 vs 0.225, lenient
+  0.595 vs 0.700), against C's higher share of answers with a grounded claim in section 3. With 40-42 citations a
+  difference of one or two judgments moves the rate by 2.5-5 points, so the two are not distinguishable here.
+- **One reviewer, AI, not human-verified,** and of the same model family as the assistant that built the pipeline;
+  its errors may be correlated with the system's. These rates are evidence about the gap, not a final grounding
+  figure.
 
 ## 5. Labelling kit (about 70 new retrieval queries)
 
@@ -241,8 +305,10 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
   comparison between configurations is not affected; the comparison between modes partly is.
 - **Unsupported-reference heuristic:** see the reading above. Flagged counts are upper bounds; the hand-checked
   counts are given beside them.
-- **Structural is not human grounding:** a valid citation points at real retrieved evidence, but that is not proof
-  the evidence supports the claim or that the law is correct. The human review measures that.
+- **Structural is not reviewed grounding:** a valid citation points at real retrieved evidence, but that is not proof
+  the evidence supports the claim or that the law is correct. On the review sample, structural grounding is 1.00 for
+  B and C while the AI-reviewed strict rate is 0.225 and 0.190 (section 4).
+- **Review excerpts cut at 600 characters,** and the reviewer is an AI chat assistant, not human-verified (section 4).
 - **Pooled recall** for retrieval (above).
 - **Provider change:** the historical generation run used Gemini with prompt v1, this one Groq gpt-oss with prompt
   v3. The two are not directly comparable.
@@ -265,5 +331,6 @@ Tested with fakes, and live on 2 example queries (22 and 24 pooled candidates), 
 
 ## 8. Next steps
 
-1. Human review of the 15 x 3 sample, then run `import_human_review.py`.
+1. A person checks the AI review of the 15 x 3 sample, ideally with the full cited passages rather than 600-character
+   excerpts, then re-runs `import_human_review.py`.
 2. Collect the about 70 new benchmark queries and labels with the kit, then recompute retrieval metrics on v2.

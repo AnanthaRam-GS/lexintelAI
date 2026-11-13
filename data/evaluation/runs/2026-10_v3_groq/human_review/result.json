@@ -1,0 +1,106 @@
+{
+ "reviewed_rows": 129,
+ "reviewers": [
+  "AI (Claude chat; not Claude Code); blind to configuration; not human-verified"
+ ],
+ "configurations": {
+  "A_llm_only": {
+   "authorities_judged": 0,
+   "citation_support": {},
+   "human_grounding_rate_strict": null,
+   "human_grounding_rate_lenient": null,
+   "incorrect_law_share": null,
+   "by_row_type": {},
+   "answers_judged": 15,
+   "answers_judged_for_correctness": 14,
+   "legal_correctness": {
+    "correct": 6,
+    "partly_correct": 5,
+    "incorrect": 3,
+    "no_answer": 1
+   },
+   "answers_correct_share": 0.4286
+  },
+  "B_dense_rag": {
+   "authorities_judged": 40,
+   "citation_support": {
+    "incorrect_law": 4,
+    "not_supported": 8,
+    "partly": 19,
+    "supported": 9
+   },
+   "human_grounding_rate_strict": 0.225,
+   "human_grounding_rate_lenient": 0.7,
+   "incorrect_law_share": 0.1,
+   "by_row_type": {
+    "citation": {
+     "authorities_judged": 40,
+     "citation_support": {
+      "incorrect_law": 4,
+      "not_supported": 8,
+      "partly": 19,
+      "supported": 9
+     },
+     "human_grounding_rate_strict": 0.225,
+     "human_grounding_rate_lenient": 0.7,
+     "incorrect_law_share": 0.1
+    }
+   },
+   "answers_judged": 15,
+   "answers_judged_for_correctness": 11,
+   "legal_correctness": {
+    "incorrect": 2,
+    "abstained": 4,
+    "correct": 6,
+    "partly_correct": 3
+   },
+   "answers_correct_share": 0.5455
+  },
+  "C_full_legalai": {
+   "authorities_judged": 43,
+   "citation_support": {
+    "not_supported": 13,
+    "supported": 9,
+    "incorrect_law": 4,
+    "partly": 17,
+    "not_applicable": 1
+   },
+   "human_grounding_rate_strict": 0.2093,
+   "human_grounding_rate_lenient": 0.6047,
+   "incorrect_law_share": 0.093,
+   "by_row_type": {
+    "citation": {
+     "authorities_judged": 42,
+     "citation_support": {
+      "not_supported": 13,
+      "supported": 8,
+      "incorrect_law": 4,
+      "partly": 17
+     },
+     "human_grounding_rate_strict": 0.1905,
+     "human_grounding_rate_lenient": 0.5952,
+     "incorrect_law_share": 0.0952
+    },
+    "text_reference": {
+     "authorities_judged": 1,
+     "citation_support": {
+      "supported": 1,
+      "not_applicable": 1
+     },
+     "human_grounding_rate_strict": 1.0,
+     "human_grounding_rate_lenient": 1.0,
+     "incorrect_law_share": 0.0
+    }
+   },
+   "answers_judged": 15,
+   "answers_judged_for_correctness": 13,
+   "legal_correctness": {
+    "partly_correct": 7,
+    "correct": 6,
+    "abstained": 1,
+    "no_answer": 1
+   },
+   "answers_correct_share": 0.4615
+  }
+ }
+}
