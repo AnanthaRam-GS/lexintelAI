@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from argparse import Namespace
 from contextlib import nullcontext
 from dataclasses import dataclass
@@ -20,6 +22,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings, resolve_chroma_location
+from backend.app.services.llm_output_cap import output_token_cap
 from backend.app.services.inference_lock import InferenceBusy
 from backend.app.core.dependencies import require_lawyer_or_admin
 from backend.app.core.rate_limit import (
@@ -88,6 +91,7 @@ from backend.app.services.product_context_budget import (
     ContextTier,
     ProductContextBudget,
     bound_trusted_evidence,
+    excerpt_at_boundary,
     evidence_metrics,
     resolve_product_context_budget,
 )
@@ -403,6 +407,8 @@ def answer_professional_pdf(
         settings=settings,
         private_context_builder=private_context_builder,
         timings={"parse_ms": parse_ms, "document_map_ms": document_map_ms},
+        # Step 26b: whole-document briefs get their own output cap (LEGALAI_BRIEF_MAX_OUTPUT_TOKENS).
+        max_output_tokens=settings.legalai_brief_max_output_tokens if analysis_mode.strip().lower() == "brief" else None,
     )
     result = outcome.result
     response = professional_response_from_result(
@@ -742,6 +748,7 @@ def run_frozen_query_pipeline(
     settings: Settings,
     private_context_builder: Callable[[str], str | None] | None = None,
     timings: dict[str, float] | None = None,
+    max_output_tokens: int | None = None,
 ) -> QueryPipelineOutcome:
     """Applies to all four product query paths (public/professional text and
     PDF). Trusted (E#) evidence is bounded to a product-wide budget *before*
@@ -760,6 +767,26 @@ def run_frozen_query_pipeline(
     """
     product_budget = resolve_product_context_budget(settings)
     timings = dict(timings or {})
+    # Step 26b: brief mode with Groq sets its own output cap (llm_output_cap.py); the size guard reserves the same number.
+    cap = max_output_tokens if settings.legalai_llm_provider.strip().lower() == "groq" else None
+    with output_token_cap(cap):
+        return _run_frozen_query_pipeline(query, mode=mode, retrieval_service=retrieval_service, adapter=adapter, settings=settings,
+                                          private_context_builder=private_context_builder, timings=timings,
+                                          product_budget=product_budget, max_output_tokens=cap)
+
+
+def _run_frozen_query_pipeline(
+    query: str,
+    *,
+    mode: AnswerMode,
+    retrieval_service: Any,
+    adapter: Any,
+    settings: Settings,
+    private_context_builder: Callable[[str], str | None] | None,
+    timings: dict[str, float],
+    product_budget: ProductContextBudget,
+    max_output_tokens: int | None,
+) -> QueryPipelineOutcome:
     try:
         stage_started = perf_counter()
         understanding = understand_legal_query(query, section_ranking_mode="deterministic")
@@ -788,9 +815,10 @@ def run_frozen_query_pipeline(
             tier=ContextTier.NORMAL,
             private_context_builder=private_context_builder,
             timings=timings,
-            size_guard=request_size_guard(settings, mode),
+            size_guard=request_size_guard(settings, mode, max_output_tokens),
             generation_limit=generation_limit(settings),
             prompt=prompt_builder(settings),
+            excerpt_last_trusted=max_output_tokens is not None,
         )
         if result.answer is None and any(
             warning.code.endswith("_REQUEST_TOO_LARGE") for warning in result.warnings
@@ -806,7 +834,7 @@ def run_frozen_query_pipeline(
                 tier=ContextTier.REDUCED,
                 private_context_builder=None,
                 timings=timings,
-                size_guard=request_size_guard(settings, mode),
+                size_guard=request_size_guard(settings, mode, max_output_tokens),
                 generation_limit=generation_limit(settings),
                 prompt=prompt_builder(settings),
             )
@@ -849,6 +877,7 @@ def _attempt_generation(
     size_guard: "RequestSizeGuard | None" = None,
     generation_limit: tuple[int, float] | None = None,
     prompt: tuple[str, Callable[..., Any]] = PROMPT_BUILDERS["v2"],
+    excerpt_last_trusted: bool = False,
 ) -> tuple[LegalAnswerResult, ContextTier, Any]:
     timings = timings if timings is not None else {}
     prompt_version, build_prompt = prompt
@@ -857,6 +886,7 @@ def _attempt_generation(
     trusted_budget_tokens = tier_budget.trusted_evidence_budget(query_tokens=query_tokens)
     bounded_retrieval = bound_trusted_evidence(retrieval, budget_tokens=trusted_budget_tokens)
     trimmed = 0
+    excerpted = 0
     while True:
         # The model and the citation validator see case names without the Indian Kanoon
         # date suffix (services/case_names.py); precedents keep the full titles.
@@ -884,6 +914,16 @@ def _attempt_generation(
             if size_guard is None or size_guard.fits(prompt_text, mode):
                 break
         if len(bounded_retrieval.evidence) <= 1:
+            # Step 26b (brief mode): the last trusted item may be shortened, at a sentence boundary, by what the
+            # request is over the ceiling, keeping at least BRIEF_MIN_TRUSTED_TOKENS of it (at most 3 attempts).
+            shortened = (
+                shortened_last_trusted(bounded_retrieval, prompt_text, mode, size_guard)
+                if excerpt_last_trusted and excerpted < 3 else None
+            )
+            if shortened is not None:
+                bounded_retrieval = shortened
+                excerpted += 1
+                continue
             # Private (P#) evidence is never dropped, and one trusted item is the minimum for a grounded answer.
             if private_document_context:
                 raise QueryExecutionError(
@@ -900,8 +940,9 @@ def _attempt_generation(
         ranked = sorted(bounded_retrieval.evidence, key=lambda item: item.rank)
         bounded_retrieval = bounded_retrieval.model_copy(update={"evidence": ranked[:-1]})
         trimmed += 1
-    if trimmed:
-        logger.info("request_size_guard trimmed_evidence_items=%d remaining=%d", trimmed, len(bounded_retrieval.evidence))
+    if trimmed or excerpted:
+        logger.info("request_size_guard trimmed_evidence_items=%d remaining=%d last_item_shortened=%d", trimmed,
+                    len(bounded_retrieval.evidence), excerpted)
     add_timing(timings, "context_assembly_ms", elapsed_since(stage_started))
     timed_adapter = TimedAdapter(adapter) if adapter is not None else None
     max_generations, wait_seconds = generation_limit or (0, 0.0)
@@ -948,6 +989,32 @@ def _attempt_generation(
     return result, tier, bounded_retrieval
 
 
+BRIEF_MIN_TRUSTED_TOKENS = 150
+
+
+def shortened_last_trusted(retrieval: Any, prompt_text: str | None, mode: AnswerMode, size_guard: "RequestSizeGuard | None") -> Any:
+    """The retrieval with its single trusted item shortened just enough for the request to fit, or None (step 26b).
+
+    The overflow ``estimated - ceiling`` is in guard tokens (input x estimate_factor + output), so the excerpt shrinks by
+    ``ceil(overflow / estimate_factor)`` plus a 25-token margin. The item keeps its id and metadata, so citation
+    validation still matches it. None when there is no guard or prompt, or the excerpt would fall below
+    ``BRIEF_MIN_TRUSTED_TOKENS``.
+    """
+    if size_guard is None or prompt_text is None or len(retrieval.evidence) != 1:
+        return None
+    overflow = size_guard.estimated_request_tokens(prompt_text, mode) - size_guard.ceiling_tokens
+    if overflow <= 0:
+        return None
+    item = retrieval.evidence[0]
+    target = estimate_tokens(item.text) - math.ceil(overflow / size_guard.estimate_factor) - 25
+    if target < BRIEF_MIN_TRUSTED_TOKENS:
+        return None
+    excerpt = excerpt_at_boundary(item.text, target)
+    if not excerpt.strip() or estimate_tokens(excerpt) >= estimate_tokens(item.text):
+        return None
+    return retrieval.model_copy(update={"evidence": [item.model_copy(update={"text": excerpt})]})
+
+
 @dataclass(frozen=True)
 class RequestSizeGuard:
     """Keeps a request (prompt + structured-output schema + output limit) under the primary provider's per-request ceiling.
@@ -970,15 +1037,18 @@ class RequestSizeGuard:
         return self.estimated_request_tokens(prompt_text, mode) <= self.ceiling_tokens
 
 
-def request_size_guard(settings: Settings, mode: AnswerMode | None = None) -> RequestSizeGuard | None:
-    """The primary provider's guard: Groq with LEGALAI_GROQ_MAX_REQUEST_TOKENS, or a profile with a request ceiling."""
+def request_size_guard(settings: Settings, mode: AnswerMode | None = None, max_output_tokens: int | None = None) -> RequestSizeGuard | None:
+    """The primary provider's guard: Groq with LEGALAI_GROQ_MAX_REQUEST_TOKENS, or a profile with a request ceiling.
+
+    ``max_output_tokens`` (step 26b, brief mode with Groq) replaces LEGALAI_LLM_MAX_OUTPUT_TOKENS in the reservation.
+    """
     provider = settings.legalai_llm_provider.strip().lower()
     if provider == "groq":
         if not settings.legalai_groq_max_request_tokens:
             return None
         return RequestSizeGuard(
             ceiling_tokens=settings.legalai_groq_max_request_tokens,
-            max_output_tokens=settings.legalai_llm_max_output_tokens,
+            max_output_tokens=max_output_tokens or settings.legalai_llm_max_output_tokens,
             estimate_factor=settings.legalai_groq_token_estimate_factor,
         )
     if provider in PROFILE_NAMES:

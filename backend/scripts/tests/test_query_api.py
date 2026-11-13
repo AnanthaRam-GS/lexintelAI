@@ -118,6 +118,10 @@ class QueryApiTests(unittest.TestCase):
                                     "note": None,
                                     "other_sources": [{"source": "section_catalog", "source_key": "BNSS 35",
                                                        "title": "Arrest safeguards", "agrees": True}],
+                                    "model_label_differs": False,
+                                    "section_heading": None,
+                                    "section_heading_source": None,
+                                    "section_heading_key": None,
                                 },
                             }
                         ],
@@ -1606,6 +1610,28 @@ class ProfessionalBriefPipelineTests(unittest.TestCase):
 
     def debug_settings(self) -> Settings:
         return self.settings.model_copy(update={"legalai_query_debug": True})
+
+    def test_brief_mode_generates_with_the_brief_output_cap(self) -> None:
+        # Step 26b: whole-document briefs with Groq get LEGALAI_BRIEF_MAX_OUTPUT_TOKENS; question mode keeps the default.
+        from backend.app.services.llm_output_cap import effective_max_output_tokens
+
+        seen: list[int] = []
+        original = self.adapter.generate_structured_answer
+
+        def recording(prompt, *, schema, mode):
+            seen.append(effective_max_output_tokens(2048))
+            return original(prompt, schema=schema, mode=mode)
+
+        self.adapter.generate_structured_answer = recording
+        groq = self.settings.model_copy(update={"legalai_llm_provider": "groq", "legalai_brief_max_output_tokens": 3000})
+        app.dependency_overrides[query_api.get_settings] = lambda: groq
+        with patch.object(query_api, "save_query_history"):
+            for mode in ("brief", "question"):
+                response = self.client.post("/query/professional/pdf", data={"query": "Prepare a case brief.", "analysis_mode": mode},
+                                            files=pdf_upload(filename="fir.pdf", body=fixture_pdf_bytes("fir")))
+                self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(seen, [3000, 2048])
+        self.assertEqual(effective_max_output_tokens(2048), 2048)  # reset after the request
 
     def test_debug_returns_every_stage_timing_and_the_backend(self) -> None:
         app.dependency_overrides[query_api.get_settings] = self.debug_settings
