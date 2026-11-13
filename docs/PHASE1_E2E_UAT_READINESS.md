@@ -79,7 +79,7 @@ python3 backend/scripts/validate_legal_section_gold.py
 cd frontend && npm run test:run
 cd frontend && npm run lint
 cd frontend && npm run format:check
-cd frontend && npx tsc --noEmit
+cd frontend && npm run typecheck
 ```
 
 ## First-Review UAT Checklist
