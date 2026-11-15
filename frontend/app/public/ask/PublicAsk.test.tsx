@@ -73,17 +73,24 @@ function SessionSeed({ input }: { input: PublicQueryInput }) {
   return null;
 }
 
-/** Like the home page: the question is handed over first, then the ask page mounts with it waiting. */
+/** Like the home page: the question is handed over first (on a click), then the ask page mounts with it waiting. */
 function HandedOverQuestion({ input }: { input: PublicQueryInput }) {
   const { setPendingInput } = usePublicSession();
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    setPendingInput(input);
-    setReady(true);
-  }, [input, setPendingInput]);
-
-  return ready ? <PublicAsk /> : null;
+  return ready ? (
+    <PublicAsk />
+  ) : (
+    <button
+      type="button"
+      onClick={() => {
+        setPendingInput(input);
+        setReady(true);
+      }}
+    >
+      Hand over
+    </button>
+  );
 }
 
 function PublicAskWithReplayableSession({
@@ -1124,6 +1131,7 @@ describe('PublicAsk', () => {
         </StrictMode>,
       );
 
+      fireEvent.click(screen.getByRole('button', { name: 'Hand over' }));
       await waitFor(() => expect(fetchPublicQuery).toHaveBeenCalledTimes(1));
       // Let the deferred unmount abort run, as it would after a Strict Mode remount.
       await act(async () => {
@@ -1148,6 +1156,7 @@ describe('PublicAsk', () => {
           <HandedOverQuestion input={handedOver} />
         </PublicSessionProvider>,
       );
+      fireEvent.click(screen.getByRole('button', { name: 'Hand over' }));
       await waitFor(() => expect(fetchPublicQuery).toHaveBeenCalledTimes(1));
       const signal = fetchPublicQuery.mock.calls[0]?.[1]?.signal;
 
