@@ -188,6 +188,13 @@ export function classifyRequestFailure(error: unknown): AdminRequestFailure {
 }
 
 export function classifyPublicAnswerFailure(error: unknown): PublicAnswerFailure {
+  // An aborted request was stopped by the page, not failed by the service.
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as { name?: unknown }).name === 'AbortError'
+  )
+    return 'cancelled';
   if (error instanceof ApiClientError) {
     if (error.code === 'PDF_TOO_LARGE') return 'pdf-too-large';
     if (

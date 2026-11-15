@@ -5,6 +5,12 @@ import { ApiClientError, apiFetch } from '../../lib/api';
 import { classifyPublicAnswerFailure, errorCopy } from './error-copy';
 
 describe('classifyPublicAnswerFailure', () => {
+  it('treats an aborted request as cancelled, not as a service failure', () => {
+    expect(
+      classifyPublicAnswerFailure(new DOMException('The operation was aborted.', 'AbortError')),
+    ).toBe('cancelled');
+  });
+
   it('maps a 429 quota code to the quota-safe failure kind', () => {
     const error = new ApiClientError('rate limited', 429, 'MODEL_PROVIDER_QUOTA_EXCEEDED');
 
