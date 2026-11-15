@@ -162,6 +162,7 @@ export function PublicAsk({
   const requestRef = useRef<PublicQueryInput | null>(null);
   const slowCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timeoutCueTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unmountAbortTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeMode: ActiveInputMode = selectedFile ? 'file' : draft.trim() ? 'text' : 'none';
   const fileNeedsQuestion = Boolean(selectedFile) && !draft.trim();
@@ -176,12 +177,24 @@ export function PublicAsk({
 
   useEffect(() => {
     isMountedRef.current = true;
+    // React Strict Mode (development) unmounts and remounts a component at once. Aborting the in-flight request
+    // in that cleanup cancelled the question handed over from the home page, and the abort was then shown as
+    // "Couldn't get an answer right now" until Retry. The abort is deferred by a tick and skipped on remount; a
+    // real unmount (leaving the page) still aborts the request.
+    if (unmountAbortTimerRef.current) {
+      clearTimeout(unmountAbortTimerRef.current);
+      unmountAbortTimerRef.current = null;
+    }
 
     return () => {
       isMountedRef.current = false;
-      requestAbortControllerRef.current?.abort();
-      requestAbortControllerRef.current = null;
-      clearRequestTimers();
+      unmountAbortTimerRef.current = setTimeout(() => {
+        unmountAbortTimerRef.current = null;
+        if (isMountedRef.current) return;
+        requestAbortControllerRef.current?.abort();
+        requestAbortControllerRef.current = null;
+        clearRequestTimers();
+      }, 0);
     };
   }, [clearRequestTimers]);
 

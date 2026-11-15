@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -71,6 +71,26 @@ function SessionSeed({ input }: { input: PublicQueryInput }) {
   }, [input, setPendingInput]);
 
   return null;
+}
+
+/** Like the home page: the question is handed over first (on a click), then the ask page mounts with it waiting. */
+function HandedOverQuestion({ input }: { input: PublicQueryInput }) {
+  const { setPendingInput } = usePublicSession();
+  const [ready, setReady] = useState(false);
+
+  return ready ? (
+    <PublicAsk />
+  ) : (
+    <button
+      type="button"
+      onClick={() => {
+        setPendingInput(input);
+        setReady(true);
+      }}
+    >
+      Hand over
+    </button>
+  );
 }
 
 function PublicAskWithReplayableSession({
@@ -1091,5 +1111,61 @@ describe('PublicAsk', () => {
       screen.queryByText('Another question from the old conversation'),
     ).not.toBeInTheDocument();
     expect(document.body).not.toHaveTextContent('/private/late failure');
+  });
+
+  describe('a question handed over from the home page (Strict Mode)', () => {
+    const handedOver: PublicQueryInput = {
+      kind: 'text',
+      content: 'Can police arrest without a warrant?',
+    };
+
+    it('is not aborted by the Strict Mode remount, and its answer is shown without an error', async () => {
+      const request = createDeferred<PublicQueryResponse>();
+      fetchPublicQuery.mockReturnValueOnce(request.promise);
+
+      render(
+        <StrictMode>
+          <PublicSessionProvider>
+            <HandedOverQuestion input={handedOver} />
+          </PublicSessionProvider>
+        </StrictMode>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hand over' }));
+      await waitFor(() => expect(fetchPublicQuery).toHaveBeenCalledTimes(1));
+      // Let the deferred unmount abort run, as it would after a Strict Mode remount.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+      const signal = fetchPublicQuery.mock.calls[0]?.[1]?.signal;
+      expect(signal?.aborted).toBe(false);
+
+      await act(async () => {
+        request.resolve(responseFixture);
+      });
+
+      expect(await screen.findByText(responseFixture.explanation)).toBeInTheDocument();
+      expect(screen.queryByText("Couldn't get an answer right now")).not.toBeInTheDocument();
+      expect(fetchPublicQuery).toHaveBeenCalledTimes(1);
+    });
+
+    it('still aborts the request when the page is really left', async () => {
+      fetchPublicQuery.mockImplementationOnce(neverSettles);
+      const { unmount } = render(
+        <PublicSessionProvider>
+          <HandedOverQuestion input={handedOver} />
+        </PublicSessionProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Hand over' }));
+      await waitFor(() => expect(fetchPublicQuery).toHaveBeenCalledTimes(1));
+      const signal = fetchPublicQuery.mock.calls[0]?.[1]?.signal;
+
+      unmount();
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      expect(signal?.aborted).toBe(true);
+    });
   });
 });
