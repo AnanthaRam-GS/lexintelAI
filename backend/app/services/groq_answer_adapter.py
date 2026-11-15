@@ -16,6 +16,7 @@ contract, so the rest of the (frozen) grounded-answer pipeline in
 
 from __future__ import annotations
 
+import http.client
 import json
 import logging
 import socket
@@ -211,6 +212,13 @@ class GroqAnswerAdapter:
             raise error from exc
         except urllib.error.URLError as exc:
             raise ModelProviderError("GROQ_PROVIDER_ERROR", sanitized_url_error(exc)) from exc
+        except (http.client.HTTPException, ConnectionError) as exc:
+            # A connection the server closed or reset without a full response (RemoteDisconnected,
+            # ConnectionResetError, IncompleteRead) is not wrapped in URLError by urllib. It is a transport error like
+            # any other: retried by the loop above (no HTTP status), never a raw exception that fails the query.
+            raise ModelProviderError(
+                "GROQ_PROVIDER_ERROR", f"Groq connection dropped before a full response: {exc.__class__.__name__}."
+            ) from exc
         except json.JSONDecodeError as exc:
             raise ModelProviderError("GROQ_INVALID_RESPONSE", "Groq returned a non-JSON API response.") from exc
 

@@ -178,6 +178,28 @@ class GroqAnswerAdapterTests(unittest.TestCase):
             result = generate_legal_answer(self.understanding(), retrieval(), adapter=adapter, prompt="prompt")
         self.assertIn("GROQ_RATE_LIMIT", {warning.code for warning in result.warnings})
 
+    def test_a_dropped_connection_on_the_first_call_is_retried(self) -> None:
+        # The server closes the connection without a response (urllib raises RemoteDisconnected, not URLError).
+        import http.client
+
+        sleeps: list[float] = []
+        adapter = GroqAnswerAdapter(self.settings(), sleep=sleeps.append)
+        side_effect = [http.client.RemoteDisconnected("Remote end closed connection without response"), FakeHttpResponse(groq_payload())]
+        with patch("urllib.request.urlopen", side_effect=side_effect) as urlopen:
+            response = adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual(urlopen.call_count, 2)
+        self.assertEqual(sleeps, [0.25])
+        self.assertTrue(response.raw_response)
+        self.assertEqual((response.model_metadata.retry_count, response.model_metadata.retry_reasons), (1, ["GROQ_PROVIDER_ERROR"]))
+
+    def test_a_connection_that_keeps_dropping_is_a_provider_error_not_a_crash(self) -> None:
+        adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
+        with patch("urllib.request.urlopen", side_effect=ConnectionResetError(54, "Connection reset by peer")) as urlopen:
+            with self.assertRaises(ModelProviderError) as ctx:
+                adapter.generate_structured_answer("prompt", schema=PublicLegalAnswer, mode=AnswerMode.PUBLIC)
+        self.assertEqual((ctx.exception.code, ctx.exception.attempt_count, urlopen.call_count), ("GROQ_PROVIDER_ERROR", 3, 3))
+        self.assertIn("ConnectionResetError", str(ctx.exception))
+
     def test_timeout_maps_to_timeout_code(self) -> None:
         adapter = GroqAnswerAdapter(self.settings(), sleep=lambda _seconds: None)
         with patch("urllib.request.urlopen", side_effect=socket.timeout()):
